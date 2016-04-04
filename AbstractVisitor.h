@@ -16,6 +16,7 @@ namespace PharmML
     class LogicBinopLeq;
     class Piecewise;
     class Piece;
+    class FunctionDefinition;
     class Variable;
     class Covariate;
 
@@ -35,6 +36,7 @@ namespace PharmML
             virtual std::string visit(LogicBinopLeq *node) = 0;
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;
+            virtual std::string visit(FunctionDefinition *node) = 0;
             virtual std::string visit(Covariate *node) = 0;
             virtual std::string visit(Variable *node) = 0;
     };

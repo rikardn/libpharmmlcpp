@@ -8,6 +8,7 @@
 #include "Binop.h"
 #include "Scalar.h"
 #include "Piecewise.h"
+#include "FunctionDefinition.h"
 #include "Covariate.h"
 #include "Variable.h"
 
@@ -29,6 +30,7 @@ namespace PharmML
             virtual std::string visit(LogicBinopLeq *node);
             virtual std::string visit(Piecewise *node);
             virtual std::string visit(Piece *node);
+            virtual std::string visit(FunctionDefinition *node);
             virtual std::string visit(Covariate *node);
             virtual std::string visit(Variable *node);
     };

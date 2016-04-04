@@ -60,6 +60,20 @@ namespace PharmML
         return("{" + node->getCondition()->accept(this) + "}");
     }
 
+    std::string RGenerator::visit(FunctionDefinition *node) {
+        std::string head = node->getSymbId() + " <- function(";
+        std::vector<std::string> args = node->getArguments();
+        for (int i = 0; i < args.size(); i++) {
+            head += args[i];
+            if (i != args.size() - 1) {
+                head += ", ";
+            }
+        }
+        head += ") {\n";
+        std::string code = "  " + node->getAssignment()->accept(this) + "\n}";
+        return(head + code);
+    }
+
     std::string RGenerator::visit(Covariate *node) {
         return(node->getTransformedName() + " <- " + node->getAssignment()->accept(this));
     }

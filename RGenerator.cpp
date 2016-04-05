@@ -87,7 +87,11 @@ namespace PharmML
         if (node->getTransformation() != "") {
             pop = node->getTransformation() + "(" + pop + ")";
         }
-        return(node->getTransformation() + node->getSymbId() + " = " + pop);
+        std::string cov;
+        if (node->getFixedEffect()) {
+            cov = " + " + node->getFixedEffect()->accept(this) + " * " + node->getCovariate()->accept(this);
+        }
+        return(node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + node->getRandomEffects()->accept(this));
     }
 
     std::string RGenerator::visit(Variable *node) {

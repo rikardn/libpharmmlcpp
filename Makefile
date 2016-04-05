@@ -60,3 +60,8 @@ Model.o: Model.cpp Model.h
 
 xml.o: xml.cpp xml.h
 	g++ -c xml.cpp -oxml.o $(CFLAGS)
+
+.PHONY: clean
+
+clean:
+	rm *.o

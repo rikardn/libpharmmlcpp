@@ -2,6 +2,7 @@
 #define PHARMML_SYMBOLS_H_
 
 #include <string>
+#include "xml.h"
 #include "AstNode.h"
 
 namespace PharmML
@@ -12,6 +13,7 @@ namespace PharmML
 
         public:
         SymbRef(std::string ref);
+        SymbRef(xml::Node node);
         virtual std::string accept(AbstractVisitor *visitor);
         std::string toString();
     };

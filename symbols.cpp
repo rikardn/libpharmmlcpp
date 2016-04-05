@@ -7,6 +7,10 @@ namespace PharmML
         this->symbIdRef = ref;
     }
 
+    SymbRef::SymbRef(xml::Node node) {
+        this->symbIdRef = node.getAttribute("symbIdRef").getValue();
+    }
+
     std::string SymbRef::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }

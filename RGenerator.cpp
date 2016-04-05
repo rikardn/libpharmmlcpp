@@ -17,6 +17,10 @@ namespace PharmML
     std::string RGenerator::visit(UniopMinus *node) {
         return("(-" + node->acceptChild(this) + ")");
     }
+    
+    std::string RGenerator::visit(UniopAbs *node) {
+        return("abs(" + node->acceptChild(this) + ")");
+    }
 
     std::string RGenerator::visit(ScalarInt *node) {
         return("(" + node->toString() + ")");

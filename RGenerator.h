@@ -22,6 +22,7 @@ namespace PharmML
             virtual std::string visit(UniopLog *node);
             virtual std::string visit(UniopExp *node);
             virtual std::string visit(UniopMinus *node);
+            virtual std::string visit(UniopAbs *node);
             virtual std::string visit(ScalarInt *node);
             virtual std::string visit(BinopPlus *node);
             virtual std::string visit(BinopMinus *node);

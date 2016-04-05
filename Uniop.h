@@ -35,6 +35,12 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
+    
+    class UniopAbs : public Uniop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 }
 
 #endif

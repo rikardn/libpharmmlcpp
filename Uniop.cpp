@@ -26,4 +26,8 @@ namespace PharmML
     std::string UniopMinus::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
+    
+    std::string UniopAbs::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
 }

@@ -6,6 +6,7 @@ namespace PharmML
     class UniopLog;
     class UniopExp;
     class UniopMinus;
+    class UniopAbs;
     class ScalarInt;
     class BinopPlus;
     class BinopMinus;
@@ -27,6 +28,7 @@ namespace PharmML
             virtual std::string visit(UniopLog *node) = 0;
             virtual std::string visit(UniopExp *node) = 0;
             virtual std::string visit(UniopMinus *node) = 0;
+            virtual std::string visit(UniopAbs *node) = 0;
             virtual std::string visit(ScalarInt *node) = 0;
             virtual std::string visit(BinopPlus *node) = 0;
             virtual std::string visit(BinopMinus *node) = 0;

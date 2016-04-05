@@ -25,6 +25,8 @@ namespace PharmML
                 uniop = new UniopExp();
             } else if (op == "minus") {
                 uniop = new UniopMinus();
+            } else if (op == "abs") {
+                uniop = new UniopAbs();
             }
             uniop->setChild(this->create(node.getChild()));
             instance = uniop;

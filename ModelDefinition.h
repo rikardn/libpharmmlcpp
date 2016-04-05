@@ -5,6 +5,7 @@
 #include <libxml/tree.h>
 #include "PharmMLContext.h"
 #include "CovariateModel.h"
+#include "ParameterModel.h"
 #include "StructuralModel.h"
 
 namespace PharmML
@@ -13,10 +14,12 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         PharmML::CovariateModel *CovariateModel;
+        PharmML::ParameterModel *ParameterModel;
         PharmML::StructuralModel *StructuralModel;
 
         public:
         PharmML::CovariateModel *getCovariateModel();
+        PharmML::ParameterModel *getParameterModel();
         PharmML::StructuralModel *getStructuralModel();
         ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);

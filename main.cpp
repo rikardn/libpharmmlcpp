@@ -20,8 +20,15 @@ int main()
     std::cout << std::endl;
 
     std::cout << "# Covariates" << std::endl;
-    Covariate *cov = model->getModelDefinition()->getCovariateModel()->getCovariates()[0];
-    std::cout << cov->accept(&gen) << std::endl;
+    for (Covariate *cov : model->getModelDefinition()->getCovariateModel()->getCovariates()) {
+        std::cout << cov->accept(&gen) << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "# Individual parameters" << std::endl;
+    for (IndividualParameter *ind : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
+        std::cout << ind->accept(&gen) << std::endl;
+    }
     std::cout << std::endl;
 
     std::cout << "# Structural model" << std::endl;

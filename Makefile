@@ -1,11 +1,17 @@
 CFLAGS = -std=c++11 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o xml.o
-	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o xml.o $(CFLAGS) $(LIBS)
+main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o xml.o
+	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o xml.o $(CFLAGS) $(LIBS)
 
 main.o: main.cpp
 	g++ -c main.cpp -omain.o $(CFLAGS)
+
+IndividualParameter.o: IndividualParameter.cpp IndividualParameter.h
+	g++ -c IndividualParameter.cpp -oIndividualParameter.o $(CFLAGS)
+
+ParameterModel.o: ParameterModel.cpp ParameterModel.h
+	g++ -c ParameterModel.cpp -oParameterModel.o $(CFLAGS)
 
 FunctionDefinition.o: FunctionDefinition.cpp FunctionDefinition.h
 	g++ -c FunctionDefinition.cpp -oFunctionDefinition.o $(CFLAGS)

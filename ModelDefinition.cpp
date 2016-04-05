@@ -20,10 +20,18 @@ namespace PharmML
         if (struct_node.exists()) {
             this->StructuralModel = new PharmML::StructuralModel(this->context, struct_node);
         }
+        xml::Node param_node = this->context->getSingleElement(node, ".//mdef:ParameterModel");
+        if (param_node.exists()) {
+            this->ParameterModel = new PharmML::ParameterModel(this->context, param_node);
+        }
     }
 
     PharmML::CovariateModel *ModelDefinition::getCovariateModel() {
         return this->CovariateModel;
+    }
+
+    PharmML::ParameterModel *ModelDefinition::getParameterModel() {
+        return this->ParameterModel;
     }
 
     PharmML::StructuralModel *ModelDefinition::getStructuralModel() {

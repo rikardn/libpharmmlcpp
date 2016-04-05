@@ -78,6 +78,14 @@ namespace PharmML
         return(node->getTransformedName() + " <- " + node->getAssignment()->accept(this));
     }
 
+    std::string RGenerator::visit(IndividualParameter *node) {
+        std::string pop = node->getPopulationValue()->accept(this);
+        if (node->getTransformation() != "") {
+            pop = node->getTransformation() + "(" + pop + ")";
+        }
+        return(node->getTransformation() + node->getSymbId() + " = " + pop);
+    }
+
     std::string RGenerator::visit(Variable *node) {
         if (node->getAssignment()) {
             return(node->getSymbId() + " <- " + node->getAssignment()->accept(this));

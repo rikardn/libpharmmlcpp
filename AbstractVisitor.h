@@ -17,6 +17,7 @@ namespace PharmML
     class Piecewise;
     class Piece;
     class FunctionDefinition;
+    class IndividualParameter;
     class Variable;
     class Covariate;
 
@@ -37,6 +38,7 @@ namespace PharmML
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;
             virtual std::string visit(FunctionDefinition *node) = 0;
+            virtual std::string visit(IndividualParameter *node) = 0;
             virtual std::string visit(Covariate *node) = 0;
             virtual std::string visit(Variable *node) = 0;
     };

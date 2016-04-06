@@ -287,10 +287,20 @@ namespace PharmML
     }
 
     std::string RGenerator::visit(FunctionCall *node) {
-        return node->getFunctionName()->accept(this) + "(" + ")";
+        bool first = true;
+        std::string argument_list;
+        for (FunctionArgument *arg : node->getFunctionArguments()) {
+            if (first) {
+                first = false;
+            } else {
+                argument_list += ", ";
+            }
+            argument_list += arg->accept(this);
+        }
+        return node->getFunctionName()->accept(this) + "(" + argument_list + ")";
     }
 
     std::string RGenerator::visit(FunctionArgument *node) {
-        return "FArg";
+        return node->getSymbId() + "=" + node->getArgument()->accept(this);
     }
 }

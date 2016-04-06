@@ -15,6 +15,7 @@ namespace PharmML
             void setFunctionName(AstNode *node);
             AstNode *getFunctionName();
             void addFunctionArgument(FunctionArgument *farg);
+            std::vector<FunctionArgument *> getFunctionArguments();
             virtual std::string accept(AbstractVisitor *visitor);
     };
     
@@ -25,7 +26,9 @@ namespace PharmML
 
         public:
             void setSymbId(std::string symbId);
+            std::string getSymbId();
             void setArgument(AstNode *node);
+            AstNode *getArgument();
             virtual std::string accept(AbstractVisitor *visitor);
     };
 }

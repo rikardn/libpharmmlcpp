@@ -1,15 +1,20 @@
 #include <iostream>
 #include "Model.h"
-//#include "Uniop.h"
 #include "Scalar.h"
 #include "RGenerator.h"
 #include "Variable.h"
 
 using namespace PharmML;
 
-int main()
+int main(int argc, char **argv)
 {
-    Model *model = new Model("UseCase2.xml");
+    const char *filename;
+    if (argc < 2) {
+        filename = "UseCase2.xml";
+    } else {
+        filename = argv[1];
+    }
+    Model *model = new Model(filename);
 
     RGenerator gen;
 
@@ -35,6 +40,10 @@ int main()
     for (Variable *v : model->getModelDefinition()->getStructuralModel()->getVariables()) {
         std::cout << v->accept(&gen) << std::endl;
     }
+    std::cout << std::endl;
+
+    //std::cout << "# Observation model" << std::endl;
+    
 
     return 0;
 }

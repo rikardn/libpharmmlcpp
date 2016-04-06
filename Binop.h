@@ -44,6 +44,48 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
+    
+    class BinopPower : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopLogx : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopRoot : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopMin : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopMax : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopRem : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class BinopAtan2 : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 
     class LogicBinop : public Binop
     {

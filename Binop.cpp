@@ -46,7 +46,35 @@ namespace PharmML
     std::string BinopTimes::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
-
+    
+    std::string BinopPower::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopLogx::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopRoot::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopMin::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopMax::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopRem::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string BinopAtan2::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
     std::string LogicBinopLt::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }

@@ -197,6 +197,34 @@ namespace PharmML
     std::string RGenerator::visit(BinopTimes *node) {
         return("(" + node->acceptLeft(this) + " * " + node->acceptRight(this) + ")");
     }
+    
+    std::string RGenerator::visit(BinopPower *node) {
+        return("(" + node->acceptLeft(this) + " ^ " + node->acceptRight(this) + ")");
+    }
+    
+    std::string RGenerator::visit(BinopLogx *node) {
+        return("log(" + node->acceptLeft(this) + ", base = " + node->acceptRight(this) + ")");
+    }
+    
+    std::string RGenerator::visit(BinopRoot *node) {
+        return("(" + node->acceptLeft(this) + " ^ (1/" + node->acceptRight(this) + "))");
+    }
+    
+    std::string RGenerator::visit(BinopMin *node) {
+        return("min(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
+    }
+    
+    std::string RGenerator::visit(BinopMax *node) {
+        return("max(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
+    }
+    
+    std::string RGenerator::visit(BinopRem *node) {
+        return("(" + node->acceptLeft(this) + " %% " + node->acceptRight(this) + ")");
+    }
+    
+    std::string RGenerator::visit(BinopAtan2 *node) {
+        return("atan2(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
+    }
 
     std::string RGenerator::visit(LogicBinopLt *node) {
         return(node->infix(this, " < "));

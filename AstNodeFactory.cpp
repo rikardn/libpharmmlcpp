@@ -120,6 +120,20 @@ namespace PharmML
                 binop = new BinopDivide();
             } else if (op == "times") {
                 binop = new BinopTimes();
+            } else if (op == "power") {
+                binop = new BinopPower();
+            } else if (op == "logx") {
+                binop = new BinopLogx();
+            } else if (op == "root") {
+                binop = new BinopRoot();
+            } else if (op == "min") {
+                binop = new BinopMin();
+            } else if (op == "max") {
+                binop = new BinopMax();
+            } else if (op == "rem") {
+                binop = new BinopRem();
+            } else if (op == "atan2") {
+                binop = new BinopAtan2();
             } else if (op == "lt") {
                 binop = new LogicBinopLt();
             } else if (op == "leq") {

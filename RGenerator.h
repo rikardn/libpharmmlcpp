@@ -68,6 +68,13 @@ namespace PharmML
             virtual std::string visit(BinopMinus *node);
             virtual std::string visit(BinopDivide *node);
             virtual std::string visit(BinopTimes *node);
+            virtual std::string visit(BinopPower *node);
+            virtual std::string visit(BinopLogx *node);
+            virtual std::string visit(BinopRoot *node);
+            virtual std::string visit(BinopMin *node);
+            virtual std::string visit(BinopMax *node);
+            virtual std::string visit(BinopRem *node);
+            virtual std::string visit(BinopAtan2 *node);
             virtual std::string visit(LogicBinopLt *node);
             virtual std::string visit(LogicBinopLeq *node);
             virtual std::string visit(Piecewise *node);

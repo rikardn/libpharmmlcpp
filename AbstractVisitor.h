@@ -21,6 +21,8 @@ namespace PharmML
     class IndividualParameter;
     class Variable;
     class Covariate;
+    class FunctionCall;
+    class FunctionArgument;
 
     class AbstractVisitor
     {
@@ -43,6 +45,8 @@ namespace PharmML
             virtual std::string visit(IndividualParameter *node) = 0;
             virtual std::string visit(Covariate *node) = 0;
             virtual std::string visit(Variable *node) = 0;
+            virtual std::string visit(FunctionCall *node) = 0;
+            virtual std::string visit(FunctionArgument *node) = 0;
     };
 }
 

@@ -42,8 +42,9 @@ int main(int argc, char **argv)
     }
     std::cout << std::endl;
 
-    //std::cout << "# Observation model" << std::endl;
-    
+    std::cout << "# Observation model" << std::endl;
+    std::cout << model->getModelDefinition()->getObservationModel()->getErrorModel()->accept(&gen) << std::endl;
+    std::cout << std::endl;
 
     return 0;
 }

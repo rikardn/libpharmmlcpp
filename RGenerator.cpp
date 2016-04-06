@@ -101,4 +101,12 @@ namespace PharmML
             return std::string();
         }
     }
+
+    std::string RGenerator::visit(FunctionCall *node) {
+        return node->getFunctionName()->accept(this) + "(" + ")";
+    }
+
+    std::string RGenerator::visit(FunctionArgument *node) {
+        return "FArg";
+    }
 }

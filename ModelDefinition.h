@@ -7,6 +7,7 @@
 #include "CovariateModel.h"
 #include "ParameterModel.h"
 #include "StructuralModel.h"
+#include "ObservationModel.h"
 
 namespace PharmML
 {
@@ -16,11 +17,13 @@ namespace PharmML
         PharmML::CovariateModel *CovariateModel;
         PharmML::ParameterModel *ParameterModel;
         PharmML::StructuralModel *StructuralModel;
+        PharmML::ObservationModel *ObservationModel;
 
         public:
         PharmML::CovariateModel *getCovariateModel();
         PharmML::ParameterModel *getParameterModel();
         PharmML::StructuralModel *getStructuralModel();
+        PharmML::ObservationModel *getObservationModel();
         ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
     };

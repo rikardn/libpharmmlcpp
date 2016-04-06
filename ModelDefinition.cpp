@@ -24,6 +24,10 @@ namespace PharmML
         if (param_node.exists()) {
             this->ParameterModel = new PharmML::ParameterModel(this->context, param_node);
         }
+        xml::Node obs_node = this->context->getSingleElement(node, ".//mdef:ObservationModel");
+        if (obs_node.exists()) {
+            this->ObservationModel = new PharmML::ObservationModel(this->context, obs_node);
+        }
     }
 
     PharmML::CovariateModel *ModelDefinition::getCovariateModel() {
@@ -36,5 +40,9 @@ namespace PharmML
 
     PharmML::StructuralModel *ModelDefinition::getStructuralModel() {
         return this->StructuralModel;
+    }
+        
+    PharmML::ObservationModel *ModelDefinition::getObservationModel() {
+        return this->ObservationModel;
     }
 }

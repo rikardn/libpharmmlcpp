@@ -9,6 +9,7 @@
 #include "symbols.h"
 #include "Scalar.h"
 #include "Piecewise.h"
+#include "FunctionCall.h"
 
 namespace PharmML
 {
@@ -63,7 +64,20 @@ namespace PharmML
                 piece->setCondition(this->create(n.getLastChild().getChild()));     // Go past math:Condition 
             }
             instance = piecewise;
-        }
+        } else if (name == "FunctionCall") {
+            FunctionCall *fcall = new FunctionCall();
+            std::vector<xml::Node> children = node.getChildren();
+            xml::Node name_node = children[0];
+            children.erase(children.begin());
+            fcall->setFunctionName(this->create(name_node));
+            for (xml::Node n : children) {
+                FunctionArgument *arg = new FunctionArgument();
+                fcall->addFunctionArgument(arg);
+                arg->setSymbId(n.getAttribute("symbId").getValue());
+                arg->setArgument(this->create(n.getChild()));
+            }
+            instance = fcall;
+        } 
 
         return instance;
     }

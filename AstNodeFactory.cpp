@@ -21,12 +21,90 @@ namespace PharmML
             Uniop *uniop;
             if (op == "log") {
                 uniop = new UniopLog();
+            } else if (op == "log2") {
+                uniop = new UniopLog2();
+            } else if (op == "log10") {
+                uniop = new UniopLog10();
             } else if (op == "exp") {
                 uniop = new UniopExp();
             } else if (op == "minus") {
                 uniop = new UniopMinus();
             } else if (op == "abs") {
                 uniop = new UniopAbs();
+            } else if (op == "sqrt") {
+                uniop = new UniopSqrt();
+            } else if (op == "logistic") {
+                uniop = new UniopLogistic();
+            } else if (op == "logit") {
+                uniop = new UniopLogit();
+            } else if (op == "probit") {
+                uniop = new UniopProbit();
+            } else if (op == "normcdf") {
+                uniop = new UniopNormcdf();
+            } else if (op == "factorial") {
+                uniop = new UniopFactorial();
+            } else if (op == "factln") {
+                uniop = new UniopFactln();
+            } else if (op == "gamma") {
+                uniop = new UniopGamma();
+            } else if (op == "gammaln") {
+                uniop = new UniopGammaln();
+            } else if (op == "sin") {
+                uniop = new UniopSin();
+            } else if (op == "sinh") {
+                uniop = new UniopSinh();
+            } else if (op == "cos") {
+                uniop = new UniopCos();
+            } else if (op == "cosh") {
+                uniop = new UniopCosh();
+            } else if (op == "tan") {
+                uniop = new UniopTan();
+            } else if (op == "tanh") {
+                uniop = new UniopTanh();
+            } else if (op == "cot") {
+                uniop = new UniopCot();
+            } else if (op == "coth") {
+                uniop = new UniopCoth();
+            } else if (op == "sec") {
+                uniop = new UniopSec();
+            } else if (op == "sech") {
+                uniop = new UniopSech();
+            } else if (op == "csc") {
+                uniop = new UniopCsc();
+            } else if (op == "csch") {
+                uniop = new UniopCsch();
+            } else if (op == "arcsin") {
+                uniop = new UniopArcsin();
+            } else if (op == "arcsinh") {
+                uniop = new UniopArcsinh();
+            } else if (op == "arccos") {
+                uniop = new UniopArccos();
+            } else if (op == "arccosh") {
+                uniop = new UniopArccosh();
+            } else if (op == "arctan") {
+                uniop = new UniopArctan();
+            } else if (op == "arctanh") {
+                uniop = new UniopArctanh();
+            } else if (op == "arccot") {
+                uniop = new UniopArccot();
+            } else if (op == "arccoth") {
+                uniop = new UniopArccoth();
+            } else if (op == "arcsec") {
+                uniop = new UniopArcsec();
+            } else if (op == "arcsech") {
+                uniop = new UniopArcsech();
+            } else if (op == "arccsc") {
+                uniop = new UniopArccsc();
+            } else if (op == "arccsch") {
+                uniop = new UniopArccsch();
+            } else if (op == "heaviside") {
+                uniop = new UniopHeaviside();
+            } else if (op == "sign") {
+                uniop = new UniopSign();
+            } else if (op == "floor") {
+                uniop = new UniopFloor();
+            } else if (op == "ceiling") {
+                uniop = new UniopCeiling();
             }
             uniop->setChild(this->create(node.getChild()));
             instance = uniop;

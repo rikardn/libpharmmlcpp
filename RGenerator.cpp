@@ -35,7 +35,7 @@ namespace PharmML
     }
     
     std::string RGenerator::visit(UniopLogistic *node) {
-        return("1/(1 + exp(" + node->acceptChild(this) + "))");
+        return("(1/(1 + exp(-" + node->acceptChild(this) + ")))");
     }
     
     std::string RGenerator::visit(UniopLogit *node) {
@@ -91,27 +91,27 @@ namespace PharmML
     }
     
     std::string RGenerator::visit(UniopCot *node) {
-        return("1/tan(" + node->acceptChild(this) + ")");
+        return("(1/tan(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopCoth *node) {
-        return("1/tanh(" + node->acceptChild(this) + ")");
+        return("(1/tanh(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopSec *node) {
-        return("1/cos(" + node->acceptChild(this) + ")");
+        return("(1/cos(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopSech *node) {
-        return("1/cosh(" + node->acceptChild(this) + ")");
+        return("(1/cosh(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopCsc *node) {
-        return("1/sin(" + node->acceptChild(this) + ")");
+        return("(1/sin(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopCsch *node) {
-        return("1/sinh(" + node->acceptChild(this) + ")");
+        return("(1/sinh(" + node->acceptChild(this) + "))");
     }
     
     std::string RGenerator::visit(UniopArcsin *node) {
@@ -139,31 +139,31 @@ namespace PharmML
     }
     
     std::string RGenerator::visit(UniopArccot *node) {
-        return("atan(1/(" + node->acceptChild(this) + "))");
+        return("atan(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopArccoth *node) {
-        return("atanh(1/(" + node->acceptChild(this) + "))");
+        return("atanh(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopArcsec *node) {
-        return("acos(1/(" + node->acceptChild(this) + "))");
+        return("acos(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopArcsech *node) {
-        return("acosh(1/(" + node->acceptChild(this) + "))");
+        return("acosh(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopArccsc *node) {
-        return("asin(1/(" + node->acceptChild(this) + "))");
+        return("asin(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopArccsch *node) {
-        return("asinh(1/(" + node->acceptChild(this) + "))");
+        return("asinh(1/" + node->acceptChild(this) + ")");
     }
     
     std::string RGenerator::visit(UniopHeaviside *node) {
-        return("ifelse((" + node->acceptChild(this) + ") >= 0, 1, 0)");
+        return("((sign(" + node->acceptChild(this) + ") + 1) / 2)");
     }
     
     std::string RGenerator::visit(UniopSign *node) {

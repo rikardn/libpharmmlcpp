@@ -314,7 +314,7 @@
 									</math:Binop>
 								</math:Binop>
 								<math:Condition>
-                                    <ct:Int>28</ct:Int>
+                                    <math:Otherwise/>
 								</math:Condition>
 							</math:Piece>
 						</ct:Piecewise>

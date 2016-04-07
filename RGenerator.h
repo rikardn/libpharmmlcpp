@@ -13,6 +13,7 @@
 #include "Covariate.h"
 #include "Variable.h"
 #include "FunctionCall.h"
+#include "ObservationModel.h"
 
 namespace PharmML
 {
@@ -100,6 +101,7 @@ namespace PharmML
             virtual std::string visit(Variable *node);
             virtual std::string visit(FunctionCall *node);
             virtual std::string visit(FunctionArgument *node);
+            virtual std::string visit(ObservationModel *node);
     };
 }
 

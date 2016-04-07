@@ -10,12 +10,19 @@ namespace PharmML
     class ObservationModel
     {
         PharmML::PharmMLContext *context;
+        std::string symbId;
+        AstNode *Output;
         AstNode *ErrorModel;
+        AstNode *ResidualError;
 
         public:
         ObservationModel(PharmMLContext *context, xml::Node node);
+        std::string getSymbId();
+        AstNode *getOutput();
         AstNode *getErrorModel();
+        AstNode *getResidualError();
         void parse(xml::Node node);
+        std::string accept(AbstractVisitor *visitor);
     };
 }
 

@@ -85,6 +85,7 @@ namespace PharmML
     class Covariate;
     class FunctionCall;
     class FunctionArgument;
+    class ObservationModel;
 
     class AbstractVisitor
     {
@@ -171,6 +172,7 @@ namespace PharmML
             virtual std::string visit(Variable *node) = 0;
             virtual std::string visit(FunctionCall *node) = 0;
             virtual std::string visit(FunctionArgument *node) = 0;
+            virtual std::string visit(ObservationModel *node) = 0;
     };
 }
 

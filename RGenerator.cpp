@@ -340,4 +340,10 @@ namespace PharmML
     std::string RGenerator::visit(FunctionArgument *node) {
         return node->getSymbId() + "=" + node->getArgument()->accept(this);
     }
+
+    std::string RGenerator::visit(ObservationModel *node) {
+        std::string error = "W = " + node->getErrorModel()->accept(this);
+        std::string y = node->getSymbId() + " = " + node->getOutput()->accept(this) + " + W * " + node->getResidualError()->accept(this);
+        return error + "\n" + y;
+    }
 }

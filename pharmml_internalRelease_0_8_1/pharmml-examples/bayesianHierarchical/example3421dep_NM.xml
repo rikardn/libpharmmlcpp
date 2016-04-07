@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example3421dep_NM.rdf" id="i1">
+    
+    <ct:Name>example3421dep_NM</ct:Name>
+    
+    <ct:Description>Example 3.4.2.1 (NONMEM external file) from BayesianModels-V1.1.pdf - population scenario, some parameters correlated (prior level), NONPARAMETRIC PRIOR DISTRIBUTIONS</ct:Description>
+    
+    <IndependentVariable symbId="T"/>
+    
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="pop"/>
+            <Level symbId="indiv">
+                <ParentLevel>
+                    <ct:SymbRef symbIdRef="pop"/>
+                </ParentLevel>
+            </Level>
+        </VariabilityModel>
+        <VariabilityModel blkId="vm2" type="residualError">
+            <Level symbId="residual"/>
+        </VariabilityModel>
+        
+        <ParameterModel blkId="pm1">
+            
+            <!-- prior parameters on "OMEGA" -->
+            <PopulationParameter symbId="a_OMEGA_K">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="b_OMEGA_K">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="a_OMEGA_V">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="b_OMEGA_V">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="a_OMEGA_T">
+                <ct:Assign>
+                    <ct:Real>0.3</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="b_OMEGA_T">
+                <ct:Assign>
+                    <ct:Real>0.3</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="a_POP_T">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="b_POP_T">
+                <ct:Assign>
+                    <ct:Real>0.1</ct:Real>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            
+            <!-- ********************************************************************** -->
+            <!-- ********************************************************************** -->
+            <!-- SEE MAPPING DETAILS in 0.8 SPEC, SECTION '2.6.4 Mapping using vectors' -->
+            <!-- ********************************************************************** -->
+            <!-- ********************************************************************** -->
+
+
+            <PopulationParameter symbId="p_POP_K_V"/>
+            
+            <!-- prior variables and transformations on "THETA" -->            
+            <RandomVariable symbId="POP_K_V">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="pop" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="RandomSample">
+                        <po:Parameter name="weight">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="p_POP_K_V"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+
+            <!-- We extract and transform the POP_K_V elements: is it ok to use the random variable POP_K_V as a vector? it should be ok since it has dimension=2 -->
+            <IndividualParameter symbId="POP_K">
+                <ct:Assign>
+                    <math:Uniop op="exp">
+                        <ct:VectorSelector>
+                            <ct:SymbRef symbIdRef="POP_K_V"/>
+                            <ct:Cell>
+                                <ct:Int>1</ct:Int>
+                            </ct:Cell>
+                        </ct:VectorSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <!-- We extract and transform the POP_K_V elements: is it ok to use the random variable POP_K_V as a vector? it should be ok since it has dimension=2 -->
+            <IndividualParameter symbId="POP_V">
+                <ct:Assign>
+                    <math:Uniop op="exp">
+                        <ct:VectorSelector>
+                            <ct:SymbRef symbIdRef="POP_K_V"/>
+                            <ct:Cell>
+                                <ct:Int>2</ct:Int>
+                            </ct:Cell>
+                        </ct:VectorSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <!-- prior variables and transformations on "OMEGA" -->
+            <RandomVariable symbId="TAU_K">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="pop" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Gamma1">
+                        <po:Parameter name="shape">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="a_OMEGA_K"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="b_OMEGA_K"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <RandomVariable symbId="TAU_V">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="pop" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Gamma1">
+                        <po:Parameter name="shape">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="a_OMEGA_V"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="b_OMEGA_V"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <RandomVariable symbId="TAU_T">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="pop" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Gamma1">
+                        <po:Parameter name="shape">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="a_OMEGA_T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="b_OMEGA_T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <IndividualParameter symbId="OMEGA_K">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:Real>1</ct:Real>
+                            <ct:SymbRef symbIdRef="TAU_K"/>
+                        </math:Binop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="OMEGA_V">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:Real>1</ct:Real>
+                            <ct:SymbRef symbIdRef="TAU_V"/>
+                        </math:Binop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="OMEGA_T">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:Real>1</ct:Real>
+                            <ct:SymbRef symbIdRef="TAU_T"/>
+                        </math:Binop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <!-- prior variables and transformations on "SIGMA" -->
+            <RandomVariable symbId="POP_T">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="pop" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Gamma1">
+                        <po:Parameter name="shape">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="a_POP_T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="b_POP_T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            
+            <!-- IIV -->
+            <RandomVariable symbId="eta_K">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="indiv" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="var">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="OMEGA_K"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <RandomVariable symbId="eta_V">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="indiv" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="var">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="OMEGA_V"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <RandomVariable symbId="eta_T">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="indiv" blkIdRef="vm1"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="var">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="OMEGA_T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            
+            <RandomVariable symbId="eps">
+                <ct:VariabilityReference>
+                    <ct:SymbRef symbIdRef="residual" blkIdRef="vm2"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="StandardNormal1"/>
+                </Distribution>
+            </RandomVariable>
+            
+            <IndividualParameter symbId="K">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <PopulationValue>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="POP_K"/>
+                        </ct:Assign>
+                    </PopulationValue>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_K"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="V">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <PopulationValue>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="POP_V"/>
+                        </ct:Assign>
+                    </PopulationValue>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_V"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="TAU">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <PopulationValue>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="POP_T"/>
+                        </ct:Assign>
+                    </PopulationValue>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_T"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- SD_ADD can also be defined as PopulationParameter -->
+            <IndividualParameter symbId="SD_ADD">
+                <ct:Assign>
+                        <math:Uniop op="sqrt">
+                            <math:Binop op="divide">
+                                <ct:Real>1</ct:Real>
+                                <ct:SymbRef symbIdRef="TAU"/>
+                            </math:Binop>
+                        </math:Uniop>
+                </ct:Assign>
+            </IndividualParameter>
+
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="DOSE"/>
+            
+            <ct:Variable symbId="C" symbolType="real">
+                <ct:Assign>
+                        <math:Binop op="times">
+                            <math:Binop op="divide">
+                                <ct:SymbRef symbIdRef="DOSE"/>
+                                <ct:SymbRef symbIdRef="V" blkIdRef="pm1"/>
+                            </math:Binop>
+                            <math:Uniop op="exp">
+                                <math:Uniop op="minus">
+                                    <math:Binop op="times">
+                                        <ct:SymbRef symbIdRef="K" blkIdRef="pm1"/>
+                                        <ct:SymbRef symbIdRef="T"/>
+                                    </math:Binop>
+                                </math:Uniop>
+                            </math:Uniop>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>                
+                <Standard symbId="Y">
+                    <Output>
+                        <ct:SymbRef symbIdRef="C" blkIdRef="sm1"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="SD_ADD" blkIdRef="pm1"/>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="eps" blkIdRef="pm1"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+    </ModelDefinition>
+    
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet oid="NMpri">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="bins_POP_K"/>
+                <ct:Assign>
+                    <ct:VectorSelector>
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="POP_K_V"/>
+                        <ct:Cell>
+                            <ct:Int>1</ct:Int>
+                        </ct:Cell>
+                    </ct:VectorSelector>
+                </ct:Assign>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="bins_POP_V"/>
+                <ct:Assign>
+                    <ct:VectorSelector>
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="POP_K_V"/>
+                        <ct:Cell>
+                            <ct:Int>2</ct:Int>
+                        </ct:Cell>
+                    </ct:VectorSelector>
+                </ct:Assign>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="p_POP_K_V"/>
+                <ct:SymbRef symbIdRef="p_POP_K_V" blkIdRef="pm1"/>
+            </ColumnMapping>
+            
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="bins_POP_K" valueType="real" columnNum="1"/>
+                    <ds:Column columnId="bins_POP_V" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="p_POP_K_V" valueType="real" columnNum="3"/>
+                </ds:Definition>
+                <ds:Table>
+                        <ds:Row>
+                            <ct:Real>2.006510</ct:Real><ct:Real>5.050013</ct:Real><ct:Real>0.033333</ct:Real>
+                            <ct:Real>2.045465</ct:Real><ct:Real>5.050013</ct:Real><ct:Real>0.100000</ct:Real>
+                            <ct:Real>2.084421</ct:Real><ct:Real>5.050013</ct:Real><ct:Real>0.100000</ct:Real>
+                            <ct:Real>2.123377</ct:Real><ct:Real>5.050013</ct:Real><ct:Real>0.200000</ct:Real>
+                            <ct:Real>2.162333</ct:Real><ct:Real>5.064166</ct:Real><ct:Real>0.100000</ct:Real>
+                            <ct:Real>2.201288</ct:Real><ct:Real>5.064166</ct:Real><ct:Real>0.066667</ct:Real>
+                            <ct:Real>2.240244</ct:Real><ct:Real>5.064166</ct:Real><ct:Real>0.166667</ct:Real>
+                            <ct:Real>2.279200</ct:Real><ct:Real>5.064166</ct:Real><ct:Real>0.100000</ct:Real>
+                            <ct:Real>2.318156</ct:Real><ct:Real>5.078318</ct:Real><ct:Real>0.066667</ct:Real>
+                            <ct:Real>2.357111</ct:Real><ct:Real>5.078318</ct:Real><ct:Real>0.066667</ct:Real>
+                        </ds:Row>
+                </ds:Table>
+<!--                <ds:ExternalFile oid="id1">
+                    <ds:path>prior_bo1.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>-->
+            </ds:DataSet>
+        </ExternalDataSet>
+
+
+        <!-- data for estimation -->
+        <ExternalDataSet oid="NMoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="T"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <ct:SymbRef symbIdRef="Y" blkIdRef="om1"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="DOSE"/>
+                <ct:SymbRef symbIdRef="DOSE" blkIdRef="sm1"/>
+            </ColumnMapping>
+            
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+                    <ds:Column columnId="DOSE" columnType="dose" valueType="real" columnNum="4"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="id1">
+                    <ds:path>bo1.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+        
+    </TrialDesign>
+    
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <EstimationStep oid="est1">
+            <ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </ExternalDataSetReference>
+            
+            <ParametersToEstimate>
+                <ParameterEstimation>
+                    <ct:SymbRef symbIdRef="lPOP_P" blkIdRef="pm1"/>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef symbIdRef="OMEGA_K" blkIdRef="pm1"/>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef symbIdRef="OMEGA_V" blkIdRef="pm1"/>
+                </ParameterEstimation>
+                <ParameterEstimation>   
+                    <ct:SymbRef symbIdRef="POP_T" blkIdRef="pm1"/>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef symbIdRef="OMEGA_T" blkIdRef="pm1"/>
+                </ParameterEstimation>
+            </ParametersToEstimate>
+            
+            <Operation order="1" opType="estPop"/>
+        </EstimationStep>
+        
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="est1"/>
+            </Step>
+        </StepDependencies>
+        
+    </ModellingSteps>
+    
+</PharmML>

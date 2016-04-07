@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Poisson model</ct:Name>
+    
+    <ct:Description>Basic Poisson model - based on code from Elodie Plan</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="lambda"/>
+            <!-- individual def with IIV omitted -->
+        </ParameterModel>
+        
+        <!-- VERSION 1 -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="Y"/>
+                    <NumberCounts symbId="k"/>
+                    
+                    <!-- transformed form -->
+                    <!-- log(P(Y=k)) = -Lambda+k*log(Lambda)-log(k!) -->
+                    <PMF transform="log">
+                        <math:LogicBinop op="eq">
+                            <ct:SymbRef symbIdRef="Y"/>
+                            <ct:SymbRef symbIdRef="k"/>
+                        </math:LogicBinop>
+                        <Distribution>
+                            <po:ProbOnto name="Poisson1">
+                                <po:Parameter name="rate">
+                                    <ct:Assign>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                    
+                    <!-- untransformed form -->
+                    <PMF>
+                        <math:LogicBinop op="eq">
+                            <ct:SymbRef symbIdRef="Y"/>
+                            <ct:SymbRef symbIdRef="k"/>
+                        </math:LogicBinop>
+                        <Distribution>
+                            <po:ProbOnto name="Poisson1">
+                                <po:Parameter name="rate">
+                                    <ct:Assign>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                    
+                    <!-- explicit log(PMF) -->
+                    <!-- log(P(Y=k)) = -Lambda+k*log(Lambda)-log(k!) -->
+                    <PMF transform="log">
+                        <math:LogicBinop op="eq">
+                            <ct:SymbRef symbIdRef="Y"/>
+                            <ct:SymbRef symbIdRef="k"/>
+                        </math:LogicBinop>
+                        <ct:Assign>
+                            <math:Binop op="minus">
+                                <math:Binop op="plus">
+                                    <math:Uniop op="minus">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                    </math:Uniop>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef symbIdRef="k"/>
+                                        <math:Uniop op="log">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                        </math:Uniop>
+                                    </math:Binop>
+                                </math:Binop>
+                                <math:Uniop op="factln">
+                                    <ct:SymbRef symbIdRef="k"/>
+                                </math:Uniop>
+                            </math:Binop>
+                        </ct:Assign>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+        
+        <!-- VERSION 2 -->
+        <ObservationModel blkId="om2">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="Y"/>
+                    <NumberCounts symbId="k"/>
+                    
+                    <IntensityParameter symbId="Lambda">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                        </ct:Assign>
+                    </IntensityParameter>
+                    
+                    <!-- log(P(Y=k)) = -Lambda+k*log(Lambda)-log(k!) -->
+                    <PMF transform="log">
+                        <Distribution>
+                            <po:ProbOnto name="Poisson1">
+                                <po:Parameter name="rate">
+                                    <ct:Assign>
+                                        <ct:SymbRef symbIdRef="Lambda"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                    
+                    <!-- P(Y=k) = (Lambda^k * exp(-Lambda) / k! -->
+                    <PMF>
+                        <Distribution>
+                            <po:ProbOnto name="Poisson1">
+                                <po:Parameter name="rate">
+                                    <ct:Assign>
+                                        <ct:SymbRef symbIdRef="Lambda"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+    </ModelDefinition>
+
+
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="Y"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>  <!-- 'om1' -->
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="Y" columnType="dv" valueType="int" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="dataOid">
+                    <ds:path>example.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+    </TrialDesign>
+    
+    
+    <mstep:ModellingSteps>
+        
+        <mstep:SimulationStep oid="simStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                <ct:Assign>
+                    <ct:Real>1</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+        </mstep:SimulationStep>
+        
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="simStep1"/>
+            </mstep:Step>
+        </mstep:StepDependencies>
+    </mstep:ModellingSteps>
+</PharmML>

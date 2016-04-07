@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <!--    Task description
+	Same as task 3, but we want both responses measured at the same time, and we 
+	set the starting protocol to be the starting protocol for PK in task 3. In all 
+	we want 4 to 10 different time points, translating to 8 to 20 measurements as 
+	the two responses are measured at each time point.
+	Note that if we specify sameTimes=FALSE below, the starting design will have 
+	the same time points for PK and PD (because we defined the same sampling schedule), 
+	but the optimised design will be allowed to have different points for PK and PD, 
+	within the same design spaces for each response. -->
+    
+    
+    <!-- MODEL NAME -->
+    <ct:Name>example2_task4 - optimise</ct:Name>
+    
+    <ct:Description>based on example document - optimisation of design with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+        </VariabilityModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="a"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="A"/>
+            <ct:Variable symbolType="real" symbId="E"/>
+            <ct:Variable symbolType="real" symbId="Gut"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Conc">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="a"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om2">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Effect">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="E"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="a"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>        
+        
+        <ObservationModel blkId="om3">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Gut">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="Gut"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="a"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="admin1">
+                <Infusion>
+                    <DoseAmount inputTarget="derivativeVariable">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map modelSymbol="Gut"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </DosingTimes>
+                    <Duration>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </Duration>
+                </Infusion>
+            </Administration>
+        </Interventions>            
+        
+        <Observations>
+            <!-- Conc, Effect -->
+            <Observation oid="win1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="win2">
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Int>0</ct:Int>
+                    </ct:Assign>
+                </NumberTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="win3">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>30</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="win4">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>49</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="win5">
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Int>0</ct:Int>
+                    </ct:Assign>
+                </NumberTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="win6">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>180</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <!-- Combinations -->
+            <ObservationsCombination oid="samp">
+                <Observations>
+                    <ObservationRef oidRef="win1"/>
+                    <ObservationRef oidRef="win2"/>
+                    <ObservationRef oidRef="win3"/>
+                    <ObservationRef oidRef="win4"/>
+                    <ObservationRef oidRef="win5"/>
+                    <ObservationRef oidRef="win6"/>
+                </Observations>
+            </ObservationsCombination>
+        </Observations>
+        
+        <DesignSpaces>
+            <!-- admin1 -->
+            <DesignSpace>
+                <InterventionRef oidRef="admin1"/>
+                <DoseAmount>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>10</ct:Real>
+                                <ct:Real>100</ct:Real>
+                                <ct:Real>200</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </DoseAmount>
+            </DesignSpace>
+            <DesignSpace>
+                <InterventionRef oidRef="admin1"/>
+                <Duration>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>0.5</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>2</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </Duration>
+            </DesignSpace>
+            
+            <!-- win1 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win1"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win1"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>0.25</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>2</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- win2 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win2"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win2"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>12</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>16</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- win3 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win3"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win3"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>24</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>36</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- win4 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win4"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win4"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>48</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>144</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- win5 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win5"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win5"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>144</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>156</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- win6 -->
+            <DesignSpace>
+                <ObservationRef oidRef="win6"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="win6"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>168</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>180</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- samp -->
+            <DesignSpace>
+                <ObservationRef oidRef="samp"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>4</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>10</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+        </DesignSpaces>
+        
+        <Arms>
+            <SameTimes>
+                <ct:Assign>
+                    <ct:True/>
+                </ct:Assign>
+            </SameTimes>
+            <TotalSize>
+                <ct:Assign>
+                    <ct:Int>100</ct:Int>
+                </ct:Assign>
+            </TotalSize>
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>100</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="admin1"/>
+                    </InterventionList>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="samp"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+    </TrialDesign>
+    
+</PharmML>

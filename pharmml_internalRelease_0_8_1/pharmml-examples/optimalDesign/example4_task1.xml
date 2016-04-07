@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example4_task1.rdf" id="i1">
+    
+    <!--    Task description
+	The experimental design of the study is a basic crossover design, with washout period and inter-occasion variability (IOV). There are two treatments and the subjects are organised into two groups that start with a different treatment. In between each treatment there is a washout period during which time the drug is eliminated from each subject. In the model the treatments provide a second level of variability which is described by the IOV. More details can be found in the PharmML Language Specification document. The model also uses covariates to model the variability within the model and so the treatments, the sequence of treatments (i.e. treatments A, B or B,A) and the occasion itself encoded in the model description.
+    The design includes 2 groups of subjects:
+    •	one group of 40 subjects receiving first treatment A then treatment B, with a washout period in between
+    •	one group of 60 subjects receiving first treatment B then treatment A, with a washout period in between
+    The two treatment periods are characterised by:
+    •	treatment A
+    ◦	multiple doses of 150mg given every 12 hours over a period of 0 to 72h
+    ◦	observation period from 0 to 100h
+    •	treatment B
+    ◦	multiple doses of 100mg given every 24 hours over a period of 0 to 72h
+    ◦	observation period from 0 to 100h -->
+    
+    
+    <!-- MODEL NAME -->
+    <ct:Name>example4_task1 - design only</ct:Name>
+    
+    <ct:Description>based on example4_task1 - design only with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+            <Level symbId="iov">
+                <ParentLevel>
+                    <ct:SymbRef symbIdRef="subject"/>
+                </ParentLevel>
+            </Level>
+        </VariabilityModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="a"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="CENTRAL"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="CENTRAL_obs">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="trtA">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>150</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Sequence>
+                                <ct:Begin><ct:Real>0</ct:Real></ct:Begin>
+                                <ct:StepSize><ct:Real>12</ct:Real></ct:StepSize>
+                                <ct:End><ct:Real>72</ct:Real></ct:End>
+                            </ct:Sequence>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Administration oid="trtB">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="2"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Sequence>
+                                <ct:Begin><ct:Real>0</ct:Real></ct:Begin>
+                                <ct:StepSize><ct:Real>24</ct:Real></ct:StepSize>
+                                <ct:End><ct:Real>72</ct:Real></ct:End>
+                            </ct:Sequence>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Action oid="washout">
+                <Washout>
+                    <VariableToReset>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="CENTRAL"/>
+                        <ResetValue>0.5</ResetValue>
+                        <ResetTime>120.5</ResetTime>
+                    </VariableToReset>
+                </Washout>
+            </Action>
+            
+            <!--            TEST ONLY
+                    <Action oid="washout_fullreset">
+                    <Washout>
+                        <VariableToReset>
+                            <FullReset/>
+                        </VariableToReset>
+                    </Washout>
+                </Action>-->
+        </Interventions>
+        
+        <Observations>
+            <Observation oid="window1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>4</ct:Real>
+                                <ct:Real>6</ct:Real>
+                                <ct:Sequence>
+                                    <ct:Begin><ct:Real>12</ct:Real></ct:Begin>
+                                    <ct:StepSize><ct:Real>12</ct:Real></ct:StepSize>
+                                    <ct:End><ct:Real>72</ct:Real></ct:End>
+                                </ct:Sequence>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="CENTRAL"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="window2">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>4</ct:Real>
+                                <ct:Real>8</ct:Real>
+                                <ct:Real>12</ct:Real>
+                                <ct:Real>24</ct:Real>
+                                <ct:Real>48</ct:Real>
+                                <ct:Real>49</ct:Real>
+                                <ct:Real>50</ct:Real>
+                                <ct:Real>52</ct:Real>
+                                <ct:Real>56</ct:Real>
+                                <ct:Real>60</ct:Real>
+                                <ct:Real>72</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="CENTRAL"/>
+                </Continuous>
+            </Observation>
+        </Observations>
+        
+        <Occasions>                          <!-- DEFINED FOR ALL ARMS TO FOLLOW -->
+            <OccasionList oid="OCCASION">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="iov"/>
+                </ct:VariabilityReference>                
+                <Occasion oid="occ1">
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Occasion>
+                <Occasion oid="occ2">
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>200</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Occasion>
+            </OccasionList>
+        </Occasions>
+        
+        <Arms>
+            <ArmSize>
+                <ct:Assign>
+                    <ct:Int>40</ct:Int>
+                </ct:Assign>
+            </ArmSize>
+            
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>40</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="trtA"/>
+                        <InterventionRef oidRef="washout"/>
+                        <InterventionRef oidRef="trtB"/>
+                    </InterventionList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </Start>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="window1"/>
+                        <ObservationRef oidRef="window2"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+            
+            <Arm oid="arm2">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>60</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="trtB"/>
+                        <InterventionRef oidRef="washout"/>
+                        <InterventionRef oidRef="trtA"/>
+                    </InterventionList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </Start>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="window2"/>
+                        <ObservationRef oidRef="window1"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>100</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+    </TrialDesign>
+    
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <TargetTool oid="targetTool">
+            <TargetToolName>PFIM</TargetToolName>
+        </TargetTool>
+        
+        <OptimalDesignStep oid="evaTask1">
+            
+            <TargetToolReference>
+                <ct:OidRef oidRef="targetTool"/>
+            </TargetToolReference>
+            
+            <FIM type="P"/>
+
+            <Method>
+                <ApproximateFIM type="full"/>
+            </Method>
+            
+            <Operation opType="evaluation" order="1"/>
+        </OptimalDesignStep>
+        
+        <!-- STEP DEPENDENCIES -->
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="evaTask1"/>
+            </Step>
+        </StepDependencies>
+    </ModellingSteps>
+</PharmML>

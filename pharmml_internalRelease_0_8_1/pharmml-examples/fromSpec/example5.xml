@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example5_NONMEM.rdf" id="i1">
+    
+    <!-- MODEL NAME -->
+    <ct:Name>Example 5 - estimation for growth tumor model (Trial Desing)</ct:Name>
+    
+    <ct:Description>based on A Tumor Growth Inhibition Model for Low-Grade Glioma Treated with Chemotherapy or Radiotherapy
+        Benjamin Ribba, Gentian Kaloshi, Mathieu Peyre, et al. Clin Cancer Res Published OnlineFirst July 3, 2012.</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- SYMBOL DEFINITION - RESUIDUAL ERROR MODEL -->
+    <ct:FunctionDefinition symbId="constantErrorModel" symbolType="real">
+        <ct:FunctionArgument symbId="a" symbolType="real"/>
+        <ct:Definition>
+            <ct:Assign>
+                <ct:SymbRef symbIdRef="a"/>
+            </ct:Assign>
+        </ct:Definition>
+    </ct:FunctionDefinition>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- VARIABILITY MODEL -->
+        <VariabilityModel blkId="vm1" type="parameterVariability"> 
+            <Level referenceLevel="true" symbId="indiv"/>
+        </VariabilityModel>
+        <VariabilityModel blkId="vm2" type="residualError"> 
+            <Level symbId="residual"/>
+        </VariabilityModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <!-- **************************************** -->
+            <!-- PARAMETERS: initial conditions           -->
+            <!-- **************************************** -->
+            <!-- C0 -->
+            <PopulationParameter symbId="C0"/>
+            <!-- P0 -->
+            <PopulationParameter symbId="pop_P0"/>
+            <PopulationParameter symbId="omega_P0"/>
+            <RandomVariable symbId="eta_P0">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_P0"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="P0">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_P0"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_P0"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>            
+            <!-- Q0 -->
+            <PopulationParameter symbId="pop_Q0"/>
+            <PopulationParameter symbId="omega_Q0"/>
+            <RandomVariable symbId="eta_Q0">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_Q0"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="Q0">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_Q0"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_Q0"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>            
+            <!-- QP0 -->
+            <PopulationParameter symbId="QP0"/>
+            
+            
+            <!-- **************************************** -->
+            <!-- PARAMETERS: population values & omegas   -->
+            <!-- **************************************** -->
+            <PopulationParameter symbId="K"/>
+            <PopulationParameter symbId="pop_KDE"/>
+            <PopulationParameter symbId="omega_KDE"/>
+            <PopulationParameter symbId="pop_LAMBDAP"/>
+            <PopulationParameter symbId="omega_LAMBDAP"/>
+            <PopulationParameter symbId="pop_KQPP"/>
+            <PopulationParameter symbId="omega_KQPP"/>
+            <PopulationParameter symbId="pop_KPQ"/>
+            <PopulationParameter symbId="omega_KPQ"/>
+            <PopulationParameter symbId="pop_GAMMA"/>
+            <PopulationParameter symbId="omega_GAMMA"/>
+            <PopulationParameter symbId="pop_DELTAQP"/>
+            <PopulationParameter symbId="omega_DELTAQP"/>
+            
+            <!-- KDE  log-normal distributed -->
+            <RandomVariable symbId="eta_KDE">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_KDE"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="KDE">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_KDE"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_KDE"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- LAMBDAP log-normal distributed -->
+            <RandomVariable symbId="eta_LAMBDAP">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_LAMBDAP"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="LAMBDAP">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_LAMBDAP"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_LAMBDAP"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- KQPP log-normal distributed -->
+            <RandomVariable symbId="eta_KQPP">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_KQPP"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="KQPP">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_KQPP"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_KQPP"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- KPQ log-normal distributed -->
+            <RandomVariable symbId="eta_KPQ">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_KPQ"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="KPQ">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_KPQ"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_KPQ"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- GAMMA log-normal distributed -->
+            <RandomVariable symbId="eta_GAMMA">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_GAMMA"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="GAMMA">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_GAMMA"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_GAMMA"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+            <!-- DELTAQP log-normal distributed -->
+            <RandomVariable symbId="eta_DELTAQP">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_DELTAQP"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="DELTAQP">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_DELTAQP"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_DELTAQP"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            
+        </ParameterModel>
+
+        <!-- STRUCTURAL MODEL - ODEs -->
+        <StructuralModel blkId="sm1">
+            
+            <!-- dC/dt -->
+            <ct:DerivativeVariable symbolType="real" symbId="C">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <math:Uniop op="minus">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="KDE"/>
+                        </math:Uniop>
+                        <ct:SymbRef symbIdRef="C"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="time"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="C0"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            
+            <!-- dPT/dt -->
+            <ct:DerivativeVariable symbolType="real" symbId="PT">
+                <ct:Assign>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="LAMBDAP"/>
+                                <math:Binop op="times">
+                                    <ct:SymbRef symbIdRef="PT"/>
+                                    <math:Binop op="minus">
+                                        <ct:Real>1</ct:Real>
+                                        <math:Binop op="divide">
+                                            <ct:SymbRef symbIdRef="PSTAR"/>
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="K"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                            <math:Binop op="minus">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="KQPP"/>
+                                    <ct:SymbRef symbIdRef="QP"/>
+                                </math:Binop>
+                                <math:Binop op="plus">
+                                    <math:Binop op="times">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="KPQ"/>
+                                        <ct:SymbRef symbIdRef="PT"/>
+                                    </math:Binop>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="GAMMA"/>
+                                        <math:Binop op="times">
+                                            <ct:SymbRef symbIdRef="C"/>
+                                            <math:Binop op="times">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="KDE"/>
+                                                <ct:SymbRef symbIdRef="PT"/>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="time"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="P0"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            
+            <!-- dQ/dt --> 
+            <ct:DerivativeVariable symbolType="real" symbId="Q">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="KPQ"/>
+                            <ct:SymbRef symbIdRef="PT"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef  blkIdRef="pm1" symbIdRef="GAMMA"/>
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="C"/>
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="KDE"/>
+                                    <ct:SymbRef symbIdRef="Q"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="time"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Q0"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            
+            <!-- dQP/dt -->
+            <ct:DerivativeVariable symbolType="real" symbId="QP">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="GAMMA"/>
+                                <math:Binop op="times">
+                                    <ct:SymbRef symbIdRef="C"/>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="KDE"/>
+                                        <ct:SymbRef symbIdRef="Q"/>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="KQPP"/>
+                                <ct:SymbRef symbIdRef="QP"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="DELTAQP"/>
+                            <ct:SymbRef symbIdRef="QP"/>
+                        </math:Binop>                        
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="time"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="QP0"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+
+            <!-- PSTAR -->
+            <ct:Variable symbolType="real" symbId="PSTAR" >
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef symbIdRef="PT"/>
+                        <math:Binop op="plus">
+                            <ct:SymbRef symbIdRef="Q"/>
+                            <ct:SymbRef symbIdRef="QP"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+        </StructuralModel>
+
+        <!-- OBSERVATION MODEL - PSTAR -->
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <RandomVariable symbId="eps">
+                    <ct:VariabilityReference>
+                        <ct:SymbRef blkIdRef="vm2" symbIdRef="residual"/>
+                    </ct:VariabilityReference>
+                    <Distribution>
+                        <po:ProbOnto name="StandardNormal1"/>
+                    </Distribution>
+                </RandomVariable>
+                <Standard symbId="PSTAR_obs">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="PSTAR"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <math:FunctionCall>
+                                <ct:SymbRef symbIdRef="constantErrorModel"/>
+                                <math:FunctionArgument symbId="a">
+                                    <ct:SymbRef symbIdRef="a"/>
+                                </math:FunctionArgument>
+                            </math:FunctionCall>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="eps"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <!-- INTERVENTIONS -->
+        <Interventions>
+            <Administration oid="bolusIV">
+                <Bolus>
+                    <DoseAmount inputTarget="derivativeVariable">
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="C"/>
+                    </DoseAmount>
+                </Bolus>
+            </Administration>
+            <IndividualAdministration>
+                <InterventionRef oidRef="bolusIV"/>
+                <ColumnMapping>
+                    <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="TIME"/>
+                    <ct:SymbRef symbIdRef="time"/>
+                </ColumnMapping>
+                <DataSet xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
+                    <Definition>
+                        <Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                        <Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+                        <Column columnId="DOSE" columnType="dose" valueType="real" columnNum="3"/>
+                    </Definition>
+                    <Table>
+                        <!-- subject 1 -->
+                        <Row><ct:String>1</ct:String><ct:Real>54.57</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>1</ct:String><ct:Real>59.77</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <!-- subject 2 -->
+                        <Row><ct:String>2</ct:String><ct:Real>12</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>2</ct:String><ct:Real>14.09</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>2</ct:String><ct:Real>16.17</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>2</ct:String><ct:Real>18.26</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>2</ct:String><ct:Real>20.35</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>2</ct:String><ct:Real>22.43</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <!-- SNIP -->
+                        <!-- subject 21 -->
+                        <Row><ct:String>21</ct:String><ct:Real>1.5</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>21</ct:String><ct:Real>3.17</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>21</ct:String><ct:Real>4.85</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>21</ct:String><ct:Real>6.52</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>21</ct:String><ct:Real>8.19</ct:Real><ct:Real>1</ct:Real></Row> 
+                        <Row><ct:String>21</ct:String><ct:Real>9.87</ct:Real><ct:Real>1</ct:Real></Row> 
+                    </Table>
+                </DataSet>
+            </IndividualAdministration>
+        </Interventions>
+        
+        <!-- OBSERVATIONS -->
+        <Observations>
+            <IndividualObservations oid="OBSoid">
+                <ColumnMapping>
+                    <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="TIME"/> 
+                    <ct:SymbRef symbIdRef="time"/>
+                </ColumnMapping>
+                <ColumnMapping>
+                    <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="DV"/> 
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="PSTAR_obs"/>
+                </ColumnMapping>
+                <DataSet xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
+                    <Definition>
+                        <Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                        <Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+                        <Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+                    </Definition>
+                    <Table>
+                        <!-- SUBJECT 1 -->
+                        <Row><ct:String>1</ct:String><ct:Real>3.43</ct:Real><ct:Real>45.7</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>5.3</ct:Real><ct:Real>48.03</ct:Real></Row> 
+                        <Row><ct:String>1</ct:String><ct:Real>42.13</ct:Real><ct:Real>71.34</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>52.63</ct:Real><ct:Real>79.3</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>57.53</ct:Real><ct:Real>72.3</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>63.3</ct:Real><ct:Real>72.07</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>68.97</ct:Real><ct:Real>70.24</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>76.53</ct:Real><ct:Real>66.81</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>94.53</ct:Real><ct:Real>60.48</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>106.1</ct:Real><ct:Real>62</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>116.23</ct:Real><ct:Real>72.04</ct:Real></Row>
+                        <Row><ct:String>1</ct:String><ct:Real>121.87</ct:Real><ct:Real>90.16</ct:Real></Row>
+                        <!-- SUBJECT 2 -->
+                        <Row><ct:String>2</ct:String><ct:Real>0</ct:Real><ct:Real>50.17</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>11.07</ct:Real><ct:Real>61.68</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>14.17</ct:Real><ct:Real>52.82</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>16.6</ct:Real><ct:Real>53.36</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>19.33</ct:Real><ct:Real>53.28</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>25.13</ct:Real><ct:Real>48.3</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>29.27</ct:Real><ct:Real>40.66</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>33.4</ct:Real><ct:Real>42.4</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>37.43</ct:Real><ct:Real>38.2</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>42.67</ct:Real><ct:Real>42.99</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>48.83</ct:Real><ct:Real>42.76</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>56.4</ct:Real><ct:Real>48.6</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>62.23</ct:Real><ct:Real>55.85</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>65.9</ct:Real><ct:Real>54.71</ct:Real></Row>
+                        <Row><ct:String>2</ct:String><ct:Real>71.37</ct:Real><ct:Real>60.77</ct:Real></Row>
+                        <!-- SUBJECT 3 -->
+                        <!-- SNIP -->
+                        <!-- SUBJECT 21 -->
+                        <Row><ct:String>21</ct:String><ct:Real>9.77</ct:Real><ct:Real>72.35</ct:Real></Row>
+                        <Row><ct:String>21</ct:String><ct:Real>14.23</ct:Real><ct:Real>66.96</ct:Real></Row>
+                        <Row><ct:String>21</ct:String><ct:Real>18.13</ct:Real><ct:Real>56.79</ct:Real></Row>
+                        <Row><ct:String>21</ct:String><ct:Real>23.9</ct:Real><ct:Real>60.06</ct:Real></Row>
+                    </Table>
+                </DataSet>
+            </IndividualObservations>
+        </Observations>
+        
+        <Arms>
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>21</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="bolusIV"/>
+                    </InterventionList>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="OBSoid"/>
+                    </ObservationList>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+        
+    </TrialDesign>
+    
+    <!-- BLOCK III: MODELLING STEPS -->
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <!-- ESTIMATION STEP -->
+        <EstimationStep oid="estTask1">
+            
+            <ParametersToEstimate>
+                <!-- INITIAL CONDITIONS -->
+                <!-- P0 -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_P0"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_P0"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>0.5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <!-- Q0 -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_Q0"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_Q0"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>0.5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <!-- QP0 -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="QP0"/>
+                    <InitialEstimate fixed="true">
+                        <ct:Real>0</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- RESIDUAL ERROR PARAMETER -->
+                <!-- a -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="a"/>
+                    <InitialEstimate>
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- STRUCTURAL PARAMETERS and RANDOM EFFECTS -->
+                <!-- LAMBDAP -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_LAMBDAP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_LAMBDAP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- K -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="K"/>
+                    <InitialEstimate fixed="true">
+                        <ct:Real>100</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- KDE -->
+                <!-- omega_KDE is fixed to 0.5 -->
+                <!-- only pop_KDE to be estimated -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_KDE"/>
+                    <InitialEstimate fixed="true">
+                        <ct:Real>0.5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_KDE"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+
+                <!-- KQPP -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_KQPP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_KQPP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                                
+                <!-- KPQ -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_KPQ"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_KPQ"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- GAMMA -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_GAMMA"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_GAMMA"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+                <!-- DELTAQP -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_DELTAQP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_DELTAQP"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                
+            </ParametersToEstimate>
+            <Operation order="1" opType="estPop"/>
+            <Operation order="2" opType="estIndiv"/>
+        </EstimationStep>
+
+        <!-- STEP DEPENDENCIES -->
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="estTask1"/>
+            </Step>
+        </StepDependencies>
+    </ModellingSteps>
+</PharmML>

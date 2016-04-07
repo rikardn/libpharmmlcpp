@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Zero-Inflated Poisson model</ct:Name>
+    
+    <ct:Description>Zero-Inflated Poisson model - based on code from Elodie Plan</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+
+        <!-- PARAMETERS -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="lambda"/>
+            <PopulationParameter symbId="p0"/>
+        </ParameterModel>
+
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="y"/>
+                    <NumberCounts symbId="k"/>
+                    
+                    <!-- if (k > 0)
+                            log(P(Y=k)) = log(1-p0) - lambda + k*log(lambda) - factln(k)
+                        else
+                            log(P(Y=k)) = log(p0 + (1-p0)*exp(-lambda))
+                        end -->
+                    <PMF transform="log">
+                        <math:LogicBinop op="eq">
+                            <ct:SymbRef symbIdRef="y"/>
+                            <ct:SymbRef symbIdRef="k"/>
+                        </math:LogicBinop>
+                        <ct:Assign>
+                            <math:Piecewise>
+                                <math:Piece>
+                                    <!-- aux = log(1-p0) - lambda + k*log(lambda) - factln(k) -->
+                                    <math:Binop op="minus">
+                                        <math:Uniop op="log">
+                                            <math:Binop op="minus">
+                                                <ct:Real>1</ct:Real>
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="p0"/>
+                                            </math:Binop>
+                                        </math:Uniop>
+                                        <math:Binop op="plus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                            <math:Binop op="minus">
+                                                <math:Binop op="times">
+                                                    <ct:SymbRef symbIdRef="k"/>
+                                                    <math:Uniop op="log">
+                                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                                    </math:Uniop>
+                                                </math:Binop>
+                                                <math:Uniop op="factln">
+                                                    <ct:SymbRef symbIdRef="k"/>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Binop>
+                                    <math:Condition>
+                                        <!-- if (k > 0) -->
+                                        <math:LogicBinop op="gt">
+                                            <ct:SymbRef symbIdRef="k"/>
+                                            <ct:Real>0</ct:Real>
+                                        </math:LogicBinop>
+                                    </math:Condition>
+                                </math:Piece>
+                                <math:Piece>
+                                    <!-- aux = log(p0 + (1-p0)*exp(-lambda)) -->
+                                    <math:Uniop op="log">
+                                        <math:Binop op="plus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="p0"/>
+                                            <math:Binop op="times">
+                                                <math:Binop op="minus">
+                                                    <ct:Real>1</ct:Real>
+                                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="p0"/>
+                                                </math:Binop>
+                                                <math:Uniop op="exp">
+                                                    <math:Uniop op="minus">
+                                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                                    </math:Uniop>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Uniop>
+                                    <!-- else -->
+                                    <math:Condition>
+                                        <math:Otherwise></math:Otherwise>
+                                    </math:Condition>
+                                </math:Piece>
+                            </math:Piecewise>
+                        </ct:Assign>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om1A">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="y"/>
+                    <NumberCounts symbId="k"/>
+                    
+                    <PMF>
+                        <Distribution>
+                            <po:ProbOnto name="ZeroInflatedPoisson1">
+                                <po:Parameter name="rate">
+                                    <ct:Assign>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                                <po:Parameter name="probabilityOfZero">
+                                    <ct:Assign>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="p0"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+    </ModelDefinition>
+
+
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="Y"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="Y" columnType="dv" valueType="int" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="dataOid">
+                    <ds:path>example.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+    </TrialDesign>
+    
+    
+    <mstep:ModellingSteps>
+        
+        <mstep:SimulationStep oid="simStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda"/>
+                <ct:Assign>
+                    <ct:Real>2</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="p0"/>
+                <ct:Assign>
+                    <ct:Real>.2</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+        </mstep:SimulationStep>
+        
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="simStep1"/>
+            </mstep:Step>
+        </mstep:StepDependencies>
+    </mstep:ModellingSteps>
+</PharmML>

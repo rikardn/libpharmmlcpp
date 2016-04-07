@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>TTE - concentration dependent hazard</ct:Name>
+    
+    <ct:Description>Time-to-event model with concetration dependent hazard function</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="beta"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="Cc"/>
+        </StructuralModel>
+        
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <TimeToEventData>
+                    <EventVariable symbId="Y"/>
+                    
+                    <!-- h(t) = beta*Cc -->
+                    <HazardFunction symbId="h">
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="beta"/>
+                                <ct:SymbRef blkIdRef="sm1" symbIdRef="Cc"/>
+                            </math:Binop>
+                        </ct:Assign>   
+                    </HazardFunction>
+                    
+                    <Censoring censoringType="intervalCensored">
+                        <IntervalLength>
+                            <ct:Assign>
+                                <ct:Real>5</ct:Real> 
+                            </ct:Assign>
+                        </IntervalLength>
+                        
+                        <RightCensoringTime>
+                            <ct:Assign>
+                                <ct:Real>200</ct:Real> 
+                            </ct:Assign>
+                        </RightCensoringTime>
+                    </Censoring>
+                    
+                    <MaximumNumberEvents>
+                        <ct:Assign>
+                            <ct:Real>3</ct:Real> 
+                        </ct:Assign>
+                    </MaximumNumberEvents>
+                </TimeToEventData>
+            </Discrete>
+        </ObservationModel>
+    </ModelDefinition>
+
+    
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="Y"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="Y"/>
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="Y" columnType="dv" valueType="int" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="dataOid">
+                    <ds:path>example.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+    </TrialDesign>
+
+
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <mstep:SimulationStep oid="simStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="beta"/>
+                <ct:Assign>
+                    <ct:Real>5</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+        </mstep:SimulationStep>
+
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="simStep1"/>
+            </mstep:Step>
+        </mstep:StepDependencies>
+    </ModellingSteps>
+</PharmML>

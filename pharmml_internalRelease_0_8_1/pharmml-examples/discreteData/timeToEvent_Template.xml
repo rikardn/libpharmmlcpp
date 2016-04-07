@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:mml="http://www.pharmml.org/pharmml/0.8/PharmML"
+    implementedBy="MJS" metadataFile="Ttemplate.rdf" 
+    writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>TTE template</ct:Name>
+    
+    <ct:Description>Time-to-event model template</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+                
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <TimeToEventData>
+                    <EventVariable symbId="y"/>
+                    
+                    <HazardFunction symbId="H">
+                        <!-- h0*exp(-beta*C) -->
+                    </HazardFunction>
+                    
+                    <!-- Alternative -->
+                    <HazardFunction symbId="H">
+                        <Distribution>
+                            <ProbOnto xmlns="http://www.pharmml.org/probonto/ProbOnto" name="Weibull1">
+                                <!-- parameters declaration -->
+                            </ProbOnto>
+                        </Distribution>
+                    </HazardFunction>
+                    
+                    <SurvivalFunction symbId="S">
+                        <!-- exp(-lambda*t) -->
+                    </SurvivalFunction>
+                    
+                    <Censoring censoringType="rightCensored">    
+                        <IntervalLength>
+                            <!-- e.g. <ct:Real>10</ct:Real> -->
+                        </IntervalLength>
+                        
+                        <RightCensoringTime>
+                            <!-- e.g. <ct:Real>200</ct:Real> -->
+                        </RightCensoringTime>
+                    </Censoring>
+                    
+                    <MaximumNumberEvents>
+                        <!-- e.g. <ct:Real>5</ct:Real> -->
+                    </MaximumNumberEvents>
+                </TimeToEventData>
+            </Discrete>
+            
+        </ObservationModel>
+    </ModelDefinition>
+
+</PharmML>

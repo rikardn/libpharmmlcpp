@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Rats example</ct:Name>
+    
+    <ct:Description>winBUGS, Volume 2 - orange trees</ct:Description>
+    
+    <IndependentVariable symbId="x"/>
+    
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="pop"/>
+            <Level symbId="indiv">
+                <ParentLevel>
+                    <ct:SymbRef symbIdRef="pop"/>
+                </ParentLevel>
+            </Level>
+        </VariabilityModel>
+        <VariabilityModel blkId="vm2" type="residualError">
+            <Level symbId="residual"/>
+        </VariabilityModel>
+        
+        <ParameterModel blkId="pm1">
+            
+            <IndividualParameter symbId="phi1">                         <!-- phi[i, 1] <- exp(theta[i, 1]) -->
+                <ct:Assign>
+                    <math:Uniop op="exp">
+                        <ct:VectorSelector>
+                            <ct:SymbRef symbIdRef="theta"/>
+                            <ct:Cell>
+                                <ct:Int>1</ct:Int>
+                            </ct:Cell>
+                        </ct:VectorSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </IndividualParameter>
+            <IndividualParameter symbId="phi2">                         <!--  phi[i, 2] <- exp(theta[i, 2]) - 1 -->
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Uniop op="exp">
+                            <ct:VectorSelector>
+                                <ct:SymbRef symbIdRef="theta"/>
+                                <ct:Cell>
+                                    <ct:Int>2</ct:Int>
+                                </ct:Cell>
+                            </ct:VectorSelector>
+                        </math:Uniop>
+                        <ct:Real>1</ct:Real>
+                    </math:Binop>
+                </ct:Assign>
+            </IndividualParameter>
+            <IndividualParameter symbId="phi3">                         <!-- phi[i, 3] <- -exp(theta[i, 3]) -->
+                <ct:Assign>
+                    <math:Uniop op="minus">
+                        <math:Uniop op="exp">
+                            <ct:VectorSelector>
+                                <ct:SymbRef symbIdRef="theta"/>
+                                <ct:Cell>
+                                    <ct:Int>3</ct:Int>
+                                </ct:Cell>
+                            </ct:VectorSelector>
+                        </math:Uniop>
+                    </math:Uniop>
+                </ct:Assign>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="theta">                 <!-- theta[i, 1:3] ~ dmnorm(mu[1:3], tau[1:3, 1:3]) -->                 
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="MultivariateNormal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="mu"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="precision">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="tau"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+
+            <!-- PRIOR -->
+            <PopulationParameter symbId="mean"/>                  <!-- mean vector -->
+            <PopulationParameter symbId="prec"/>                  <!-- precision matrix --> 
+            <PopulationParameter symbId="mu">                     <!-- mu[1:3] ~ dmnorm(mean[1:3], prec[1:3, 1:3]) -->
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="pop"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="MultivariateNormal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="mean"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="precision">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="prec"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="R"/>
+            <PopulationParameter symbId="tau">                  <!-- tau[1:3, 1:3] ~ dwish(R[1:3, 1:3], 3) -->
+                <Distribution>
+                    <po:ProbOnto name="Wishart2">
+                        <po:Parameter name="inverseScaleMatrix">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="R"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="degreesOfFreedom">
+                            <ct:Assign>
+                                <ct:Int>3</ct:Int>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="sigma2">               <!-- sigma2[1:3, 1:3] <- inverse(tau[1:3, 1:3]) -->
+                <ct:Assign>
+                    <math:MatrixUniop op="inverse">
+                        <ct:SymbRef symbIdRef="tau"/>
+                    </math:MatrixUniop>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="stdev_1">               <!-- for (i in 1 : 3) {sigma[i] <- sqrt(sigma2[i, i]) } -->
+                <ct:Assign>
+                    <math:Uniop op="sqrt">
+                        <ct:MatrixSelector>
+                            <ct:SymbRef symbIdRef="sigma2"/>
+                            <ct:Cell>
+                                <ct:RowIndex><ct:Int>1</ct:Int></ct:RowIndex>
+                                <ct:ColumnIndex><ct:Int>1</ct:Int></ct:ColumnIndex>
+                            </ct:Cell>
+                        </ct:MatrixSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </PopulationParameter>
+            <PopulationParameter symbId="stdev_2">
+                <ct:Assign>
+                    <math:Uniop op="sqrt">
+                        <ct:MatrixSelector>
+                            <ct:SymbRef symbIdRef="sigma2"/>
+                            <ct:Cell>
+                                <ct:RowIndex><ct:Int>2</ct:Int></ct:RowIndex>
+                                <ct:ColumnIndex><ct:Int>2</ct:Int></ct:ColumnIndex>
+                            </ct:Cell>
+                        </ct:MatrixSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </PopulationParameter>
+            <PopulationParameter symbId="stdev_3">
+                <ct:Assign>
+                    <math:Uniop op="sqrt">
+                        <ct:MatrixSelector>
+                            <ct:SymbRef symbIdRef="sigma2"/>
+                            <ct:Cell>
+                                <ct:RowIndex><ct:Int>3</ct:Int></ct:RowIndex>
+                                <ct:ColumnIndex><ct:Int>3</ct:Int></ct:ColumnIndex>
+                            </ct:Cell>
+                        </ct:MatrixSelector>
+                    </math:Uniop>
+                </ct:Assign>
+            </PopulationParameter>
+
+            <PopulationParameter symbId="tauC">                   <!-- tauC ~ dgamma(1.0E-3, 1.0E-3) -->
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="pop"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Gamma1">
+                        <po:Parameter name="shape">
+                            <ct:Assign><ct:Real>1.0E-3</ct:Real></ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign><ct:Real>1.0E-3</ct:Real></ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="sigmaC">                   <!-- sigmaC <- 1 / sqrt(tauC) -->
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:Real>1</ct:Real>
+                        <math:Uniop op="sqrt">
+                            <ct:SymbRef symbIdRef="tauC"/>
+                        </math:Uniop>
+                    </math:Binop>
+                </ct:Assign>
+            </PopulationParameter>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            
+            <ct:Variable symbolType="real" symbId="eta">      <!-- eta[i, j] <- phi[i, 1] / (1 + phi[i, 2] * exp(phi[i, 3] * x[j]))-->
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="phi1"/>
+                        <math:Binop op="plus">
+                            <ct:Real>1</ct:Real>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="phi2"/>
+                                <math:Uniop op="exp">
+                                    <math:Binop op="times">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="phi3"/>
+                                        <ct:SymbRef symbIdRef="x"/>
+                                    </math:Binop>
+                                </math:Uniop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <General symbId="Y">                                <!-- Y[i, j] ~ dnorm(eta[i, j], tauC) -->
+                    <ct:VariabilityReference>
+                        <ct:SymbRef blkIdRef="vm2" symbIdRef="residual"/>
+                    </ct:VariabilityReference>
+                    <Distribution>
+                        <po:ProbOnto name="Normal3">
+                            <po:Parameter name="mean">
+                                <ct:Assign>
+                                    <ct:SymbRef blkIdRef="sm1" symbIdRef="eta"/>
+                                </ct:Assign>
+                            </po:Parameter>
+                            <po:Parameter name="precision">
+                                <ct:Assign>
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="tauC"/>
+                                </ct:Assign>
+                            </po:Parameter>
+                        </po:ProbOnto>
+                    </Distribution>
+                </General>
+            </ContinuousData>
+        </ObservationModel>
+    </ModelDefinition>
+    
+    
+    <mstep:ModellingSteps>
+        <mstep:EstimationStep oid="estStep1">
+            <mstep:ParametersToEstimate>
+                
+                <!-- mean = c(0, 0, 0) -->
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef symbIdRef="mean"/>
+                    <mstep:InitialEstimate fixed="true">
+                        <ct:Vector default="0" length="3">
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>0</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </mstep:InitialEstimate>
+                    <!-- ALTERNATIVELY using default/lenght attributes -->
+<!--                    <mstep:InitialEstimate fixed="true">
+                        <ct:Vector default="0" length="3"/>
+                    </mstep:InitialEstimate>-->
+                </mstep:ParameterEstimation>
+                
+                <!-- R = structure(.Data = c(0.1, 0, 0,
+                                       0, 0.1, 0,
+                                       0, 0, 0.1), .Dim = c(3, 3)) 
+                -->
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef symbIdRef="R"/>
+                    <mstep:InitialEstimate fixed="true">
+                        <ct:Matrix matrixType="Diagonal">
+                            <ct:MatrixRow><ct:Real>0.1</ct:Real></ct:MatrixRow>
+                            <ct:MatrixRow><ct:Real>0.1</ct:Real></ct:MatrixRow>
+                            <ct:MatrixRow><ct:Real>0.1</ct:Real></ct:MatrixRow>
+                        </ct:Matrix>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+
+                <!-- prec = structure(.Data = c(1.0E-6, 0, 0,
+                                       0, 1.0E-6, 0,
+                                       0, 0, 1.0E-6), .Dim = c(3, 3))) 
+                -->
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef symbIdRef="prec"/>
+                    <mstep:InitialEstimate fixed="true">
+                         <ct:Matrix matrixType="Diagonal" numbCols="3" numbRows="3" diagDefault="1.0E-6"/> 
+                        <!-- ALTERNATIVELY
+                            <ct:Matrix matrixType="Diagonal">
+                            <ct:MatrixRow><ct:Real>1.0E-6</ct:Real></ct:MatrixRow>
+                            <ct:MatrixRow><ct:Real>1.0E-6</ct:Real></ct:MatrixRow>
+                            <ct:MatrixRow><ct:Real>1.0E-6</ct:Real></ct:MatrixRow>
+                        </ct:Matrix>-->
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+            </mstep:ParametersToEstimate>
+            
+            <mstep:Operation order="1" opType="estPop"/>
+        </mstep:EstimationStep>
+    </mstep:ModellingSteps>
+    
+</PharmML>

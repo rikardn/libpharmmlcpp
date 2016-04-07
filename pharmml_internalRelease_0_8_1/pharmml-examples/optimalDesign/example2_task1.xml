@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+<!--    Task description
+    This example is taken from the PFIM documentation (PFIM 3.2, additional documentation, example 3), and involves 2 responses with different sampling times.
+    •	PK/PD model (assumed to be defined in the model object)
+    ◦	PK model: 1hr infusion, Michaelis-Menten elimination
+    ◦	PD model: immediate response model with linear drug action and no baseline
+    ◦	covariate model:
+    ▪	gender effect on volume of distribution V; assuming an equal proportion of men and women in the sample
+    ▪	treatment effect on clearance CL, assuming two successive occasions receiving the reference and tested treatments
+    •	design
+    ◦	one group of 100 subjects with a dose of 100
+    ◦	PK sampling times: 0.5, 2, 30, 49, 180
+    ◦	PD sampling times: 0.5, 2, 14, 110, 150
+    The objective in this task is to evaluate this design without considering the effect of covariates-->
+    
+    
+    <!-- MODEL NAME -->
+    <ct:Name>example2_task1 - design only</ct:Name>
+    
+    <ct:Description>based on example2_task1 - design only with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+        </VariabilityModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="a"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="Gut"/>
+            <ct:Variable symbolType="real" symbId="A"/>
+            <ct:Variable symbolType="real" symbId="E"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Conc">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om2">  <!-- E_obs = E + g*epsilon -->
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Effect">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="E"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="admin1">
+                <Infusion>
+                    <DoseAmount inputTarget="derivativeVariable">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map modelSymbol="Gut"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </DosingTimes>
+                    <Duration>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </Duration>
+                </Infusion>
+            </Administration>
+        </Interventions>            
+        
+        <Observations>
+            <Observation oid="window1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>30</ct:Real>
+                                <ct:Real>49</ct:Real>
+                                <ct:Real>180</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            <Observation oid="window2">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>14</ct:Real>
+                                <ct:Real>110</ct:Real>
+                                <ct:Real>150</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <ObservationsCombination oid="samp1">
+                <Observations>
+                    <ObservationRef oidRef="window1"/>
+                </Observations>
+                <Observations>
+                    <ObservationRef oidRef="window2"/>
+                </Observations>
+            </ObservationsCombination>
+        </Observations>
+        
+        <Arms>
+            <TotalSize>
+                <ct:Assign>
+                    <ct:Int>100</ct:Int>
+                </ct:Assign>
+            </TotalSize>
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>100</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="admin1"/>
+                    </InterventionList>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="samp1"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+    </TrialDesign>
+    
+
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <TargetTool oid="targetTool">
+            <TargetToolName>PFIM</TargetToolName>
+        </TargetTool>
+        
+        <OptimalDesignStep oid="evaTask1">
+            
+            <TargetToolReference>
+                <ct:OidRef oidRef="targetTool"/>
+            </TargetToolReference>
+            
+            <FIM type="B"/>
+            <Method>
+                <OptimizationAlgorithm type="simplex"/>
+            </Method>
+            
+            <Operation opType="evaluation" order="1"/>
+        </OptimalDesignStep>
+        
+        <!-- STEP DEPENDENCIES -->
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="evaTask1"/>
+            </Step>
+        </StepDependencies>
+    </ModellingSteps>
+</PharmML>

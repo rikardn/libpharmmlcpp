@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name id="i2">Cumulative Logit 2nd order Markov (3 categories)</ct:Name>
+    
+    <ct:Description>Categorical model - cumulative logut model with 2nd order Markov dependency.</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition id="i3" xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CategoricalData ordered="yes">
+                    <PopulationParameter symbId="a112"/>
+                    <!-- omitted here a213...a131 -->
+                    <PopulationParameter symbId="a232"/>
+                    
+                    <ListOfCategories> 
+                        <Category symbId="cat1"/>
+                        <Category symbId="cat2"/>
+                        <Category symbId="cat3"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    <PreviousStateVariable symbId="yp1"/>
+                    <PreviousStateVariable symbId="yp2"/>
+                    
+                    <Dependance type="discreteMarkov"/>
+                    
+                    <!--   logit(P(y <= 1 | yp1 = 1, yp2 = 2)) = a112 -->
+                    <ProbabilityAssignment>
+                        <Probability linkFunction="logit">
+                            <CurrentState>
+                                <math:LogicBinop op="leq">
+                                    <ct:SymbRef symbIdRef="y"/>
+                                    <ct:SymbRef symbIdRef="cat1"/>
+                                </math:LogicBinop>
+                            </CurrentState>
+                            <PreviousState MarkovOrder="1">
+                                <math:LogicBinop op="eq">
+                                    <ct:SymbRef symbIdRef="yp1"/>
+                                    <ct:SymbRef symbIdRef="cat1"/>
+                                </math:LogicBinop>
+                            </PreviousState>
+                            <PreviousState MarkovOrder="2">
+                                <math:LogicBinop op="eq">
+                                    <ct:SymbRef symbIdRef="yp2"/>
+                                    <ct:SymbRef symbIdRef="cat2"/>
+                                </math:LogicBinop>
+                            </PreviousState>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="a112"/>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!--   logit(P(y<=2 | yp1=1, yp2=3)) = a213 -->
+                    <ProbabilityAssignment>
+                        <Probability linkFunction="logit">
+                            <CurrentState>
+                                <math:LogicBinop op="leq">
+                                    <ct:SymbRef symbIdRef="y"/>
+                                    <ct:SymbRef symbIdRef="cat2"/>
+                                </math:LogicBinop>
+                            </CurrentState>
+                            <PreviousState MarkovOrder="1">
+                                <math:LogicBinop op="eq">
+                                    <ct:SymbRef symbIdRef="yp1"/>
+                                    <ct:SymbRef symbIdRef="cat1"/>
+                                </math:LogicBinop>
+                            </PreviousState>
+                            <PreviousState MarkovOrder="2">
+                                <math:LogicBinop op="eq">
+                                    <ct:SymbRef symbIdRef="yp2"/>
+                                    <ct:SymbRef symbIdRef="cat3"/>
+                                </math:LogicBinop>
+                            </PreviousState>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="a213"/>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    <!-- omitted here -->
+                    <!-- logit(P (y <= 1|yp1 = 2, yp2 = 1)) = a121 
+                                 logit(P (y <= 2|yp1 = 2, yp2 = 3)) = a223 
+                                 logit(P (y <= 1|yp1 = 3, yp2 = 1)) = a131 
+                                 logit(P (y <= 2|yp1 = 3, yp2 = 2)) = a232
+                            -->
+                </CategoricalData>            
+            </Discrete>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om2">
+            <Discrete>
+                <CategoricalData ordered="yes">
+                    <PopulationParameter symbId="a1"/>
+                    <!-- a2 omitted -->
+                    <PopulationParameter symbId="a112"/>
+                    <!-- omitted here a213...a131 -->
+                    <PopulationParameter symbId="a232"/>
+                    
+                    <ListOfCategories>
+                        <Category symbId="cat1"/>
+                        <Category symbId="cat2"/>
+                        <Category symbId="cat3"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    <InitialStateVariable symbId ="yinit"/>
+                    <PreviousStateVariable symbId="yp1"/>
+                    <PreviousStateVariable symbId="yp2"/>
+                    
+                    <Dependance type="discreteMarkov"/>
+                    
+                    <!-- P(y = 1) = a1 -->
+                    <ProbabilityAssignment>
+                        <Probability>
+                            <CurrentState>
+                                <math:LogicBinop op="eq">
+                                    <ct:SymbRef symbIdRef="yinit"/>
+                                    <ct:SymbRef symbIdRef="cat1"/>
+                                </math:LogicBinop >
+                            </CurrentState>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="a1"/>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!-- P(y = 2) = a2 -->
+                    <ProbabilityAssignment>
+                        <Probability>
+                            <!-- omitted , as above -->
+                        </Probability>
+                    </ProbabilityAssignment>
+                    
+                    <!-- logit (P(y <= 1 | yp1 = 1, yp2 = 2)) = a112 -->
+                    <ProbabilityAssignment>
+                        <Probability linkFunction="logit">
+                            <CurrentState>
+                                <math:LogicBinop op="leq">
+                                    <ct:SymbRef symbIdRef="y"/>
+                                    <ct:SymbRef symbIdRef="cat1"/>
+                                </math:LogicBinop >
+                            </CurrentState>
+                            <!-- The Condition tag is used to define the Markovian dependences -->
+                            <Condition>
+                                <math:LogicBinop op="and">
+                                    <math:LogicBinop op="eq">
+                                        <ct:SymbRef symbIdRef="yp1"/>
+                                        <ct:SymbRef symbIdRef="cat1"/>
+                                    </math:LogicBinop >
+                                    <math:LogicBinop op="eq">
+                                        <ct:SymbRef symbIdRef="yp2"/>
+                                        <ct:SymbRef symbIdRef="cat2"/>
+                                    </math:LogicBinop >
+                                </math:LogicBinop >
+                            </Condition>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef ="a112" />
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!-- omitted here all other equations, as above-->
+                    
+                </CategoricalData>
+            </Discrete>
+        </ObservationModel>     
+    </ModelDefinition>
+</PharmML>
+

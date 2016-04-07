@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Poisson Mixture model – PMIX</ct:Name>
+    
+    <ct:Description>Poisson Mixture model PMIX - based on code from Marc Lavielle</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="Lambda1"/>
+            <!-- individual def with IIV omitted -->
+            <PopulationParameter symbId="Lambda2"/>
+            <!-- individual def with IIV omitted -->
+            <PopulationParameter symbId="Pi"/>
+            <!-- individual def with IIV omitted -->
+        </ParameterModel>
+        
+        <!-- P1 = - lambda1 + k*log(lambda1) - factln(k)
+         P2 = - lambda2 + k*log(lambda2) - factln(k)
+         Log(P(Y=k)) = Pi*P1 + (1-Pi)*P2 -->
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="y"/>
+                    <NumberCounts symbId="k"/>
+
+                    <PMF transform="log">
+                        <!-- log(P(Y=k)) -->
+                        <math:LogicBinop op="eq">
+                            <ct:SymbRef symbIdRef="y"/>
+                            <ct:SymbRef symbIdRef="k"/>
+                        </math:LogicBinop>
+                        <ct:Assign>
+                            <!-- MP*P1; P1 = - lambda1 + k*log(lambda1) - factln(k) -->
+                            <math:Binop op="plus">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="Pi"/>
+                                    <math:Binop op="plus">
+                                        <math:Uniop op="minus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda1"/>
+                                        </math:Uniop>
+                                        <math:Binop op="minus">
+                                            <math:Binop op="times">
+                                                <ct:SymbRef symbIdRef="k"/>
+                                                <math:Uniop op="log">
+                                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda1"/>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                            <math:Uniop op="factln">
+                                                <ct:SymbRef symbIdRef="k"/>
+                                            </math:Uniop>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                                <!-- (1-MP)*P2; P2 = - lambda2 + k*log(lambda2) - factln(k) -->
+                                <math:Binop op="times">
+                                    <math:Binop op="minus">
+                                        <ct:Real>1</ct:Real>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="Pi"/>
+                                    </math:Binop>
+                                    <math:Binop op="plus">
+                                        <math:Uniop op="minus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda2"/>
+                                        </math:Uniop>
+                                        <math:Binop op="minus">
+                                            <math:Binop op="times">
+                                                <ct:SymbRef symbIdRef="k"/>
+                                                <math:Uniop op="log">
+                                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda2"/>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                            <math:Uniop op="factln">
+                                                <ct:SymbRef symbIdRef="k"/>
+                                            </math:Uniop>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                        </ct:Assign>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om1B">
+            <Discrete>
+                <CountData>
+                    <CountVariable symbId="y"/>
+                    <PMF>
+                        <Distribution>
+                            <po:ProbOnto name="MixtureDistribution">
+                                <!-- mixing coefficients -->
+                                <po:Parameter name="weight">
+                                    <ct:Assign>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="Pi"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                                <!-- lambda_1	-	Poisson intensity	
+                                     lambda_2	-	Poisson intensity -->
+                                <po:MixtureComponent name="Poisson1">
+                                    <po:Parameter name="rate">
+                                        <ct:Assign>
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda1"/>
+                                        </ct:Assign>
+                                    </po:Parameter>
+                                </po:MixtureComponent>
+                                <po:MixtureComponent name="Poisson1">
+                                    <po:Parameter name="rate">
+                                        <ct:Assign>
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Lambda2"/>
+                                        </ct:Assign>
+                                    </po:Parameter>
+                                </po:MixtureComponent>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                </CountData>
+            </Discrete>
+        </ObservationModel>
+        
+    </ModelDefinition>
+
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="Y"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="Y" columnType="dv" valueType="int" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="dataOid">
+                    <ds:path>example.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+    </TrialDesign>
+    
+    <mstep:ModellingSteps>
+        
+        <mstep:EstimationStep oid="estStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            <mstep:ParametersToEstimate>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pi"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>.5</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda1"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>.5</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="lambda2"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>.5</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+            </mstep:ParametersToEstimate>
+            
+            <mstep:Operation order="1" opType="estInd"/>
+            <mstep:Operation order="1" opType="estPop"/>
+        </mstep:EstimationStep>        
+
+    </mstep:ModellingSteps>
+    
+</PharmML>

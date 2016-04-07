@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Binomial model</ct:Name>
+    
+    <ct:Description>Categorical model - binomial</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- SECTION I -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CategoricalData ordered="no">
+                    <PopulationParameter symbId="p"/>
+                    
+                    <ListOfCategories> 
+                        <Category symbId="cat0"/>
+                        <Category symbId="cat1"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    
+                    <!-- P(y = 1) = p -->
+                    <ProbabilityAssignment>
+                        <Probability>
+                            <math:LogicBinop op="eq">
+                                <ct:SymbRef symbIdRef="y"/>
+                                <ct:SymbRef symbIdRef="cat1"/>
+                            </math:LogicBinop>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef symbIdRef="p"/>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!-- P(y = 0) = 1 - p -->
+                    <ProbabilityAssignment>
+                        <Probability>
+                            <math:LogicBinop op="eq">
+                                <ct:SymbRef symbIdRef="y"/>
+                                <ct:SymbRef symbIdRef="cat0"/>
+                            </math:LogicBinop>
+                        </Probability>
+                        <ct:Assign>
+                            <math:Binop op="minus">
+                                <ct:Real>1</ct:Real>
+                                <ct:SymbRef symbIdRef="p"/>
+                            </math:Binop>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!-- ALTERNATIVE -->
+                    <PMF>
+                        <Distribution>
+                            <po:ProbOnto name="Binomial1">
+                                <po:Parameter name="numberOfFailures">
+                                    <ct:Assign>
+                                        <ct:Int>1</ct:Int>
+                                    </ct:Assign>
+                                </po:Parameter>
+                                <po:Parameter name="probability">
+                                    <ct:Assign>
+                                        <ct:SymbRef symbIdRef="p"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+                        </Distribution>
+                    </PMF>
+                </CategoricalData>
+            </Discrete>
+        </ObservationModel>
+        
+    </ModelDefinition>
+        
+    <!-- SECTION II -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+                <ds:CategoryMapping>
+                    <ds:Map dataSymbol="0" modelSymbol="cat0"/>
+                    <ds:Map dataSymbol="1" modelSymbol="cat1"/>
+                </ds:CategoryMapping>
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="importData">
+                    <ds:path>myFile.dat</ds:path>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+    </TrialDesign>
+    
+    <!-- SECTION III -->
+    <mstep:ModellingSteps>
+        
+        <mstep:EstimationStep oid="estStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            <mstep:ParametersToEstimate>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="p"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+            </mstep:ParametersToEstimate>
+            
+            <mstep:Operation order="1" opType="estPop"/>
+        </mstep:EstimationStep>
+    </mstep:ModellingSteps>
+</PharmML>

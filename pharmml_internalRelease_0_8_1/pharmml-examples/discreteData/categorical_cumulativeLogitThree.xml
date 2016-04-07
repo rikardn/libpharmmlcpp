@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name id="i2">Cumulative logit model (3 categories)</ct:Name>
+    
+    <ct:Description>Categorical model - cumulative logit with three categories</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- SECTION I -->
+    <ModelDefinition id="i3" xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+       
+       <ParameterModel blkId="pm1">
+           <PopulationParameter symbId="theta1"/>
+           <PopulationParameter symbId="theta2"/>           
+       </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="C"/>
+        </StructuralModel>
+       
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CategoricalData ordered="yes">
+                    
+                    <ListOfCategories>
+                        <Category symbId="cat1"/>
+                        <Category symbId="cat2"/>
+                        <Category symbId="cat3"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    
+                    <!-- logit(P(y <= 1)) = theta1 -->
+                    <ProbabilityAssignment>
+                        <Probability linkFunction="logit">
+                            <math:LogicBinop op="leq">
+                                <ct:SymbRef symbIdRef="y"/>
+                                <ct:SymbRef symbIdRef="cat1"/>
+                            </math:LogicBinop>
+                        </Probability>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                    
+                    <!-- logit(P(y <= 2)) = theta1 + theta2 -->
+                    <ProbabilityAssignment>
+                        <Probability linkFunction="logit">
+                            <math:LogicBinop op="leq">
+                                <ct:SymbRef symbIdRef="y"/>
+                                <ct:SymbRef symbIdRef="cat2"/>
+                            </math:LogicBinop>
+                        </Probability>
+                        <ct:Assign>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta2"/>
+                            </math:Binop>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                </CategoricalData>
+            </Discrete>
+        </ObservationModel>
+    </ModelDefinition>
+    
+    
+    <!-- SECTION II -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <ExternalDataSet toolName="NONMEM" oid="MLXoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+                <ds:CategoryMapping>
+                    <ds:Map dataSymbol="0" modelSymbol="cat0"/>
+                    <ds:Map dataSymbol="1" modelSymbol="cat1"/>
+                    <!-- OMITTED OTHER MAPPINGS -->
+                </ds:CategoryMapping>
+            </ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="importData">
+                    <ds:path>myFile.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+        
+        <Observations>
+            <Observation oid="OBSoid_Y">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>1</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>1</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Discrete>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+                </Discrete>
+            </Observation>
+        </Observations>
+        
+    </TrialDesign>    
+    
+    <!-- SECTION III -->
+    <mstep:ModellingSteps>
+        
+        <mstep:EstimationStep oid="estStep1">
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="MLXoid"/>
+            </mstep:ExternalDataSetReference>
+            <mstep:ParametersToEstimate>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>10</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+            </mstep:ParametersToEstimate>   
+            <!-- omitted other parameters theta_2  ... theta_m -->
+            
+            <mstep:Operation order="1" opType="estPop"/>
+            <mstep:Operation order="2" opType="And now for something completely different"/>
+        </mstep:EstimationStep>
+        
+        <mstep:SimulationStep oid="simStep1">
+            <mstep:ObservationsReference>
+                <ct:OidRef oidRef="OBSoid_Y"/>
+            </mstep:ObservationsReference>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta"/>
+                <ct:Assign>
+                    <ct:Real>1</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            
+            <mstep:Operation order="1" opType="simulatePK"/>
+        </mstep:SimulationStep>
+        
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="estStep1"/>
+                <mstep:Dependents>
+                    <ct:OidRef oidRef="simStep1"/>
+                </mstep:Dependents>
+            </mstep:Step>
+        </mstep:StepDependencies>
+    </mstep:ModellingSteps>
+</PharmML>

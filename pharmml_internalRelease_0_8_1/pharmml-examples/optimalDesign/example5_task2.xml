@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example5_task2.rdf" id="i1">
+    
+    <!--    Task description
+        Task 2: Optimization of the time difference of drug Administrations
+        The purpose in this section is to optimize the difference in administration time 
+        between the two drugs S and D in order to maximize a user-defined metric of interest. 
+        In this example, the typical nadir value of the PD response, computed using the FO 
+        approximation method is maximized. For simplification, the optimization is only carried 
+        out in study 1 for the first cycle and for the free drug D (Treatment B) only. The time 
+        of administration of drug S is also fixed to the original administration schedule while 
+        the time of administration of drug D varies with some design restrictions: treatment D 
+        must still be given once a week, three out of a four-week cycle, and at the same time 
+        as the original design (i.e. 2 hours after the second intake of drug S during the day). 
+        The optimization is restrained to only optimize on the day of this administration within 
+        one week and must be a discrete value (in hours EC: days ?). The resulting time of 
+        administration must be identical for all the groups.  -->
+    
+    
+    <!-- MODEL NAME -->
+    <ct:Name>example5_task2 - design only</ct:Name>
+    
+    <ct:Description>based on example5_task1 - design only with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+            <Level symbId="iov">
+                <ParentLevel>
+                    <ct:SymbRef symbIdRef="subject"/>
+                </ParentLevel>
+            </Level>
+        </VariabilityModel>
+        
+        <CovariateModel blkId="cm1">
+            <Covariate symbId="BSA">
+                <Continuous/>
+            </Covariate>
+        </CovariateModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="a"/>
+            <IndividualParameter symbId="V">
+                <StructuredModel>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="Vpop"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                        <Covariate>
+                            <ct:SymbRef symbIdRef="SEX"/>
+                            <FixedEffect>
+                                <ct:SymbRef symbIdRef="betaV"/>
+                                <Category catId="M"/>
+                            </FixedEffect>
+                        </Covariate>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_V"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="CENTRAL"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="CENTRAL_obs">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <mdef:DesignParameter symbId="p">       <!-- p=BSA -->
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="cm1" symbIdRef="BSA"/>
+                </ct:Assign>
+            </mdef:DesignParameter>
+            
+            <Administration oid="s1">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="p"/>
+                                <ct:Real>30</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <!-- doseTime=[0,4,24,28,48,52,72,76,168,172,192,196,216,220,240,244,336,340,360,364,384,388,408,412] -->
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>4</ct:Real>
+                                    <ct:Real>24</ct:Real>
+                                    <!-- left out values -->
+                                    <ct:Real>408</ct:Real>
+                                    <ct:Real>412</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Administration oid="s2">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="p"/>
+                                <ct:Real>45</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <!-- doseTime=[0,4,24,28,48,52,72,76,168,172,192,196,216,220,240,244,336,340,360,364,384,388,408,412] -->
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>4</ct:Real>
+                                    <ct:Real>24</ct:Real>
+                                    <!-- left out values -->
+                                    <ct:Real>408</ct:Real>
+                                    <ct:Real>412</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Administration oid="s3">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="p"/>
+                                <ct:Real>60</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <!-- doseTime=[0,4,24,28,48,52,72,76,168,172,192,196,216,220,240,244,336,340,360,364,384,388,408,412] -->
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>4</ct:Real>
+                                    <ct:Real>24</ct:Real>
+                                    <!-- left out values -->
+                                    <ct:Real>408</ct:Real>
+                                    <ct:Real>412</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Administration oid="s4">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="p"/>
+                                <ct:Real>75</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <!-- doseTime=[0,4,24,28,48,52,72,76,168,172,192,196,216,220,240,244,336,340,360,364,384,388,408,412] -->
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>0</ct:Real>
+                                    <ct:Real>4</ct:Real>
+                                    <ct:Real>24</ct:Real>
+                                    <!-- left out values -->
+                                    <ct:Real>408</ct:Real>
+                                    <ct:Real>412</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            
+            <Administration oid="dfree1">
+                <Infusion>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="2"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="cm1" symbIdRef="BSA"/>     <!-- p=BSA -->
+                                <ct:Real>25</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <!-- doseTime=[rep(c(54,222,390),1)+672*rep(0, each=3)] -->
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>54</ct:Real>
+                                    <ct:Real>222</ct:Real>
+                                    <ct:Real>390</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                    <Duration>
+                        <ct:Assign>
+                            <ct:Real>0.25</ct:Real>
+                        </ct:Assign>
+                    </Duration>
+                </Infusion>
+            </Administration>
+            
+            <Administration oid="dlipo1">
+                <Infusion>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping>
+                            <ds:Map admNumber="3"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="cm1" symbIdRef="BSA"/>
+                                <ct:Real>75</ct:Real>
+                            </math:Binop>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>54</ct:Real>
+                                    <ct:Real>726</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Infusion>
+            </Administration>
+            
+            <!--  THIS IS NOT DOABLE RIRGHT NOW in PharmML
+                #		cyc2_s1 = s1 
+                #		cyc2_s1.doseTime=cyc2_s1.doseTime+30*24-->
+            
+            <!-- INSTEAD AN ALTERNATIVE FORMULATION IS USED -->
+            <!-- cyc2_s1 : {input=1, amount=30, p=BSA, 		
+                doseTime=[rep(c(0,4,24,28,48,52,72,76),3)+168*rep(0:2,each=8)+30*24]}-->
+            <!-- 720  724  744  748  768  772  792  796  888  892  912  
+                     916  936  940  960  964 1056 1060 1080 1084 1104 1108 1128 1132 -->
+            
+            <Administration oid="cyc2_s1">
+                <InterventionRef oidRef="s1"/>
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>150</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Vector>
+                                <ct:VectorElements>
+                                    <ct:Real>720</ct:Real>
+                                    <ct:Real>724</ct:Real>
+                                    <ct:Real>744</ct:Real>
+                                    <!-- values skipped -->
+                                    <ct:Real>1128</ct:Real>
+                                    <ct:Real>1132</ct:Real>
+                                </ct:VectorElements>
+                            </ct:Vector>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+            <Action oid="w2">
+                <Washout>
+                    <VariableToReset>
+                        <FullReset></FullReset>
+                    </VariableToReset>
+                </Washout>
+            </Action>
+            
+            <InterventionsCombination oid="fcomb1">
+                <Interventions>
+                    <InterventionRef oidRef="s1"/>
+                    <InterventionRef oidRef="dfree1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="fcomb2">
+                <Interventions>
+                    <InterventionRef oidRef="s2"/>
+                    <InterventionRef oidRef="dfree1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="fcomb3">
+                <Interventions>
+                    <InterventionRef oidRef="s3"/>
+                    <InterventionRef oidRef="dfree1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="fcomb4">
+                <Interventions>
+                    <InterventionRef oidRef="s4"/>
+                    <InterventionRef oidRef="dfree1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="lcomb1">
+                <Interventions>
+                    <InterventionRef oidRef="s1"/>
+                    <InterventionRef oidRef="dlipo1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="lcomb2">
+                <Interventions>
+                    <InterventionRef oidRef="s2"/>
+                    <InterventionRef oidRef="dlipo1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="lcomb3">
+                <Interventions>
+                    <InterventionRef oidRef="s2"/>
+                    <InterventionRef oidRef="dlipo1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+            
+            <InterventionsCombination oid="lcomb4">
+                <Interventions>
+                    <InterventionRef oidRef="s2"/>
+                    <InterventionRef oidRef="dlipo1"/>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                    <End>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </End>
+                </Interventions>
+            </InterventionsCombination>
+        </Interventions>
+        
+        <Observations>
+            <Observation oid="fsamp1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>48</ct:Real>
+                                <ct:Real>168</ct:Real>
+                                <ct:Real>216</ct:Real>
+                                <ct:Real>336</ct:Real>
+                                <ct:Real>384</ct:Real>
+                                <ct:Real>672</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+            </Observation>
+            
+            <Observation oid="lsamp1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>48</ct:Real>
+                                <ct:Real>96</ct:Real>
+                                <ct:Real>168</ct:Real>
+                                <ct:Real>264</ct:Real>
+                                <ct:Real>336</ct:Real>
+                                <ct:Real>432</ct:Real>
+                                <ct:Real>504</ct:Real>
+                                <ct:Real>672</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+            </Observation>
+        </Observations>
+        
+        <Covariates>
+            <CovariateModel oid="td_cm1">
+                <CovariateModelRef blkIdRef="cm1"/>
+                <Covariate symbId="BSA">
+                    <mdef:Continuous>
+                        <mdef:Distribution>
+                            <math:Piecewise>
+                                <Piece xmlns="http://www.pharmml.org/pharmml/0.8/Maths">
+                                    <po:ProbOnto name="Normal2">
+                                        <po:Parameter name="mean">
+                                            <ct:Assign>
+                                                <ct:Real>1.847727</ct:Real>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                        <po:Parameter name="var">
+                                            <ct:Assign>
+                                                <ct:Real>0.038066</ct:Real>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                    </po:ProbOnto>
+                                    <Condition>                                 <!-- special case -->
+                                        <LogicBinop op="or">                    <!-- arm=arm1 OR arm=arm2 -->
+                                            <LogicBinop op="eq">                <!-- SEX=M AND ETHNICITY=indian -->
+                                                <ct:SymbRef blkIdRef="cm1" symbIdRef="SEX"/>
+                                                <ct:CatRef catIdRef="M"/>
+                                            </LogicBinop>
+                                            <LogicBinop op="eq">    <!-- arm = arm1:  arm1 = TRUE -->
+                                                <ArmRef oidRef="arm1"/>
+                                                <ct:True/>
+                                            </LogicBinop>
+                                        </LogicBinop>
+                                    </Condition>
+                                </Piece>
+                                <Piece xmlns="http://www.pharmml.org/pharmml/0.8/Maths">
+                                    <po:ProbOnto name="Normal2">
+                                        <po:Parameter name="mean">
+                                            <ct:Assign>
+                                                <ct:Real>1.795</ct:Real>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                        <po:Parameter name="var">
+                                            <ct:Assign>
+                                                <ct:Real>0.041209</ct:Real>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                    </po:ProbOnto>
+                                    <Condition>
+                                        <LogicBinop op="eq">
+                                            <ct:SymbRef symbIdRef="arm2"/>
+                                            <ct:True/>
+                                        </LogicBinop>
+                                    </Condition>
+                                </Piece>
+                            </math:Piecewise>
+                        </mdef:Distribution>
+                    </mdef:Continuous>
+                </Covariate>
+            </CovariateModel>
+        </Covariates>
+        
+        
+        <Occasions>
+            <!-- Occasion equal for all arms -->
+            <OccasionList oid="OCCASION">
+                <Occasion oid="occ1">
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </Occasion>
+                <Occasion oid="occ2">
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>672</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </Occasion>
+            </OccasionList>
+        </Occasions>
+        
+        
+            <Arms>
+                <TotalSize>
+                    <ct:Assign>
+                        <ct:Int>41</ct:Int>
+                    </ct:Assign>
+                </TotalSize>
+                
+                
+                <Arm oid="farm1">
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Int>4</ct:Int>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="fcomb1"/>
+                            <InterventionRef oidRef="fcomb1"/>
+                        </InterventionList>
+                        <Start>
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:Real>0</ct:Real>
+                                        <ct:Real>672</ct:Real>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </Start>
+                    </InterventionSequence>
+                    <ObservationSequence>
+                        <ObservationList>
+                            <ObservationRef oidRef="fsamp1"/>
+                            <ObservationRef oidRef="fsamp1"/>
+                        </ObservationList>
+                        <Start>
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:Real>0</ct:Real>
+                                        <ct:Real>672</ct:Real>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </Start>
+                    </ObservationSequence>
+                </Arm>
+                <!-- farm2=farm1
+                farm2.armSize=3
+                farm2.interventionSequence.list = [fcomb2,fcomb2]-->
+                <Arm oid="farm2">
+                    <ArmRef oidRef="farm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Int>3</ct:Int>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="fcomb2"/>
+                            <InterventionRef oidRef="fcomb2"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+                <!-- farm3=farm1
+                farm3.armSize=9
+                farm3.interventionSequence.list = [fcomb3,fcomb3]-->
+                <Arm oid="farm3">
+                    <ArmRef oidRef="farm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Int>9</ct:Int>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="fcomb3"/>
+                            <InterventionRef oidRef="fcomb3"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+                <!-- farm4=farm1
+                farm4.armSize=8
+                farm4.interventionSequence.list = [fcomb4,fcomb4]-->
+                <Arm oid="farm4">
+                    <ArmRef oidRef="farm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Int>8</ct:Int>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="fcomb4"/>
+                            <InterventionRef oidRef="fcomb4"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+                
+                
+                <Arm oid="larm1">
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Int>3</ct:Int>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="lcomb1"/>
+                            <InterventionRef oidRef="lcomb1"/>
+                        </InterventionList>
+                        <Start>
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:Real>0</ct:Real>
+                                        <ct:Real>672</ct:Real>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </Start>
+                    </InterventionSequence>
+                    <ObservationSequence>
+                        <ObservationList>
+                            <ObservationRef oidRef="lsamp1"/>
+                            <ObservationRef oidRef="lsamp1"/>
+                        </ObservationList>
+                        <Start>
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:Real>0</ct:Real>
+                                        <ct:Real>672</ct:Real>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </Start>
+                    </ObservationSequence>
+                </Arm>
+                <!-- larm2=larm1
+        		     larm2.armSize=4
+		             larm2.interventionSequence.list = [lcomb2,lcomb2] -->
+                <Arm oid="larm2">
+                    <ArmRef oidRef="larm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Real>4</ct:Real>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="lcomb2"/>
+                            <InterventionRef oidRef="lcomb2"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+                <!-- larm3=larm1
+        		     larm3.armSize=4
+		             larm3.interventionSequence.list = [lcomb3,lcomb3] -->
+                <Arm oid="larm3">
+                    <ArmRef oidRef="larm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Real>4</ct:Real>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="lcomb3"/>
+                            <InterventionRef oidRef="lcomb3"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+                <!-- larm4=larm1
+        		     larm4.armSize=7
+		             larm4.interventionSequence.list = [lcomb4,lcomb4] -->
+                <Arm oid="larm4">
+                    <ArmRef oidRef="larm1"/>
+                    <ArmSize>
+                        <ct:Assign>
+                            <ct:Real>7</ct:Real>
+                        </ct:Assign>
+                    </ArmSize>
+                    <InterventionSequence>
+                        <InterventionList>
+                            <InterventionRef oidRef="lcomb4"/>
+                            <InterventionRef oidRef="lcomb4"/>
+                        </InterventionList>
+                    </InterventionSequence>
+                </Arm>
+            </Arms>
+    </TrialDesign>
+
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <TargetTool oid="targetTool">
+            <TargetToolName>PFIM</TargetToolName>
+        </TargetTool>
+        
+        <OptimalDesignStep oid="evaTask1">
+            
+            <TargetToolReference>
+                <ct:OidRef oidRef="targetTool"/>
+            </TargetToolReference>
+            
+            <FIM type="B"/>
+            
+            <Method>
+                <ApproximateFIM type="full"/>
+            </Method>
+            
+            <Operation opType="evaluation" order="1"/>
+        </OptimalDesignStep>
+        
+        <!-- STEP DEPENDENCIES -->
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="evaTask1"/>
+            </Step>
+        </StepDependencies>
+    </ModellingSteps>
+</PharmML>

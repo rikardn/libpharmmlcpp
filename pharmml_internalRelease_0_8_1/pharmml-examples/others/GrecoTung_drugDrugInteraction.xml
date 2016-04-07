@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="GrecoTung_drugDrugInteraction.rdf" id="i1">
+    
+    <!-- MODEL NAME -->
+    <ct:Name>Greco-Tung: drug-drug interaction model 1990</ct:Name>
+    
+    <ct:Description>Based on Kabera, M. G. (2010). D-optimal designs for drug synergy. PhD thesis.</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="d1"/>
+    <IndependentVariable symbId="d2"/>
+    
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        <ParameterModel blkId="pm1">
+            <Parameter symbId="mu1"/>
+            <Parameter symbId="mu2"/>
+            <Parameter symbId="Ec"/>
+            <Parameter symbId="m1"/>
+            <Parameter symbId="m2"/>
+            <Parameter symbId="alpha"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="E"/>
+            
+            <ct:AssignStatement op="eq">
+                <math:Binop op="plus">
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="d1"/>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="mu1"/>
+                            <math:Binop op="power">
+                                <math:Binop op="divide">
+                                    <ct:SymbRef symbIdRef="E"/>
+                                    <math:Binop op="minus">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="Ec"/>
+                                        <ct:SymbRef symbIdRef="E"/>
+                                    </math:Binop>
+                                </math:Binop>
+                                <math:Binop op="divide">
+                                    <ct:Real>1</ct:Real>
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="m1"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                    <math:Binop op="plus">
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="d2"/>
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="mu2"/>
+                                <math:Binop op="power">
+                                    <math:Binop op="divide">
+                                        <ct:SymbRef symbIdRef="E"/>
+                                        <math:Binop op="minus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Ec"/>
+                                            <ct:SymbRef symbIdRef="E"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                    <math:Binop op="divide">
+                                        <ct:Real>1</ct:Real>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="m2"/>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="divide">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm1" symbIdRef="alpha"/>
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="d1"/>
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="d2"/>
+                                </math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="mu1"/>
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="mu2"/>
+                                </math:Binop>
+                                <math:Binop op="power">
+                                    <math:Binop op="divide">
+                                        <ct:SymbRef symbIdRef="E"/>
+                                        <math:Binop op="minus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="Ec"/>
+                                            <ct:SymbRef symbIdRef="E"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                    <math:Binop op="plus">
+                                        <math:Binop op="divide">
+                                            <ct:Real>1</ct:Real>
+                                            <math:Binop op="times">
+                                                <ct:Real>2</ct:Real>
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="m1"/>
+                                            </math:Binop>
+                                        </math:Binop>
+                                        <math:Binop op="divide">
+                                            <ct:Real>1</ct:Real>
+                                            <math:Binop op="times">
+                                                <ct:Real>2</ct:Real>
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="m2"/>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </math:Binop>
+                <ct:Real>1</ct:Real>
+            </ct:AssignStatement>
+        </StructuralModel>
+        
+    </ModelDefinition>
+</PharmML>

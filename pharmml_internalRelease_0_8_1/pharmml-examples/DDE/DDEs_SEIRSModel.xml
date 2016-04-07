@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML 
+    http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <!-- MODEL NAME -->
+    <ct:Name>SEIRS model - DDE</ct:Name>
+    
+    <ct:Description>DDE example - SEIRS Model</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="t"/>
+
+
+    <!-- MODEL DEFINITION -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+
+        <!-- STRUCTURAL MODEL -->
+        <StructuralModel blkId="sm1">
+            
+            <!-- N = S + E + I + R -->
+            <ct:Variable symbolType="real" symbId="N">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef symbIdRef="S"/>
+                        <math:Binop op="plus">
+                            <ct:SymbRef symbIdRef="E"/>
+                            <math:Binop op="plus">
+                                <ct:SymbRef symbIdRef="I"/>
+                                <ct:SymbRef symbIdRef="R"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            
+            <!-- ddt_S = A - d*S -lambda*S*I/N +gamma*delay(I,tau)*exp(-d*tau) -->
+            <ct:DerivativeVariable symbId="S" symbolType="real">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <ct:SymbRef symbIdRef="A"/>
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+                                <ct:SymbRef symbIdRef="d"/>
+                                <ct:SymbRef symbIdRef="A"/>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <math:Binop op="times">
+                                    <math:Uniop op="minus">
+                                        <ct:SymbRef symbIdRef="lambda"/>
+                                    </math:Uniop>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef symbIdRef="S"/>
+                                        <math:Binop op="divide">
+                                            <ct:SymbRef symbIdRef="I"/>
+                                            <ct:SymbRef symbIdRef="N"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                                <math:Binop op="times">
+                                    <ct:SymbRef symbIdRef="gamma"/>
+                                    <math:Binop op="times">
+                                        <ct:Delay>
+                                            <ct:SymbRef symbIdRef="I"/>
+                                            <ct:DelayVariable>
+                                                <ct:SymbRef symbIdRef="tau"/>
+                                            </ct:DelayVariable>
+                                        </ct:Delay>
+                                        <math:Uniop op="exp">
+                                            <math:Binop op="times">
+                                                <math:Uniop op="minus">
+                                                    <ct:SymbRef symbIdRef="d"/>
+                                                </math:Uniop>
+                                                <ct:SymbRef symbIdRef="tau"/>
+                                            </math:Binop>
+                                        </math:Uniop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="t"/>
+                </ct:IndependentVariable>
+                <ct:History>
+                    <ct:HistoryValue>
+                        <ct:Assign>
+                            <ct:Real>15</ct:Real>
+                        </ct:Assign>
+                    </ct:HistoryValue>
+                    <ct:HistoryTime>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </ct:HistoryTime>
+                </ct:History>
+            </ct:DerivativeVariable>
+        
+            <!-- Skipped other ODEs -->
+            
+            <!--HISTORY t0 = 0, S_0 = 15, E_0 = 0, I_0 = 2, R_0 = 3
+            ddt_S = A - d*S -lambda*S*I/N +gamma*delay(I,tau)*exp(-d*tau)
+            ddt_E = - lambda*delay(S,omega)*delay(I,omega)*exp(-d*omega)/(delay(I,omega) + delay(S,omega) + delay(E,omega) + delay(R,omega)) + lambda*S*I/N - d*E
+            ddt_I = - (gamma + epsilon + d)*I + lambda*delay(S,omega)*delay(I,omega)*exp(-d*omega)/(delay(I,omega) + delay(S,omega) + delay(E,omega)+ delay(R,omega))
+            ddt_R = gamma*I - d*R - gamma*delay(I,tau)*exp(-d*tau)-->
+            
+        </StructuralModel>
+        
+    </ModelDefinition>
+</PharmML>

@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Distribution test</ct:Name>
+    
+    <IndependentVariable symbId="time"/>
+    
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <CovariateModel blkId="cm1">
+            <Covariate symbId="W">
+                <Continuous>
+                    <ct:Interpolation>
+                        <ct:Algorithm>linear</ct:Algorithm>
+                        <ct:InterpIndepVar>
+                            <ct:SymbRef symbIdRef="Age"/>
+                        </ct:InterpIndepVar>
+                    </ct:Interpolation>
+                </Continuous>
+            </Covariate>
+        </CovariateModel>
+
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            
+            <!-- UNIVARIATE DISCRETE UNIVARIATE DISCRETE UNIVARIATE DISCRETE UNIVARIATE DISCRETE -->
+            <IndividualParameter symbId="p_Bernoulli">
+                <Distribution>
+                    <po:ProbOnto name="Bernoulli1">
+                        <po:Parameter name="probability">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="p"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_Binomial">
+                <Distribution>
+                    <po:ProbOnto name="Binomial1">
+                        <po:Parameter name="numberOfFailures">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="n"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="probability">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="p"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_CategoricalOrdered">
+                <Distribution>
+                    <po:ProbOnto name="CategoricalOrdered1">
+                        <po:Parameter name="categoryProb">   <!-- p vector for cat1, cat2, cat3 -->
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:SymbRef symbIdRef="p_1"/>
+                                        <ct:SymbRef symbIdRef="p_2"/>
+                                        <!-- ... -->
+                                        <ct:SymbRef symbIdRef="p_k"/>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_CategoricalNonOrdered">
+                <Distribution>
+                    <po:ProbOnto name="CategoricalNonordered1">
+                        <po:Parameter name="categoryProb">   <!-- p vector for cat1, cat2, cat3 -->
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:SymbRef symbIdRef="p_1"/>
+                                        <ct:SymbRef symbIdRef="p_2"/>
+                                        <!-- ... -->
+                                        <ct:SymbRef symbIdRef="p_k"/>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_GP">
+                <Distribution>
+                    <po:ProbOnto name="GeneralizedPoisson1">
+                        <po:Parameter name="rate">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lambda"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="dispersion">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="delta"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_Hypergeometric">
+                <Distribution>
+                    <po:ProbOnto name="Hypergeometric1">
+                        <po:Parameter name="populationSize">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="N"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="numberOfTrials">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="K"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="numberOfSuccesses">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="n"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_NegativeBinomial1">
+                <Distribution>
+                    <po:ProbOnto name="NegativeBinomial1">
+                        <po:Parameter name="numberOfFailures">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="r"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="probability">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="p"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_NegativeBinomial2">
+                <Distribution>
+                    <po:ProbOnto name="NegativeBinomial2">
+                        <po:Parameter name="rate">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lambda"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="overdispersion">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="tau"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_Poisson">
+                <Distribution>
+                    <po:ProbOnto name="Poisson1">
+                        <po:Parameter name="rate">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lambda"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_MD">
+                <Distribution>
+                    <po:ProbOnto name="MixtureDistribution">
+                        <po:Parameter name="weight">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pi"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:MixtureComponent name="Poisson1">
+                            <po:Parameter name="rate">
+                                <ct:Assign>
+                                    <ct:SymbRef symbIdRef="lambda1"/>
+                                </ct:Assign>
+                            </po:Parameter>
+                        </po:MixtureComponent>
+                        <po:MixtureComponent name="Poisson1">
+                            <po:Parameter name="rate">
+                                <ct:Assign>
+                                    <ct:SymbRef symbIdRef="lambda2"/>
+                                </ct:Assign>
+                            </po:Parameter>
+                        </po:MixtureComponent>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_UniformDiscrete1">
+                <Distribution>
+                    <po:ProbOnto name="UniformDiscrete1">
+                        <po:Parameter name="minimum">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="a"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="maximum">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="b"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_UniformDiscrete2">
+                <Distribution>
+                    <po:ProbOnto name="UniformDiscrete2">
+                        <po:Parameter name="minimum">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="numberOfValues">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="n"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_ZeroInflatedPoisson">
+                <Distribution>
+                    <po:ProbOnto name="ZeroInflatedPoisson1">
+                        <po:Parameter name="rate">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lambda"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="probabilityOfZero">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pi"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <!-- UNIVARIATE CONTINUOUS UNIVARIATE CONTINUOUS UNIVARIATE CONTINUOUS UNIVARIATE CONTINUOUS -->
+            <IndividualParameter symbId="p_Beta">
+                <Distribution>
+                    <po:ProbOnto name="Beta1">
+                        <po:Parameter name="alpha">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="alpha"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="beta">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="beta"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_Cauchy">
+                <Distribution>
+                    <po:ProbOnto name="Cauchy1">
+                        <po:Parameter name="location">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="x0"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="scale">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="gamma"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <!--            X ~normal(mu,sigma,lower=mu-1.96*sigma,upper=mu+1.96*sigma)-->
+            <IndividualParameter symbId="pTruncated">
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="mu"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="sigma"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:LowerTruncationBound>
+                            <ct:Assign>
+                                <math:Binop op="minus">
+                                    <ct:SymbRef symbIdRef="mu"/>
+                                    <math:Binop op="times">
+                                        <ct:Real>1.96</ct:Real>
+                                        <ct:SymbRef symbIdRef="sigma"/>
+                                    </math:Binop>
+                                </math:Binop>
+                            </ct:Assign>
+                        </po:LowerTruncationBound>
+                        <po:UpperTruncationBound>
+                            <ct:Assign>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef symbIdRef="mu"/>
+                                    <math:Binop op="times">
+                                        <ct:Real>1.96</ct:Real>
+                                        <ct:SymbRef symbIdRef="sigma"/>
+                                    </math:Binop>
+                                </math:Binop>
+                            </ct:Assign>
+                        </po:UpperTruncationBound>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="pSN1">
+                <Distribution>
+                    <po:ProbOnto name="StandardNormal1"/>
+                </Distribution>
+            </IndividualParameter>
+            
+            
+            <!-- omitted other continuous distributions - no other features are required
+            then these tested above - only scalar parameters -->
+            
+            
+            <!-- MULTIVARIATE DISCRETE MULTIVARIATE DISCRETE MULTIVARIATE DISCRETE MULTIVARIATE DISCRETE -->
+            <IndividualParameter symbId="p_Multinomial">
+                <Distribution>
+                    <po:ProbOnto name="Multinomial1">
+                        <po:Parameter name="numberOfTrials">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="n"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="probabilityOfSuccess">
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:SymbRef symbIdRef="p_1"/>
+                                        <!-- other p's omitted -->
+                                        <ct:SymbRef symbIdRef="p_k"/>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            <IndividualParameter symbId="p_Dirichlet">
+                <Distribution>
+                    <po:ProbOnto name="Dirichlet1">
+                        <po:Parameter name="concentration">
+                            <ct:Assign>
+                                <ct:Vector>
+                                    <ct:VectorElements>
+                                        <ct:SymbRef symbIdRef="alpha_1"/>
+                                        <!-- other alpha's omitted -->
+                                        <ct:SymbRef symbIdRef="alpha_k"/>
+                                    </ct:VectorElements>
+                                </ct:Vector>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </IndividualParameter>
+            
+            
+            <!-- InverseWishart InverseWishart InverseWishart InverseWishart InverseWishart InverseWishart -->
+            <PopulationParameter symbId="R">
+                <ct:Assign>
+                    <ct:Matrix matrixType="Any">
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>1</ct:Int></ct:RowIndex>
+                            <ct:Real>1</ct:Real>
+                            <ct:Real>0.1</ct:Real>
+                        </ct:MatrixRow>
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>2</ct:Int></ct:RowIndex>
+                            <ct:Real>0.1</ct:Real>
+                            <ct:Real>1</ct:Real>
+                        </ct:MatrixRow>
+                    </ct:Matrix>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            
+            <PopulationParameter symbId="p_InverseWishart">
+                <Distribution>
+                    <po:ProbOnto name="InverseWishart1">
+                        <po:Parameter name="scaleMatrix">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="R"/>     <!-- scale matrix -->
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="degreesOfFreedom">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="rho"/>   <!-- degrees of freedom (scalar) -->
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            <!-- / InverseWishart InverseWishart InverseWishart InverseWishart InverseWishart InverseWishart -->
+            
+            
+            
+            <!-- MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 -->
+            <!-- mean vector -->
+            <PopulationParameter symbId="lMU">
+                <ct:Assign>
+                    <ct:Vector>
+                        <ct:VectorElements>
+                            <ct:SymbRef symbIdRef="lMU1"/>
+                            <ct:SymbRef symbIdRef="lMU2"/>
+                        </ct:VectorElements>
+                    </ct:Vector>
+                </ct:Assign>
+            </PopulationParameter>
+            <!-- covariance matrix -->
+            <PopulationParameter symbId="SIGMA">
+                <ct:Assign>
+                    <ct:Matrix matrixType="Any">
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>1</ct:Int></ct:RowIndex>
+                            <ct:Real>1</ct:Real>
+                            <ct:Real>0.1</ct:Real>
+                        </ct:MatrixRow>
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>2</ct:Int></ct:RowIndex>
+                            <ct:Real>0.1</ct:Real>
+                            <ct:Real>1</ct:Real>
+                        </ct:MatrixRow>
+                    </ct:Matrix>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="lPOP">
+                <Distribution>
+                    <po:ProbOnto name="MultivariateNormal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lMU"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="covarianceMatrix">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="SIGMA"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            <!-- /MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 MultivariateNormal1 -->
+            
+            
+            
+            <!-- MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 -->
+            <!-- mean vector -->
+            <PopulationParameter symbId="lMU">
+                <ct:Assign>
+                    <ct:Vector>
+                        <ct:VectorElements>
+                            <ct:SymbRef symbIdRef="lMU1"/>
+                            <ct:SymbRef symbIdRef="lMU2"/>
+                        </ct:VectorElements>
+                    </ct:Vector>
+                </ct:Assign>
+            </PopulationParameter>
+            <!-- covariance matrix -->
+            <PopulationParameter symbId="T">
+                <ct:Assign>
+                    <ct:Matrix matrixType="Any">
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>1</ct:Int></ct:RowIndex>
+                            <ct:Real>1</ct:Real>
+                            <ct:Real>0.1</ct:Real>
+                        </ct:MatrixRow>
+                        <ct:MatrixRow>
+                            <ct:RowIndex><ct:Int>2</ct:Int></ct:RowIndex>
+                            <ct:Real>0.1</ct:Real>
+                            <ct:Real>1</ct:Real>
+                        </ct:MatrixRow>
+                    </ct:Matrix>
+                </ct:Assign>
+            </PopulationParameter>
+            
+            <PopulationParameter symbId="lPOP">
+                <Distribution>
+                    <po:ProbOnto name="MultivariateNormal2">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="lMU"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="precisionMatrix">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="T"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            <!-- /MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 MultivariateNormal2 -->
+            
+            
+            
+            <!-- Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples  -->
+            <PopulationParameter symbId="p"/>
+            <PopulationParameter symbId="POP_K_sample">
+                <Distribution>
+                    <po:ProbOnto name="RandomSample">
+                        <po:Parameter name="weight">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="p"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:ColumnMapping xmlns="http://www.pharmml.org/pharmml/0.7/TrialDesign">
+                            <ds:ColumnRef columnIdRef="P"/>
+                            <ct:SymbRef symbIdRef="p"/>
+                        </po:ColumnMapping>
+                        <po:ColumnMapping>
+                            <ds:ColumnRef columnIdRef="POP_K"/>
+                            <ct:SymbRef symbIdRef="POP_K_sample"/>
+                        </po:ColumnMapping>
+                        <ds:DataSet>
+                            <ds:Definition>
+                                <ds:Column columnId="P" valueType="real" columnNum="1"/>
+                                <ds:Column columnId="POP_K_sample" valueType="real" columnNum="2"/>
+                            </ds:Definition>
+                            <ds:Table>
+                                <ds:Row><ct:Real>0.25</ct:Real><ct:Real>0.10</ct:Real></ds:Row>
+                                <ds:Row><ct:Real>0.25</ct:Real><ct:Real>0.23</ct:Real></ds:Row>
+                                <ds:Row><ct:Real>0.5</ct:Real><ct:Real>0.3</ct:Real></ds:Row>
+                            </ds:Table>
+                            <!-- <ds:ExternalFile oid="sxtData">
+                                <ds:path>POP_K_sample.csv</ds:path>
+                            </ds:ExternalFile>-->
+                        </ds:DataSet>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            
+            
+            <!-- no weights, no mapping required -->
+            <PopulationParameter symbId="POP_K_sample_ALT">
+                <Distribution>
+                    <po:ProbOnto name="RandomSample">
+                        <ds:DataSet>
+                            <ds:Table>
+                                <ds:Row><ct:Real>0.10</ct:Real></ds:Row>
+                                <ds:Row><ct:Real>0.23</ct:Real></ds:Row>
+                                <ds:Row><ct:Real>0.3</ct:Real></ds:Row>
+                            </ds:Table>
+                            <!-- <ds:ExternalFile oid="sxtData">
+                                        <ds:path>POP_K_sample.csv</ds:path>
+                                    </ds:ExternalFile>-->
+                        </ds:DataSet>
+                    </po:ProbOnto>
+                </Distribution>
+            </PopulationParameter>
+            
+            <!-- /Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples Samples  -->
+            
+        </ParameterModel>
+        
+    </ModelDefinition>
+</PharmML>

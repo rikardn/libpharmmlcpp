@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example3_task1.rdf" id="i1">
+    
+    <!--    Task description
+	This example is taken from the PFIM documentation (PFIM 3.2, additional documentation, example 7, refer for more details). The purpose is to evaluate a design with 2 covariates. This example has the following characteristics:
+•	PK model is a one compartment oral model with first order absorption and first order elimination
+•	covariate effect: gender effect and a genetic effect in three categories on the volume of distribution (V)
+◦	we assume that the effect of gender and genetic effect on the PK parameters is defined in the model object
+•	design:
+◦	 dose is fixed to 30 for the 40 subjects
+◦	same sampling times at 0.5, 2, 6 and 8. -->
+        
+    <!-- MODEL NAME -->
+    <ct:Name>example3_task1 - design only</ct:Name>
+    
+    <ct:Description>based on example3_task1 - design only with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- VARIABILITY MODEL -->
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+        </VariabilityModel>
+        
+        <!-- COVARIATE MODEL -->
+        <CovariateModel blkId="cm1">
+            <Covariate symbId="SEX">
+                <Categorical>
+                    <Category catId="F"/>
+                    <Category catId="M"/>
+                </Categorical>
+            </Covariate>
+            
+            <Covariate symbId="WT">                 <!-- CONDITIONING in DESIGN -->
+                <Continuous/>
+            </Covariate>
+
+        </CovariateModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="dummy"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="A"/>
+            <ct:Variable symbolType="real" symbId="E"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Conc">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om2">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Effect">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="E"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="admin1">
+                <Bolus>
+                    <DoseAmount inputTarget="admType">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map admNumber="1"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>30</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+        </Interventions>            
+        
+        <Observations>
+            <Observation oid="window1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>6</ct:Real>
+                                <ct:Real>8</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Y"/>
+                </Continuous>
+            </Observation>
+        </Observations>
+        
+        <Covariates>
+            <!-- COVARIATE MODEL - overwritting covariate model defined in ModelDefinition -->
+            <CovariateModel oid="td_cm1">
+                <CovariateModelRef blkIdRef="cm1"/>                    <!-- CONNECTION TO MODEL DEF -->
+                <Covariate symbId="SEX">
+                    <mdef:Categorical>
+                        <mdef:Category catId="M">
+                            <mdef:Probability>
+                                <ct:Real>0.5</ct:Real>
+                            </mdef:Probability>
+                        </mdef:Category>
+                        <mdef:Category catId="F">
+                            <mdef:Probability>
+                                <ct:Real>0.5</ct:Real>
+                            </mdef:Probability>
+                        </mdef:Category>
+                    </mdef:Categorical>
+                </Covariate>
+                
+                <Covariate symbId="WT">    <!-- CONDITIONAL ON ARM -->
+                    <mdef:Continuous>
+                        <mdef:Distribution>
+                            <math:Piecewise>
+                                <Piece xmlns="http://www.pharmml.org/pharmml/0.8/Maths">
+                                    <po:ProbOnto name="Normal2">
+                                        <po:Parameter name="mean">
+                                            <ct:Assign>
+                                                <ct:SymbRef symbIdRef="WT1_mean"/>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                        <po:Parameter name="var">
+                                            <ct:Assign>
+                                                <ct:SymbRef symbIdRef="WT1_variance"/>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                    </po:ProbOnto>
+                                    <Condition>
+                                        <!-- "arm1" -->
+                                        <LogicBinop op="eq">
+                                            <ArmRef oidRef="arm1"/>
+                                            <ct:True/>
+                                        </LogicBinop>
+                                    </Condition>
+                                </Piece>
+                                <Piece xmlns="http://www.pharmml.org/pharmml/0.8/Maths">
+                                    <po:ProbOnto name="Normal2">
+                                        <po:Parameter name="mean">
+                                            <ct:Assign>
+                                                <ct:SymbRef symbIdRef="WT2_mean"/>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                        <po:Parameter name="var">
+                                            <ct:Assign>
+                                                <ct:SymbRef symbIdRef="WT2_variance"/>
+                                            </ct:Assign>
+                                        </po:Parameter>
+                                    </po:ProbOnto>
+                                    <Condition>
+                                        <!-- "arm2" -->
+                                        <LogicBinop op="eq">
+                                            <ArmRef oidRef="arm2"/>
+                                            <ct:True/>
+                                        </LogicBinop>
+                                    </Condition>
+                                </Piece>
+                            </math:Piecewise>
+                        </mdef:Distribution>
+                    </mdef:Continuous>
+                </Covariate>
+            </CovariateModel>
+        </Covariates>
+            
+        <DesignSpaces>
+            <!-- Wtmal_mean/var, Wtfem_mean/var -->
+            <mdef:DesignParameter symbId="Wt1_mean">
+                <ct:Assign>
+                    <ct:Real>85.5</ct:Real>
+                </ct:Assign>
+            </mdef:DesignParameter>
+            <mdef:DesignParameter symbId="Wt1_var">
+                <ct:Assign>
+                    <ct:Real>19</ct:Real>
+                </ct:Assign>
+            </mdef:DesignParameter>
+            <mdef:DesignParameter symbId="Wt2_mean">
+                <ct:Assign>
+                    <ct:Real>74.5</ct:Real>
+                </ct:Assign>    
+            </mdef:DesignParameter>
+            <mdef:DesignParameter symbId="Wt2_var">
+                <ct:Assign>
+                    <ct:Real>18</ct:Real>
+                </ct:Assign>
+            </mdef:DesignParameter>
+            
+            <DesignSpace>
+                <ObservationRef oidRef="window1"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                                <ct:Real>3</ct:Real>
+                                <ct:Real>4</ct:Real>
+                                <ct:Real>6</ct:Real>
+                                <ct:Real>7</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <DesignSpace>
+                <CovariateModelRef oidRef="td_cm1"/>
+                <CovariateRef symbIdRef="SEX">
+                    <mdef:Categorical>
+                        <mdef:Category catId="M">
+                            <mdef:Probability>
+                                <ct:Interval>
+                                    <ct:LeftEndpoint type="closed">
+                                        <ct:Assign>
+                                            <ct:Real>0</ct:Real>
+                                        </ct:Assign>
+                                    </ct:LeftEndpoint>
+                                    <ct:RightEndpoint type="closed">
+                                        <ct:Assign>
+                                            <ct:Real>1</ct:Real>
+                                        </ct:Assign>
+                                    </ct:RightEndpoint>
+                                </ct:Interval>
+                            </mdef:Probability>
+                        </mdef:Category>
+                    </mdef:Categorical>
+                </CovariateRef>
+            </DesignSpace>
+            
+            <DesignSpace>
+                <CovariateModelRef oidRef="td_cm1"/>
+                <CovariateRef symbIdRef="SEX">
+                    <mdef:Categorical>
+                        <mdef:Category catId="F">
+                            <mdef:Probability>
+                                <ct:Interval>
+                                    <ct:LeftEndpoint type="closed">
+                                        <ct:Assign>
+                                            <ct:Real>0</ct:Real>
+                                        </ct:Assign>
+                                    </ct:LeftEndpoint>
+                                    <ct:RightEndpoint type="closed">
+                                        <ct:Assign>
+                                            <ct:Real>1</ct:Real>
+                                        </ct:Assign>
+                                    </ct:RightEndpoint>
+                                </ct:Interval>
+                            </mdef:Probability>
+                        </mdef:Category>
+                    </mdef:Categorical>
+                </CovariateRef>
+            </DesignSpace>
+            
+            <DesignSpace>
+                <ct:SymbRef symbIdRef="Wt1_mean"/>
+                <ct:Assign>
+                    <ct:Interval>
+                        <ct:LeftEndpoint>
+                            <ct:Assign>
+                                <ct:Real>80</ct:Real>
+                            </ct:Assign>
+                        </ct:LeftEndpoint>
+                        <ct:RightEndpoint>
+                            <ct:Assign>
+                                <ct:Real>90</ct:Real>
+                            </ct:Assign>
+                        </ct:RightEndpoint>
+                    </ct:Interval>
+                </ct:Assign>
+            </DesignSpace>
+            <DesignSpace>
+                <ct:SymbRef symbIdRef="Wt1_var"/>
+                <ct:Assign>
+                    <ct:Interval>
+                        <ct:LeftEndpoint>
+                            <ct:Assign>
+                                <ct:Real>10</ct:Real>
+                            </ct:Assign>
+                        </ct:LeftEndpoint>
+                        <ct:RightEndpoint>
+                            <ct:Assign>
+                                <ct:Real>20</ct:Real>
+                            </ct:Assign>
+                        </ct:RightEndpoint>
+                    </ct:Interval>
+                </ct:Assign>
+            </DesignSpace>
+            <DesignSpace>
+                <ct:SymbRef symbIdRef="Wt2_mean"/>
+                <ct:Assign>
+                    <ct:Interval>
+                        <ct:LeftEndpoint>
+                            <ct:Assign>
+                                <ct:Real>60</ct:Real>
+                            </ct:Assign>
+                        </ct:LeftEndpoint>
+                        <ct:RightEndpoint>
+                            <ct:Assign>
+                                <ct:Real>80</ct:Real>
+                            </ct:Assign>
+                        </ct:RightEndpoint>
+                    </ct:Interval>
+                </ct:Assign>
+            </DesignSpace>
+            <DesignSpace>
+                <ct:SymbRef symbIdRef="Wt2_var"/>
+                <ct:Assign>
+                    <ct:Interval>
+                        <ct:LeftEndpoint>
+                            <ct:Assign>
+                                <ct:Real>10</ct:Real>
+                            </ct:Assign>
+                        </ct:LeftEndpoint>
+                        <ct:RightEndpoint>
+                            <ct:Assign>
+                                <ct:Real>20</ct:Real>
+                            </ct:Assign>
+                        </ct:RightEndpoint>
+                    </ct:Interval>
+                </ct:Assign>
+            </DesignSpace>
+        </DesignSpaces>
+            
+        <Arms>
+            <NumberSamples>
+                <ct:Assign>
+                    <ct:Int>100</ct:Int>
+                </ct:Assign>
+            </NumberSamples>
+            <TotalSize>
+                <ct:Assign>
+                    <ct:Int>40</ct:Int>
+                </ct:Assign>
+            </TotalSize>
+            
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>20</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="admin1"/>
+                    </InterventionList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="window1"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+            
+            <Arm oid="arm2">
+                <ArmRef oidRef="arm1"/>
+            </Arm>
+        </Arms>
+        
+    </TrialDesign>
+</PharmML>

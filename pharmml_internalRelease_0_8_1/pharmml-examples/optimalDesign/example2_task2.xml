@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <!--    Task description
+	The next task considers optimisation of the design, starting with the design evaluated above. The following sampling windows are considered for each response:
+    •	PK sampling times
+    ◦	1 to 2 points between 0.25 and 2
+    ◦	0 to 1 point between 12 and 16
+    ◦	1 to 2 points between 24 and 36
+    ◦	1 to 2 points between 48 and 144
+    ◦	0 to 1 point between 144 and 156
+    ◦	0 to 1 point between 168 and 180
+    ◦	4 to 8 points in all for each response
+    •	PD sampling times
+    ◦	same windows
+    •	optimisation
+    ◦	continuous times
+    ◦	the time points for the two responses do not need to be the same
+    ◦	optimisation of the duration of the infusion
+    ◦	set dose to 100 -->
+    
+    
+    <!-- MODEL NAME -->
+    <ct:Name>example2_task2 - optimise</ct:Name>
+    
+    <ct:Description>based on example2_task2 - optimisation of design with dummy model definition</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="time"/>
+
+    <!-- BLOCK I: MODEL DEFINITION -->
+    <ModelDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+        </VariabilityModel>
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="a"/>
+        </ParameterModel>
+        
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="Gut"/>
+            <ct:Variable symbolType="real" symbId="A"/>
+            <ct:Variable symbolType="real" symbId="E"/>
+        </StructuralModel>
+        
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Conc">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+        <ObservationModel blkId="om2">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <Standard symbId="Effect">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="E"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="blub"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+        
+    </ModelDefinition>
+    
+    <!-- BLOCK II: TRIAL DEFINITION -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="admin1">
+                <Infusion>
+                    <DoseAmount inputTarget="derivativeVariable">
+                        <TargetMapping blkIdRef="sm1">
+                            <ds:Map modelSymbol="Gut"/>
+                        </TargetMapping>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </DosingTimes>
+                    <Duration>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </Duration>
+                </Infusion>
+            </Administration>
+        </Interventions>            
+        
+        <Observations>
+            <!-- Conc -->
+            <Observation oid="pkwin1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pkwin2">
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Int>0</ct:Int>
+                    </ct:Assign>
+                </NumberTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pkwin3">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>30</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pkwin4">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>49</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pkwin5">
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Int>0</ct:Int>
+                    </ct:Assign>
+                </NumberTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pkwin6">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>180</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Conc"/>
+                </Continuous>
+            </Observation>
+            
+            <!-- Effect -->
+            <Observation oid="pdwin1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0.5</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pdwin2">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>14</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pdwin3">
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Int>0</ct:Int>
+                    </ct:Assign>
+                </NumberTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pdwin4">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>110</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pdwin5">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Real>110</ct:Real>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="Effect"/>
+                </Continuous>
+            </Observation>
+            
+            <Observation oid="pdwin6">     <!-- using reference -->
+                <ObservationRef oidRef="pdwin3"/>
+            </Observation>
+            
+            <!-- Combinations -->
+            <ObservationsCombination oid="sampPK">
+                <Observations>
+                    <ObservationRef oidRef="pkwin1"/>
+                    <ObservationRef oidRef="pkwin2"/>
+                    <ObservationRef oidRef="pkwin3"/>
+                    <ObservationRef oidRef="pkwin4"/>
+                    <ObservationRef oidRef="pkwin5"/>
+                    <ObservationRef oidRef="pkwin6"/>
+                </Observations>
+            </ObservationsCombination>
+            <ObservationsCombination oid="sampPD">
+                <Observations>
+                    <ObservationRef oidRef="pdwin1"/>
+                    <ObservationRef oidRef="pdwin2"/>
+                    <ObservationRef oidRef="pdwin3"/>
+                    <ObservationRef oidRef="pdwin4"/>
+                    <ObservationRef oidRef="pdwin5"/>
+                    <ObservationRef oidRef="pdwin6"/>
+                </Observations>
+            </ObservationsCombination>
+            <ObservationsCombination oid="sampPKPD">
+                <Observations>
+                    <ObservationRef oidRef="sampPK"/>
+                    <ObservationRef oidRef="sampPD"/>
+                </Observations>
+            </ObservationsCombination>
+        </Observations>
+        
+        <DesignSpaces>
+            <!-- admin1 -->
+            <DesignSpace>
+                <InterventionRef oidRef="admin1"/>
+                <DoseAmount>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>10</ct:Real>
+                                <ct:Real>100</ct:Real>
+                                <ct:Real>200</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </DoseAmount>
+            </DesignSpace>
+            <DesignSpace>
+                <InterventionRef oidRef="admin1"/>
+                <Duration>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>0.5</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>2</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </Duration>
+            </DesignSpace>
+            
+            <!-- pkwin1, pdwin1 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin1"/>
+                <ObservationRef oidRef="pdwin1"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin1"/>
+                <ObservationRef oidRef="pdwin1"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>0.25</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>2</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- pkwin2, pdwin2 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin2"/>
+                <ObservationRef oidRef="pdwin2"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin2"/>
+                <ObservationRef oidRef="pdwin2"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>12</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>16</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- pkwin3, pdwin3 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin3"/>
+                <ObservationRef oidRef="pdwin3"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin3"/>
+                <ObservationRef oidRef="pdwin3"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>24</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>36</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- pkwin4, pdwin4 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin4"/>
+                <ObservationRef oidRef="pdwin4"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin4"/>
+                <ObservationRef oidRef="pdwin4"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>48</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>144</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- pkwin5, pdwin5 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin5"/>
+                <ObservationRef oidRef="pdwin5"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin5"/>
+                <ObservationRef oidRef="pdwin5"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>144</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>156</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- pkwin6, pdwin6 -->
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin6"/>
+                <ObservationRef oidRef="pdwin6"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>0</ct:Real>
+                                <ct:Real>1</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="pkwin6"/>
+                <ObservationRef oidRef="pdwin6"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>168</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>180</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            
+            <!-- sampPK, sampPD -->
+            <DesignSpace>
+                <ObservationRef oidRef="sampPK"/>
+                <ObservationRef oidRef="sampPD"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>4</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>8</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+        </DesignSpaces>
+        
+        <Arms>
+            <TotalSize>
+                <ct:Assign>
+                    <ct:Int>100</ct:Int>
+                </ct:Assign>
+            </TotalSize>
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>100</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="admin1"/>
+                    </InterventionList>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="sampPKPD"/>
+                    </ObservationList>
+                    <Start>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </Start>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+    </TrialDesign>
+
+
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <TargetTool oid="targetTool">
+            <TargetToolName>PFIM</TargetToolName>
+        </TargetTool>
+        
+        <OptimalDesignStep oid="evaTask1">
+            
+            <TargetToolReference>
+                <ct:OidRef oidRef="targetTool"/>
+            </TargetToolReference>
+            
+            <OptimiseOn>
+                <DoseAmount>
+                    <ct:Assign>
+                        <ct:Real>100</ct:Real>
+                    </ct:Assign>
+                </DoseAmount>
+                <Duration/>
+                <ObservationTimes/>
+            </OptimiseOn>
+            
+            <FIM type="P"/>
+            
+            <Method>
+                <ApproximateFIM type="full"/>
+                <OptimizationAlgorithm type="simplex"/>
+            </Method>
+            
+            <Cost>
+                <TotalCost>
+                    <ct:Assign>
+                        <ct:Real>120</ct:Real>
+                    </ct:Assign>
+                </TotalCost>
+            </Cost>
+            
+            <Operation opType="evaluation" order="1"/>
+        </OptimalDesignStep>
+        
+        <!-- STEP DEPENDENCIES -->
+        <StepDependencies>
+            <Step>
+                <ct:OidRef oidRef="evaTask1"/>
+            </Step>
+        </StepDependencies>
+    </ModellingSteps>
+</PharmML>

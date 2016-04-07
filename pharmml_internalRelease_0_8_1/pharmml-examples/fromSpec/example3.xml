@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1"
+    metadataFile="example3.rdf" id="i1">
+    
+    <!-- MODEL NAME -->
+    <ct:Name>Example 3 - Warfarin PK estimation</ct:Name>
+    
+    <ct:Description>Example 3 - basic Warfarin PK estimation with covariate W</ct:Description>
+    
+    <!-- INDEPENDENT VARIABLE -->
+    <IndependentVariable symbId="t"/>
+    
+    <!-- FUNCTION DEFINITION -->
+    <ct:FunctionDefinition  xmlns="http://www.pharmml.org/pharmml/0.8/CommonTypes" 
+        symbId="combinedErrorModel" symbolType="real">
+        <FunctionArgument symbolType="real" symbId="a"/>
+        <FunctionArgument symbolType="real" symbId="b"/>
+        <FunctionArgument symbolType="real" symbId="f"/>
+        <Definition>
+            <Assign>
+                <math:Binop op="plus">
+                    <ct:SymbRef symbIdRef="a"/>
+                    <math:Binop op="times">
+                        <ct:SymbRef symbIdRef="b"/>
+                        <ct:SymbRef symbIdRef="f"/>
+                    </math:Binop>
+                </math:Binop>
+            </Assign>
+        </Definition>
+    </ct:FunctionDefinition>
+
+    <!-- MODEL DEFINITION -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- VARIABILITY MODEL -->
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="indiv"/>
+        </VariabilityModel>
+        <VariabilityModel blkId="vm2" type="residualError">
+            <Level symbId="residual"/>
+        </VariabilityModel>
+        
+        
+        <!-- COVARIATE MODEL -->
+        <CovariateModel blkId="cm1">
+            <Covariate symbId="W">
+                <Continuous>
+                    <Transformation>
+                        <TransformedCovariate symbId="logWT70"/>
+                        <ct:Assign>
+                            <math:Uniop op="log">
+                                <math:Binop op="divide">
+                                    <ct:SymbRef symbIdRef="W"/>
+                                    <ct:Real>70</ct:Real>
+                                </math:Binop>
+                            </math:Uniop>
+                        </ct:Assign>
+                    </Transformation>
+                </Continuous>
+            </Covariate>
+        </CovariateModel>
+        
+        
+        <!-- PARAMETER MODEL -->
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="pop_Tlag"/>
+            <PopulationParameter symbId="omega_Tlag"/>
+            <PopulationParameter symbId="pop_ka"/>
+            <PopulationParameter symbId="omega_ka"/>
+            <PopulationParameter symbId="pop_V"/>
+            <PopulationParameter symbId="omega_V"/>
+            <PopulationParameter symbId="beta_V"/>
+            <PopulationParameter symbId="pop_CL"/>
+            <PopulationParameter symbId="omega_CL"/>
+            <PopulationParameter symbId="beta_CL"/>
+            <!-- Tlag -->
+            <RandomVariable symbId="eta_Tlag">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_Tlag"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="Tlag">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_Tlag"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_Tlag"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            <!-- ka -->
+            <RandomVariable symbId="eta_ka">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_ka"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="ka">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_ka"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_ka"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            <!-- V -->
+            <RandomVariable symbId="eta_V">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_V"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="V">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_V"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                        <Covariate>
+                            <ct:SymbRef blkIdRef="cm1" symbIdRef="logWT70"/>
+                            <FixedEffect>
+                                <ct:SymbRef symbIdRef="beta_V"/>
+                            </FixedEffect>
+                        </Covariate>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_V"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+            <!-- CL -->
+            <RandomVariable symbId="eta_CL">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <Distribution>
+                    <po:ProbOnto name="Normal1">
+                        <po:Parameter name="mean">
+                            <ct:Assign>
+                                <ct:Real>0</ct:Real>
+                            </ct:Assign>
+                        </po:Parameter>
+                        <po:Parameter name="stdev">
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="omega_CL"/>
+                            </ct:Assign>
+                        </po:Parameter>
+                    </po:ProbOnto>
+                </Distribution>
+            </RandomVariable>
+            <IndividualParameter symbId="CL">
+                <StructuredModel>
+                    <Transformation type="log"/>
+                    <LinearCovariate>
+                        <PopulationValue>
+                            <ct:Assign>
+                                <ct:SymbRef symbIdRef="pop_CL"/>
+                            </ct:Assign>
+                        </PopulationValue>
+                        <Covariate>
+                            <ct:SymbRef blkIdRef="cm1" symbIdRef="logWT70"/>
+                            <FixedEffect>
+                                <ct:SymbRef symbIdRef="beta_CL"/>
+                            </FixedEffect>
+                        </Covariate>
+                    </LinearCovariate>
+                    <RandomEffects>
+                        <ct:SymbRef symbIdRef="eta_CL"/>
+                    </RandomEffects>
+                </StructuredModel>
+            </IndividualParameter>
+        </ParameterModel>
+        
+        <!-- STRUCTURAL MODEL -->
+        <StructuralModel blkId="sm1">
+            <!-- k -->
+            <IndividualParameter symbId="k">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="CL"/>
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="V"/>
+                    </math:Binop>
+                </ct:Assign>
+            </IndividualParameter>
+            <!-- dosing variables -->
+            <ct:Variable symbolType="real" symbId="D"/>
+            <ct:Variable symbolType="real" symbId="tD"/>
+            <!-- C - algebraic formula -->
+            <ct:Variable symbolType="real" symbId="C">
+                <ct:Assign>
+                    <math:Piecewise>
+                        <math:Piece>
+                            <ct:Real>0</ct:Real>
+                            <math:Condition>
+                                <math:LogicBinop op="lt">
+                                    <math:Binop op="minus">
+                                        <ct:SymbRef symbIdRef="t"/>
+                                        <ct:SymbRef symbIdRef="tD"/>
+                                    </math:Binop>
+                                    <ct:SymbRef blkIdRef="pm1" symbIdRef="Tlag"/>
+                                </math:LogicBinop>
+                            </math:Condition>
+                        </math:Piece>
+                        <math:Piece>
+                            <math:Binop op="times">
+                                <math:Binop op="divide">
+                                    <math:Binop op="times">
+                                        <ct:SymbRef symbIdRef="D"/>
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="ka"/>
+                                    </math:Binop>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef blkIdRef="pm1" symbIdRef="V"/>
+                                        <math:Binop op="minus">
+                                            <ct:SymbRef blkIdRef="pm1" symbIdRef="ka"/>
+                                            <ct:SymbRef symbIdRef="k"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                                <math:Binop op="minus">
+                                    <math:Uniop op="exp">
+                                        <math:Binop op="times">
+                                            <math:Uniop op="minus">
+                                                <ct:SymbRef symbIdRef="k"/>
+                                            </math:Uniop>
+                                            <math:Binop op="minus">
+                                                <math:Binop op="minus">
+                                                    <ct:SymbRef symbIdRef="t"/>
+                                                    <ct:SymbRef symbIdRef="tD"/>
+                                                </math:Binop>
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="Tlag"/>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Uniop>
+                                    <math:Uniop op="exp">
+                                        <math:Binop op="times">
+                                            <math:Uniop op="minus">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="ka"/>
+                                            </math:Uniop>
+                                            <math:Binop op="minus">
+                                                <math:Binop op="minus">
+                                                    <ct:SymbRef symbIdRef="t"/>
+                                                    <ct:SymbRef symbIdRef="tD"/>
+                                                </math:Binop>
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="Tlag"/>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Uniop>
+                                </math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+                                <math:Otherwise/>
+                            </math:Condition>
+                        </math:Piece>
+                    </math:Piecewise>
+                </ct:Assign>
+            </ct:Variable>
+        </StructuralModel>
+        
+        <!-- OBSERVATION MODEL -->
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <PopulationParameter symbId="b"/>
+                <RandomVariable symbId="epsilon_C">
+                    <ct:VariabilityReference>
+                        <ct:SymbRef blkIdRef="vm2" symbIdRef="residual"/>
+                    </ct:VariabilityReference>
+                    <Distribution>
+                        <po:ProbOnto name="StandardNormal1"/>
+                    </Distribution>
+                </RandomVariable>
+                <Standard symbId="C_obs">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="C"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <math:FunctionCall>
+                                <ct:SymbRef symbIdRef="combinedErrorModel"/>
+                                <math:FunctionArgument symbId="a">
+                                    <ct:SymbRef symbIdRef="a"/>
+                                </math:FunctionArgument>
+                                <math:FunctionArgument symbId="b">
+                                    <ct:SymbRef symbIdRef="b"/>
+                                </math:FunctionArgument>
+                                <math:FunctionArgument symbId="f">
+                                    <ct:SymbRef blkIdRef="sm1" symbIdRef="C"/>
+                                </math:FunctionArgument>
+                            </math:FunctionCall>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef symbIdRef="epsilon_C"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+    </ModelDefinition>
+    
+    <!-- TRIAL DESIGN -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <Interventions>
+            <Administration oid="d1">
+                <Bolus>
+                    <DoseAmount inputTarget="parameter">
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="D"/>
+                        <ct:Assign>
+                            <ct:Real>100</ct:Real>
+                        </ct:Assign>
+                    </DoseAmount>
+                    <DosingTimes>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="tD"/>
+                        <ct:Assign>
+                            <ct:Real>0</ct:Real>
+                        </ct:Assign>
+                    </DosingTimes>
+                </Bolus>
+            </Administration>
+        </Interventions>
+        
+        <Observations>
+            <IndividualObservations oid="OBSoid">
+                <ColumnMapping>
+                    <ds:ColumnRef columnIdRef="time"/>
+                    <ct:SymbRef symbIdRef="t"/>
+                </ColumnMapping>
+                <ColumnMapping>
+                    <ds:ColumnRef columnIdRef="dv"/>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="C_obs"/>
+                </ColumnMapping>
+                <ds:DataSet>
+                    <ds:Definition>
+                        <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                        <ds:Column columnId="time" columnType="time" valueType="real" columnNum="2"/>
+                        <ds:Column columnId="dv" columnType="dv" valueType="real" columnNum="3"/>
+                    </ds:Definition>
+                    <ds:Table>
+                        <!-- SUBJECT 1 -->
+                        <ds:Row><ct:String>1</ct:String><ct:Real>0.5</ct:Real><ct:Real>0</ct:Real></ds:Row>
+                        <ds:Row><ct:String>1</ct:String><ct:Real>1</ct:Real><ct:Real>1.9</ct:Real></ds:Row>
+                        <ds:Row><ct:String>1</ct:String><ct:Real>2</ct:Real><ct:Real>3.3</ct:Real></ds:Row>
+                        <ds:Row><ct:String>1</ct:String><ct:Real>3</ct:Real><ct:Real>6.6</ct:Real></ds:Row>
+                        <ds:Row><ct:String>1</ct:String><ct:Real>6</ct:Real><ct:Real>9.1</ct:Real></ds:Row>
+                        <ds:Row><ct:String>1</ct:String><ct:Real>9</ct:Real><ct:Real>10.8</ct:Real></ds:Row>
+                        <!-- SUBJECT 2 -->
+                        <!-- SNIP -->
+                    </ds:Table>
+                </ds:DataSet>
+            </IndividualObservations>
+        </Observations>
+        
+        <Covariates>
+            <IndividualCovariates>
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm1" symbIdRef="indiv"/>
+                </ct:VariabilityReference>
+                <ColumnMapping>
+                    <ds:ColumnRef columnIdRef="wt"/>
+                    <ct:SymbRef blkIdRef="cm1" symbIdRef="W"/>
+                </ColumnMapping>
+                <ds:DataSet>
+                    <ds:Definition>
+                        <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                        <ds:Column columnId="arm" columnType="arm" valueType="id" columnNum="2"/>
+                        <ds:Column columnId="wt" columnType="covariate" valueType="real" columnNum="3"/>
+                    </ds:Definition>
+                    <ds:Table>
+                        <ds:Row><ct:String>1</ct:String><ct:Id>arm1</ct:Id><ct:Real>70.1</ct:Real></ds:Row>
+                        <ds:Row><ct:String>2</ct:String><ct:Id>arm1</ct:Id><ct:Real>60.0</ct:Real></ds:Row>
+                        <ds:Row><ct:String>3</ct:String><ct:Id>arm1</ct:Id><ct:Real>93.2</ct:Real></ds:Row>
+                        <ds:Row><ct:String>4</ct:String><ct:Id>arm1</ct:Id><ct:Real>85.7</ct:Real></ds:Row>
+                        <ds:Row><ct:String>5</ct:String><ct:Id>arm1</ct:Id><ct:Real>78.3</ct:Real></ds:Row>
+                        <!-- SNIP -->
+                        <ds:Row><ct:String>33</ct:String><ct:Id>arm1</ct:Id><ct:Real>94.1</ct:Real></ds:Row>
+                    </ds:Table>
+                </ds:DataSet>
+            </IndividualCovariates>
+        </Covariates>
+        
+        <Arms>
+            <Arm oid="arm1">
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Int>33</ct:Int>
+                    </ct:Assign>
+                </ArmSize>
+                <InterventionSequence>
+                    <InterventionList>
+                        <InterventionRef oidRef="d1"/>
+                    </InterventionList>
+                </InterventionSequence>
+                <ObservationSequence>
+                    <ObservationList>
+                        <ObservationRef oidRef="OBSoid"/>
+                    </ObservationList>
+                </ObservationSequence>
+            </Arm>
+        </Arms>
+        
+    </TrialDesign>
+    
+    <!-- MODELLING STEPS -->
+    <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+        
+        <!-- ESTIMATION -->
+        <EstimationStep oid="estimStep1">
+
+            <!-- PARAMETERS TO ESTIMATE -->
+            <ParametersToEstimate>
+                <!-- V -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_V"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>10</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_V"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="beta_V"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>
+                <!-- CL -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_CL"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_CL"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="beta_CL"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>
+                <!-- Tlag -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_Tlag"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_Tlag"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>
+                <!-- ka -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="pop_ka"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm1" symbIdRef="omega_ka"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>                
+                <!-- a -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="a"/>
+                    <InitialEstimate fixed="false">
+                        <ct:Real>.5</ct:Real>
+                    </InitialEstimate>
+                </ParameterEstimation>
+                <!-- b -->
+                <ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="b"/>
+                    <mstep:InitialEstimate fixed="false">
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </ParameterEstimation>                
+            </ParametersToEstimate>
+            
+            <!-- OPERATION -->
+            <Operation order="1" opType="estPop">
+                <ct:Description>Estimate the population parameters in the model.</ct:Description>
+                <Property name="software-tool-name">
+                    <ct:Assign>
+                        <ct:String>NONMEM</ct:String>
+                    </ct:Assign>
+                </Property>
+                <Property name="software-tool-version">
+                    <ct:Assign>
+                        <ct:Real>7.3</ct:Real>
+                    </ct:Assign>
+                </Property>
+                <Algorithm definition="FOCEI">
+                    <Property name="tolerance">
+                        <ct:Assign><ct:Int>1</ct:Int></ct:Assign>
+                    </Property>
+                </Algorithm>
+            </Operation>
+            <Operation order="2" opType="estFIM"/>
+            <Operation order="3" opType="estIndiv"/>
+        </EstimationStep>
+        
+        <!-- STEP DEPENDENCIES -->
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="estimStep1"/>
+            </mstep:Step>
+        </mstep:StepDependencies>
+    </ModellingSteps>
+</PharmML>

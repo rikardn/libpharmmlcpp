@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:msteps="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    writtenVersion="0.8.1"
+    implementedBy="Cyprotex Model Writer --- adapted to 0.8 by MJS" id="bp1">
+    
+    <ct:Name>BradshawPierce</ct:Name>
+    <IndependentVariable symbId="t"/>
+    <mdef:ModelDefinition>
+        <mdef:ParameterModel blkId="pm">
+            <mdef:Parameter symbId="gut_km1">
+                <ct:Description>gut_km1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_km2">
+                <ct:Description>gut_km2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_vmax1">
+                <ct:Description>gut_vmax1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_vmax2">
+                <ct:Description>gut_vmax2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_bindingAffinity">
+                <ct:Description>gut_bindingAffinity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_bindingCapacity">
+                <ct:Description>gut_bindingCapacity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_bloodFlow">
+                <ct:Description>gut_bloodFlow</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_partitionCoefficient">
+                <ct:Description>gut_partitionCoefficient</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="gut_volume">
+                <ct:Description>gut_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_km1">
+                <ct:Description>kidney_km1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_km2">
+                <ct:Description>kidney_km2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_vmax1">
+                <ct:Description>kidney_vmax1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_vmax2">
+                <ct:Description>kidney_vmax2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_bindingAffinity">
+                <ct:Description>kidney_bindingAffinity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_bindingCapacity">
+                <ct:Description>kidney_bindingCapacity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_bloodFlow">
+                <ct:Description>kidney_bloodFlow</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_partitionCoefficient">
+                <ct:Description>kidney_partitionCoefficient</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="kidney_volume">
+                <ct:Description>kidney_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_km1">
+                <ct:Description>liver_km1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_km2">
+                <ct:Description>liver_km2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_vmax1">
+                <ct:Description>liver_vmax1</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_vmax2">
+                <ct:Description>liver_vmax2</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_bindingAffinity">
+                <ct:Description>liver_bindingAffinity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_bindingCapacity">
+                <ct:Description>liver_bindingCapacity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_hepaticArteryBloodFlow">
+                <ct:Description>liver_hepaticArteryBloodFlow</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_partitionCoefficient">
+                <ct:Description>liver_partitionCoefficient</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="liver_volume">
+                <ct:Description>liver_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="rapidlyPerfused_bindingAffinity">
+                <ct:Description>rapidlyPerfused_bindingAffinity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="rapidlyPerfused_bindingCapacity">
+                <ct:Description>rapidlyPerfused_bindingCapacity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="rapidlyPerfused_bloodFlow">
+                <ct:Description>rapidlyPerfused_bloodFlow</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="rapidlyPerfused_partitionCoefficient">
+                <ct:Description>rapidlyPerfused_partitionCoefficient</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="rapidlyPerfused_volume">
+                <ct:Description>rapidlyPerfused_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="slowlyPerfused_bindingAffinity">
+                <ct:Description>slowlyPerfused_bindingAffinity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="slowlyPerfused_bindingCapacity">
+                <ct:Description>slowlyPerfused_bindingCapacity</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="slowlyPerfused_bloodFlow">
+                <ct:Description>slowlyPerfused_bloodFlow</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="slowlyPerfused_partitionCoefficient">
+                <ct:Description>slowlyPerfused_partitionCoefficient</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="slowlyPerfused_volume">
+                <ct:Description>slowlyPerfused_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>1.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+            <mdef:Parameter symbId="blood_volume">
+                <ct:Description>blood_volume</ct:Description>
+                <ct:Assign>
+                    <ct:Real>10.0</ct:Real>
+                </ct:Assign>
+            </mdef:Parameter>
+        </mdef:ParameterModel>
+        <mdef:StructuralModel blkId="sm">
+            <ct:Variable symbolType="real" symbId="liver_splanchicBloodFlow">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gut_bloodFlow"/>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_bloodFlow">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="liver_hepaticArteryBloodFlow"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="liver_splanchicBloodFlow"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="blood_bloodFlow">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_bloodFlow"/>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_bloodFlow"/>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_bloodFlow"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_bloodFlow"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="blood_concentration">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="blood_amount"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="blood_volume"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="gut_concentration">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="gut_amount"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="gut_volume"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="gut_fluxIn">
+                <ct:Assign>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="gut_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="gut_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="gut_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="gut_amount"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="gut_volume"/>
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="gut_partitionCoefficient"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="gut_bindingCapacity"/>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="gut_bindingAffinity"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="gut_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="kidney_concentration">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_amount"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_volume"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="kidney_fluxIn">
+                <ct:Assign>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="kidney_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_amount"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_volume"/>
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_partitionCoefficient"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_bindingCapacity"/>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_bindingAffinity"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_concentration">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="liver_amount"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="liver_volume"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_arterialFluxIn">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="liver_hepaticArteryBloodFlow"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_splanchicFluxIn">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="gut_fluxOut"/>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_fluxIn">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="liver_arterialFluxIn"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="liver_splanchicFluxIn"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="liver_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="liver_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="liver_amount"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="liver_volume"/>
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="liver_partitionCoefficient"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="liver_bindingCapacity"/>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="liver_bindingAffinity"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="liver_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="slowlyPerfused_concentration">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_amount"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_volume"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="slowlyPerfused_fluxIn">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_bloodFlow"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="slowlyPerfused_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_amount"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_volume"/>
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_partitionCoefficient"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_bindingCapacity"/>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="slowlyPerfused_bindingAffinity"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="rapidlyPerfused_concentration">
+                <ct:Assign>
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_amount"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_volume"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="rapidlyPerfused_fluxIn">
+                <ct:Assign>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                        </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="rapidlyPerfused_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_bloodFlow"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_amount"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_volume"/>
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_partitionCoefficient"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_bindingCapacity"/>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="rapidlyPerfused_bindingAffinity"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="blood_fluxIn">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_fluxOut"/>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_fluxOut"/>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_fluxOut"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_fluxOut"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="blood_fluxOut">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_concentration"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_bloodFlow"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="blood_amount">
+                <ct:Description>blood_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_fluxIn"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="blood_fluxOut"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="gut_amount">
+                <ct:Description>gut_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="minus">
+                            <math:Binop op="minus">
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="gut_fluxIn"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="gut_fluxOut"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="gut_vmax1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="gut_concentration"/>
+                                </math:Binop>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="gut_km1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="gut_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="divide">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="gut_vmax2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="gut_concentration"/>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="gut_km2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="gut_concentration"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="kidney_amount">
+                <ct:Description>kidney_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="minus">
+                            <math:Binop op="minus">
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_fluxIn"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_fluxOut"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_vmax1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_concentration"/>
+                                </math:Binop>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_km1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="divide">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_vmax2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_concentration"/>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="kidney_km2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_concentration"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="liver_amount">
+                <ct:Description>liver_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="minus">
+                            <math:Binop op="minus">
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_fluxIn"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_fluxOut"/>
+                            </math:Binop>
+                            <math:Binop op="divide">
+                                <math:Binop op="times">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="liver_vmax1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="liver_concentration"/>
+                                </math:Binop>
+                                <math:Binop op="plus">
+                                    <ct:SymbRef blkIdRef="pm" symbIdRef="liver_km1"/>
+                                    <ct:SymbRef blkIdRef="sm" symbIdRef="liver_concentration"/>
+                                </math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="divide">
+                            <math:Binop op="times">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="liver_vmax2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_concentration"/>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <ct:SymbRef blkIdRef="pm" symbIdRef="liver_km2"/>
+                                <ct:SymbRef blkIdRef="sm" symbIdRef="liver_concentration"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="rapidlyPerfused_amount">
+                <ct:Description>rapidlyPerfused_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_fluxIn"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_fluxOut"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="slowlyPerfused_amount">
+                <ct:Description>slowlyPerfused_amount</ct:Description>
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_fluxIn"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_fluxOut"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Real>10.0</ct:Real>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+        </mdef:StructuralModel>
+    </mdef:ModelDefinition>
+    
+    
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+    
+        <Observations>
+            <Observation oid="idx_4">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin>
+                                <ct:Real>0.0</ct:Real>
+                            </ct:Begin>
+                            <ct:StepSize>
+                                <ct:Real>0.2</ct:Real>
+                            </ct:StepSize>
+                            <ct:End>
+                                <ct:Real>15.0</ct:Real>
+                            </ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="blood_amount"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="gut_amount"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="kidney_amount"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="liver_amount"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="rapidlyPerfused_amount"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="slowlyPerfused_amount"/>
+                </Continuous>
+            </Observation>
+        </Observations>
+    </TrialDesign>
+    
+    <msteps:ModellingSteps>
+
+        <msteps:SimulationStep oid="simStep">
+            <msteps:ObservationsReference>
+                <ct:OidRef oidRef="idx_4"/>
+            </msteps:ObservationsReference>
+        </msteps:SimulationStep>
+
+        <msteps:StepDependencies>
+            <msteps:Step>
+                <ct:OidRef oidRef="idx_4"/>
+            </msteps:Step>
+        </msteps:StepDependencies>
+    </msteps:ModellingSteps>
+</PharmML>

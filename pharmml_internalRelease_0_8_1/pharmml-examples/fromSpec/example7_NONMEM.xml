@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    implementedBy="MJS" writtenVersion="0.8.1" id="i1">
+    
+    <ct:Name>Example 7 - PK with Categorical - joint model</ct:Name>
+    
+    <ct:Description>Joint PKPD model with a categorical model</ct:Description>
+    
+    <IndependentVariable symbId="t"/>
+    
+    <!-- MODEL -->
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        
+        <!-- VARIABILITY -->
+        <VariabilityModel blkId="vm1" type="parameterVariability">
+            <Level symbId="subject"/>
+        </VariabilityModel>
+
+        <VariabilityModel blkId="vm2" type="residualError">
+            <Level symbId="residual"/>
+        </VariabilityModel>
+        
+        <ParameterModel blkId="pm1">
+            <PopulationParameter symbId="ka"/>
+            <PopulationParameter symbId="V"/>
+            <PopulationParameter symbId="CL"/>
+            <PopulationParameter symbId="theta0"/>
+            <PopulationParameter symbId="theta1"/>
+            <!-- individual def with IIV omitted -->
+
+        </ParameterModel>
+        
+        <!-- STRUCTURE -->
+        <StructuralModel blkId="sm1">
+
+            <!-- k -->
+            <ct:Variable symbolType="real" symbId="k">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="CL"/>
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="V"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            
+            <!-- dAd/dt -->
+            <ct:DerivativeVariable symbId="Ad" symbolType="real">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <math:Uniop op="minus">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="ka"/>
+                        </math:Uniop>
+                        <ct:SymbRef symbIdRef="Ad"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:DerivativeVariable>
+            
+            <!-- dAc/dt -->
+            <ct:DerivativeVariable symbId="Ac" symbolType="real">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm1" symbIdRef="ka"/>
+                            <ct:SymbRef symbIdRef="Ad"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef symbIdRef="k"/>
+                            <ct:SymbRef symbIdRef="Ac"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:DerivativeVariable>
+            
+            <!-- Cc -->
+            <ct:Variable symbolType="real" symbId="Cc">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef symbIdRef="Ac"/>
+                        <ct:SymbRef blkIdRef="pm1" symbIdRef="V"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            
+        </StructuralModel>
+        
+        <!-- OBSERVATIONS -->
+        <ObservationModel blkId="om1">
+            <Discrete>
+                <CategoricalData ordered="no">
+                    
+                    <ct:Variable symbolType="real" symbId="p1">
+                        <ct:Assign>
+                            <math:Binop op="divide">
+                                <ct:Real>1</ct:Real>
+                                <math:Binop op="plus">
+                                    <ct:Real>1</ct:Real>
+                                    <math:Uniop op="exp">
+                                        <math:Binop op="minus">
+                                            <math:Uniop op="minus">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                                            </math:Uniop>
+                                            <math:Binop op="times">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta2"/>
+                                                <math:Uniop op="log">
+                                                    <ct:SymbRef blkIdRef="sm1" symbIdRef="Cc"/>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Uniop>
+                                </math:Binop>
+                            </math:Binop>
+                        </ct:Assign>
+                    </ct:Variable>
+                    
+                    <ListOfCategories> 
+                        <Category symbId="cat0"/>
+                        <Category symbId="cat1"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    
+                    <PMF>
+                        <Distribution>
+                            <po:ProbOnto name="Weibull1">
+                                <po:Parameter name="numberOfFailures">
+                                    <ct:Assign>
+                                        <ct:Int>1</ct:Int>
+                                    </ct:Assign>
+                                </po:Parameter>
+                                <po:Parameter name="probability">
+                                    <ct:Assign>
+                                        <ct:SymbRef symbIdRef="p1"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>
+<!--                            <po:ProbOnto name="Binomial1">
+                                <po:Parameter name="numberOfFailures">
+                                    <ct:Assign>
+                                        <ct:Int>1</ct:Int>
+                                    </ct:Assign>
+                                </po:Parameter>
+                                <po:Parameter name="probability">
+                                    <ct:Assign>
+                                        <ct:SymbRef symbIdRef="p1"/>
+                                    </ct:Assign>
+                                </po:Parameter>
+                            </po:ProbOnto>-->
+                        </Distribution>
+                    </PMF>
+                </CategoricalData>
+            </Discrete>
+        </ObservationModel>
+        
+        
+        <!-- ALTERNATIVE -->
+        <ObservationModel blkId="om1B">
+            <Discrete>
+                <CategoricalData ordered="no">
+                    
+                    <ListOfCategories> 
+                        <Category symbId="cat0"/>
+                        <Category symbId="cat1"/>
+                    </ListOfCategories>
+                    
+                    <CategoryVariable symbId="y"/>
+                    
+                    <!-- P(y = 1) = 1 / (1 + exp(-theta1 - theta2*log(Cc))) -->
+                    <ProbabilityAssignment>
+                        <Probability symbId="p1">
+                            <math:LogicBinop op="eq">
+                                <ct:SymbRef symbIdRef="y"/>
+                                <ct:SymbRef symbIdRef="cat1"/>
+                            </math:LogicBinop>
+                        </Probability>
+                        <ct:Assign>
+                            <math:Binop op="divide">
+                                <ct:Real>1</ct:Real>
+                                <math:Binop op="plus">
+                                    <ct:Real>1</ct:Real>
+                                    <math:Uniop op="exp">
+                                        <math:Binop op="minus">
+                                            <math:Uniop op="minus">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                                            </math:Uniop>
+                                            <math:Binop op="times">
+                                                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta2"/>
+                                                <math:Uniop op="log">
+                                                    <ct:SymbRef blkIdRef="sm1" symbIdRef="Cc"/>
+                                                </math:Uniop>
+                                            </math:Binop>
+                                        </math:Binop>
+                                    </math:Uniop>
+                                </math:Binop>
+                            </math:Binop>
+                        </ct:Assign>
+                    </ProbabilityAssignment>
+                </CategoricalData>
+            </Discrete>
+        </ObservationModel>
+        
+        <!-- PK -->
+        <ObservationModel blkId="om2">
+            <ContinuousData>
+                <PopulationParameter symbId="a"/>
+                <PopulationParameter symbId="b"/>
+                <RandomVariable symbId="eps_Cc">
+                    <ct:VariabilityReference>
+                        <ct:SymbRef blkIdRef="vm2" symbIdRef="residual"/>
+                    </ct:VariabilityReference>
+                    <Distribution>
+                        <po:ProbOnto name="StandardNormal1"/>
+                    </Distribution>
+                </RandomVariable>
+                <General symbId="C_obs">
+                    <ct:Assign>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="sm1" symbIdRef="C"/>
+                            <math:Binop op="times">
+                                <math:Binop op="plus">
+                                    <ct:SymbRef symbIdRef="a"/>
+                                    <math:Binop op="times">
+                                        <ct:SymbRef symbIdRef="b"/>
+                                        <ct:SymbRef blkIdRef="sm1" symbIdRef="C"/>
+                                    </math:Binop>
+                                </math:Binop>
+                                <ct:SymbRef symbIdRef="eps_Cc"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </ct:Assign>
+                </General>
+            </ContinuousData>
+        </ObservationModel>
+    </ModelDefinition>
+    
+    <!-- TRIAL DESIGN -->
+    <TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+        
+        <!-- estimation data -->
+        <ExternalDataSet toolName="NONMEM" oid="NMoid">
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="t"/>
+            </ColumnMapping>
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="AMT"/>
+                <ct:SymbRef blkIdRef="sm1" symbIdRef="Ad"/>
+            </ColumnMapping>
+            <MultipleDVMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <Piecewise>
+                    <math:Piece>
+                        <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+                        <math:CategoryMapping>
+                            <ds:Map dataSymbol="0" modelSymbol="cat0"/>
+                            <ds:Map dataSymbol="1" modelSymbol="cat1"/>
+                        </math:CategoryMapping>
+                        <math:Condition>
+                            <math:LogicBinop op="eq">
+                                <ds:ColumnRef columnIdRef="ORIG"/>
+                                <ct:Int>2</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                    <math:Piece>
+                        <ct:SymbRef blkIdRef="om2" symbIdRef="C_obs"/>
+                        <math:Condition>
+                            <math:LogicBinop op="eq">
+                                <ds:ColumnRef columnIdRef="ORIG"/>
+                                <ct:Int>1</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                </Piecewise>
+            </MultipleDVMapping>
+            <ds:DataSet>
+                <!-- identical as in previous example -->
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="AMT" columnType="dose" valueType="real" columnNum="3"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="4"/>
+                    <ds:Column columnId="DVID" columnType="dvid" valueType="int" columnNum="5"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="importData">
+                    <ds:path>myFile.csv</ds:path>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </ExternalDataSet>
+        
+        <Observations>
+            <!-- simulation data -->
+            <Observation oid="OBSoid_y_p1">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Sequence>
+                                    <ct:Begin><ct:Int>0</ct:Int></ct:Begin>
+                                    <ct:StepSize><ct:Int>1</ct:Int></ct:StepSize>
+                                    <ct:End><ct:Int>12</ct:Int></ct:End>
+                                </ct:Sequence>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                    <Discrete>
+                        <ct:SymbRef blkIdRef="om1" symbIdRef="y"/>
+                        <ct:SymbRef blkIdRef="om1" symbIdRef="p1"/>
+                    </Discrete>
+            </Observation>
+            
+            <!-- simulation data -->
+            <Observation oid="OBSoid_C_obs">
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Sequence>
+                                    <ct:Begin><ct:Int>0</ct:Int></ct:Begin>
+                                    <ct:StepSize><ct:Int>1</ct:Int></ct:StepSize>
+                                    <ct:End><ct:Int>12</ct:Int></ct:End>
+                                </ct:Sequence>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </ObservationTimes>
+                <Continuous>
+                    <ct:SymbRef blkIdRef="om2" symbIdRef="C_obs"/>
+                </Continuous>
+            </Observation>
+        </Observations>
+    </TrialDesign>
+    
+    <!-- MODELLINGS STEPS -->
+    <mstep:ModellingSteps>
+        
+        <!-- estStep1 -->
+        <mstep:EstimationStep oid="estStep1">
+            
+            <mstep:ExternalDataSetReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </mstep:ExternalDataSetReference>
+            
+            <mstep:ParametersToEstimate>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="theta1"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+                <mstep:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="om1" symbIdRef="theta2"/>
+                    <mstep:InitialEstimate>
+                        <ct:Real>1</ct:Real>
+                    </mstep:InitialEstimate>
+                </mstep:ParameterEstimation>
+            </mstep:ParametersToEstimate>
+            
+            <mstep:Operation order="1" opType="estPop"/>
+        </mstep:EstimationStep>
+        
+        <!-- simStep1 -->
+        <mstep:SimulationStep oid="simStep1">
+            
+            <mstep:ObservationsReference>
+                <ct:OidRef oidRef="OBSoid_y_p1"/>
+            </mstep:ObservationsReference>
+            
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm1" symbIdRef="theta1"/>
+                <ct:Assign>
+                    <ct:Real>1</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <!-- other parameter omitted -->
+        </mstep:SimulationStep>
+
+        <!-- simStep2 -->
+        <mstep:SimulationStep oid="simStep2">
+            <mstep:ObservationsReference>
+                <ct:OidRef oidRef="OBSoid_C_obs"/>
+            </mstep:ObservationsReference>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="om2" symbIdRef="a"/>
+                <ct:Assign>
+                    <ct:Real>1</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="om2" symbIdRef="b"/>
+                <ct:Assign>
+                    <ct:Real>1</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+        </mstep:SimulationStep>
+        
+        <mstep:StepDependencies>
+            <mstep:Step>
+                <ct:OidRef oidRef="estStep1"/>
+            </mstep:Step>
+            <mstep:Step>
+                <ct:OidRef oidRef="simStep1"/>
+            </mstep:Step>
+            <mstep:Step>
+                <ct:OidRef oidRef="simStep2"/>
+            </mstep:Step>
+        </mstep:StepDependencies>
+        
+    </mstep:ModellingSteps>
+    
+</PharmML>

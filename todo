@@ -1,22 +1,13 @@
-* Complex piecewise for R. Multiple pieces, otherwise or only one piece
+* proportionalError
+* Derivatives
 
-* Function definition. Design and implementation
-* Read independent variable
-* Observation model. Design and implementation.
-* Parameter model.
-* What to do with variability model?
+* Complex piecewise for R. Multiple pieces, otherwise or only one piece (Gunnar)
+
+* Parameter model (Rikard)
+* Variability model (Rikard)
 * Trial design
 * Optimal design
 
-* Create gitrepo
-
-
-
-* Add all binops
-* Add all uniops
-* Add all logical ops
-
-* Combine AST code into main library code and Makefile
 * Proper destruction
 
 * Check of PharmML syntax:

@@ -9,6 +9,7 @@
 #include "Scalar.h"
 #include "Piecewise.h"
 #include "FunctionDefinition.h"
+#include "PopulationParameter.h"
 #include "IndividualParameter.h"
 #include "Covariate.h"
 #include "Variable.h"
@@ -96,13 +97,15 @@ namespace PharmML
             virtual std::string visit(Piecewise *node);
             virtual std::string visit(Piece *node);
             
+            virtual std::string visit(FunctionCall *node);
+            virtual std::string visit(FunctionArgument *node);
+            
             virtual std::string visit(FunctionDefinition *node);
+            virtual std::string visit(PopulationParameter *node);
             virtual std::string visit(IndividualParameter *node);
             virtual std::string visit(Covariate *node);
             virtual std::string visit(IndependentVariable *node);
             virtual std::string visit(Variable *node);
-            virtual std::string visit(FunctionCall *node);
-            virtual std::string visit(FunctionArgument *node);
             virtual std::string visit(ObservationModel *node);
     };
 }

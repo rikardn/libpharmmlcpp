@@ -285,6 +285,24 @@ namespace PharmML
         return("{" + node->getCondition()->accept(this) + "}");
     }
 
+    std::string RGenerator::visit(FunctionCall *node) {
+        bool first = true;
+        std::string argument_list;
+        for (FunctionArgument *arg : node->getFunctionArguments()) {
+            if (first) {
+                first = false;
+            } else {
+                argument_list += ", ";
+            }
+            argument_list += arg->accept(this);
+        }
+        return node->getFunctionName()->accept(this) + "(" + argument_list + ")";
+    }
+
+    std::string RGenerator::visit(FunctionArgument *node) {
+        return node->getSymbId() + "=" + node->getArgument()->accept(this);
+    }
+
     std::string RGenerator::visit(FunctionDefinition *node) {
         std::string head = node->getSymbId() + " <- function(";
         std::vector<std::string> args = node->getArguments();
@@ -301,6 +319,10 @@ namespace PharmML
 
     std::string RGenerator::visit(Covariate *node) {
         return(node->getTransformedName() + " <- " + node->getAssignment()->accept(this));
+    }
+
+    std::string RGenerator::visit(PopulationParameter *node) {
+        return "\"" + node->getSymbId() + "\"";
     }
 
     std::string RGenerator::visit(IndividualParameter *node) {
@@ -325,24 +347,6 @@ namespace PharmML
         } else {
             return std::string();
         }
-    }
-
-    std::string RGenerator::visit(FunctionCall *node) {
-        bool first = true;
-        std::string argument_list;
-        for (FunctionArgument *arg : node->getFunctionArguments()) {
-            if (first) {
-                first = false;
-            } else {
-                argument_list += ", ";
-            }
-            argument_list += arg->accept(this);
-        }
-        return node->getFunctionName()->accept(this) + "(" + argument_list + ")";
-    }
-
-    std::string RGenerator::visit(FunctionArgument *node) {
-        return node->getSymbId() + "=" + node->getArgument()->accept(this);
     }
 
     std::string RGenerator::visit(ObservationModel *node) {

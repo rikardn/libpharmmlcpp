@@ -79,13 +79,15 @@ namespace PharmML
     class Piecewise;
     class Piece;
     
+    class FunctionCall;
+    class FunctionArgument;
+    
     class FunctionDefinition;
+    class PopulationParameter;
     class IndividualParameter;
     class Variable;
     class IndependentVariable;
     class Covariate;
-    class FunctionCall;
-    class FunctionArgument;
     class ObservationModel;
 
     class AbstractVisitor
@@ -167,13 +169,15 @@ namespace PharmML
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;
             
+            virtual std::string visit(FunctionCall *node) = 0;
+            virtual std::string visit(FunctionArgument *node) = 0;
+            
             virtual std::string visit(FunctionDefinition *node) = 0;
+            virtual std::string visit(PopulationParameter *node) = 0;
             virtual std::string visit(IndividualParameter *node) = 0;
             virtual std::string visit(Covariate *node) = 0;
             virtual std::string visit(IndependentVariable *node) = 0;
             virtual std::string visit(Variable *node) = 0;
-            virtual std::string visit(FunctionCall *node) = 0;
-            virtual std::string visit(FunctionArgument *node) = 0;
             virtual std::string visit(ObservationModel *node) = 0;
     };
 }

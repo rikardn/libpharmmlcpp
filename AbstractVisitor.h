@@ -46,7 +46,9 @@ namespace PharmML
     class UniopSign;
     class UniopFloor;
     class UniopCeiling;
+    
     class ScalarInt;
+    
     class BinopPlus;
     class BinopMinus;
     class BinopDivide;
@@ -58,11 +60,25 @@ namespace PharmML
     class BinopMax;
     class BinopRem;
     class BinopAtan2;
+    
     class SymbRef;
+    
+    class LogicUniopIsdefined;
+    class LogicUniopNot;
+    
     class LogicBinopLt;
     class LogicBinopLeq;
+    class LogicBinopGt;
+    class LogicBinopGeq;
+    class LogicBinopEq;
+    class LogicBinopNeq;
+    class LogicBinopAnd;
+    class LogicBinopOr;
+    class LogicBinopXor;
+    
     class Piecewise;
     class Piece;
+    
     class FunctionDefinition;
     class IndividualParameter;
     class Variable;
@@ -116,7 +132,9 @@ namespace PharmML
             virtual std::string visit(UniopSign *node) = 0;
             virtual std::string visit(UniopFloor *node) = 0;
             virtual std::string visit(UniopCeiling *node) = 0;
+            
             virtual std::string visit(ScalarInt *node) = 0;
+            
             virtual std::string visit(BinopPlus *node) = 0;
             virtual std::string visit(BinopMinus *node) = 0;
             virtual std::string visit(BinopDivide *node) = 0;
@@ -128,11 +146,25 @@ namespace PharmML
             virtual std::string visit(BinopMax *node) = 0;
             virtual std::string visit(BinopRem *node) = 0;
             virtual std::string visit(BinopAtan2 *node) = 0;
+            
             virtual std::string visit(SymbRef *node) = 0;
+            
+            virtual std::string visit(LogicUniopIsdefined *node) = 0;
+            virtual std::string visit(LogicUniopNot *node) = 0;
+            
             virtual std::string visit(LogicBinopLt *node) = 0;
             virtual std::string visit(LogicBinopLeq *node) = 0;
+            virtual std::string visit(LogicBinopGt *node) = 0;
+            virtual std::string visit(LogicBinopGeq *node) = 0;
+            virtual std::string visit(LogicBinopEq *node) = 0;
+            virtual std::string visit(LogicBinopNeq *node) = 0;
+            virtual std::string visit(LogicBinopAnd *node) = 0;
+            virtual std::string visit(LogicBinopOr *node) = 0;
+            virtual std::string visit(LogicBinopXor *node) = 0;
+            
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;
+            
             virtual std::string visit(FunctionDefinition *node) = 0;
             virtual std::string visit(IndividualParameter *node) = 0;
             virtual std::string visit(Covariate *node) = 0;

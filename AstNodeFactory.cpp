@@ -17,7 +17,7 @@ namespace PharmML
         AstNode *instance = nullptr;
 
         std::string name = node.getName();
-        if (name == "Uniop") {
+        if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
             Uniop *uniop;
             if (op == "log") {
@@ -106,6 +106,10 @@ namespace PharmML
                 uniop = new UniopFloor();
             } else if (op == "ceiling") {
                 uniop = new UniopCeiling();
+            } else if (op == "isDefined") {
+                uniop = new LogicUniopIsdefined();
+            } else if (op == "not") {
+                uniop = new LogicUniopNot();
             }
             uniop->setChild(this->create(node.getChild()));
             instance = uniop;
@@ -138,6 +142,20 @@ namespace PharmML
                 binop = new LogicBinopLt();
             } else if (op == "leq") {
                 binop = new LogicBinopLeq();
+            } else if (op == "gt") {
+                binop = new LogicBinopGt();
+            } else if (op == "geq") {
+                binop = new LogicBinopGeq();
+            } else if (op == "eq") {
+                binop = new LogicBinopEq();
+            } else if (op == "neq") {
+                binop = new LogicBinopNeq();
+            } else if (op == "and") {
+                binop = new LogicBinopAnd();
+            } else if (op == "or") {
+                binop = new LogicBinopOr();
+            } else if (op == "xor") {
+                binop = new LogicBinopXor();
             }
             binop->setLeft(this->create(node.getChild()));
             binop->setRight(this->create(node.getLastChild()));

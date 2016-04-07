@@ -63,7 +63,9 @@ namespace PharmML
             virtual std::string visit(UniopSign *node);
             virtual std::string visit(UniopFloor *node);
             virtual std::string visit(UniopCeiling *node);
+            
             virtual std::string visit(ScalarInt *node);
+            
             virtual std::string visit(BinopPlus *node);
             virtual std::string visit(BinopMinus *node);
             virtual std::string visit(BinopDivide *node);
@@ -75,10 +77,23 @@ namespace PharmML
             virtual std::string visit(BinopMax *node);
             virtual std::string visit(BinopRem *node);
             virtual std::string visit(BinopAtan2 *node);
+            
+            virtual std::string visit(LogicUniopIsdefined *node);
+            virtual std::string visit(LogicUniopNot *node);
+            
             virtual std::string visit(LogicBinopLt *node);
             virtual std::string visit(LogicBinopLeq *node);
+            virtual std::string visit(LogicBinopGt *node);
+            virtual std::string visit(LogicBinopGeq *node);
+            virtual std::string visit(LogicBinopEq *node);
+            virtual std::string visit(LogicBinopNeq *node);
+            virtual std::string visit(LogicBinopAnd *node);
+            virtual std::string visit(LogicBinopOr *node);
+            virtual std::string visit(LogicBinopXor *node);
+            
             virtual std::string visit(Piecewise *node);
             virtual std::string visit(Piece *node);
+            
             virtual std::string visit(FunctionDefinition *node);
             virtual std::string visit(IndividualParameter *node);
             virtual std::string visit(Covariate *node);

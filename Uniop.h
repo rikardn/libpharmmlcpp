@@ -275,6 +275,23 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
+    
+    class LogicUniop : public Uniop
+    {
+        
+    };
+    
+    class LogicUniopIsdefined : public LogicUniop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicUniopNot : public LogicUniop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 }
 
 #endif

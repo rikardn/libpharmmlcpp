@@ -103,6 +103,48 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
+    
+    class LogicBinopGt : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopGeq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopEq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopNeq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopAnd : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopOr : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopXor : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 }
 
 #endif

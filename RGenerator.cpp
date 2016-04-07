@@ -225,7 +225,15 @@ namespace PharmML
     std::string RGenerator::visit(BinopAtan2 *node) {
         return("atan2(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
     }
-
+    
+    std::string RGenerator::visit(LogicUniopIsdefined *node) {
+        return("!is.null(" + node->acceptChild(this) + ")");
+    }
+    
+    std::string RGenerator::visit(LogicUniopNot *node) {
+        return("!(" + node->acceptChild(this) + ")");
+    }
+    
     std::string RGenerator::visit(LogicBinopLt *node) {
         return(node->infix(this, " < "));
     }
@@ -233,7 +241,36 @@ namespace PharmML
     std::string RGenerator::visit(LogicBinopLeq *node) {
         return(node->infix(this, " <= "));
     }
-
+    
+    std::string RGenerator::visit(LogicBinopGt *node) {
+        return(node->infix(this, " > "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopGeq *node) {
+        return(node->infix(this, " >= "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopEq *node) {
+        return(node->infix(this, " == "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopNeq *node) {
+        return(node->infix(this, " != "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopAnd *node) {
+        return(node->infix(this, " && "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopOr *node) {
+        return(node->infix(this, " || "));
+    }
+    
+    std::string RGenerator::visit(LogicBinopXor *node) {
+        return("((" + node->acceptLeft(this) + " || " + node->acceptRight(this) + ")" +
+            " && !(" + node->acceptLeft(this) + " && " + node->acceptRight(this) + "))");
+    }
+    
     std::string RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
         std::string s = "ifelse(" + pieces[0]->getCondition()->accept(this);

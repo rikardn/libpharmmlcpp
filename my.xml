@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML" xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset" xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition" xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps" xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML">
-  <IndependentVariable symbId="T"/>
-</PharmML>

@@ -31,7 +31,12 @@ int main(int argc, char **argv)
         }
         std::cout << p->accept(&gen);
     }
-    std::cout << ")" << std::endl << std::endl;
+    std::cout << ")" << std::endl;
+
+    for (RandomVariable *r : model->getModelDefinition()->getParameterModel()->getRandomVariables()) {
+        std::cout << r->accept(&gen) << std::endl;
+    }
+    std::cout << std::endl;
 
     std::cout << "# Function definitions" << std::endl;
     for (FunctionDefinition *f : model->getFunctionDefinitions()) {

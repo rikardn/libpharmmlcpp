@@ -19,6 +19,12 @@ namespace PharmML
             PharmML::IndividualParameter *ind = new PharmML::IndividualParameter(this->context, n);
             this->IndividualParameters.push_back(ind);
         }
+
+        std::vector<xml::Node> rand_nodes = this->context->getElements(node, ".//mdef:RandomVariable");
+        for (xml::Node n : rand_nodes) {
+            PharmML::RandomVariable *ind = new PharmML::RandomVariable(this->context, n);
+            this->RandomVariables.push_back(ind);
+        }
     }
 
     std::vector<PopulationParameter *> ParameterModel::getPopulationParameters() {
@@ -27,5 +33,9 @@ namespace PharmML
 
     std::vector<IndividualParameter *> ParameterModel::getIndividualParameters() {
         return this->IndividualParameters;
+    }
+        
+    std::vector<RandomVariable *> ParameterModel::getRandomVariables() {
+        return this->RandomVariables;
     }
 }

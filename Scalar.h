@@ -24,6 +24,18 @@ namespace PharmML
             std::string toString();
     };
 
+    class ScalarReal : public Scalar
+    {
+        private:
+            double value;
+
+        public:
+            ScalarReal(double value);
+            ScalarReal(std::string s);
+            ScalarReal(xml::Node xml_node);
+            std::string toString();
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 }
 
 #endif

@@ -48,6 +48,7 @@ namespace PharmML
     class UniopCeiling;
     
     class ScalarInt;
+    class ScalarReal;
     
     class BinopPlus;
     class BinopMinus;
@@ -140,6 +141,7 @@ namespace PharmML
             virtual std::string visit(UniopCeiling *node) = 0;
             
             virtual std::string visit(ScalarInt *node) = 0;
+            virtual std::string visit(ScalarReal *node) = 0;
             
             virtual std::string visit(BinopPlus *node) = 0;
             virtual std::string visit(BinopMinus *node) = 0;

@@ -164,6 +164,8 @@ namespace PharmML
             instance = new SymbRef(node.getAttribute("symbIdRef").getValue());
         } else if (name == "Int") {
             instance = new ScalarInt(node);
+        } else if (name == "Real") {
+            instance = new ScalarReal(node);
         } else if (name == "Piecewise") {
             Piecewise *piecewise = new Piecewise();
             std::vector<xml::Node> children = node.getChildren();

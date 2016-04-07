@@ -70,6 +70,7 @@ namespace PharmML
             virtual std::string visit(UniopCeiling *node);
             
             virtual std::string visit(ScalarInt *node);
+            virtual std::string visit(ScalarReal *node);
             
             virtual std::string visit(BinopPlus *node);
             virtual std::string visit(BinopMinus *node);

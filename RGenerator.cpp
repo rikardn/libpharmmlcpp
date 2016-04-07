@@ -182,6 +182,10 @@ namespace PharmML
         return("(" + node->toString() + ")");
     }
 
+    std::string RGenerator::visit(ScalarReal *node) {
+        return("(" + node->toString() + ")");
+    }
+
     std::string RGenerator::visit(BinopPlus *node) {
         return("(" + node->acceptLeft(this) + " + " + node->acceptRight(this) + ")");
     }
@@ -362,6 +366,10 @@ namespace PharmML
     }
 
     std::string RGenerator::visit(Distribution *node) {
-        return "distribution=\"" + node->getName() + "\"";
+        std::string result = "distribution=\"" + node->getName() + "\"";
+        for (DistributionParameter *p : node->getDistributionParameters()) {
+            result += ", " + p->getName() + "=" + p->getAssignment()->accept(this);
+        }
+        return result;
     }
 }

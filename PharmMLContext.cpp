@@ -18,6 +18,7 @@ namespace PharmML
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mstep", BAD_CAST "http://www.pharmml.org/pharmml/0.8/ModellingSteps");
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST "http://www.pharmml.org/pharmml/0.8/TrialDesign");
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 
     xmlDoc *PharmMLContext::getDocument() {

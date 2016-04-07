@@ -90,6 +90,7 @@ namespace PharmML
     class IndependentVariable;
     class Covariate;
     class ObservationModel;
+    class Distribution;
 
     class AbstractVisitor
     {
@@ -181,6 +182,7 @@ namespace PharmML
             virtual std::string visit(IndependentVariable *node) = 0;
             virtual std::string visit(Variable *node) = 0;
             virtual std::string visit(ObservationModel *node) = 0;
+            virtual std::string visit(Distribution *node) = 0;
     };
 }
 

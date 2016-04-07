@@ -338,7 +338,9 @@ namespace PharmML
     }
 
     std::string RGenerator::visit(RandomVariable *node) {
-        return node->getSymbId() + " = list(variability_reference=\"" + node->getVariabilityReference()->accept(this) + "\")";
+        std::string var_ref = "variability_reference=\"" + node->getVariabilityReference()->accept(this) + "\"";
+        std::string dist = node->getDistribution()->accept(this);
+        return node->getSymbId() + " = list(" + var_ref + ", " + dist + ")";
     }
 
     std::string RGenerator::visit(IndependentVariable *node) {
@@ -357,5 +359,9 @@ namespace PharmML
         std::string error = "W = " + node->getErrorModel()->accept(this);
         std::string y = node->getSymbId() + " = " + node->getOutput()->accept(this) + " + W * " + node->getResidualError()->accept(this);
         return error + "\n" + y;
+    }
+
+    std::string RGenerator::visit(Distribution *node) {
+        return "distribution=\"" + node->getName() + "\"";
     }
 }

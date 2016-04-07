@@ -17,6 +17,7 @@
 #include "ObservationModel.h"
 #include "IndependentVariable.h"
 #include "RandomVariable.h"
+#include "Distribution.h"
 
 namespace PharmML
 {
@@ -109,6 +110,7 @@ namespace PharmML
             virtual std::string visit(IndependentVariable *node);
             virtual std::string visit(Variable *node);
             virtual std::string visit(ObservationModel *node);
+            virtual std::string visit(Distribution *node);
     };
 }
 

@@ -2,6 +2,7 @@
 #define PHARMML_RANDOMVARIABLE_H_
 
 #include "PharmMLContext.h"
+#include "Distribution.h"
 
 namespace PharmML
 {
@@ -10,12 +11,14 @@ namespace PharmML
         PharmMLContext *context;
         std::string symbId;
         AstNode *VariabilityReference;
+        PharmML::Distribution *Distribution;
 
         public:
         RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getSymbId();
         AstNode *getVariabilityReference();
+        PharmML::Distribution *getDistribution();
         std::string accept(AbstractVisitor *visitor);
     };
 }

@@ -18,6 +18,10 @@ int main(int argc, char **argv)
 
     RGenerator gen;
 
+    std::cout << "# Parameter definitions" << std::endl;
+    std::cout << model->getIndependentVariable()->accept(&gen) << std::endl;
+    std::cout << std::endl;
+
     std::cout << "# Function definitions" << std::endl;
     for (FunctionDefinition *f : model->getFunctionDefinitions()) {
         std::cout << f->accept(&gen) << std::endl;

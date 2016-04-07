@@ -82,6 +82,7 @@ namespace PharmML
     class FunctionDefinition;
     class IndividualParameter;
     class Variable;
+    class IndependentVariable;
     class Covariate;
     class FunctionCall;
     class FunctionArgument;
@@ -169,6 +170,7 @@ namespace PharmML
             virtual std::string visit(FunctionDefinition *node) = 0;
             virtual std::string visit(IndividualParameter *node) = 0;
             virtual std::string visit(Covariate *node) = 0;
+            virtual std::string visit(IndependentVariable *node) = 0;
             virtual std::string visit(Variable *node) = 0;
             virtual std::string visit(FunctionCall *node) = 0;
             virtual std::string visit(FunctionArgument *node) = 0;

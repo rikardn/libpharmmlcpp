@@ -14,6 +14,7 @@
 #include "Variable.h"
 #include "FunctionCall.h"
 #include "ObservationModel.h"
+#include "IndependentVariable.h"
 
 namespace PharmML
 {
@@ -98,6 +99,7 @@ namespace PharmML
             virtual std::string visit(FunctionDefinition *node);
             virtual std::string visit(IndividualParameter *node);
             virtual std::string visit(Covariate *node);
+            virtual std::string visit(IndependentVariable *node);
             virtual std::string visit(Variable *node);
             virtual std::string visit(FunctionCall *node);
             virtual std::string visit(FunctionArgument *node);

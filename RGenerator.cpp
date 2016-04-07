@@ -315,6 +315,10 @@ namespace PharmML
         return(node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + node->getRandomEffects()->accept(this));
     }
 
+    std::string RGenerator::visit(IndependentVariable *node) {
+        return "IndependentVariable = \"" + node->getSymbId() + "\"";
+    }
+
     std::string RGenerator::visit(Variable *node) {
         if (node->getAssignment()) {
             return(node->getSymbId() + " <- " + node->getAssignment()->accept(this));

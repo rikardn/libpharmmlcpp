@@ -1,11 +1,14 @@
 CFLAGS = -std=c++11 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o ObservationModel.o FunctionCall.o xml.o
-	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o ObservationModel.o FunctionCall.o xml.o $(CFLAGS) $(LIBS)
+main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o xml.o
+	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o xml.o $(CFLAGS) $(LIBS)
 
 main.o: main.cpp
 	g++ -c main.cpp -omain.o $(CFLAGS)
+
+IndependentVariable.o: IndependentVariable.cpp IndependentVariable.h
+	g++ -c IndependentVariable.cpp -oIndependentVariable.o $(CFLAGS)
 
 FunctionCall.o: FunctionCall.cpp FunctionCall.h
 	g++ -c FunctionCall.cpp -oFunctionCall.o $(CFLAGS)

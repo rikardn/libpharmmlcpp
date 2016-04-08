@@ -1,561 +1,491 @@
-<?xml version="1.0" encoding="UTF-8"?><PharmML xmlns="http://www.pharmml.org/pharmml/0.6/PharmML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pharmml.org/pharmml/0.6/PharmML http://www.pharmml.org/pharmml/0.6/PharmML" writtenVersion="0.6.1">
-  <ct:Description xmlns:ct="http://www.pharmml.org/2013/03/CommonTypes">PKPD model of Tumor Growth Kinetics in xenograft models after administration of anticancer agents</ct:Description>
-  <ct:Name xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">Simeoni_2004_oncology_TGI</ct:Name>
-  <IndependentVariable symbId="T"/>
-  <ct:FunctionDefinition xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbolType="real" symbId="proportionalError">
-    <ct:Description>Proportional or constant CV (CVV)</ct:Description>
-    <ct:FunctionArgument symbolType="real" symbId="proportional"/>
-    <ct:FunctionArgument symbolType="real" symbId="f"/>
-    <ct:Definition>
-      <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-        <Binop op="times">
-          <ct:SymbRef symbIdRef="proportional"/>
-          <ct:SymbRef symbIdRef="f"/>
-        </Binop>
-      </Equation>
-    </ct:Definition>
-  </ct:FunctionDefinition>
-  <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.6/ModelDefinition">
-    <VariabilityModel blkId="vm_err" type="residualError">
-      <Level referenceLevel="false" symbId="DV"/>
-    </VariabilityModel>
-    <ParameterModel blkId="pm">
-      <SimpleParameter symbId="LAMBDA0_POP"/>
-      <SimpleParameter symbId="LAMBDA1_POP"/>
-      <SimpleParameter symbId="K1_POP"/>
-      <SimpleParameter symbId="K2_POP"/>
-      <SimpleParameter symbId="W0_POP"/>
-      <SimpleParameter symbId="CV"/>
-      <SimpleParameter symbId="SIGMA_RES_W"/>
-      <IndividualParameter symbId="LAMBDA0">
-        <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0_POP"/>
-          </Equation>
-        </ct:Assign>
-      </IndividualParameter>
-      <IndividualParameter symbId="LAMBDA1">
-        <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA1_POP"/>
-          </Equation>
-        </ct:Assign>
-      </IndividualParameter>
-      <IndividualParameter symbId="K1">
-        <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef blkIdRef="pm" symbIdRef="K1_POP"/>
-          </Equation>
-        </ct:Assign>
-      </IndividualParameter>
-      <IndividualParameter symbId="K2">
-        <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef blkIdRef="pm" symbIdRef="K2_POP"/>
-          </Equation>
-        </ct:Assign>
-      </IndividualParameter>
-      <IndividualParameter symbId="W0">
-        <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef blkIdRef="pm" symbIdRef="W0_POP"/>
-          </Equation>
-        </ct:Assign>
-      </IndividualParameter>
-      <RandomVariable symbId="eps_RES_W">
-        <ct:VariabilityReference xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-          <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV"/>
-        </ct:VariabilityReference>
-        <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
-          <mean>
-            <rVal>0</rVal>
-          </mean>
-          <variance>
-            <var varId="SIGMA_RES_W"/>
-          </variance>
-        </NormalDistribution>
-      </RandomVariable>
-    </ParameterModel>
-    <StructuralModel blkId="sm">
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="K10" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="times">
-              <ct:Real>0.868</ct:Real>
-              <ct:Int>24</ct:Int>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="K12" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="times">
-              <ct:Real>0.006</ct:Real>
-              <ct:Int>24</ct:Int>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="K21" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="times">
-              <ct:Real>0.0838</ct:Real>
-              <ct:Int>24</ct:Int>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="V1" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:Real>0.81</ct:Real>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="PSI" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:Int>20</ct:Int>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="C" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="divide">
-              <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
-              <ct:SymbRef blkIdRef="sm" symbIdRef="V1"/>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:Variable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="WTOT" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="plus">
-              <math:Binop op="plus">
-                <math:Binop op="plus">
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
-                </math:Binop>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
-              </math:Binop>
-              <ct:SymbRef blkIdRef="sm" symbIdRef="X4"/>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-      </ct:Variable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="Q1" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="sm" symbIdRef="K21"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
-              </math:Binop>
-              <math:Binop op="times">
-                <math:Binop op="plus">
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="K10"/>
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="K12"/>
-                </math:Binop>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="Q2" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="sm" symbIdRef="K12"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
-              </math:Binop>
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="sm" symbIdRef="K21"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="X1" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="divide">
-                <math:Binop op="times">
-                  <ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0"/>
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
-                </math:Binop>
-                <math:Binop op="power">
-                  <math:Binop op="plus">
-                    <ct:Int>1</ct:Int>
-                    <math:Binop op="power">
-                      <math:Binop op="divide">
-                        <math:Binop op="times">
-                          <ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
-                          <ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0"/>
-                        </math:Binop>
-                        <ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA1"/>
-                      </math:Binop>
-                      <ct:SymbRef blkIdRef="sm" symbIdRef="PSI"/>
-                    </math:Binop>
-                  </math:Binop>
-                  <math:Binop op="divide">
-                    <ct:Int>1</ct:Int>
-                    <ct:SymbRef blkIdRef="sm" symbIdRef="PSI"/>
-                  </math:Binop>
-                </math:Binop>
-              </math:Binop>
-              <math:Binop op="times">
-                <math:Binop op="times">
-                  <ct:SymbRef blkIdRef="pm" symbIdRef="K2"/>
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
-                </math:Binop>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="W0"/>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="X2" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="times">
-                <math:Binop op="times">
-                  <ct:SymbRef blkIdRef="pm" symbIdRef="K2"/>
-                  <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
-                </math:Binop>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
-              </math:Binop>
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="X3" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
-              </math:Binop>
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-      <ct:DerivativeVariable xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbId="X4" symbolType="real">
-        <ct:Assign>
-          <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-            <math:Binop xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" op="minus">
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
-              </math:Binop>
-              <math:Binop op="times">
-                <ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
-                <ct:SymbRef blkIdRef="sm" symbIdRef="X4"/>
-              </math:Binop>
-            </math:Binop>
-          </Equation>
-        </ct:Assign>
-        <ct:IndependentVariable>
-          <ct:SymbRef symbIdRef="T"/>
-        </ct:IndependentVariable>
-        <ct:InitialCondition>
-          <ct:InitialValue>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialValue>
-          <ct:InitialTime>
-            <ct:Assign>
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <ct:Int>0</ct:Int>
-              </Equation>
-            </ct:Assign>
-          </ct:InitialTime>
-        </ct:InitialCondition>
-      </ct:DerivativeVariable>
-    </StructuralModel>
-    <ObservationModel blkId="om1">
-      <ContinuousData>
-        <Standard symbId="Y">
-          <Output>
-            <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="sm" symbIdRef="WTOT"/>
-          </Output>
-          <ErrorModel>
-            <ct:Assign xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">
-              <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-                <FunctionCall>
-                  <ct:SymbRef symbIdRef="proportionalError"/>
-                  <FunctionArgument symbId="proportional">
-                    <ct:SymbRef blkIdRef="pm" symbIdRef="CV"/>
-                  </FunctionArgument>
-                  <FunctionArgument symbId="f">
-                    <ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
-                  </FunctionArgument>
-                </FunctionCall>
-              </Equation>
-            </ct:Assign>
-          </ErrorModel>
-          <ResidualError>
-            <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="eps_RES_W"/>
-          </ResidualError>
-        </Standard>
-      </ContinuousData>
-    </ObservationModel>
-  </ModelDefinition>
-  <ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.6/ModellingSteps">
-    <ExternalDataSet toolName="NONMEM" oid="nm_ds">
-      <ColumnMapping>
-        <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.6/Dataset" columnIdRef="TIME"/>
-        <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" symbIdRef="T"/>
-      </ColumnMapping>
-      <ColumnMapping>
-        <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.6/Dataset" columnIdRef="DV"/>
-        <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="om1" symbIdRef="Y"/>
-      </ColumnMapping>
-      <ColumnMapping>
-        <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.6/Dataset" columnIdRef="AMT"/>
-        <Piecewise xmlns="http://www.pharmml.org/pharmml/0.6/Dataset">
-          <math:Piece xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths">
-            <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="sm" symbIdRef="Q1"/>
-            <math:Condition>
-              <math:LogicBinop op="gt">
-                <ColumnRef columnIdRef="AMT"/>
-                <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-              </math:LogicBinop>
-            </math:Condition>
-          </math:Piece>
-        </Piecewise>
-      </ColumnMapping>
-      <DataSet xmlns="http://www.pharmml.org/pharmml/0.6/Dataset">
-        <Definition>
-          <Column columnId="ID" columnType="id" valueType="int" columnNum="1"/>
-          <Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
-          <Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
-          <Column columnId="AMT" columnType="dose" valueType="real" columnNum="4"/>
-          <Column columnId="EVID" columnType="undefined" valueType="real" columnNum="5"/>
-          <Column columnId="CMT" columnType="cmt" valueType="int" columnNum="6"/>
-        </Definition>
-        <ExternalFile oid="id">
-          <path>Simulated_simeoni2004_data.csv</path>
-          <format>CSV</format>
-          <delimiter>COMMA</delimiter>
-        </ExternalFile>
-      </DataSet>
-    </ExternalDataSet>
-    <EstimationStep oid="estimStep_1">
-      <ExternalDataSetReference>
-        <ct:OidRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" oidRef="nm_ds"/>
-      </ExternalDataSetReference>
-      <ParametersToEstimate>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="LAMBDA0_POP"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.3</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="LAMBDA1_POP"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.3</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="K1_POP"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.3</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="K2_POP"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.5</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="W0_POP"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.02</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="CV"/>
-          <InitialEstimate fixed="false">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Real xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0.1</ct:Real>
-            </Equation>
-          </InitialEstimate>
-          <LowerBound>
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">0</ct:Int>
-            </Equation>
-          </LowerBound>
-        </ParameterEstimation>
-        <ParameterEstimation>
-          <ct:SymbRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" blkIdRef="pm" symbIdRef="SIGMA_RES_W"/>
-          <InitialEstimate fixed="true">
-            <Equation xmlns="http://www.pharmml.org/pharmml/0.6/Maths">
-              <ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes">1</ct:Int>
-            </Equation>
-          </InitialEstimate>
-        </ParameterEstimation>
-      </ParametersToEstimate>
-      <Operation order="1" opType="estPop">
-        <Algorithm definition="FOCE"/>
-      </Operation>
-    </EstimationStep>
-    <mstep:StepDependencies xmlns:mstep="http://www.pharmml.org/pharmml/0.6/ModellingSteps">
-      <mstep:Step>
-        <ct:OidRef xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" oidRef="estimStep_1"/>
-      </mstep:Step>
-    </mstep:StepDependencies>
-  </ModellingSteps>
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+	xsi:schemaLocation="http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML"
+	xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+	xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+	xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+	xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+	xmlns:mstep="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+	xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+	writtenVersion="0.8">
+	<ct:Name>"generated by MDL2PharmML v.6.0"</ct:Name>
+	<IndependentVariable symbId="T"/>
+	<ct:FunctionDefinition xmlns="http://www.pharmml.org/pharmml/0.8/CommonTypes" 
+		symbolType="real"
+		symbId="proportionalError">
+	    <ct:Description>Proportional or constant CV (CVV)</ct:Description>
+	    <ct:FunctionArgument symbolType="real" symbId="proportional"/>
+	    <ct:FunctionArgument symbolType="real" symbId="f"/>
+	    <ct:Definition>
+	        <Assign>
+	            <Binop op="times" xmlns="http://www.pharmml.org/pharmml/0.8/Maths">
+	                <ct:SymbRef symbIdRef="proportional"/>
+	                <ct:SymbRef symbIdRef="f"/>
+	            </Binop>
+	        </Assign>
+	    </ct:Definition>
+	</ct:FunctionDefinition>
+	<ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+		<VariabilityModel blkId="vm_err" type="residualError">
+			<Level referenceLevel="false" symbId="DV"/>
+		</VariabilityModel>
+		<ParameterModel blkId="pm">
+			<PopulationParameter symbId = "LAMBDA0_POP"/>
+			<PopulationParameter symbId = "LAMBDA1_POP"/>
+			<PopulationParameter symbId = "K1_POP"/>
+			<PopulationParameter symbId = "K2_POP"/>
+			<PopulationParameter symbId = "W0_POP"/>
+			<PopulationParameter symbId = "CV"/>
+			<PopulationParameter symbId = "SIGMA_RES_W"/>
+			<IndividualParameter symbId="LAMBDA0">
+				<ct:Assign>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0_POP"/>
+				</ct:Assign>
+			</IndividualParameter>
+			<IndividualParameter symbId="LAMBDA1">
+				<ct:Assign>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA1_POP"/>
+				</ct:Assign>
+			</IndividualParameter>
+			<IndividualParameter symbId="K1">
+				<ct:Assign>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="K1_POP"/>
+				</ct:Assign>
+			</IndividualParameter>
+			<IndividualParameter symbId="K2">
+				<ct:Assign>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="K2_POP"/>
+				</ct:Assign>
+			</IndividualParameter>
+			<IndividualParameter symbId="W0">
+				<ct:Assign>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="W0_POP"/>
+				</ct:Assign>
+			</IndividualParameter>
+			<RandomVariable symbId="eps_RES_W">
+				<ct:VariabilityReference>
+					<ct:SymbRef blkIdRef="vm_err" symbIdRef="DV"/>
+				</ct:VariabilityReference>
+				<Distribution>
+					<UncertML>
+						<NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
+							<mean>
+								<rVal>0</rVal>
+							</mean>
+							<variance>
+								<var varId="SIGMA_RES_W"/>
+							</variance>
+						</NormalDistribution>
+					</UncertML>
+				</Distribution>
+			</RandomVariable>
+		</ParameterModel>
+		<StructuralModel blkId="sm">
+			<ct:Variable symbId="K10" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="times">
+						<ct:Real>0.868</ct:Real>
+						<ct:Int>24</ct:Int>
+					</math:Binop>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="K12" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="times">
+						<ct:Real>0.006</ct:Real>
+						<ct:Int>24</ct:Int>
+					</math:Binop>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="K21" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="times">
+						<ct:Real>0.0838</ct:Real>
+						<ct:Int>24</ct:Int>
+					</math:Binop>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="V1" symbolType="real">
+				<ct:Assign>
+					<ct:Real>0.81</ct:Real>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="PSI" symbolType="real">
+				<ct:Assign>
+					<ct:Int>20</ct:Int>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="C" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="divide">
+						<ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+						<ct:SymbRef blkIdRef="sm" symbIdRef="V1"/>
+					</math:Binop>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:Variable symbId="WTOT" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="plus">
+						<math:Binop op="plus">
+							<math:Binop op="plus">
+								<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+								<ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
+							</math:Binop>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
+						</math:Binop>
+						<ct:SymbRef blkIdRef="sm" symbIdRef="X4"/>
+					</math:Binop>
+				</ct:Assign>
+			</ct:Variable>
+			<ct:DerivativeVariable symbId="Q1" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="sm" symbIdRef="K21"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
+						</math:Binop>
+						<math:Binop op="times">
+							<math:Binop op="plus">
+								<ct:SymbRef blkIdRef="sm" symbIdRef="K10"/>
+								<ct:SymbRef blkIdRef="sm" symbIdRef="K12"/>
+							</math:Binop>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+			<ct:DerivativeVariable symbId="Q2" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="sm" symbIdRef="K12"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+						</math:Binop>
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="sm" symbIdRef="K21"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+			<ct:DerivativeVariable symbId="X1" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="divide">
+							<math:Binop op="times">
+								<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0"/>
+								<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+							</math:Binop>
+							<math:Binop op="power">
+								<math:Binop op="plus">
+									<ct:Int>1</ct:Int>
+									<math:Binop op="power">
+										<math:Binop op="divide">
+											<math:Binop op="times">
+												<ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
+												<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0"/>
+											</math:Binop>
+											<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA1"/>
+										</math:Binop>
+										<ct:SymbRef blkIdRef="sm" symbIdRef="PSI"/>
+									</math:Binop>
+								</math:Binop>
+								<math:Binop op="divide">
+									<ct:Int>1</ct:Int>
+									<ct:SymbRef blkIdRef="sm" symbIdRef="PSI"/>
+								</math:Binop>
+							</math:Binop>
+						</math:Binop>
+						<math:Binop op="times">
+							<math:Binop op="times">
+								<ct:SymbRef blkIdRef="pm" symbIdRef="K2"/>
+								<ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+							</math:Binop>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:SymbRef blkIdRef="pm" symbIdRef="W0"/>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+			<ct:DerivativeVariable symbId="X2" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="times">
+							<math:Binop op="times">
+								<ct:SymbRef blkIdRef="pm" symbIdRef="K2"/>
+								<ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+							</math:Binop>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+						</math:Binop>
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+			<ct:DerivativeVariable symbId="X3" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X2"/>
+						</math:Binop>
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+			<ct:DerivativeVariable symbId="X4" symbolType="real">
+				<ct:Assign>
+					<math:Binop op="minus">
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X3"/>
+						</math:Binop>
+						<math:Binop op="times">
+							<ct:SymbRef blkIdRef="pm" symbIdRef="K1"/>
+							<ct:SymbRef blkIdRef="sm" symbIdRef="X4"/>
+						</math:Binop>
+					</math:Binop>
+				</ct:Assign>
+				<ct:IndependentVariable>
+					<ct:SymbRef symbIdRef="T"/>
+				</ct:IndependentVariable>
+				<ct:InitialCondition>
+					<ct:InitialValue>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>
+					</ct:InitialValue>
+					<ct:InitialTime>
+						<ct:Assign>
+							<ct:Int>0</ct:Int>
+						</ct:Assign>	
+					</ct:InitialTime>
+				</ct:InitialCondition>
+			</ct:DerivativeVariable>
+		</StructuralModel>
+		<ObservationModel blkId="om1">
+			<ContinuousData>
+				<Standard symbId="Y">
+					<Output>
+						<ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
+					</Output>
+					<ErrorModel>
+						<ct:Assign>
+							<math:FunctionCall>
+								<ct:SymbRef symbIdRef="proportionalError"/>
+								<math:FunctionArgument symbId="proportional">
+									<ct:SymbRef blkIdRef="pm" symbIdRef="CV"/>
+								</math:FunctionArgument>
+								<math:FunctionArgument symbId="f">
+									<ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
+								</math:FunctionArgument>
+							</math:FunctionCall>
+						</ct:Assign>
+					</ErrorModel>
+					<ResidualError>
+						<ct:SymbRef blkIdRef="pm" symbIdRef="eps_RES_W"/>
+					</ResidualError>
+				</Standard>
+			</ContinuousData>
+		</ObservationModel>
+	</ModelDefinition>
+	<TrialDesign xmlns="http://www.pharmml.org/pharmml/0.8/TrialDesign">
+		<ExternalDataSet toolName="NONMEM" oid="nm_ds">
+			<ColumnMapping>
+				<ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="TIME"/>
+				<ct:SymbRef  symbIdRef="T"/>
+			</ColumnMapping>
+			<ColumnMapping>
+			    <ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="DV"/>
+				<ct:SymbRef blkIdRef="om1" symbIdRef="Y"/>
+			</ColumnMapping>
+			<ColumnMapping>
+				<ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="AMT"/>
+				<Piecewise xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
+					<math:Piece>
+						<ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+						<math:Condition>
+							<math:LogicBinop op="gt">
+								<ColumnRef columnIdRef="AMT"/>
+								<ct:Int>0</ct:Int>
+							</math:LogicBinop>
+						</math:Condition>
+					</math:Piece>
+				</Piecewise>
+			</ColumnMapping>
+			<DataSet xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
+				<Definition>
+					<Column columnId="ID" columnType="id" valueType="int" columnNum="1"/>
+					<Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+					<Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+					<Column columnId="AMT" columnType="dose" valueType="real" columnNum="4"/>
+					<Column columnId="EVID" columnType="undefined" valueType="real" columnNum="5"/>
+					<Column columnId="CMT" columnType="cmt" valueType="int" columnNum="6"/>
+				</Definition>
+				<ExternalFile oid="id">
+					<path>Simulated_simeoni2004_data.csv</path>
+					<format>CSV</format>
+					<delimiter>COMMA</delimiter>
+				</ExternalFile>
+			</DataSet>
+		</ExternalDataSet>
+	</TrialDesign>
+	<ModellingSteps xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps">
+		<EstimationStep oid="estimStep_1">
+			<ExternalDataSetReference>
+				<ct:OidRef oidRef="nm_ds"/>
+			</ExternalDataSetReference>
+			<ParametersToEstimate>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA0_POP"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.3</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="LAMBDA1_POP"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.3</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="K1_POP"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.3</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="K2_POP"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.5</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="W0_POP"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.02</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="CV"/>
+					<InitialEstimate fixed="false">
+						<ct:Real>0.1</ct:Real>
+					</InitialEstimate>
+					<LowerBound>
+						<ct:Int>0</ct:Int>
+					</LowerBound>
+				</ParameterEstimation>
+				<ParameterEstimation>
+					<ct:SymbRef blkIdRef="pm" symbIdRef="SIGMA_RES_W"/>
+					<InitialEstimate fixed="true">
+						<ct:Int>1</ct:Int>
+					</InitialEstimate>
+				</ParameterEstimation>
+			</ParametersToEstimate>
+			<Operation order="1" opType="estPop">
+				<Algorithm definition="FOCE"/>
+			</Operation>
+		</EstimationStep>
+		<mstep:StepDependencies>
+			<mstep:Step>
+				<ct:OidRef oidRef="estimStep_1"/>
+			</mstep:Step>
+		</mstep:StepDependencies>
+	</ModellingSteps>		
 </PharmML>

@@ -330,15 +330,23 @@ namespace PharmML
     }
 
     std::string RGenerator::visit(IndividualParameter *node) {
-        std::string pop = node->getPopulationValue()->accept(this);
-        if (node->getTransformation() != "") {
-            pop = node->getTransformation() + "(" + pop + ")";
+        std::string result;
+
+        if (node->isStructured()) {
+            std::string pop = node->getPopulationValue()->accept(this);
+            if (node->getTransformation() != "") {
+                pop = node->getTransformation() + "(" + pop + ")";
+            }
+            std::string cov;
+            if (node->getFixedEffect()) {
+                cov = " + " + node->getFixedEffect()->accept(this) + " * " + node->getCovariate()->accept(this);
+            }
+            
+            result = node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + node->getRandomEffects()->accept(this);
+        } else {
+            result = node->getSymbId() + " = " + node->getAssignment()->accept(this);
         }
-        std::string cov;
-        if (node->getFixedEffect()) {
-            cov = " + " + node->getFixedEffect()->accept(this) + " * " + node->getCovariate()->accept(this);
-        }
-        return(node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + node->getRandomEffects()->accept(this));
+        return result;
     }
 
     std::string RGenerator::visit(RandomVariable *node) {

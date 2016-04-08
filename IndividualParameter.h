@@ -12,10 +12,12 @@ namespace PharmML
         PharmMLContext *context;
         std::string symbId;
         std::string transformation;
+        bool is_structured;
         AstNode *PopulationValue;
         AstNode *RandomEffects;
         AstNode *FixedEffect = nullptr;
         AstNode *Covariate = nullptr;
+        AstNode *assignment;
 
         public:
         IndividualParameter(PharmMLContext *context, xml::Node node);
@@ -26,6 +28,8 @@ namespace PharmML
         AstNode *getRandomEffects();
         AstNode *getFixedEffect();
         AstNode *getCovariate();
+        AstNode *getAssignment();
+        bool isStructured();
         std::string accept(AbstractVisitor *visitor);
     };
 }

@@ -14,6 +14,9 @@ namespace PharmML
         xmlDoc *doc;
         xmlXPathContext *xpath_context;
 
+        std::string buildNamespace(std::string name, std::string namespace_version);
+        std::string getNamespaceVersion();
+
         public:
         AstNodeFactory factory;
         xmlDoc *getDocument();

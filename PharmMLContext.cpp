@@ -2,22 +2,38 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-
+#include <iostream>
 #include "xml.h"
 #include "PharmMLContext.h"
 
 namespace PharmML
 {
+    std::string PharmMLContext::buildNamespace(std::string name, std::string namespace_version) {
+        return "http://www.pharmml.org/pharmml/" + namespace_version + "/" + name;
+    }
+
+    std::string PharmMLContext::getNamespaceVersion() {
+        xml::Node root = this->getRoot();
+        std::string version = root.getAttribute("writtenVersion").getValue();
+        int first_dot_index = version.find_first_of(".");
+        int last_dot_index = version.find_last_of(".");
+        if (first_dot_index != last_dot_index) {
+            version = version.substr(0, last_dot_index);
+        }
+        return version;
+    }
+
     PharmMLContext::PharmMLContext(const char *filename) {
         this->doc = xmlReadFile(filename, NULL, 0);
         this->xpath_context = xmlXPathNewContext(this->doc);
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST "http://www.pharmml.org/pharmml/0.8/PharmML");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Maths");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST "http://www.pharmml.org/pharmml/0.8/CommonTypes");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Dataset");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mstep", BAD_CAST "http://www.pharmml.org/pharmml/0.8/ModellingSteps");
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST "http://www.pharmml.org/pharmml/0.8/TrialDesign");
+        std::string version = getNamespaceVersion();
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST buildNamespace("Maths", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST buildNamespace("CommonTypes", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST buildNamespace("Dataset", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST buildNamespace("ModelDefinition", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mstep", BAD_CAST buildNamespace("ModellingSteps", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST buildNamespace("TrialDesign", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 

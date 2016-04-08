@@ -14,10 +14,10 @@ namespace PharmML
     class ModelDefinition
     {
         PharmML::PharmMLContext *context;
-        PharmML::CovariateModel *CovariateModel;
-        PharmML::ParameterModel *ParameterModel;
-        PharmML::StructuralModel *StructuralModel;
-        PharmML::ObservationModel *ObservationModel;
+        PharmML::CovariateModel *CovariateModel = nullptr;
+        PharmML::ParameterModel *ParameterModel = nullptr;
+        PharmML::StructuralModel *StructuralModel = nullptr;
+        PharmML::ObservationModel *ObservationModel = nullptr;
 
         public:
         PharmML::CovariateModel *getCovariateModel();

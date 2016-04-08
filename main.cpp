@@ -44,11 +44,14 @@ int main(int argc, char **argv)
     }
     std::cout << std::endl;
 
-    std::cout << "# Covariates" << std::endl;
-    for (Covariate *cov : model->getModelDefinition()->getCovariateModel()->getCovariates()) {
-        std::cout << cov->accept(&gen) << std::endl;
+    CovariateModel *cov_mod = model->getModelDefinition()->getCovariateModel();
+    if (cov_mod) {
+        std::cout << "# Covariates" << std::endl;
+        for (Covariate *cov : cov_mod->getCovariates()) {
+            std::cout << cov->accept(&gen) << std::endl;
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 
     std::cout << "# Individual parameters" << std::endl;
     for (IndividualParameter *ind : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {

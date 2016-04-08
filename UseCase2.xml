@@ -314,7 +314,7 @@
 									</math:Binop>
 								</math:Binop>
 								<math:Condition>
-                                    <math:Otherwise/>
+									<math:Otherwise/>
 								</math:Condition>
 							</math:Piece>
 						</ct:Piecewise>

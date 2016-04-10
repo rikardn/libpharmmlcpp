@@ -64,6 +64,10 @@ namespace PharmML
     
     class SymbRef;
     
+    class LogicNullopOtherwise;
+    class LogicNullopFalse;
+    class LogicNullopTrue;
+    
     class LogicUniopIsdefined;
     class LogicUniopNot;
     
@@ -156,6 +160,10 @@ namespace PharmML
             virtual std::string visit(BinopAtan2 *node) = 0;
             
             virtual std::string visit(SymbRef *node) = 0;
+            
+            virtual std::string visit(LogicNullopOtherwise *node) = 0;
+            virtual std::string visit(LogicNullopFalse *node) = 0;
+            virtual std::string visit(LogicNullopTrue *node) = 0;
             
             virtual std::string visit(LogicUniopIsdefined *node) = 0;
             virtual std::string visit(LogicUniopNot *node) = 0;

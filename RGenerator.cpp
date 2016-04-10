@@ -277,16 +277,33 @@ namespace PharmML
     
     std::string RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
-        std::string s = "ifelse(" + pieces[0]->getCondition()->accept(this);
+        Piece *otherwise;
+        std::string s = "ifelse(";
         for (Piece *p : pieces) {
-            s += ", " + p->getExpression()->accept(this); 
+			if (p->getCondition()->accept(this) != "otherwise") {
+				s += p->accept(this) + ", (";
+			} else {
+				otherwise = p; // Only one LogicNullopOtherwise per Piece
+			}
         }
-        return(s + ")");
+        s += otherwise->getExpression()->accept(this) + std::string(pieces.size(), ')');
+        return(s);
     }
 
-    // Never visited. Limited piecewise for now.
     std::string RGenerator::visit(Piece *node) {
-        return("{" + node->getCondition()->accept(this) + "}");
+        return(node->getCondition()->accept(this) + ", " + node->getExpression()->accept(this));
+    }
+    
+    std::string RGenerator::visit(LogicNullopOtherwise *node) {
+        return("otherwise"); // Not optimal but better than dynamic_cast code
+    }
+    
+    std::string RGenerator::visit(LogicNullopFalse *node) {
+        return("(FALSE)");
+    }
+    
+    std::string RGenerator::visit(LogicNullopTrue *node) {
+        return("(TRUE)");
     }
 
     std::string RGenerator::visit(FunctionCall *node) {

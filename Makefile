@@ -1,8 +1,8 @@
 CFLAGS = -std=c++11 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o xml.o
-	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o xml.o $(CFLAGS) $(LIBS)
+main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o LogicConditionType.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o xml.o
+	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Uniop.o Binop.o LogicConditionType.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o xml.o $(CFLAGS) $(LIBS)
 
 main.o: main.cpp
 	g++ -c main.cpp -omain.o $(CFLAGS)
@@ -60,6 +60,9 @@ Binop.o: Binop.cpp Binop.h
 
 Uniop.o: Uniop.cpp Uniop.h
 	g++ -c Uniop.cpp -oUniop.o $(CFLAGS)
+
+LogicConditionType.o: LogicConditionType.cpp LogicConditionType.h
+	g++ -c LogicConditionType.cpp -oLogicConditionType.o $(CFLAGS)
 
 AstNodeFactory.o: AstNodeFactory.cpp AstNodeFactory.h
 	g++ -c AstNodeFactory.cpp -oAstNodeFactory.o $(CFLAGS)

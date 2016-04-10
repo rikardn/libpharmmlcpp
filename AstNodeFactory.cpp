@@ -6,6 +6,7 @@
 #include "AstNode.h"
 #include "Uniop.h"
 #include "Binop.h"
+#include "LogicConditionType.h"
 #include "symbols.h"
 #include "Scalar.h"
 #include "Piecewise.h"
@@ -17,7 +18,7 @@ namespace PharmML
         AstNode *instance = nullptr;
 
         std::string name = node.getName();
-        if (name == "Uniop" || name == "LogicUniop") {
+        if (name == "Uniop") {
             std::string op = node.getAttribute("op").getValue();
             Uniop *uniop;
             if (op == "log") {
@@ -106,14 +107,10 @@ namespace PharmML
                 uniop = new UniopFloor();
             } else if (op == "ceiling") {
                 uniop = new UniopCeiling();
-            } else if (op == "isDefined") {
-                uniop = new LogicUniopIsdefined();
-            } else if (op == "not") {
-                uniop = new LogicUniopNot();
             }
             uniop->setChild(this->create(node.getChild()));
             instance = uniop;
-        } else if (name == "Binop" || name == "LogicBinop") {
+        } else if (name == "Binop") {
             std::string op = node.getAttribute("op").getValue();
             Binop *binop;
             if (op == "plus") {
@@ -138,7 +135,24 @@ namespace PharmML
                 binop = new BinopRem();
             } else if (op == "atan2") {
                 binop = new BinopAtan2();
-            } else if (op == "lt") {
+            }
+            binop->setLeft(this->create(node.getChild()));
+            binop->setRight(this->create(node.getLastChild()));
+            instance = binop;
+        } else if (name == "LogicUniop") {
+			std::string op = node.getAttribute("op").getValue();
+            LogicUniop *uniop;
+            if (op == "isDefined") {
+                uniop = new LogicUniopIsdefined();
+            } else if (op == "not") {
+                uniop = new LogicUniopNot();
+            }
+            uniop->setChild(this->create(node.getChild()));
+            instance = uniop;
+		} else if (name == "LogicBinop") {
+			std::string op = node.getAttribute("op").getValue();
+            LogicBinop *binop;
+			if (op == "lt") {
                 binop = new LogicBinopLt();
             } else if (op == "leq") {
                 binop = new LogicBinopLeq();
@@ -160,6 +174,12 @@ namespace PharmML
             binop->setLeft(this->create(node.getChild()));
             binop->setRight(this->create(node.getLastChild()));
             instance = binop;
+		} else if (name == "Otherwise") {
+			instance = new LogicNullopOtherwise();
+		} else if (name == "False") {
+			instance = new LogicNullopFalse();
+		} else if (name == "True") {
+			instance = new LogicNullopTrue();
         } else if (name == "SymbRef") {
             instance = new SymbRef(node.getAttribute("symbIdRef").getValue());
         } else if (name == "Int") {
@@ -172,6 +192,7 @@ namespace PharmML
             for (xml::Node n : children) {
                 Piece *piece = new Piece();
                 piecewise->addPiece(piece);
+                // Assumes expression is first child and condition last child
                 piece->setExpression(this->create(n.getChild()));
                 piece->setCondition(this->create(n.getLastChild().getChild()));     // Go past math:Condition 
             }

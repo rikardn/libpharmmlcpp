@@ -2,12 +2,12 @@
 
 namespace PharmML
 {
-    Variable::Variable(PharmMLContext *context, xml::Node node) {
+    CommonVariable::CommonVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
 
-    void Variable::parse(xml::Node node) {
+    void CommonVariable::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
         xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
@@ -16,11 +16,11 @@ namespace PharmML
         }
     }
         
-    AstNode *Variable::getAssignment() {
+    AstNode *CommonVariable::getAssignment() {
         return this->assignment;
     }
 
-    std::string Variable::getSymbId() {
+    std::string CommonVariable::getSymbId() {
         return this->symbId;
     }
 

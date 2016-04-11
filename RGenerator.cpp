@@ -397,6 +397,18 @@ namespace PharmML
             return std::string();
         }
     }
+    
+    std::string RGenerator::visit(DerivativeVariable *node) {
+        std::string expr;
+        if (node->getAssignment()) {
+            expr = node->getSymbId() + " <- " + node->getAssignment()->accept(this);
+        } else {
+            expr = std::string();
+        }
+        std::string init_val = "x0=" + node->getInitialValue()->accept(this);
+        std::string init_t = "t0=" + node->getInitialTime()->accept(this);
+        return "deriv(" + expr + ", iv=" + node->getIndependentVariable()->accept(this) + ", " + init_val + ", " + init_t + ")";
+    }
 
     std::string RGenerator::visit(ObservationModel *node) {
         std::string error = "W = " + node->getErrorModel()->accept(this);

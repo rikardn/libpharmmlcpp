@@ -14,6 +14,7 @@
 #include "IndividualParameter.h"
 #include "Covariate.h"
 #include "Variable.h"
+#include "DerivativeVariable.h"
 #include "FunctionCall.h"
 #include "ObservationModel.h"
 #include "IndependentVariable.h"
@@ -117,6 +118,7 @@ namespace PharmML
             virtual std::string visit(Covariate *node);
             virtual std::string visit(IndependentVariable *node);
             virtual std::string visit(Variable *node);
+            virtual std::string visit(DerivativeVariable *node);
             virtual std::string visit(ObservationModel *node);
             virtual std::string visit(Distribution *node);
     };

@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     std::cout << std::endl;
 
     std::cout << "# Structural model" << std::endl;
-    for (Variable *v : model->getModelDefinition()->getStructuralModel()->getVariables()) {
+    for (CommonVariable *v : model->getModelDefinition()->getStructuralModel()->getVariables()) {
         std::cout << v->accept(&gen) << std::endl;
     }
     std::cout << std::endl;

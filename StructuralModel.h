@@ -4,18 +4,19 @@
 #include <vector>
 #include "PharmMLContext.h"
 #include "Variable.h"
+#include "DerivativeVariable.h"
 
 namespace PharmML
 {
     class StructuralModel
     {
         PharmML::PharmMLContext *context;
-        std::vector<PharmML::Variable *> variables;
+        std::vector<PharmML::CommonVariable *> variables;
 
         public:
         StructuralModel(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::vector<PharmML::Variable *> getVariables();
+        std::vector<PharmML::CommonVariable *> getVariables();
     };
 }
 

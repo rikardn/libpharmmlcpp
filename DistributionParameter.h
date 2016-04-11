@@ -13,10 +13,13 @@ namespace PharmML
         AstNode *assignment;
 
         public:
+        DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
         DistributionParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getName();
+        void setName(std::string name);
         AstNode *getAssignment();
+        void setAssignment(AstNode *assignment);
     };
 }
 

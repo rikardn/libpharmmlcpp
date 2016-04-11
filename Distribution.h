@@ -3,6 +3,8 @@
 
 #include "PharmMLContext.h"
 #include "DistributionParameter.h"
+#include "Scalar.h"
+#include "symbols.h"
 
 namespace PharmML
 {

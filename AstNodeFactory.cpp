@@ -169,6 +169,15 @@ namespace PharmML
 			instance = new LogicFalse();
 		} else if (name == "True") {
 			instance = new LogicTrue();
+        } else if (name == "ConstantType") {
+            std::string op = node.getAttribute("op").getValue();
+            Constant *constant;
+            if (op == "pi") {
+                constant = new Pi();
+            } else if (op == "exponentiale") {
+                constant = new Exponentiale();
+            }
+            instance = constant;
         } else if (name == "SymbRef") {
             instance = new SymbRef(node.getAttribute("symbIdRef").getValue());
         } else if (name == "Int") {

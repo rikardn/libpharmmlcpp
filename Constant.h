@@ -31,6 +31,19 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
+    
+    // Pi and Euler's constant
+    class Pi : public Constant
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class Exponentiale : public Constant
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
 }
 
 #endif

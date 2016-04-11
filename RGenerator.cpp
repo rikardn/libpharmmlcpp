@@ -308,6 +308,14 @@ namespace PharmML
         return("(TRUE)");
     }
     
+    std::string RGenerator::visit(Pi *node) {
+        return("(pi)");
+    }
+    
+    std::string RGenerator::visit(Exponentiale *node) {
+        return("exp(1)");
+    }
+    
     std::string RGenerator::visit(NullValue *node) {
         return("NULL");
     }

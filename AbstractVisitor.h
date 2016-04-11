@@ -79,6 +79,8 @@ namespace PharmML
     
     class LogicFalse;
     class LogicTrue;
+    class Pi;
+    class Exponentiale;
     class NullValue;
     
     class Piecewise;
@@ -176,6 +178,8 @@ namespace PharmML
             
             virtual std::string visit(LogicFalse *node) = 0;
             virtual std::string visit(LogicTrue *node) = 0;
+            virtual std::string visit(Pi *node) = 0;
+            virtual std::string visit(Exponentiale *node) = 0;
             virtual std::string visit(NullValue *node) = 0;
             
             virtual std::string visit(Piecewise *node) = 0;

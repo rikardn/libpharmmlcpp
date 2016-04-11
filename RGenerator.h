@@ -6,6 +6,7 @@
 #include "symbols.h"
 #include "Uniop.h"
 #include "Binop.h"
+#include "LogicConditionType.h"
 #include "Scalar.h"
 #include "Piecewise.h"
 #include "FunctionDefinition.h"
@@ -83,6 +84,10 @@ namespace PharmML
             virtual std::string visit(BinopMax *node);
             virtual std::string visit(BinopRem *node);
             virtual std::string visit(BinopAtan2 *node);
+            
+            virtual std::string visit(LogicNullopOtherwise *node);
+            virtual std::string visit(LogicNullopFalse *node);
+            virtual std::string visit(LogicNullopTrue *node);
             
             virtual std::string visit(LogicUniopIsdefined *node);
             virtual std::string visit(LogicUniopNot *node);

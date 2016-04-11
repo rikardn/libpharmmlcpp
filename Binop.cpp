@@ -74,40 +74,4 @@ namespace PharmML
     std::string BinopAtan2::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
-    
-    std::string LogicBinopLt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-
-    std::string LogicBinopLeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopGt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopGeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopEq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopNeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopAnd::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopOr::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicBinopXor::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
 }

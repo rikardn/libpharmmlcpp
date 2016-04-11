@@ -3,7 +3,7 @@
 namespace PharmML
 {
     Piece::Piece() {
-
+		
     }
 
     void Piece::setExpression(AstNode *expression) {

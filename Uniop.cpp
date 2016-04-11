@@ -186,12 +186,4 @@ namespace PharmML
     std::string UniopCeiling::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
-    
-    std::string LogicUniopIsdefined::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
-    
-    std::string LogicUniopNot::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
 }

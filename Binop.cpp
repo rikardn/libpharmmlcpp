@@ -14,7 +14,7 @@ namespace PharmML
     void Binop::setRight(AstNode *child) {
         this->right = child;
     }
-
+    
     AstNode *Binop::getRight() {
         return this->right;
     }
@@ -30,7 +30,8 @@ namespace PharmML
     std::string Binop::infix(AbstractVisitor *visitor, const char *op) {
         return "(" + this->acceptLeft(visitor) + op + this->acceptRight(visitor) + ")";
     }
-
+    
+    // Ordinary binops
     std::string BinopPlus::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
@@ -72,6 +73,43 @@ namespace PharmML
     }
     
     std::string BinopAtan2::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    // Logic binops
+    std::string LogicBinopLt::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+
+    std::string LogicBinopLeq::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopGt::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopGeq::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopEq::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopNeq::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopAnd::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopOr::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicBinopXor::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
 }

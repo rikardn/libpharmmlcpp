@@ -6,9 +6,9 @@
 #include "AstNode.h"
 #include "Uniop.h"
 #include "Binop.h"
-#include "LogicConditionType.h"
 #include "symbols.h"
 #include "Scalar.h"
+#include "Constant.h"
 #include "Piecewise.h"
 #include "FunctionCall.h"
 
@@ -18,9 +18,10 @@ namespace PharmML
         AstNode *instance = nullptr;
 
         std::string name = node.getName();
-        if (name == "Uniop") {
+        if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
             Uniop *uniop;
+            // Ordinary uniops
             if (op == "log") {
                 uniop = new UniopLog();
             } else if (op == "log2") {
@@ -107,12 +108,18 @@ namespace PharmML
                 uniop = new UniopFloor();
             } else if (op == "ceiling") {
                 uniop = new UniopCeiling();
+            // Logic uniops
+            } else if (op == "isDefined") {
+                uniop = new LogicUniopIsdefined();
+            } else if (op == "not") {
+                uniop = new LogicUniopNot();
             }
             uniop->setChild(this->create(node.getChild()));
             instance = uniop;
-        } else if (name == "Binop") {
+        } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
             Binop *binop;
+            // Ordinary binops
             if (op == "plus") {
                 binop = new BinopPlus();
             } else if (op == "minus") {
@@ -135,24 +142,8 @@ namespace PharmML
                 binop = new BinopRem();
             } else if (op == "atan2") {
                 binop = new BinopAtan2();
-            }
-            binop->setLeft(this->create(node.getChild()));
-            binop->setRight(this->create(node.getLastChild()));
-            instance = binop;
-        } else if (name == "LogicUniop") {
-			std::string op = node.getAttribute("op").getValue();
-            LogicUniop *uniop;
-            if (op == "isDefined") {
-                uniop = new LogicUniopIsdefined();
-            } else if (op == "not") {
-                uniop = new LogicUniopNot();
-            }
-            uniop->setChild(this->create(node.getChild()));
-            instance = uniop;
-		} else if (name == "LogicBinop") {
-			std::string op = node.getAttribute("op").getValue();
-            LogicBinop *binop;
-			if (op == "lt") {
+            // Logic binops
+            } else if (op == "lt") {
                 binop = new LogicBinopLt();
             } else if (op == "leq") {
                 binop = new LogicBinopLeq();
@@ -174,12 +165,19 @@ namespace PharmML
             binop->setLeft(this->create(node.getChild()));
             binop->setRight(this->create(node.getLastChild()));
             instance = binop;
-		} else if (name == "Otherwise") {
-			instance = new LogicNullopOtherwise();
 		} else if (name == "False") {
-			instance = new LogicNullopFalse();
+			instance = new LogicFalse();
 		} else if (name == "True") {
-			instance = new LogicNullopTrue();
+			instance = new LogicTrue();
+        } else if (name == "ConstantType") {
+            std::string op = node.getAttribute("op").getValue();
+            Constant *constant;
+            if (op == "pi") {
+                constant = new Pi();
+            } else if (op == "exponentiale") {
+                constant = new Exponentiale();
+            }
+            instance = constant;
         } else if (name == "SymbRef") {
             instance = new SymbRef(node.getAttribute("symbIdRef").getValue());
         } else if (name == "Int") {
@@ -193,8 +191,14 @@ namespace PharmML
                 Piece *piece = new Piece();
                 piecewise->addPiece(piece);
                 // Assumes expression is first child and condition last child
-                piece->setExpression(this->create(n.getChild()));
-                piece->setCondition(this->create(n.getLastChild().getChild()));     // Go past math:Condition 
+                xml::Node expression = n.getChild();
+                xml::Node condition = n.getLastChild().getChild();
+                piece->setExpression(this->create(expression));
+                piece->setCondition(this->create(condition));
+                // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
+                if (condition.getName() == "Otherwise") {
+                    piece->setOtherwise();
+                }
             }
             instance = piecewise;
         } else if (name == "FunctionCall") {

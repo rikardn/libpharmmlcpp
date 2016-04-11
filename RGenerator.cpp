@@ -277,33 +277,47 @@ namespace PharmML
     
     std::string RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
-        Piece *otherwise;
+        Piece *otherwise = nullptr;
         std::string s = "ifelse(";
         for (Piece *p : pieces) {
-			if (p->getCondition()->accept(this) != "otherwise") {
+			if (!p->isOtherwise()) {
 				s += p->accept(this) + ", (";
 			} else {
-				otherwise = p; // Only one LogicNullopOtherwise per Piece
+				otherwise = p; // Only one otherwise per Piece
 			}
         }
-        s += otherwise->getExpression()->accept(this) + std::string(pieces.size(), ')');
-        return(s);
+        if (otherwise == nullptr) {
+            // And the missing otherwise said, Let it be 'NULL'. And all was good.
+            NullValue *null = new NullValue();
+            s += null->accept(this) + ")";
+        } else {
+            s += otherwise->getExpression()->accept(this);
+        }
+        return(s + std::string(pieces.size(), ')'));
     }
 
     std::string RGenerator::visit(Piece *node) {
         return(node->getCondition()->accept(this) + ", " + node->getExpression()->accept(this));
     }
     
-    std::string RGenerator::visit(LogicNullopOtherwise *node) {
-        return("otherwise"); // Not optimal but better than dynamic_cast code
-    }
-    
-    std::string RGenerator::visit(LogicNullopFalse *node) {
+    std::string RGenerator::visit(LogicFalse *node) {
         return("(FALSE)");
     }
     
-    std::string RGenerator::visit(LogicNullopTrue *node) {
+    std::string RGenerator::visit(LogicTrue *node) {
         return("(TRUE)");
+    }
+    
+    std::string RGenerator::visit(Pi *node) {
+        return("(pi)");
+    }
+    
+    std::string RGenerator::visit(Exponentiale *node) {
+        return("exp(1)");
+    }
+    
+    std::string RGenerator::visit(NullValue *node) {
+        return("NULL");
     }
 
     std::string RGenerator::visit(FunctionCall *node) {

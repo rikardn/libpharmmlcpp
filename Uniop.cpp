@@ -10,11 +10,12 @@ namespace PharmML
         delete child;
         this->child = node;
     }
-
+    
     std::string Uniop::acceptChild(AbstractVisitor *visitor) {
         return this->child->accept(visitor);
     }
-
+    
+    // Ordinary uniops
     std::string UniopLog::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
@@ -184,6 +185,15 @@ namespace PharmML
     }
     
     std::string UniopCeiling::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    // Logic uniops
+    std::string LogicUniopIsdefined::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
+    std::string LogicUniopNot::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
 }

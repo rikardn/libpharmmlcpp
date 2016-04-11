@@ -17,7 +17,8 @@ namespace PharmML
         void setChild(AstNode *node);
         std::string acceptChild(AbstractVisitor *visitor);
     };
-
+    
+    // Ordinary uniops
     class UniopLog : public Uniop
     {
         public:
@@ -271,6 +272,23 @@ namespace PharmML
     };
     
     class UniopCeiling : public Uniop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    // Logic uniops
+    class LogicUniop : public Uniop {
+        
+    };
+    
+    class LogicUniopIsdefined : public LogicUniop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicUniopNot : public LogicUniop
     {
         public:
             virtual std::string accept(AbstractVisitor *visitor);

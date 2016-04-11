@@ -20,7 +20,8 @@ namespace PharmML
         std::string acceptRight(AbstractVisitor *visitor);
         std::string infix(AbstractVisitor *visitor, const char *op);
     };
-
+    
+    // Ordinary binops
     class BinopPlus : public Binop
     {
         public:
@@ -82,6 +83,66 @@ namespace PharmML
     };
     
     class BinopAtan2 : public Binop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    // Logic binops
+    class LogicBinop : public Binop
+    {
+        
+    };
+    
+    class LogicBinopLt : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+
+    class LogicBinopLeq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopGt : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopGeq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopEq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopNeq : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopAnd : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopOr : public LogicBinop
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicBinopXor : public LogicBinop
     {
         public:
             virtual std::string accept(AbstractVisitor *visitor);

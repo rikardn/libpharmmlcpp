@@ -300,11 +300,11 @@ namespace PharmML
         return(node->getCondition()->accept(this) + ", " + node->getExpression()->accept(this));
     }
     
-    std::string RGenerator::visit(LogicNullopFalse *node) {
+    std::string RGenerator::visit(LogicFalse *node) {
         return("(FALSE)");
     }
     
-    std::string RGenerator::visit(LogicNullopTrue *node) {
+    std::string RGenerator::visit(LogicTrue *node) {
         return("(TRUE)");
     }
     

@@ -47,6 +47,9 @@ namespace PharmML
     class UniopFloor;
     class UniopCeiling;
     
+    class LogicUniopIsdefined;
+    class LogicUniopNot;
+    
     class ScalarInt;
     class ScalarReal;
     
@@ -62,15 +65,6 @@ namespace PharmML
     class BinopRem;
     class BinopAtan2;
     
-    class SymbRef;
-    
-    class LogicNullopFalse;
-    class LogicNullopTrue;
-    class NullValue;
-    
-    class LogicUniopIsdefined;
-    class LogicUniopNot;
-    
     class LogicBinopLt;
     class LogicBinopLeq;
     class LogicBinopGt;
@@ -80,6 +74,12 @@ namespace PharmML
     class LogicBinopAnd;
     class LogicBinopOr;
     class LogicBinopXor;
+    
+    class SymbRef;
+    
+    class LogicFalse;
+    class LogicTrue;
+    class NullValue;
     
     class Piecewise;
     class Piece;
@@ -144,6 +144,9 @@ namespace PharmML
             virtual std::string visit(UniopFloor *node) = 0;
             virtual std::string visit(UniopCeiling *node) = 0;
             
+            virtual std::string visit(LogicUniopIsdefined *node) = 0;
+            virtual std::string visit(LogicUniopNot *node) = 0;
+            
             virtual std::string visit(ScalarInt *node) = 0;
             virtual std::string visit(ScalarReal *node) = 0;
             
@@ -159,15 +162,6 @@ namespace PharmML
             virtual std::string visit(BinopRem *node) = 0;
             virtual std::string visit(BinopAtan2 *node) = 0;
             
-            virtual std::string visit(SymbRef *node) = 0;
-            
-            virtual std::string visit(LogicNullopFalse *node) = 0;
-            virtual std::string visit(LogicNullopTrue *node) = 0;
-            virtual std::string visit(NullValue *node) = 0;
-            
-            virtual std::string visit(LogicUniopIsdefined *node) = 0;
-            virtual std::string visit(LogicUniopNot *node) = 0;
-            
             virtual std::string visit(LogicBinopLt *node) = 0;
             virtual std::string visit(LogicBinopLeq *node) = 0;
             virtual std::string visit(LogicBinopGt *node) = 0;
@@ -177,6 +171,12 @@ namespace PharmML
             virtual std::string visit(LogicBinopAnd *node) = 0;
             virtual std::string visit(LogicBinopOr *node) = 0;
             virtual std::string visit(LogicBinopXor *node) = 0;
+            
+            virtual std::string visit(SymbRef *node) = 0;
+            
+            virtual std::string visit(LogicFalse *node) = 0;
+            virtual std::string visit(LogicTrue *node) = 0;
+            virtual std::string visit(NullValue *node) = 0;
             
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;

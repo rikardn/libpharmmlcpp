@@ -277,7 +277,7 @@ namespace PharmML
     
     std::string RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
-        Piece *otherwise;
+        Piece *otherwise = nullptr;
         std::string s = "ifelse(";
         for (Piece *p : pieces) {
 			if (!p->isOtherwise()) {
@@ -286,8 +286,14 @@ namespace PharmML
 				otherwise = p; // Only one otherwise per Piece
 			}
         }
-        s += otherwise->getExpression()->accept(this) + std::string(pieces.size(), ')');
-        return(s);
+        if (otherwise == nullptr) {
+            // And the missing otherwise said, Let it be 'NULL'. And all was good.
+            NullValue *null = new NullValue();
+            s += null->accept(this) + ")";
+        } else {
+            s += otherwise->getExpression()->accept(this);
+        }
+        return(s + std::string(pieces.size(), ')'));
     }
 
     std::string RGenerator::visit(Piece *node) {
@@ -300,6 +306,10 @@ namespace PharmML
     
     std::string RGenerator::visit(LogicNullopTrue *node) {
         return("(TRUE)");
+    }
+    
+    std::string RGenerator::visit(NullValue *node) {
+        return("NULL");
     }
 
     std::string RGenerator::visit(FunctionCall *node) {

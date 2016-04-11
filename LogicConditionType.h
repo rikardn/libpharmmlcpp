@@ -7,6 +7,14 @@
 
 namespace PharmML
 {
+    // TODO: Move to constants when implemented
+    class NullValue : public AstNode
+    {
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    //
+    
     class LogicConditionType : public AstNode
     {
         

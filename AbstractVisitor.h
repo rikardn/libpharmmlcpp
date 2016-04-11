@@ -66,6 +66,7 @@ namespace PharmML
     
     class LogicNullopFalse;
     class LogicNullopTrue;
+    class NullValue;
     
     class LogicUniopIsdefined;
     class LogicUniopNot;
@@ -162,6 +163,7 @@ namespace PharmML
             
             virtual std::string visit(LogicNullopFalse *node) = 0;
             virtual std::string visit(LogicNullopTrue *node) = 0;
+            virtual std::string visit(NullValue *node) = 0;
             
             virtual std::string visit(LogicUniopIsdefined *node) = 0;
             virtual std::string visit(LogicUniopNot *node) = 0;

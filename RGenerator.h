@@ -87,6 +87,7 @@ namespace PharmML
             
             virtual std::string visit(LogicNullopFalse *node);
             virtual std::string visit(LogicNullopTrue *node);
+            virtual std::string visit(NullValue *node);
             
             virtual std::string visit(LogicUniopIsdefined *node);
             virtual std::string visit(LogicUniopNot *node);

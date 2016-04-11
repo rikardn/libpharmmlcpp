@@ -2,6 +2,12 @@
 
 namespace PharmML
 {
+    // TODO: Move to constants when implemented
+    std::string NullValue::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    //
+    
     // Logic nullops (false and true)
     
     std::string LogicNullopFalse::accept(AbstractVisitor *visitor) {

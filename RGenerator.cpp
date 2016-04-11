@@ -280,10 +280,10 @@ namespace PharmML
         Piece *otherwise;
         std::string s = "ifelse(";
         for (Piece *p : pieces) {
-			if (p->getCondition()->accept(this) != "otherwise") {
+			if (!p->isOtherwise()) {
 				s += p->accept(this) + ", (";
 			} else {
-				otherwise = p; // Only one LogicNullopOtherwise per Piece
+				otherwise = p; // Only one otherwise per Piece
 			}
         }
         s += otherwise->getExpression()->accept(this) + std::string(pieces.size(), ')');
@@ -292,10 +292,6 @@ namespace PharmML
 
     std::string RGenerator::visit(Piece *node) {
         return(node->getCondition()->accept(this) + ", " + node->getExpression()->accept(this));
-    }
-    
-    std::string RGenerator::visit(LogicNullopOtherwise *node) {
-        return("otherwise"); // Not optimal but better than dynamic_cast code
     }
     
     std::string RGenerator::visit(LogicNullopFalse *node) {

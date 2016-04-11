@@ -13,6 +13,10 @@ namespace PharmML
     void Piece::setCondition(AstNode *condition) {
         this->condition = condition;   
     }
+    
+    void Piece::setOtherwise() {
+        otherwise = true;
+    }
 
     AstNode *Piece::getExpression() {
         return this->expression;
@@ -20,6 +24,10 @@ namespace PharmML
 
     AstNode *Piece::getCondition() {
         return this->condition;
+    }
+    
+    bool Piece::isOtherwise() {
+        return otherwise;
     }
 
     std::string Piece::accept(AbstractVisitor *visitor) {

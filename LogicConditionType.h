@@ -11,36 +11,30 @@ namespace PharmML
     {
         
     };
-	
-	// Logic nullops (otherwise, false and true)
-	class LogicNullop : public LogicConditionType
-	{
-		
-	};
-	
-    class LogicNullopOtherwise : public LogicNullop
+    
+    // Logic nullops (false and true)
+    class LogicNullop : public LogicConditionType
     {
-		public:
-			virtual std::string accept(AbstractVisitor *visitor);
-	};
-	
-	class LogicNullopFalse : public LogicNullop
+    
+    };
+    
+    class LogicNullopFalse : public LogicNullop
     {
-		public:
-			virtual std::string accept(AbstractVisitor *visitor);
-	};
-	
-	class LogicNullopTrue : public LogicNullop
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class LogicNullopTrue : public LogicNullop
     {
-		public:
-			virtual std::string accept(AbstractVisitor *visitor);
-	};
-	
-	// Logic uniops
-	class LogicUniop : public LogicConditionType
+        public:
+            virtual std::string accept(AbstractVisitor *visitor);
+    };
+    
+    // Logic uniops
+    class LogicUniop : public LogicConditionType
     {
         AstNode *child = nullptr;
-		
+        
         public:
         AstNode *getChild();
         void setChild(AstNode *node);
@@ -58,14 +52,14 @@ namespace PharmML
         public:
             virtual std::string accept(AbstractVisitor *visitor);
     };
-	
-	// Logic binops
-	class LogicBinop : public LogicConditionType
+    
+    // Logic binops
+    class LogicBinop : public LogicConditionType
     {
-		AstNode *left;
+        AstNode *left;
         AstNode *right;
         
-		public:
+        public:
         void setLeft(AstNode *child);
         AstNode *getLeft();
         void setRight(AstNode *child);

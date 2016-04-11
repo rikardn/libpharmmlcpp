@@ -85,7 +85,6 @@ namespace PharmML
             virtual std::string visit(BinopRem *node);
             virtual std::string visit(BinopAtan2 *node);
             
-            virtual std::string visit(LogicNullopOtherwise *node);
             virtual std::string visit(LogicNullopFalse *node);
             virtual std::string visit(LogicNullopTrue *node);
             

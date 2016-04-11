@@ -12,13 +12,16 @@ namespace PharmML
     {
         AstNode *expression;
         AstNode *condition;
+        bool otherwise = false;
 
         public:
         Piece();
         void setExpression(AstNode *expression);
         void setCondition(AstNode *condition);
+        void setOtherwise();
         AstNode *getExpression();
         AstNode *getCondition();
+        bool isOtherwise();
         std::string accept(AbstractVisitor *visitor);
     };
 

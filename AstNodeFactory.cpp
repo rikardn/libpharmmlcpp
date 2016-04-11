@@ -174,8 +174,6 @@ namespace PharmML
             binop->setLeft(this->create(node.getChild()));
             binop->setRight(this->create(node.getLastChild()));
             instance = binop;
-		} else if (name == "Otherwise") {
-			instance = new LogicNullopOtherwise();
 		} else if (name == "False") {
 			instance = new LogicNullopFalse();
 		} else if (name == "True") {
@@ -193,8 +191,14 @@ namespace PharmML
                 Piece *piece = new Piece();
                 piecewise->addPiece(piece);
                 // Assumes expression is first child and condition last child
-                piece->setExpression(this->create(n.getChild()));
-                piece->setCondition(this->create(n.getLastChild().getChild()));     // Go past math:Condition 
+                xml::Node expression = n.getChild();
+                xml::Node condition = n.getLastChild().getChild();
+                piece->setExpression(this->create(expression));
+                piece->setCondition(this->create(condition));
+                // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
+                if (condition.getName() == "Otherwise") {
+                    piece->setOtherwise();
+                }
             }
             instance = piecewise;
         } else if (name == "FunctionCall") {

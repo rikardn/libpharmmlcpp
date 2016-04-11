@@ -2,10 +2,7 @@
 
 namespace PharmML
 {
-    // Logic nullops (otherwise, false and true)
-    std::string LogicNullopOtherwise::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
-    }
+    // Logic nullops (false and true)
     
     std::string LogicNullopFalse::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);

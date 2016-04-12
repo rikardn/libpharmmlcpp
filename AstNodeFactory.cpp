@@ -14,7 +14,7 @@
 
 namespace PharmML
 {
-    AstNode *AstNodeFactory::create(xml::Node node) {
+    AstNode *AstNodeFactory::create(xml::Node node, Dependencies *deps) {
         AstNode *instance = nullptr;
 
         std::string name = node.getName();
@@ -179,7 +179,11 @@ namespace PharmML
             }
             instance = constant;
         } else if (name == "SymbRef") {
-            instance = new SymbRef(node.getAttribute("symbIdRef").getValue());
+            std::string symbol = node.getAttribute("symbIdRef").getValue();
+            instance = new SymbRef(symbol);
+            if (deps) {
+                deps->addDependency(symbol);
+            }
         } else if (name == "Int") {
             instance = new ScalarInt(node);
         } else if (name == "Real") {

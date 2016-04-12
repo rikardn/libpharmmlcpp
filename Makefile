@@ -1,11 +1,14 @@
 CFLAGS = -std=c++11 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o xml.o
-	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o xml.o $(CFLAGS) $(LIBS)
+main: main.o PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o xml.o
+	g++ main.o -omain PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Piecewise.o FunctionDefinition.o ParameterModel.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o xml.o $(CFLAGS) $(LIBS)
 
 main.o: main.cpp
 	g++ -c main.cpp -omain.o $(CFLAGS)
+
+Dependencies.o: Dependencies.cpp Dependencies.h
+	g++ -c Dependencies.cpp -oDependencies.o $(CFLAGS)
 
 DerivativeVariable.o: DerivativeVariable.cpp DerivativeVariable.h
 	g++ -c DerivativeVariable.cpp -oDerivativeVariable.o $(CFLAGS)

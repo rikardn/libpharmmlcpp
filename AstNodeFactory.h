@@ -3,13 +3,14 @@
 
 #include "xml.h"
 #include "AstNode.h"
+#include "Dependencies.h"
 
 namespace PharmML
 {
     class AstNodeFactory
     {
         public:
-        AstNode *create(xml::Node node);
+        AstNode *create(xml::Node node, Dependencies *deps = nullptr);
     };
 }
 

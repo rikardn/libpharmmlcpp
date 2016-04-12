@@ -4,6 +4,10 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
+#include <libxml/valid.h>
+#include <libxml/xmlschemas.h>
+#include <libxml/catalog.h>
+
 #include "xml.h"
 #include "AstNodeFactory.h"
 
@@ -20,6 +24,7 @@ namespace PharmML
         public:
         AstNodeFactory factory;
         xmlDoc *getDocument();
+        void validateDocument();
         xml::Node getRoot();
         xml::Node getSingleElement(xml::Node, const char *xpath);
         std::vector<xml::Node> getElements(xml::Node node, const char *xpath);

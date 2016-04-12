@@ -25,6 +25,7 @@ namespace PharmML
 
     PharmMLContext::PharmMLContext(const char *filename) {
         this->doc = xmlReadFile(filename, NULL, 0);
+        //this->validateDocument();
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());
@@ -39,6 +40,54 @@ namespace PharmML
 
     xmlDoc *PharmMLContext::getDocument() {
         return this->doc;
+    }
+
+    void PharmMLContext::validateDocument() {
+        if (xmlLoadCatalog("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
+            return;
+        }
+        int result = 42;
+        xmlSchemaParserCtxtPtr parserCtxt = NULL;
+        xmlSchemaPtr schema = NULL;
+        xmlSchemaValidCtxtPtr validCtxt = NULL;
+
+        parserCtxt = xmlSchemaNewParserCtxt("/usr/share/libsoc/pharmml-spec_0.8/pharmml-schema/definitions/pharmml.xsd");
+
+        if (parserCtxt == NULL) {
+            goto leave;
+        }
+
+        schema = xmlSchemaParse(parserCtxt);
+
+        if (schema == NULL) {
+            goto leave;
+        }
+
+        validCtxt = xmlSchemaNewValidCtxt(schema);
+
+        if (!validCtxt) {
+            goto leave;
+        }
+
+        result = xmlSchemaValidateDoc(validCtxt, this->doc);
+
+leave:
+
+        if (parserCtxt) {
+            xmlSchemaFreeParserCtxt(parserCtxt);
+        }
+
+        if (schema) {
+            xmlSchemaFree(schema);
+        }
+
+        if (validCtxt) {
+            xmlSchemaFreeValidCtxt(validCtxt);
+        }
+        printf("\n");
+        printf("Validation successful: %s (result: %d)\n", (result == 0) ? "YES" : "NO", result);
+
+        xmlCatalogCleanup();
     }
 
     xml::Node PharmMLContext::getRoot() {

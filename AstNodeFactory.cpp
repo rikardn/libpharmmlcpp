@@ -114,7 +114,7 @@ namespace PharmML
             } else if (op == "not") {
                 uniop = new LogicUniopNot();
             }
-            uniop->setChild(this->create(node.getChild()));
+            uniop->setChild(this->create(node.getChild(), deps));
             instance = uniop;
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
@@ -162,8 +162,8 @@ namespace PharmML
             } else if (op == "xor") {
                 binop = new LogicBinopXor();
             }
-            binop->setLeft(this->create(node.getChild()));
-            binop->setRight(this->create(node.getLastChild()));
+            binop->setLeft(this->create(node.getChild(), deps));
+            binop->setRight(this->create(node.getLastChild(), deps));
             instance = binop;
 		} else if (name == "False") {
 			instance = new LogicFalse();
@@ -197,8 +197,8 @@ namespace PharmML
                 // Assumes expression is first child and condition last child
                 xml::Node expression = n.getChild();
                 xml::Node condition = n.getLastChild().getChild();
-                piece->setExpression(this->create(expression));
-                piece->setCondition(this->create(condition));
+                piece->setExpression(this->create(expression, deps));
+                piece->setCondition(this->create(condition, deps));
                 // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
                 if (condition.getName() == "Otherwise") {
                     piece->setOtherwise();
@@ -210,12 +210,12 @@ namespace PharmML
             std::vector<xml::Node> children = node.getChildren();
             xml::Node name_node = children[0];
             children.erase(children.begin());
-            fcall->setFunctionName(this->create(name_node));
+            fcall->setFunctionName(this->create(name_node, deps));
             for (xml::Node n : children) {
                 FunctionArgument *arg = new FunctionArgument();
                 fcall->addFunctionArgument(arg);
                 arg->setSymbId(n.getAttribute("symbId").getValue());
-                arg->setArgument(this->create(n.getChild()));
+                arg->setArgument(this->create(n.getChild(), deps));
             }
             instance = fcall;
         } 

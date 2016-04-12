@@ -9,4 +9,8 @@ namespace PharmML
     bool Dependencies::hasDependency(std::string symbol) {
         return (this->dependencies.count(symbol) > 0);
     }
+
+    int Dependencies::numDependencies() {
+        return this->dependencies.size();
+    }
 }

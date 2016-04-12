@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include <iostream>
 
 namespace PharmML
 {
@@ -22,6 +23,10 @@ namespace PharmML
 
     std::string CommonVariable::getSymbId() {
         return this->symbId;
+    }
+
+    Dependencies& CommonVariable::getDependencies() {
+        return this->deps;
     }
 
     std::string Variable::accept(AbstractVisitor *visitor) {

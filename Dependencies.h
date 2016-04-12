@@ -12,6 +12,7 @@ namespace PharmML
         public:
         void addDependency(std::string symbol);
         bool hasDependency(std::string symbol);
+        int numDependencies();
     };
 }
 

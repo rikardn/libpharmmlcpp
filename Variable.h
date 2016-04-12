@@ -19,6 +19,7 @@ namespace PharmML
         CommonVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         AstNode *getAssignment();
+        Dependencies& getDependencies();
         std::string getSymbId();
         virtual std::string accept(AbstractVisitor *visitor) = 0;
     };

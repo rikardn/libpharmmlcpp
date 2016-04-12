@@ -8,6 +8,7 @@ namespace PharmML
 {
     class CommonVariable
     {
+        Dependencies deps;
         AstNode *assignment = nullptr;
         std::string symbId;
 

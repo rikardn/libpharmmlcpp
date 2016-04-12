@@ -12,7 +12,7 @@ namespace PharmML
         xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = this->context->factory.create(tree);
+            this->assignment = this->context->factory.create(tree, &this->deps);
         }
     }
         

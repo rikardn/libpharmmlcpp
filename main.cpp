@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
     const char *filename;
     if (argc < 2) {
-        filename = "UseCase2.xml";
+        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
     } else {
         filename = argv[1];
     }

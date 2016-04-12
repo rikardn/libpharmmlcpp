@@ -99,3 +99,4 @@ xml.o: xml.cpp xml.h
 clean:
 	rm *.o
 	rm main
+	rm libpharmmlc.a

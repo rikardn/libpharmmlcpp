@@ -6,15 +6,15 @@ namespace PharmML
     void DerivativeVariable::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, ".//ct:IndependentVariable");
         if (iv.exists()) {
-            this->independent_variable = this->context->factory.create(iv.getChild());
+            this->independent_variable = this->context->factory.create(iv.getChild(), &this->deps);
         }
         xml::Node ival = this->context->getSingleElement(node, ".//ct:InitialCondition/ct:InitialValue");
         if (ival.exists()) {
-            this->initial_value = this->context->factory.create(ival.getChild().getChild());
+            this->initial_value = this->context->factory.create(ival.getChild().getChild(), &this->deps);
         }
         xml::Node itime = this->context->getSingleElement(node, ".//ct:InitialCondition/ct:InitialTime");
         if (itime.exists()) {
-            this->initial_time = this->context->factory.create(itime.getChild().getChild());
+            this->initial_time = this->context->factory.create(itime.getChild().getChild(), &this->deps);
         }
     }
 

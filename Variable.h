@@ -8,12 +8,12 @@ namespace PharmML
 {
     class CommonVariable
     {
-        Dependencies deps;
         AstNode *assignment = nullptr;
         std::string symbId;
 
         protected:
         PharmML::PharmMLContext *context;
+        Dependencies deps;
 
         public:
         CommonVariable(PharmMLContext *context, xml::Node node);

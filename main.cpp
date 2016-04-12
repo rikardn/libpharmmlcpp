@@ -60,7 +60,25 @@ int main(int argc, char **argv)
     std::cout << std::endl;
 
     std::cout << "# Structural model" << std::endl;
-    for (CommonVariable *v : model->getModelDefinition()->getStructuralModel()->getVariables()) {
+    // Separate dependency resolution for variables. Should be moved to other place.
+    std::vector<CommonVariable *> vars = model->getModelDefinition()->getStructuralModel()->getVariables();
+    std::vector<CommonVariable *> ordered;
+    ordered.push_back(vars[0]);
+    bool inserted;
+    for (int i = 1; i < vars.size(); i++) {
+        inserted = false;
+        for (auto j = ordered.begin(); j < ordered.end(); j++) {
+            if (ordered[j - ordered.begin()]->getDependencies().hasDependency(vars[i]->getSymbId())) {
+                ordered.insert(j, vars[i]);
+                inserted = true;
+                break;
+            }
+        } 
+        if (!inserted) {
+            ordered.push_back(vars[i]);
+        }
+    }
+    for (CommonVariable *v : ordered) {
         std::cout << v->accept(&gen) << std::endl;
     }
     std::cout << std::endl;

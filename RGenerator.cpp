@@ -5,6 +5,11 @@ namespace PharmML
     std::string RGenerator::visit(SymbRef *node) {
         return node->toString();
     }
+    
+    // Dummy visit for something that shouldn't be an AstNode (probably)
+    std::string RGenerator::visit(TargetMapping *node) {
+        return nullptr;
+    }
 
     std::string RGenerator::visit(UniopLog *node) {
         return("log(" + node->acceptChild(this) + ")");
@@ -280,11 +285,11 @@ namespace PharmML
         Piece *otherwise = nullptr;
         std::string s = "ifelse(";
         for (Piece *p : pieces) {
-			if (!p->isOtherwise()) {
-				s += p->accept(this) + ", (";
-			} else {
-				otherwise = p; // Only one otherwise per Piece
-			}
+            if (!p->isOtherwise()) {
+                s += p->accept(this) + ", (";
+            } else {
+                otherwise = p; // Only one otherwise per Piece
+            }
         }
         if (otherwise == nullptr) {
             // And the missing otherwise said, Let it be 'NULL'. And all was good.

@@ -5,6 +5,7 @@
 #include "IndependentVariable.h"
 #include "FunctionDefinition.h"
 #include "ModelDefinition.h"
+#include "TrialDesign.h"
 #include "xml.h"
 
 namespace PharmML
@@ -15,6 +16,7 @@ namespace PharmML
         PharmML::IndependentVariable *IndependentVariable;
         std::vector<PharmML::FunctionDefinition *> FunctionDefinitions; 
         PharmML::ModelDefinition *ModelDefinition;
+        PharmML::TrialDesign *TrialDesign;
 
         private:
         void parse(xml::Node node);
@@ -25,6 +27,7 @@ namespace PharmML
         PharmML::IndependentVariable *getIndependentVariable();
         std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
         PharmML::ModelDefinition *getModelDefinition();
+        PharmML::TrialDesign *getTrialDesign();
     };
 }
 

@@ -27,6 +27,8 @@ namespace PharmML
     {
         public:
             virtual std::string visit(SymbRef *node);
+            virtual std::string visit(TargetMapping *node);
+            
             virtual std::string visit(UniopLog *node);
             virtual std::string visit(UniopLog2 *node);
             virtual std::string visit(UniopLog10 *node);

@@ -76,6 +76,7 @@ namespace PharmML
     class LogicBinopXor;
     
     class SymbRef;
+    class TargetMapping;
     
     class LogicFalse;
     class LogicTrue;
@@ -176,6 +177,7 @@ namespace PharmML
             virtual std::string visit(LogicBinopXor *node) = 0;
             
             virtual std::string visit(SymbRef *node) = 0;
+            virtual std::string visit(TargetMapping *node) = 0;
             
             virtual std::string visit(LogicFalse *node) = 0;
             virtual std::string visit(LogicTrue *node) = 0;

@@ -20,6 +20,11 @@ namespace PharmML
         for (xml::Node n : function_nodes) {
             this->FunctionDefinitions.push_back(new PharmML::FunctionDefinition(this->context, n));
         }
+        
+        xml::Node design_node = this->context->getSingleElement(node, "/x:PharmML/design:TrialDesign");
+        if (design_node.exists()) {
+            this->TrialDesign = new PharmML::TrialDesign(this->context, design_node);
+        }
     }
 
     Model::Model(const char *filename) {
@@ -41,5 +46,9 @@ namespace PharmML
 
     PharmML::ModelDefinition *Model::getModelDefinition() {
         return this->ModelDefinition;
+    }
+    
+    PharmML::TrialDesign *Model::getTrialDesign() {
+        return this->TrialDesign;
     }
 }

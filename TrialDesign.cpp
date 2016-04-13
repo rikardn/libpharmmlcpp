@@ -12,6 +12,10 @@ namespace PharmML
     }
 
     void TrialDesign::parse(xml::Node node) {
+        xml::Node external_dataset_node = this->context->getSingleElement(node, ".//design:ExternalDataSet");
+        if (external_dataset_node.exists()) {
+            this->ExternalDataset = new PharmML::ExternalDataset(this->context, external_dataset_node);
+        }
         xml::Node intervention_node = this->context->getSingleElement(node, ".//design:Interventions");
         if (intervention_node.exists()) {
             this->Intervention = new PharmML::Intervention(this->context, intervention_node);
@@ -26,6 +30,10 @@ namespace PharmML
         //~ if (arm_node.exists()) {
             //~ this->Arm = new PharmML::Arm(this->context, arm_node);
         //~ }
+    }
+
+    PharmML::ExternalDataset *TrialDesign::getExternalDataset() {
+        return this->ExternalDataset;
     }
 
     PharmML::Intervention *TrialDesign::getIntervention() {

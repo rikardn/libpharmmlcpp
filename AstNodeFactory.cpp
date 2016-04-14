@@ -184,6 +184,12 @@ namespace PharmML
             if (deps) {
                 deps->addDependency(symbol);
             }
+        } else if (name == "ColumnRef") { 
+            std::string symbol = node.getAttribute("columnIdRef").getValue();
+            instance = new ColumnRef(symbol);
+            if (deps) {
+                deps->addDependency(symbol);
+            }
         } else if (name == "Int") {
             instance = new ScalarInt(node);
         } else if (name == "Real") {

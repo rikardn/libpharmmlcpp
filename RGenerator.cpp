@@ -6,6 +6,10 @@ namespace PharmML
         return node->toString();
     }
     
+    std::string RGenerator::visit(ColumnRef *node) {
+        return node->toString();
+    }
+
     // Dummy visit for something that shouldn't be an AstNode (probably)
     std::string RGenerator::visit(TargetMapping *node) {
         return nullptr;
@@ -427,5 +431,9 @@ namespace PharmML
             result += ", " + p->getName() + "=" + p->getAssignment()->accept(this);
         }
         return result;
+    }
+
+    std::string RGenerator::visit(ColumnMapping *node) {
+        return node->getColumnIdRef() + " = " + node->getAssignment()->accept(this);
     }
 }

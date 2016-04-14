@@ -76,6 +76,7 @@ namespace PharmML
     class LogicBinopXor;
     
     class SymbRef;
+    class ColumnRef;
     class TargetMapping;
     
     class LogicFalse;
@@ -100,6 +101,7 @@ namespace PharmML
     class Covariate;
     class ObservationModel;
     class Distribution;
+    class ColumnMapping;
 
     class AbstractVisitor
     {
@@ -177,6 +179,7 @@ namespace PharmML
             virtual std::string visit(LogicBinopXor *node) = 0;
             
             virtual std::string visit(SymbRef *node) = 0;
+            virtual std::string visit(ColumnRef *node) = 0;
             virtual std::string visit(TargetMapping *node) = 0;
             
             virtual std::string visit(LogicFalse *node) = 0;
@@ -201,6 +204,7 @@ namespace PharmML
             virtual std::string visit(DerivativeVariable *node) = 0;
             virtual std::string visit(ObservationModel *node) = 0;
             virtual std::string visit(Distribution *node) = 0;
+            virtual std::string visit(ColumnMapping *node) = 0;
     };
 }
 

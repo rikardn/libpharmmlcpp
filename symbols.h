@@ -17,6 +17,18 @@ namespace PharmML
         virtual std::string accept(AbstractVisitor *visitor);
         std::string toString();
     };
+
+    class ColumnRef : public AstNode
+    {
+        std::string columnIdRef;
+
+        public:
+        ColumnRef(std::string ref);
+        ColumnRef(xml::Node node);
+        virtual std::string accept(AbstractVisitor *visitor);
+        std::string toString();
+    };
 }
+
 
 #endif

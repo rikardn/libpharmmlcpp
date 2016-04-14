@@ -18,4 +18,20 @@ namespace PharmML
     std::string SymbRef::toString() {
         return symbIdRef;
     }
+
+    ColumnRef::ColumnRef(std::string ref) {
+        this->columnIdRef = ref;
+    }
+
+    ColumnRef::ColumnRef(xml::Node node) {
+        this->columnIdRef = node.getAttribute("columnIdRef").getValue();
+    }
+
+    std::string ColumnRef::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+
+    std::string ColumnRef::toString() {
+        return this->columnIdRef;
+    }
 }

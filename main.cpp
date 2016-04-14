@@ -60,6 +60,12 @@ int main(int argc, char **argv)
     }
     std::cout << std::endl;
 
+    std::cout << "# Data column mappings" << std::endl;
+    for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
+        std::cout << col->accept(&gen) << std::endl;
+    }
+    std::cout << std::endl;
+
     std::cout << "# Structural model" << std::endl;
     // Separate dependency resolution for variables. Should be moved to other place.
     std::vector<CommonVariable *> vars = model->getModelDefinition()->getStructuralModel()->getVariables();

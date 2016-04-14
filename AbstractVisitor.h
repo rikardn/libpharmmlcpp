@@ -107,6 +107,9 @@ namespace PharmML
     class ColumnMapping;
     
     class Administration;
+    //~ class Observation;
+    class Sampling;
+    class ObservationCombination;
 
     class AbstractVisitor
     {
@@ -215,6 +218,9 @@ namespace PharmML
             virtual std::string visit(ColumnMapping *node) = 0;
             
             virtual std::string visit(Administration *node) = 0;
+            //~ virtual std::string visit(Observation *node) = 0;
+            virtual std::string visit(Sampling *node) = 0;
+            virtual std::string visit(ObservationCombination *node) = 0;
     };
 }
 

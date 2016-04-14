@@ -23,6 +23,7 @@
 #include "Distribution.h"
 #include "ColumnMapping.h"
 #include "Intervention.h"
+#include "Observation.h"
 
 namespace PharmML
 {
@@ -133,6 +134,9 @@ namespace PharmML
             virtual std::string visit(ColumnMapping *node);
             
             virtual std::string visit(Administration *node);
+            //~ virtual std::string visit(Observation *node);
+            virtual std::string visit(Sampling *node);
+            virtual std::string visit(ObservationCombination *node);
     };
 }
 

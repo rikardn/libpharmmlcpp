@@ -461,13 +461,58 @@ namespace PharmML
     std::string RGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " = list(";
         
-        s += "type = \"" + node->getType() + "\"" + ", ";
-        s += "target = " + node->getTarget()->accept(this) + ", ";
-        s += "times = " + node->getTimes()->accept(this) + ")";
-        //~ s += "steady = " + node->getSteady()->accept(this) + ", ";
-        //~ s += "duration = " + node->getDuration()->accept(this) + ", ";
-        //~ s += "rate = " + node->getRate()->accept(this) + ", ";
+        s += "type = \"" + node->getType() + "\"";
+        s += ", target = " + node->getTarget()->accept(this);
+        if (node->getTimes()) {
+            s += ", times = " + node->getTimes()->accept(this);
+        }
+        if (node->getSteady()) {
+            s += ", steady = " + node->getSteady()->accept(this);
+        }
+        if (node->getDuration()) {
+            s += ", duration = " + node->getDuration()->accept(this);
+        }
+        if (node->getRate()) {
+            s += ", rate = " + node->getRate()->accept(this);
+        }
+
+        return(s + ")");
+    }
+    
+    std::string RGenerator::visit(Sampling *node) {
+        std::string s = node->getOid() + " = list(";
         
-        return(s);
+        if (node->getOidRef() != "") {
+            s += "oidRef = \"" + node->getOidRef() + "\"" + ", ";
+        }
+        if (node->getNumber()) {
+            s += "number = " + node->getNumber()->accept(this) + ", ";
+        }
+        s += "times = " + node->getTimes()->accept(this);
+        
+        return (s + ")");
+    }
+    
+    std::string RGenerator::visit(ObservationCombination *node) {
+        std::string s = node->getOid() + " = list(";
+        
+        if (!node->getOidRefs().empty()) {
+            s += "oidRefs = c(";
+            bool first = true;
+            for (std::string ref : node->getOidRefs()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                s += "\"" + ref + "\"";
+            }
+            s += ")";
+        }
+        if (node->getRelative()) {
+            s += ", relative = " + node->getRelative()->accept(this);
+        }
+        
+        return (s + ")");
     }
 }

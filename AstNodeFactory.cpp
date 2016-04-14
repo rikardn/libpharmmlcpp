@@ -166,10 +166,10 @@ namespace PharmML
             binop->setLeft(this->create(node.getChild(), deps));
             binop->setRight(this->create(node.getLastChild(), deps));
             instance = binop;
-		} else if (name == "False") {
-			instance = new LogicFalse();
-		} else if (name == "True") {
-			instance = new LogicTrue();
+        } else if (name == "False") {
+            instance = new LogicFalse();
+        } else if (name == "True") {
+            instance = new LogicTrue();
         } else if (name == "ConstantType") {
             std::string op = node.getAttribute("op").getValue();
             Constant *constant;

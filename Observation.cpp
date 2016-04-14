@@ -53,9 +53,33 @@ namespace PharmML
         }
     }
     
-    //~ std::string Sampling::accept(AbstractVisitor *visitor) {
-        //~ return visitor->visit(this);
-    //~ }
+    std::string Sampling::getOid() {
+        return this->oid;
+    }
+    
+    std::string Sampling::getOidRef() {
+        return this->oidRef;
+    }
+    
+    AstNode *Sampling::getNumber() {
+        return this->number;
+    }
+    
+    AstNode *Sampling::getTimes() {
+        return this->times;
+    }
+    
+    std::vector<PharmML::SymbRef *> Sampling::getContinuousVariables() {
+        return this->continuousVariables;
+    }
+    
+    std::vector<PharmML::SymbRef *> Sampling::getDiscreteVariables() {
+        return this->discreteVariables;
+    }
+    
+    std::string Sampling::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
     
     ObservationCombination::ObservationCombination(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -63,6 +87,7 @@ namespace PharmML
     }
     
     void ObservationCombination::parse(xml::Node node) {
+        this->oid = node.getAttribute("oid").getValue();
         // Get all observation combinations
         std::vector<xml::Node> single_observations = this->context->getElements(node, ".//design:Observations");
         for (xml::Node obs : single_observations) {
@@ -74,17 +99,29 @@ namespace PharmML
         }
         
         // Get relative
-        std::vector<xml::Node> relatives = this->context->getElements(node, ".//design:Relative");
-        for (xml::Node rel : relatives) {
-            xml::Node assign = this->context->getSingleElement(rel, ".//ct:Assign");
+        xml::Node relative = this->context->getSingleElement(node, ".//design:Relative");
+        if (relative.exists()) {
+            xml::Node assign = this->context->getSingleElement(relative, ".//ct:Assign");
             xml::Node tree = assign.getChild();
-            this->relatives.push_back(this->context->factory.create(tree));
+            this->relative = this->context->factory.create(tree);
         }
     }
     
-    //~ std::string ObservationCombination::accept(AbstractVisitor *visitor) {
-        //~ return visitor->visit(this);
-    //~ }
+    std::string ObservationCombination::getOid() {
+        return this->oid;
+    }
+    
+    std::vector<std::string> ObservationCombination::getOidRefs() {
+        return this->oidRefs;
+    }
+    
+    AstNode *ObservationCombination::getRelative() {
+        return this->relative;
+    }
+    
+    std::string ObservationCombination::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
     
     Observation::Observation(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -117,6 +154,18 @@ namespace PharmML
             ObservationCombination *combination = new ObservationCombination(this->context, node);
             this->observationCombinations.push_back(combination);
         }
+    }
+    
+    std::vector<PharmML::Variable *> Observation::getDesignParameters() {
+        return this->designParameters;
+    }
+    
+    std::vector<PharmML::Sampling *> Observation::getSamplings() {
+        return this->samplings;
+    }
+    
+    std::vector<PharmML::ObservationCombination *> Observation::getObservationCombinations() {
+        return this->observationCombinations;
     }
     
     //~ std::string Observation::accept(AbstractVisitor *visitor) {

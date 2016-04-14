@@ -13,15 +13,21 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         std::string oidRef;
-        AstNode *number;
-        AstNode *times;
+        AstNode *number = nullptr;
+        AstNode *times = nullptr;
         std::vector<PharmML::SymbRef *> continuousVariables;
         std::vector<PharmML::SymbRef *> discreteVariables;
         
         public:
         Sampling(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        //~ std::string accept(AbstractVisitor *visitor);
+        std::string getOid();
+        std::string getOidRef();
+        AstNode *getNumber();
+        AstNode *getTimes();
+        std::vector<PharmML::SymbRef *> getContinuousVariables();
+        std::vector<PharmML::SymbRef *> getDiscreteVariables();
+        std::string accept(AbstractVisitor *visitor);
     };
     
     class ObservationCombination
@@ -29,12 +35,15 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         std::vector<std::string> oidRefs;
-        std::vector<AstNode *> relatives;
+        AstNode *relative = nullptr;
         
         public:
         ObservationCombination(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        //~ std::string accept(AbstractVisitor *visitor);
+        std::string getOid();
+        std::vector<std::string> getOidRefs();
+        AstNode *getRelative();
+        std::string accept(AbstractVisitor *visitor);
     };
     
     class Observation
@@ -49,6 +58,9 @@ namespace PharmML
         public:
         Observation(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        std::vector<PharmML::Variable *> getDesignParameters();
+        std::vector<PharmML::Sampling *> getSamplings();
+        std::vector<PharmML::ObservationCombination *> getObservationCombinations();
         //~ std::string accept(AbstractVisitor *visitor);
     };
 }

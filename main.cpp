@@ -105,6 +105,7 @@ int main(int argc, char **argv)
     Intervention *intervention = model->getTrialDesign()->getIntervention();
     std::cout << "# Interventions" << std::endl;
     if (intervention) {
+        // Administrations (<Administration>)
         std::vector<std::string> adm_oids;
         std::vector<Administration *> administrations = intervention->getAdministrations();
         for (Administration *adm : administrations) {
@@ -121,6 +122,39 @@ int main(int argc, char **argv)
     
     // Observations output
     Observation *observation = model->getTrialDesign()->getObservation();
+    std::cout << "# Observations" << std::endl;
+    if (observation) {
+        // Design parameters (<DesignParameter>)
+        std::vector<Variable *> variables = observation->getDesignParameters();
+        for (Variable *var : variables) {
+            std::cout << var->accept(&gen) << std::endl;
+        }
+        // Samplings (<Observation>)
+        std::vector<std::string> sampling_oids;
+        std::vector<Sampling *> samplings = observation->getSamplings();
+        for (Sampling *sampling : samplings) {
+            std::cout << sampling->accept(&gen) << std::endl;
+            sampling_oids.push_back(sampling->getOid());
+        }
+        std::cout << "sampling_oids = c(";
+        for (std::string oid : sampling_oids) {
+            std::cout << "'" << oid << "'";
+        }
+        std::cout << ")" << std::endl;
+        // Observation combinations (<ObservationsCombination>)
+        std::vector<std::string> comb_oids;
+        std::vector<ObservationCombination *> combinations = observation->getObservationCombinations();
+        for (ObservationCombination *comb : combinations) {
+            std::cout << comb->accept(&gen) << std::endl;
+            comb_oids.push_back(comb->getOid());
+        }
+        std::cout << "combination_oids = c(";
+        for (std::string oid : comb_oids) {
+            std::cout << "'" << oid << "'";
+        }
+        std::cout << ")" << std::endl;
+    }
+    std::cout << std::endl;
 
     return 0;
 }

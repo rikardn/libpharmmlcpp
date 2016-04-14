@@ -12,6 +12,7 @@ namespace PharmML
     class ParameterModel
     {
         PharmML::PharmMLContext *context;
+        std::string blkId;
         std::vector<PopulationParameter *> PopulationParameters;
         std::vector<IndividualParameter *> IndividualParameters;
         std::vector<RandomVariable *> RandomVariables;

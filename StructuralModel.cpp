@@ -8,6 +8,7 @@ namespace PharmML
     }
 
     void StructuralModel::parse(xml::Node node) {
+        this->blkId = node.getAttribute("blkId").getValue();
         std::vector<xml::Node> array = this->context->getElements(node, ".//ct:Variable");
         for (xml::Node n : array) {
             PharmML::Variable *var = new PharmML::Variable(this->context, n);

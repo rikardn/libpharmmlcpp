@@ -8,6 +8,7 @@ namespace PharmML
     }
 
     void ObservationModel::parse(xml::Node node) {
+        this->blkId = node.getAttribute("blkId").getValue();
         xml::Node standard = this->context->getSingleElement(node, ".//mdef:ContinuousData/mdef:Standard");
         if (standard.exists()) {
             this->symbId = standard.getAttribute("symbId").getValue();

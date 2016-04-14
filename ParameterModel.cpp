@@ -8,6 +8,7 @@ namespace PharmML
     }
 
     void ParameterModel::parse(xml::Node node) {
+        this->blkId = node.getAttribute("blkId").getValue();
         std::vector<xml::Node> pop_nodes = this->context->getElements(node, ".//mdef:PopulationParameter");
         for (xml::Node n : pop_nodes) {
             PharmML::PopulationParameter *pop = new PharmML::PopulationParameter(this->context, n);

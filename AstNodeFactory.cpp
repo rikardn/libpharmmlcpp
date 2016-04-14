@@ -180,9 +180,9 @@ namespace PharmML
             }
             instance = constant;
         } else if (name == "SymbRef") {
-            std::string symbol = node.getAttribute("symbIdRef").getValue();
-            instance = new SymbRef(symbol);
+            instance = new SymbRef(node);
             if (deps) {
+                std::string symbol = node.getAttribute("symbIdRef").getValue();
                 deps->addDependency(symbol);
             }
         } else if (name == "ColumnRef") { 

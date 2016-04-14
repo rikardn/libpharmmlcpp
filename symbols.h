@@ -9,6 +9,7 @@ namespace PharmML
 {
     class SymbRef : public AstNode
     {
+        std::string blkIdRef;
         std::string symbIdRef;
 
         public:
@@ -17,7 +18,7 @@ namespace PharmML
         virtual std::string accept(AbstractVisitor *visitor);
         std::string toString();
     };
-
+    
     class ColumnRef : public AstNode
     {
         std::string columnIdRef;

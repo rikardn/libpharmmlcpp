@@ -10,6 +10,7 @@ namespace PharmML
     class ObservationModel
     {
         PharmML::PharmMLContext *context;
+        std::string blkId;
         std::string symbId;
         AstNode *Output;
         AstNode *ErrorModel;

@@ -11,6 +11,7 @@ namespace PharmML
     class StructuralModel
     {
         PharmML::PharmMLContext *context;
+        std::string blkId;
         std::vector<PharmML::CommonVariable *> variables;
 
         public:

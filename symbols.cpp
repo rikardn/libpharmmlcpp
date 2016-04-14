@@ -8,6 +8,7 @@ namespace PharmML
     }
 
     SymbRef::SymbRef(xml::Node node) {
+        this->blkIdRef = node.getAttribute("blkIdRef").getValue();
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
     }
 
@@ -24,6 +25,7 @@ namespace PharmML
     }
 
     ColumnRef::ColumnRef(xml::Node node) {
+        this->columnIdRef = node.getAttribute("columnIdRef").getValue();
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }
 

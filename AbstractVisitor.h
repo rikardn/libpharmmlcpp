@@ -85,6 +85,8 @@ namespace PharmML
     class Exponentiale;
     class NullValue;
     
+    class Vector;
+    
     class Piecewise;
     class Piece;
     
@@ -187,6 +189,8 @@ namespace PharmML
             virtual std::string visit(Pi *node) = 0;
             virtual std::string visit(Exponentiale *node) = 0;
             virtual std::string visit(NullValue *node) = 0;
+            
+            virtual std::string visit(Vector *node) = 0;
             
             virtual std::string visit(Piecewise *node) = 0;
             virtual std::string visit(Piece *node) = 0;

@@ -21,11 +21,10 @@ namespace PharmML
             this->Intervention = new PharmML::Intervention(this->context, intervention_node);
         }
         
-        //~ std::vector<xml::Node> array = this->context->getElements(node, ".//design:Observations/design:Observation");
-        //~ for (xml::Node node : array) {
-            //~ PharmML::Observation *obs = new PharmML::Observation(this->context, node);
-            //~ this->Observations.push_back(obs);
-        //~ }
+        xml::Node observation_node = this->context->getSingleElement(node, ".//design:Observations");
+        if (observation_node.exists()) {
+            this->Observation = new PharmML::Observation(this->context, observation_node);
+        }
         //~ xml::Node arm_node = this->context->getSingleElement(node, ".//mdef:Arms");
         //~ if (arm_node.exists()) {
             //~ this->Arm = new PharmML::Arm(this->context, arm_node);

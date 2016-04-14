@@ -9,6 +9,7 @@
 #include "symbols.h"
 #include "Scalar.h"
 #include "Constant.h"
+#include "Vector.h"
 #include "Piecewise.h"
 #include "FunctionCall.h"
 
@@ -194,6 +195,48 @@ namespace PharmML
             instance = new ScalarInt(node);
         } else if (name == "Real") {
             instance = new ScalarReal(node);
+        } else if (name == "Vector") {
+            std::string length = node.getAttribute("length").getValue();
+            std::string defaultValue = node.getAttribute("default").getValue();
+            Vector *vector = new Vector(length, defaultValue);
+            // Get elements, cells and segments (any better way?)
+            std::vector<xml::Node> children = node.getChildren();
+            std::vector<xml::Node> vectorElements;
+            std::vector<xml::Node> vectorCells;
+            std::vector<xml::Node> vectorSegments;
+            for (xml::Node node : children) {
+                name = node.getName();
+                if (name == "VectorElements") {
+                    vectorElements.push_back(node);
+                } else if (name == "VectorCell") {
+                    vectorCells.push_back(node);
+                } else if (name == "VectorSegment") {
+                    vectorSegments.push_back(node);
+                }
+            }
+            if (!vectorElements.empty()) {
+                // Build vector object from elements
+                xml::Node elements_node = vectorElements[0];
+                std::vector<xml::Node> elements = elements_node.getChildren();
+                for (xml::Node element : elements) {
+                    vector->addElement(this->create(element, deps));
+                }
+            } else if (!(vectorCells.empty() && vectorSegments.empty())) {
+                // Build vector from cells
+                for (xml::Node cell : vectorCells) {
+                    std::vector<xml::Node> children = cell.getChildren();
+                    int cellIndex = std::stoi(children[0].getText());
+                    AstNode *cellContent = this->create(children[1], deps);
+                    
+                    VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
+                    vector->populateCell(vectorCell);
+                }
+                for (xml::Node segment : vectorSegments) {
+                    // TODO: Bulid vector from segments
+                    //~ vector->populateSegment(segment);
+                }
+            }
+            instance = vector;
         } else if (name == "Piecewise") {
             Piecewise *piecewise = new Piecewise();
             std::vector<xml::Node> children = node.getChildren();

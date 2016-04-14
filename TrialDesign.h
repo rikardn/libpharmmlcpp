@@ -4,9 +4,10 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include "PharmMLContext.h"
-#include "Intervention.h"
 #include "ExternalDataset.h"
-//~ #include "Observation.h"
+#include "Intervention.h"
+#include "Observation.h"
+>>>>>>> trialdesign-devel
 //~ #include "Arm.h"
 
 namespace PharmML
@@ -16,13 +17,13 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         PharmML::Intervention *Intervention = nullptr;
         PharmML::ExternalDataset *ExternalDataset = nullptr;
-        //~ std::vector<PharmML::Observation *> Observations;
+        PharmML::Observation *Observation = nullptr;
         //~ PharmML::Arm *Arm = nullptr;
 
         public:
         PharmML::ExternalDataset *getExternalDataset();
         PharmML::Intervention *getIntervention();
-        //~ PharmML::Observation *getObservation();
+        PharmML::Observation *getObservation();
         //~ PharmML::Arm *getArm();
         TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);

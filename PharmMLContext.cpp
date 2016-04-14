@@ -51,7 +51,7 @@ namespace PharmML
         xmlSchemaPtr schema = NULL;
         xmlSchemaValidCtxtPtr validCtxt = NULL;
 
-        parserCtxt = xmlSchemaNewParserCtxt("/usr/share/libsoc/pharmml-spec_0.8/pharmml-schema/definitions/pharmml.xsd");
+        parserCtxt = xmlSchemaNewParserCtxt("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/pharmml.xsd");
 
         if (parserCtxt == NULL) {
             goto leave;

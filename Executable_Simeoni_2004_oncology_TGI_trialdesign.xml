@@ -382,17 +382,17 @@
 			</ColumnMapping>
 			<ColumnMapping>
 				<ColumnRef xmlns="http://www.pharmml.org/pharmml/0.8/Dataset" columnIdRef="AMT"/>
-				<Piecewise xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
+				<math:Piecewise>
 					<math:Piece>
 						<ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
 						<math:Condition>
 							<math:LogicBinop op="gt">
-								<ColumnRef columnIdRef="AMT"/>
+								<ds:ColumnRef columnIdRef="AMT"/>
 								<ct:Int>0</ct:Int>
 							</math:LogicBinop>
 						</math:Condition>
 					</math:Piece>
-				</Piecewise>
+				</math:Piecewise>
 			</ColumnMapping>
 			<DataSet xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
 				<Definition>

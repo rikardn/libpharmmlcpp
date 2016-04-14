@@ -7,13 +7,43 @@
 
 namespace PharmML
 {
+    // TODO: Maybe move this somewhere? Variable.cpp (this is a reference, however)?
+    // TODO: Maybe the name can be changed to something more general if needed
+    SteadyStateParameter::SteadyStateParameter(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void SteadyStateParameter::parse(xml::Node node) {
+        xml::Node symbol = this->context->getSingleElement(node, ".//ct:SymbRef");
+        symbRef = new SymbRef(symbol);
+        
+        xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
+        if (assign.exists()) {
+            xml::Node tree = assign.getChild();
+            this->assignment = this->context->factory.create(tree);
+        }
+    }
+        
+    AstNode *SteadyStateParameter::getAssignment() {
+        return this->assignment;
+    }
+
+    AstNode *SteadyStateParameter::getSymbRef() {
+        return this->symbRef;
+    }
+
+    std::string SteadyStateParameter::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
     // TODO: Move elsewhere (Dataset.h when implemented)
     // TODO: Subclass for MapType? Subclass for SymbRef (see usage in Administration)?
     TargetMapping::TargetMapping(PharmMLContext *context, std::string type, xml::Node node) {
         this->context = context;
         this->type = type;
+        this->blkIdRef = node.getAttribute("blkIdRef").getValue();
         xml::Node map = this->context->getSingleElement(node, ".//ds:Map");
-        this->blkIdRef = map.getAttribute("blkIdRef").getValue();
         // Not sure type differentiates attribute used in MapType (only empirical observation)
         if (type == "parameter") {
             // Not seen example of but in schema
@@ -26,6 +56,17 @@ namespace PharmML
         }
         // Not sure when used in MapType
         //~ this->ref = map.getAttribute("dataSymbol").getValue();
+    }
+    
+    std::string TargetMapping::getType() {
+        return this->type;
+    }
+    
+    std::string TargetMapping::getBlkIdRef() {
+        return this->blkIdRef;
+    }
+    std::string TargetMapping::getRef() {
+        return this->ref;
     }
     
     std::string TargetMapping::accept(AbstractVisitor *visitor) {
@@ -49,13 +90,13 @@ namespace PharmML
         this->amount = this->context->factory.create(tree);
         
         // Get dose target ('target' should probably be of parent class of SymbRef/TargetMapping).
-        this->targetType = amount.getAttribute("inputTarget").getValue();
+        std::string targetType = amount.getAttribute("inputTarget").getValue();
         xml::Node symbref = this->context->getSingleElement(dose, ".//design:DoseAmount/ct:SymbRef");
         xml::Node mapping = this->context->getSingleElement(dose, ".//design:DoseAmount/design:TargetMapping");
         if (symbref.exists()) {
             this->target = new SymbRef(symbref);
         } else if (mapping.exists()) {
-            this->target = new TargetMapping(this->context, this->targetType, mapping);
+            this->target = new TargetMapping(this->context, targetType, mapping);
         }
         
         // Get dose times/steady state
@@ -66,8 +107,7 @@ namespace PharmML
             xml::Node tree = assign.getChild();
             this->times = this->context->factory.create(tree);
         } else if (steady.exists()) {
-            // TODO: Support <SteadyState>
-            this->steady = nullptr;
+            this->steady = new SteadyStateParameter(this->context, steady);
         }
         
         // Get duration/rate for infusion type
@@ -84,9 +124,37 @@ namespace PharmML
         }
     }
     
-    //~ std::string Administration::accept(AbstractVisitor *visitor) {
-        //~ return visitor->visit(this);
-    //~ }
+    std::string Administration::getOid() {
+        return this->oid;
+    }
+    
+    std::string Administration::getType() {
+        return this->type;
+    }
+    
+    AstNode *Administration::getTarget() {
+        return this->target;
+    }
+    
+    AstNode *Administration::getTimes() {
+        return this->times;
+    }
+    
+    AstNode *Administration::getSteady() {
+        return this->steady;
+    }
+    
+    AstNode *Administration::getDuration() {
+        return this->duration;
+    }
+    
+    AstNode *Administration::getRate() {
+        return this->rate;
+    }
+    
+    std::string Administration::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
     
     Intervention::Intervention(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -101,7 +169,7 @@ namespace PharmML
         }
     }
     
-    //~ std::string Intervention::accept(AbstractVisitor *visitor) {
-        //~ return visitor->visit(this);
-    //~ }
+    std::vector <Administration *> Intervention::getAdministrations() {
+        return Administrations;
+    }
 }

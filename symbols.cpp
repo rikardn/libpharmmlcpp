@@ -25,6 +25,7 @@ namespace PharmML
     }
 
     ColumnRef::ColumnRef(xml::Node node) {
+        // Why duplicate lines?
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }

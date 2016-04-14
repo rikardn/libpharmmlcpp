@@ -38,10 +38,10 @@ namespace PharmML
     PharmML::Intervention *TrialDesign::getIntervention() {
         return this->Intervention;
     }
-
-    //~ PharmML::Observation *TrialDesign::getObservation() {
-        //~ return this->Observation;
-    //~ }
+    
+    PharmML::Observation *TrialDesign::getObservation() {
+        return this->Observation;
+    }
 
     //~ PharmML::Arm *TrialDesign::getArm() {
         //~ return this->Arm;

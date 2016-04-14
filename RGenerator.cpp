@@ -6,13 +6,19 @@ namespace PharmML
         return node->toString();
     }
     
+    std::string RGenerator::visit(SteadyStateParameter *node) {
+        return node->getSymbRef()->accept(this) + " = " + node->getAssignment()->accept(this);
+    }
+    
     std::string RGenerator::visit(ColumnRef *node) {
         return node->toString();
     }
 
-    // Dummy visit for something that shouldn't be an AstNode (probably)
     std::string RGenerator::visit(TargetMapping *node) {
-        return nullptr;
+        std::string type = "type=\"" + node->getType() + "\"";
+        std::string blkIdRef = "blkIdRef=\"" + node->getBlkIdRef() + "\"";
+        std::string ref = "ref=\"" + node->getRef() + "\"";
+        return "list(" + type + ", " + blkIdRef + ", " + ref + ")";
     }
 
     std::string RGenerator::visit(UniopLog *node) {
@@ -450,5 +456,18 @@ namespace PharmML
 
     std::string RGenerator::visit(ColumnMapping *node) {
         return node->getColumnIdRef() + " = " + node->getAssignment()->accept(this);
+    }
+    
+    std::string RGenerator::visit(Administration *node) {
+        std::string s = node->getOid() + " = list(";
+        
+        s += "type = \"" + node->getType() + "\"" + ", ";
+        s += "target = " + node->getTarget()->accept(this) + ", ";
+        s += "times = " + node->getTimes()->accept(this) + ")";
+        //~ s += "steady = " + node->getSteady()->accept(this) + ", ";
+        //~ s += "duration = " + node->getDuration()->accept(this) + ", ";
+        //~ s += "rate = " + node->getRate()->accept(this) + ", ";
+        
+        return(s);
     }
 }

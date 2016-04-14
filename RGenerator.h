@@ -22,6 +22,7 @@
 #include "RandomVariable.h"
 #include "Distribution.h"
 #include "ColumnMapping.h"
+#include "Intervention.h"
 
 namespace PharmML
 {
@@ -29,6 +30,7 @@ namespace PharmML
     {
         public:
             virtual std::string visit(SymbRef *node);
+            virtual std::string visit(SteadyStateParameter *node);
             virtual std::string visit(ColumnRef *node);
             virtual std::string visit(TargetMapping *node);
             
@@ -129,6 +131,8 @@ namespace PharmML
             virtual std::string visit(ObservationModel *node);
             virtual std::string visit(Distribution *node);
             virtual std::string visit(ColumnMapping *node);
+            
+            virtual std::string visit(Administration *node);
     };
 }
 

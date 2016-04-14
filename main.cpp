@@ -19,7 +19,8 @@ int main(int argc, char **argv)
     Model *model = new Model(filename);
 
     RGenerator gen;
-
+    
+    // Parameter definitions output
     std::cout << "# Parameter definitions" << std::endl;
     std::cout << model->getIndependentVariable()->accept(&gen) << std::endl;
     std::cout << "PopulationParameters = c(";
@@ -38,13 +39,15 @@ int main(int argc, char **argv)
         std::cout << r->accept(&gen) << std::endl;
     }
     std::cout << std::endl;
-
+    
+    // Function definitions output
     std::cout << "# Function definitions" << std::endl;
     for (FunctionDefinition *f : model->getFunctionDefinitions()) {
         std::cout << f->accept(&gen) << std::endl;
     }
     std::cout << std::endl;
-
+    
+    // Covariates output
     CovariateModel *cov_mod = model->getModelDefinition()->getCovariateModel();
     if (cov_mod) {
         std::cout << "# Covariates" << std::endl;
@@ -53,19 +56,22 @@ int main(int argc, char **argv)
         }
         std::cout << std::endl;
     }
-
+    
+    // Individual parameters output
     std::cout << "# Individual parameters" << std::endl;
     for (IndividualParameter *ind : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
         std::cout << ind->accept(&gen) << std::endl;
     }
     std::cout << std::endl;
-
+    
+    // Data column mapping output
     std::cout << "# Data column mappings" << std::endl;
     for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
         std::cout << col->accept(&gen) << std::endl;
     }
     std::cout << std::endl;
-
+    
+    // Structural model output
     std::cout << "# Structural model" << std::endl;
     // Separate dependency resolution for variables. Should be moved to other place.
     std::vector<CommonVariable *> vars = model->getModelDefinition()->getStructuralModel()->getVariables();
@@ -89,10 +95,32 @@ int main(int argc, char **argv)
         std::cout << v->accept(&gen) << std::endl;
     }
     std::cout << std::endl;
-
+    
+    // Observation model output
     std::cout << "# Observation model" << std::endl;
     std::cout << model->getModelDefinition()->getObservationModel()->accept(&gen) << std::endl;
     std::cout << std::endl;
+    
+    // Interventions output
+    Intervention *intervention = model->getTrialDesign()->getIntervention();
+    std::cout << "# Interventions" << std::endl;
+    if (intervention) {
+        std::vector<std::string> adm_oids;
+        std::vector<Administration *> administrations = intervention->getAdministrations();
+        for (Administration *adm : administrations) {
+            std::cout << adm->accept(&gen) << std::endl;
+            adm_oids.push_back(adm->getOid());
+        }
+        std::cout << "administration_oids = c(";
+        for (std::string oid : adm_oids) {
+            std::cout << "'" << oid << "'";
+        }
+        std::cout << ")" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Observations output
+    Observation *observation = model->getTrialDesign()->getObservation();
 
     return 0;
 }

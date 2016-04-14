@@ -25,7 +25,7 @@ namespace PharmML
 
     PharmMLContext::PharmMLContext(const char *filename) {
         this->doc = xmlReadFile(filename, NULL, 0);
-        //this->validateDocument();
+        this->validateDocument();
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());
@@ -84,8 +84,11 @@ leave:
         if (validCtxt) {
             xmlSchemaFreeValidCtxt(validCtxt);
         }
-        printf("\n");
-        printf("Validation successful: %s (result: %d)\n", (result == 0) ? "YES" : "NO", result);
+        if (result != 0) {
+            printf("\n");
+            printf("Validation successful: %s (result: %d)\n", (result == 0) ? "YES" : "NO", result);
+            exit(10);
+        }
 
         xmlCatalogCleanup();
     }

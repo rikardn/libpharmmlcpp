@@ -7,7 +7,6 @@
 #include "ExternalDataset.h"
 #include "Intervention.h"
 #include "Observation.h"
->>>>>>> trialdesign-devel
 //~ #include "Arm.h"
 
 namespace PharmML

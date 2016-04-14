@@ -280,6 +280,21 @@ namespace PharmML
             " && !(" + node->acceptLeft(this) + " && " + node->acceptRight(this) + "))");
     }
     
+    std::string RGenerator::visit(Vector *node) {
+        std::vector<AstNode *> elements = node->getElements();
+        std::string s = "c(";
+        bool first = true;
+        for (AstNode *element : elements) {
+            if (first) {
+                first = false;
+            } else {
+                s += ", ";
+            }
+            s += element->accept(this);
+        }
+        return(s += ")");
+    }
+    
     std::string RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
         Piece *otherwise = nullptr;

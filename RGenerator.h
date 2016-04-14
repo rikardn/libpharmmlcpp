@@ -8,6 +8,7 @@
 #include "Binop.h"
 #include "Scalar.h"
 #include "Constant.h"
+#include "Vector.h"
 #include "Piecewise.h"
 #include "FunctionDefinition.h"
 #include "PopulationParameter.h"
@@ -106,6 +107,8 @@ namespace PharmML
             virtual std::string visit(LogicBinopAnd *node);
             virtual std::string visit(LogicBinopOr *node);
             virtual std::string visit(LogicBinopXor *node);
+            
+            virtual std::string visit(Vector *node);
             
             virtual std::string visit(Piecewise *node);
             virtual std::string visit(Piece *node);

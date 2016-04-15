@@ -1,29 +1,29 @@
-#ifndef PHARMML_TrialDesign_H_
-#define PHARMML_TrialDesign_H_
+#ifndef PHARMML_TRIALDESIGN_H_
+#define PHARMML_TRIALDESIGN_H_
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include "PharmMLContext.h"
 #include "ExternalDataset.h"
-#include "Intervention.h"
-#include "Observation.h"
-//~ #include "Arm.h"
+#include "Interventions.h"
+#include "Observations.h"
+#include "Arms.h"
 
 namespace PharmML
 {
     class TrialDesign
     {
         PharmML::PharmMLContext *context;
-        PharmML::Intervention *Intervention = nullptr;
+        PharmML::Interventions *Interventions = nullptr;
         PharmML::ExternalDataset *ExternalDataset = nullptr;
-        PharmML::Observation *Observation = nullptr;
-        //~ PharmML::Arm *Arm = nullptr;
+        PharmML::Observations *Observations = nullptr;
+        PharmML::Arms *Arms = nullptr;
 
         public:
         PharmML::ExternalDataset *getExternalDataset();
-        PharmML::Intervention *getIntervention();
-        PharmML::Observation *getObservation();
-        //~ PharmML::Arm *getArm();
+        PharmML::Interventions *getInterventions();
+        PharmML::Observations *getObservations();
+        PharmML::Arms *getArms();
         TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
     };

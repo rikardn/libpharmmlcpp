@@ -106,10 +106,18 @@ namespace PharmML
     class Distribution;
     class ColumnMapping;
     
+    class Interventions;
     class Administration;
-    //~ class Observation;
-    class Sampling;
+    
+    class Observations;
+    class Observation;
     class ObservationCombination;
+    
+    class Arms;
+    class Arm;
+    class InterventionSequence;
+    class ObservationSequence;
+    class OccasionSequence;
 
     class AbstractVisitor
     {
@@ -217,10 +225,18 @@ namespace PharmML
             virtual void visit(Distribution *node) = 0;
             virtual void visit(ColumnMapping *node) = 0;
             
+            virtual void visit(Interventions *node) = 0;
             virtual void visit(Administration *node) = 0;
-            //~ virtual void visit(Observation *node) = 0;
-            virtual void visit(Sampling *node) = 0;
+            
+            virtual void visit(Observations *node) = 0;
+            virtual void visit(Observation *node) = 0;
             virtual void visit(ObservationCombination *node) = 0;
+            
+            virtual void visit(Arms *node) = 0;
+            virtual void visit(Arm *node) = 0;
+            virtual void visit(InterventionSequence *node) = 0;
+            virtual void visit(ObservationSequence *node) = 0;
+            virtual void visit(OccasionSequence *node) = 0;
     };
 }
 

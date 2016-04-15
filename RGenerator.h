@@ -22,8 +22,9 @@
 #include "RandomVariable.h"
 #include "Distribution.h"
 #include "ColumnMapping.h"
-#include "Intervention.h"
-#include "Observation.h"
+#include "Interventions.h"
+#include "Observations.h"
+#include "Arms.h"
 
 namespace PharmML
 {
@@ -36,6 +37,8 @@ namespace PharmML
             std::string acceptRight(Binop *binop);
             std::string infix(Binop *binop, std::string op); 
             std::string acceptChild(Uniop *uniop);
+            // Helper function to reduce redundant code
+            std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'");
 
         public:
             std::string getValue();
@@ -143,10 +146,18 @@ namespace PharmML
             virtual void visit(Distribution *node);
             virtual void visit(ColumnMapping *node);
             
+            virtual void visit(Interventions *node);
             virtual void visit(Administration *node);
-            //~ virtual void visit(Observation *node);
-            virtual void visit(Sampling *node);
+            
+            virtual void visit(Observations *node);
+            virtual void visit(Observation *node);
             virtual void visit(ObservationCombination *node);
+            
+            virtual void visit(Arms *node);
+            virtual void visit(Arm *node);
+            virtual void visit(InterventionSequence *node);
+            virtual void visit(ObservationSequence *node);
+            virtual void visit(OccasionSequence *node);
     };
 }
 

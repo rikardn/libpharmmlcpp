@@ -16,34 +16,34 @@ namespace PharmML
         if (external_dataset_node.exists()) {
             this->ExternalDataset = new PharmML::ExternalDataset(this->context, external_dataset_node);
         }
-        xml::Node intervention_node = this->context->getSingleElement(node, ".//design:Interventions");
-        if (intervention_node.exists()) {
-            this->Intervention = new PharmML::Intervention(this->context, intervention_node);
+        xml::Node interventions_node = this->context->getSingleElement(node, ".//design:Interventions");
+        if (interventions_node.exists()) {
+            this->Interventions = new PharmML::Interventions(this->context, interventions_node);
         }
         
-        xml::Node observation_node = this->context->getSingleElement(node, ".//design:Observations");
-        if (observation_node.exists()) {
-            this->Observation = new PharmML::Observation(this->context, observation_node);
+        xml::Node observations_node = this->context->getSingleElement(node, ".//design:Observations");
+        if (observations_node.exists()) {
+            this->Observations = new PharmML::Observations(this->context, observations_node);
         }
-        //~ xml::Node arm_node = this->context->getSingleElement(node, ".//mdef:Arms");
-        //~ if (arm_node.exists()) {
-            //~ this->Arm = new PharmML::Arm(this->context, arm_node);
-        //~ }
+        xml::Node arms_node = this->context->getSingleElement(node, ".//design:Arms");
+        if (arms_node.exists()) {
+            this->Arms = new PharmML::Arms(this->context, arms_node);
+        }
     }
 
     PharmML::ExternalDataset *TrialDesign::getExternalDataset() {
         return this->ExternalDataset;
     }
 
-    PharmML::Intervention *TrialDesign::getIntervention() {
-        return this->Intervention;
+    PharmML::Interventions *TrialDesign::getInterventions() {
+        return this->Interventions;
     }
     
-    PharmML::Observation *TrialDesign::getObservation() {
-        return this->Observation;
+    PharmML::Observations *TrialDesign::getObservations() {
+        return this->Observations;
     }
 
-    //~ PharmML::Arm *TrialDesign::getArm() {
-        //~ return this->Arm;
-    //~ }
+    PharmML::Arms *TrialDesign::getArms() {
+        return this->Arms;
+    }
 }

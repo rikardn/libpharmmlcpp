@@ -111,63 +111,28 @@ int main(int argc, char **argv)
     std::cout << std::endl;
     
     // Interventions output
-    Intervention *intervention = model->getTrialDesign()->getIntervention();
-    std::cout << "# Interventions" << std::endl;
-    if (intervention) {
-        // Administrations (<Administration>)
-        std::vector<std::string> adm_oids;
-        std::vector<Administration *> administrations = intervention->getAdministrations();
-        for (Administration *adm : administrations) {
-            adm->accept(&gen);
-            std::cout << gen.getValue() << std::endl;
-            adm_oids.push_back(adm->getOid());
-        }
-        std::cout << "administration_oids = c(";
-        for (std::string oid : adm_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
+    Interventions *interventions = model->getTrialDesign()->getInterventions();
+    std::cout << "## Interventions" << std::endl;
+    if (interventions) {
+        interventions->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
-    std::cout << std::endl;
     
     // Observations output
-    Observation *observation = model->getTrialDesign()->getObservation();
-    std::cout << "# Observations" << std::endl;
-    if (observation) {
-        // Design parameters (<DesignParameter>)
-        std::vector<Variable *> variables = observation->getDesignParameters();
-        for (Variable *var : variables) {
-            var->accept(&gen);
-            std::cout << gen.getValue() << std::endl;
-        }
-        // Samplings (<Observation>)
-        std::vector<std::string> sampling_oids;
-        std::vector<Sampling *> samplings = observation->getSamplings();
-        for (Sampling *sampling : samplings) {
-            sampling->accept(&gen);
-            std::cout << gen.getValue() << std::endl;
-            sampling_oids.push_back(sampling->getOid());
-        }
-        std::cout << "sampling_oids = c(";
-        for (std::string oid : sampling_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
-        // Observation combinations (<ObservationsCombination>)
-        std::vector<std::string> comb_oids;
-        std::vector<ObservationCombination *> combinations = observation->getObservationCombinations();
-        for (ObservationCombination *comb : combinations) {
-            comb->accept(&gen);
-            std::cout << gen.getValue() << std::endl;
-            comb_oids.push_back(comb->getOid());
-        }
-        std::cout << "combination_oids = c(";
-        for (std::string oid : comb_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
+    Observations *obs = model->getTrialDesign()->getObservations();
+    std::cout << "## Observations" << std::endl;
+    if (obs) {
+        obs->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
-    std::cout << std::endl;
+    
+    // Arms output
+    Arms *arms = model->getTrialDesign()->getArms();
+    std::cout << "## Arms" << std::endl;
+    if (arms) {
+        arms->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
+    }
 
     return 0;
 }

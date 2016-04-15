@@ -1,5 +1,5 @@
-#ifndef PHARMML_INTERVENTION_H_
-#define PHARMML_INTERVENTION_H_
+#ifndef PHARMML_INTERVENTIONS_H_
+#define PHARMML_INTERVENTIONS_H_
 
 #include "xml.h"
 #include "PharmMLContext.h"
@@ -22,7 +22,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         AstNode *getSymbRef();
-        virtual void accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
     
     // TODO: Move elsewhere (Dataset.h when implemented)
@@ -41,7 +41,7 @@ namespace PharmML
         std::string getType();
         std::string getBlkIdRef();
         std::string getRef();
-        virtual void accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
     
     
@@ -67,18 +67,19 @@ namespace PharmML
         AstNode *getSteady();
         AstNode *getDuration();
         AstNode *getRate();
-        virtual void accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
     
-    class Intervention
+    class Interventions
     {
         PharmML::PharmMLContext *context;
         std::vector<PharmML::Administration *> Administrations;
 
         public:
-        Intervention(PharmMLContext *context, xml::Node node);
+        Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<Administration *> getAdministrations();
+        void accept(AbstractVisitor *visitor);
     };
 }
 

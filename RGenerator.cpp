@@ -7,10 +7,6 @@ namespace PharmML
         this->value = str;
     }
 
-    std::string RGenerator::getValue() {
-        return this->value;
-    }
-
     std::string RGenerator::acceptLeft(Binop *binop) {
         binop->getLeft()->accept(this);
         return this->getValue();
@@ -34,8 +30,29 @@ namespace PharmML
         uniop->getChild()->accept(this);
         return this->getValue();
     }
+    
+    // Helper function to reduce redundant code
+    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
+    std::string RGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote) {
+        std::string s = prefix + "(";
+        
+        bool first = true;
+        for (std::string element : vector) {
+            if (first) {
+                first = false;
+            } else {
+                s += ", ";
+            }
+            s += quote + element + quote;
+        }
+        return(s + ")");
+    }
 
     // public
+    std::string RGenerator::getValue() {
+        return this->value;
+    }
+    
     void RGenerator::visit(SymbRef *node) {
         this->setValue(node->toString());
     }
@@ -529,6 +546,7 @@ namespace PharmML
         this->setValue(node->getColumnIdRef() + " = " + this->getValue());
     }
     
+    // Class Interventions and all its content
     void RGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " = list(";
         
@@ -555,7 +573,27 @@ namespace PharmML
         this->setValue(s + ")");
     }
     
-    void RGenerator::visit(Sampling *node) {
+    void RGenerator::visit(Interventions *node) {
+        std::string s;
+        
+        // <Administration>'s
+        std::vector<Administration *> administrations = node->getAdministrations();
+        if (!administrations.empty()) {
+            s += "# Administration\n";
+            std::vector<std::string> adm_oids;
+            for (Administration *adm : administrations) {
+                adm->accept(this);
+                s += this->getValue() + "\n";
+                adm_oids.push_back(adm->getOid());
+            }
+            s += "administration_oids = " + formatVector(adm_oids, "c") + "\n";
+        }
+
+        this->setValue(s);
+    }
+    
+    // Class Observations and all its content
+    void RGenerator::visit(Observation *node) {
         std::string s = node->getOid() + " = list(";
         
         node->getTimes()->accept(this);
@@ -568,7 +606,7 @@ namespace PharmML
             s += ", number = " + this->getValue();
         }
         if (!node->getContinuousVariables().empty()) {
-            s += ", cont_vars = list(";
+            s += ", cont_vars = c(";
             bool first = true;
             for (SymbRef *symbol : node->getContinuousVariables()) {
                 if (first) {
@@ -577,12 +615,12 @@ namespace PharmML
                     s += ", ";
                 }
                 symbol->accept(this);
-                s += this->getValue();
+                s += "'" + this->getValue() + "'";
             }
             s += ")";
         }
         if (!node->getDiscreteVariables().empty()) {
-            s += ", disc_vars = list(";
+            s += ", disc_vars = c(";
             bool first = true;
             for (SymbRef *symbol : node->getDiscreteVariables()) {
                 if (first) {
@@ -591,7 +629,7 @@ namespace PharmML
                     s += ", ";
                 }
                 symbol->accept(this);
-                s += this->getValue();
+                s += "'" + this->getValue() + "'";
             }
             s += ")";
         }
@@ -602,24 +640,218 @@ namespace PharmML
     void RGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " = list(";
         
-        if (!node->getOidRefs().empty()) {
-            s += "oidRefs = c(";
-            bool first = true;
-            for (std::string ref : node->getOidRefs()) {
-                if (first) {
-                    first = false;
-                } else {
-                    s += ", ";
-                }
-                s += "\"" + ref + "\"";
-            }
-            s += ")";
-        }
+        s += "refs = " + formatVector(node->getOidRefs(), "c");
         if (node->getRelative()) {
             node->getRelative()->accept(this);
             s += ", relative = " + this->getValue();
         }
         
         this->setValue(s + ")");
+    }
+    
+    void RGenerator::visit(Observations *node) {
+        std::string s;
+        
+        std::vector<Variable *> variables = node->getDesignParameters();
+        if (!variables.empty()) {
+            s += "# Design parameters\n";
+            for (Variable *var : variables) {
+                var->accept(this);
+                s += this->getValue() + "\n";
+            }
+        }
+        
+        std::vector<Observation *> observations = node->getObservations();
+        if (!observations.empty()) {
+            s += "# Observation\n";
+            std::vector<std::string> obs_oids;
+            for (Observation *observation : observations) {
+                observation->accept(this);
+                s += this->getValue() + "\n";
+                obs_oids.push_back(observation->getOid());
+            }
+            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n";
+        }
+        
+        std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
+        if (!combinations.empty()) {
+            s += "# Observation combinations\n";
+            std::vector<std::string> comb_oids;
+            for (ObservationCombination *comb : combinations) {
+                comb->accept(this);
+                s += this->getValue() + "\n";
+                comb_oids.push_back(comb->getOid());
+            }
+            s += "combination_oids = c(";
+            for (std::string oid : comb_oids) {
+                s += "'" + oid + "'";
+            }
+        }
+        
+        this->setValue(s + ")" + "\n");
+    }
+    
+    // Class Arms and all its contents
+    void RGenerator::visit(InterventionSequence *node) {
+        std::string s = "list(";
+        
+        s += "refs = " + formatVector(node->getOidRefs(), "c");
+        if (node->getStart()) {
+            node->getStart()->accept(this);
+            s += ", start = " + this->getValue();
+        }
+        
+        this->setValue(s + ")");
+    }
+    
+    void RGenerator::visit(ObservationSequence *node) {
+        std::string s = "list(";
+        
+        s += "refs = " + formatVector(node->getOidRefs(), "c");
+        if (node->getStart()) {
+            node->getStart()->accept(this);
+            s += ", start = " + this->getValue();
+        }
+        
+        this->setValue(s + ")");
+    }
+    
+    void RGenerator::visit(OccasionSequence *node) {
+        this->setValue("[WIP]"); // Not implemented
+    }
+    
+    void RGenerator::visit(Arm *node) {
+        std::string s = node->getOid() + " = ";
+        std::vector<std::string> list;
+        
+        if (node->getOidRef() != "") {
+            list.push_back("oidRef = '" + node->getOidRef() + "'");
+        }
+        if (node->getArmSize()) {
+            node->getArmSize()->accept(this);
+            list.push_back("size = " + this->getValue());
+        }
+        if (node->getNumSamples()) {
+            node->getNumSamples()->accept(this);
+            list.push_back("samples = " + this->getValue());
+        }
+        if (node->getNumTimes()) {
+            node->getNumTimes()->accept(this);
+            list.push_back("times = " + this->getValue());
+        }
+        if (node->getSameTimes()) {
+            node->getSameTimes()->accept(this);
+            list.push_back("same_times = " + this->getValue());
+        }
+        if (!node->getInterventionSequences().empty()) {
+            std::string s = "intervention_seq = c(";
+            bool first = true;
+            for (InterventionSequence *seq : node->getInterventionSequences()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                seq->accept(this);
+                s += this->getValue();
+            }
+            list.push_back(s + ")");
+        }
+        if (!node->getObservationSequences().empty()) {
+            std::string s = "observation_seq = c(";
+            bool first = true;
+            for (ObservationSequence *seq : node->getObservationSequences()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                seq->accept(this);
+                s += this->getValue();
+            }
+            list.push_back(s + ")");
+        }
+        // TODO: Implement output of node->getOccasionSequences
+        
+        s += formatVector(list, "list", "");
+        this->setValue(s + ")");
+    }
+    
+    void RGenerator::visit(Arms *node) {
+        std::string s;
+        
+        // Top-level settings that may or may not exist
+        std::vector<std::string> top;
+        // <ArmSize>
+        if (node->getArmSize()) {
+            node->getArmSize()->accept(this);
+            top.push_back("arm_size = " + this->getValue());
+        }
+        // <CostFunction>
+        if (node->getCostFunction()) {
+            node->getCostFunction()->accept(this);
+            top.push_back("cost_function = " + this->getValue());
+        }
+        // <NumberArms>
+        if (node->getNumArms()) {
+            node->getNumArms()->accept(this);
+            top.push_back("num_arms = " + this->getValue());
+        }
+        // <NumberSamples>
+        if (node->getNumSamples()) {
+            node->getNumSamples()->accept(this);
+            top.push_back("num_samples = " + this->getValue());
+        }
+        // <NumberTimes>
+        if (node->getNumTimes()) {
+            node->getNumTimes()->accept(this);
+            top.push_back("num_times = " + this->getValue());
+        }
+        // <SameTimes>
+        if (node->getSameTimes()) {
+            node->getSameTimes()->accept(this);
+            top.push_back("same_times = " + this->getValue());
+        }
+        // <TotalCost>
+        if (node->getTotalCost()) {
+            node->getTotalCost()->accept(this);
+            top.push_back("total_cost = " + this->getValue());
+        }
+        // <TotalSize>
+        if (node->getTotalSize()) {
+            node->getTotalSize()->accept(this);
+            top.push_back("total_size = " + this->getValue());
+        }
+        if (!top.empty()) {
+            s += "arms = " + formatVector(top, "list") + "\n";
+        }
+        
+        // <DesignParameter>'s
+        std::vector<Variable *> variables = node->getDesignParameters();
+        if (!variables.empty()) {
+            s += "# Design parameters\n";
+            for (Variable *var : variables) {
+                var->accept(this);
+                s += this->getValue() + "\n";
+            }
+        }
+        
+        // <Arm>'s
+        std::vector<Arm *> arms = node->getArms();
+        if (!arms.empty()) {
+            s += "# Arm\n";
+            std::vector<std::string> arm_oids;
+            for (Arm *arm : arms) {
+                arm->accept(this);
+                s += this->getValue() + "\n";
+                arm_oids.push_back(arm->getOid());
+            }
+            s += "arm_oids = c(";
+            for (std::string oid : arm_oids) {
+                s += "'" + oid + "'";
+            }
+        }
+        
+        this->setValue(s + ")" + "\n");
     }
 }

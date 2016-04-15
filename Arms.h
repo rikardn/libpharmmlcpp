@@ -1,9 +1,7 @@
 #ifndef PHARMML_ARMS_H_
 #define PHARMML_ARMS_H_
 
-#include "PopulationParameter.h"
-#include "IndividualParameter.h"
-#include "RandomVariable.h"
+#include "Variable.h"
 
 #include "xml.h"
 
@@ -66,6 +64,7 @@ namespace PharmML
     class Arms
     {
         PharmML::PharmMLContext *context;
+        std::vector<PharmML::Variable *> designParameters;
         AstNode *armSize = nullptr;
         AstNode *costFunction = nullptr;
         AstNode *numArms = nullptr;
@@ -78,6 +77,7 @@ namespace PharmML
         
         public:
         Arms(PharmML::PharmMLContext *context, xml::Node node);
+        std::vector<PharmML::Variable *> getDesignParameters();
         AstNode *getArmSize();
         AstNode *getCostFunction();
         AstNode *getNumArms();

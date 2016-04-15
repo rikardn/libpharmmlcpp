@@ -168,6 +168,14 @@ namespace PharmML
     }
     
     void Arms::parse(xml::Node node) {
+        // Get design parameters
+        // (mdef:DesignParameterType extends mdef:CommonParameterType which is close enough to class Variable for now)
+        std::vector<xml::Node> design_parameters = this->context->getElements(node, "./mdef:DesignParameter");
+        for (xml::Node node : design_parameters) {
+            Variable *parameter = new Variable(this->context, node);
+            this->designParameters.push_back(parameter);
+        }
+        
         // Get arm size
         xml::Node assign = this->context->getSingleElement(node, "./design:ArmSize/ct:Assign");
         if (assign.exists()) {
@@ -222,6 +230,10 @@ namespace PharmML
             Arm *arm = new Arm(this->context, node);
             this->arms.push_back(arm);
         }
+    }
+    
+    std::vector<Variable *> Arms::getDesignParameters() {
+        return this->designParameters;
     }
     
     AstNode *Arms::getArmSize() {

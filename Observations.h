@@ -5,6 +5,7 @@
 #include "PharmMLContext.h"
 #include "AstNode.h"
 #include "Variable.h"
+#include "symbols.h"
 
 namespace PharmML
 {

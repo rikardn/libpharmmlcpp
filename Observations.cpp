@@ -1,6 +1,4 @@
 #include "Observations.h"
-#include "Variable.h"
-#include "symbols.h"
 
 namespace PharmML
 {
@@ -156,15 +154,15 @@ namespace PharmML
         }
     }
     
-    std::vector<PharmML::Variable *> Observations::getDesignParameters() {
+    std::vector<Variable *> Observations::getDesignParameters() {
         return this->designParameters;
     }
     
-    std::vector<PharmML::Observation *> Observations::getObservations() {
+    std::vector<Observation *> Observations::getObservations() {
         return this->observations;
     }
     
-    std::vector<PharmML::ObservationCombination *> Observations::getObservationCombinations() {
+    std::vector<ObservationCombination *> Observations::getObservationCombinations() {
         return this->observationCombinations;
     }
     

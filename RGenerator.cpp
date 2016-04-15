@@ -4,7 +4,7 @@ namespace PharmML
 {
     // Helper function to reduce redundant code
     // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string RGenerator::formatVector(std::vector<std::string> vector, std::string prefix) {
+    std::string RGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote) {
         std::string s = prefix + "(";
         
         bool first = true;
@@ -14,7 +14,7 @@ namespace PharmML
             } else {
                 s += ", ";
             }
-            s += "'" + element + "'";
+            s += quote + element + quote;
         }
         return(s + ")");
     }
@@ -612,23 +612,26 @@ namespace PharmML
     }
     
     std::string RGenerator::visit(Arm *node) {
-        std::string s = node->getOid() + " = list(";
+        std::string s = node->getOid() + " = ";
+        std::vector<std::string> list;
         
-        s += "oidRef = '" + node->getOidRef() + "'"; // What if missing? How format that?
+        if (!(node->getOidRef() != "")) {
+            list.push_back("oidRef = '" + node->getOidRef() + "'");
+        }
         if (node->getArmSize()) {
-            s += ", size = " + node->getArmSize()->accept(this);
+            list.push_back("size = " + node->getArmSize()->accept(this));
         }
         if (node->getNumSamples()) {
-            s += ", samples = " + node->getNumSamples()->accept(this);
+            list.push_back("samples = " + node->getNumSamples()->accept(this));
         }
         if (node->getNumTimes()) {
-            s += ", times = " + node->getNumTimes()->accept(this);
+            list.push_back("times = " + node->getNumTimes()->accept(this));
         }
         if (node->getSameTimes()) {
-            s += ", same_times = " + node->getSameTimes()->accept(this);
+            list.push_back("same_times = " + node->getSameTimes()->accept(this));
         }
         if (!node->getInterventionSequences().empty()) {
-            s += ", intervention_seq = c(";
+            std::string s = "intervention_seq = c(";
             bool first = true;
             for (InterventionSequence *seq : node->getInterventionSequences()) {
                 if (first) {
@@ -638,9 +641,10 @@ namespace PharmML
                 }
                 s += seq->accept(this);
             }
-            s += ")";
+            list.push_back(s + ")");
         }
-
+        
+        s += formatVector(list, "list", "");
         return(s + ")");
     }
     
@@ -683,6 +687,15 @@ namespace PharmML
         }
         if (!top.empty()) {
             s += "arms = " + formatVector(top, "list") + "\n";
+        }
+        
+        // <DesignParameter>'s
+        std::vector<Variable *> variables = node->getDesignParameters();
+        if (!variables.empty()) {
+            s += "# Design parameters\n";
+            for (Variable *var : variables) {
+                s += var->accept(this) + "\n";
+            }
         }
         
         // <Arm>'s

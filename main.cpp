@@ -121,44 +121,15 @@ int main(int argc, char **argv)
     std::cout << std::endl;
     
     // Observations output
-    Observation *observation = model->getTrialDesign()->getObservation();
-    std::cout << "# Observations" << std::endl;
-    if (observation) {
-        // Design parameters (<DesignParameter>)
-        std::vector<Variable *> variables = observation->getDesignParameters();
-        for (Variable *var : variables) {
-            std::cout << var->accept(&gen) << std::endl;
-        }
-        // Samplings (<Observation>)
-        std::vector<std::string> sampling_oids;
-        std::vector<Sampling *> samplings = observation->getSamplings();
-        for (Sampling *sampling : samplings) {
-            std::cout << sampling->accept(&gen) << std::endl;
-            sampling_oids.push_back(sampling->getOid());
-        }
-        std::cout << "sampling_oids = c(";
-        for (std::string oid : sampling_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
-        // Observation combinations (<ObservationsCombination>)
-        std::vector<std::string> comb_oids;
-        std::vector<ObservationCombination *> combinations = observation->getObservationCombinations();
-        for (ObservationCombination *comb : combinations) {
-            std::cout << comb->accept(&gen) << std::endl;
-            comb_oids.push_back(comb->getOid());
-        }
-        std::cout << "combination_oids = c(";
-        for (std::string oid : comb_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
+    Observations *obs = model->getTrialDesign()->getObservations();
+    std::cout << "## Observations" << std::endl;
+    if (obs) {
+        std::cout << obs->accept(&gen) << std::endl;
     }
-    std::cout << std::endl;
     
     // Arms output
     Arms *arms = model->getTrialDesign()->getArms();
-    std::cout << "# Arms" << std::endl;
+    std::cout << "## Arms" << std::endl;
     if (arms) {
         std::cout << arms->accept(&gen) << std::endl;
     }

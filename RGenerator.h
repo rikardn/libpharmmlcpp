@@ -23,7 +23,7 @@
 #include "Distribution.h"
 #include "ColumnMapping.h"
 #include "Intervention.h"
-#include "Observation.h"
+#include "Observations.h"
 #include "Arms.h"
 
 namespace PharmML
@@ -32,7 +32,7 @@ namespace PharmML
     {
         public:
             // Helper function to reduce redundant code
-            std::string formatVector(std::vector<std::string> vector, bool asList);
+            std::string formatVector(std::vector<std::string> vector, std::string prefix);
             
             virtual std::string visit(SymbRef *node);
             virtual std::string visit(SteadyStateParameter *node);
@@ -138,9 +138,9 @@ namespace PharmML
             virtual std::string visit(ColumnMapping *node);
             
             virtual std::string visit(Administration *node);
-            //~ virtual std::string visit(Observation *node);
             
-            virtual std::string visit(Sampling *node);
+            virtual std::string visit(Observations *node);
+            virtual std::string visit(Observation *node);
             virtual std::string visit(ObservationCombination *node);
             
             virtual std::string visit(Arms *node);

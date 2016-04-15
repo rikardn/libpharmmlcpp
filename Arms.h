@@ -1,5 +1,5 @@
-#ifndef PHARMML_ARM_H_
-#define PHARMML_ARM_H_
+#ifndef PHARMML_ARMS_H_
+#define PHARMML_ARMS_H_
 
 #include "PopulationParameter.h"
 #include "IndividualParameter.h"

@@ -6,7 +6,7 @@
 #include "PharmMLContext.h"
 #include "ExternalDataset.h"
 #include "Intervention.h"
-#include "Observation.h"
+#include "Observations.h"
 #include "Arms.h"
 
 namespace PharmML
@@ -16,13 +16,13 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         PharmML::Intervention *Intervention = nullptr;
         PharmML::ExternalDataset *ExternalDataset = nullptr;
-        PharmML::Observation *Observation = nullptr;
+        PharmML::Observations *Observations = nullptr;
         PharmML::Arms *Arms = nullptr;
 
         public:
         PharmML::ExternalDataset *getExternalDataset();
         PharmML::Intervention *getIntervention();
-        PharmML::Observation *getObservation();
+        PharmML::Observations *getObservations();
         PharmML::Arms *getArms();
         TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);

@@ -21,9 +21,9 @@ namespace PharmML
             this->Intervention = new PharmML::Intervention(this->context, intervention_node);
         }
         
-        xml::Node observation_node = this->context->getSingleElement(node, ".//design:Observations");
-        if (observation_node.exists()) {
-            this->Observation = new PharmML::Observation(this->context, observation_node);
+        xml::Node observations_node = this->context->getSingleElement(node, ".//design:Observations");
+        if (observations_node.exists()) {
+            this->Observations = new PharmML::Observations(this->context, observations_node);
         }
         xml::Node arms_node = this->context->getSingleElement(node, ".//design:Arms");
         if (arms_node.exists()) {
@@ -39,8 +39,8 @@ namespace PharmML
         return this->Intervention;
     }
     
-    PharmML::Observation *TrialDesign::getObservation() {
-        return this->Observation;
+    PharmML::Observations *TrialDesign::getObservations() {
+        return this->Observations;
     }
 
     PharmML::Arms *TrialDesign::getArms() {

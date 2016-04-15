@@ -1,18 +1,18 @@
-#include "Observation.h"
+#include "Observations.h"
 #include "Variable.h"
 #include "symbols.h"
 
 namespace PharmML
 {
-    Sampling::Sampling(PharmMLContext *context, xml::Node node) {
+    Observation::Observation(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
     
-    void Sampling::parse(xml::Node node) {
+    void Observation::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         
-        // Get (oid) observation references (to samplings already defined)
+        // Get (oid) observation references (to observations already defined)
         xml::Node reference = this->context->getSingleElement(node, ".//design:ObservationRef");
         if (reference.exists()) {
             this->oidRef = reference.getAttribute("oidRef").getValue();
@@ -53,31 +53,31 @@ namespace PharmML
         }
     }
     
-    std::string Sampling::getOid() {
+    std::string Observation::getOid() {
         return this->oid;
     }
     
-    std::string Sampling::getOidRef() {
+    std::string Observation::getOidRef() {
         return this->oidRef;
     }
     
-    AstNode *Sampling::getNumber() {
+    AstNode *Observation::getNumber() {
         return this->number;
     }
     
-    AstNode *Sampling::getTimes() {
+    AstNode *Observation::getTimes() {
         return this->times;
     }
     
-    std::vector<PharmML::SymbRef *> Sampling::getContinuousVariables() {
+    std::vector<PharmML::SymbRef *> Observation::getContinuousVariables() {
         return this->continuousVariables;
     }
     
-    std::vector<PharmML::SymbRef *> Sampling::getDiscreteVariables() {
+    std::vector<PharmML::SymbRef *> Observation::getDiscreteVariables() {
         return this->discreteVariables;
     }
     
-    std::string Sampling::accept(AbstractVisitor *visitor) {
+    std::string Observation::accept(AbstractVisitor *visitor) {
         return visitor->visit(this);
     }
     
@@ -123,12 +123,12 @@ namespace PharmML
         return visitor->visit(this);
     }
     
-    Observation::Observation(PharmMLContext *context, xml::Node node) {
+    Observations::Observations(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
     
-    void Observation::parse(xml::Node node) {
+    void Observations::parse(xml::Node node) {
         // Get design parameters
         // (mdef:DesignParameterType extends mdef:CommonParameterType which is close enough to class Variable for now)
         std::vector<xml::Node> design_parameters = this->context->getElements(node, ".//mdef:DesignParameter");
@@ -138,12 +138,12 @@ namespace PharmML
         }
         
         // Get sampling
-        std::vector<xml::Node> samplings = this->context->getElements(node, ".//design:Observation");
+        std::vector<xml::Node> observations = this->context->getElements(node, ".//design:Observation");
         std::vector<xml::Node> data_observations = this->context->getElements(node, ".//design:IndividualObservations");
         std::vector<xml::Node> lookup_tables = this->context->getElements(node, ".//design:LookupTable");
-        for (xml::Node node : samplings) {
-            Sampling *sampling = new Sampling(this->context, node);
-            this->samplings.push_back(sampling);
+        for (xml::Node node : observations) {
+            Observation *sampling = new Observation(this->context, node);
+            this->observations.push_back(sampling);
         }
         // TODO: Implement support for IndividualObservations according to schema
         // TODO: Implement support for LookupTable according to schema
@@ -156,19 +156,19 @@ namespace PharmML
         }
     }
     
-    std::vector<PharmML::Variable *> Observation::getDesignParameters() {
+    std::vector<PharmML::Variable *> Observations::getDesignParameters() {
         return this->designParameters;
     }
     
-    std::vector<PharmML::Sampling *> Observation::getSamplings() {
-        return this->samplings;
+    std::vector<PharmML::Observation *> Observations::getObservations() {
+        return this->observations;
     }
     
-    std::vector<PharmML::ObservationCombination *> Observation::getObservationCombinations() {
+    std::vector<PharmML::ObservationCombination *> Observations::getObservationCombinations() {
         return this->observationCombinations;
     }
     
-    //~ std::string Observation::accept(AbstractVisitor *visitor) {
-        //~ return visitor->visit(this);
-    //~ }
+    std::string Observations::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
 }

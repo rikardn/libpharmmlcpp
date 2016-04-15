@@ -1,5 +1,5 @@
-#ifndef PHARMML_OBSERVATION_H_
-#define PHARMML_OBSERVATION_H_
+#ifndef PHARMML_OBSERVATIONS_H_
+#define PHARMML_OBSERVATIONS_H_
 
 #include "xml.h"
 #include "PharmMLContext.h"
@@ -8,7 +8,7 @@
 
 namespace PharmML
 {
-    class Sampling
+    class Observation
     {
         PharmML::PharmMLContext *context;
         std::string oid;
@@ -19,7 +19,7 @@ namespace PharmML
         std::vector<PharmML::SymbRef *> discreteVariables;
         
         public:
-        Sampling(PharmMLContext *context, xml::Node node);
+        Observation(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getOid();
         std::string getOidRef();
@@ -46,22 +46,22 @@ namespace PharmML
         std::string accept(AbstractVisitor *visitor);
     };
     
-    class Observation
+    class Observations
     {
         PharmML::PharmMLContext *context;
         std::vector<PharmML::Variable *> designParameters;
-        std::vector<PharmML::Sampling *> samplings;
+        std::vector<PharmML::Observation *> observations;
         // TODO: Implement support for IndividualObservations according to schema
         // TODO: Implement support for LookupTable according to schema
         std::vector<ObservationCombination *> observationCombinations;
 
         public:
-        Observation(PharmMLContext *context, xml::Node node);
+        Observations(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<PharmML::Variable *> getDesignParameters();
-        std::vector<PharmML::Sampling *> getSamplings();
+        std::vector<PharmML::Observation *> getObservations();
         std::vector<PharmML::ObservationCombination *> getObservationCombinations();
-        //~ std::string accept(AbstractVisitor *visitor);
+        std::string accept(AbstractVisitor *visitor);
     };
 }
 

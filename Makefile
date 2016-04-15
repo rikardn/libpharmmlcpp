@@ -4,8 +4,8 @@ LIBS = -lxml2
 main: main.o libpharmmlc.a
 	g++ main.o -omain -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Intervention.o Observation.o Arms.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Intervention.o Observation.o Arms.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
+libpharmmlc.a: PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Intervention.o Observations.o Arms.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Intervention.o Observations.o Arms.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
 
 main.o: main.cpp
 	g++ -c main.cpp -omain.o $(CFLAGS)
@@ -54,8 +54,8 @@ ParameterModel.o: ParameterModel.cpp ParameterModel.h
 Intervention.o: Intervention.cpp Intervention.h
 	g++ -c Intervention.cpp -oIntervention.o $(CFLAGS)
 
-Observation.o: Observation.cpp Observation.h
-	g++ -c Observation.cpp -oObservation.o $(CFLAGS)
+Observations.o: Observations.cpp Observations.h
+	g++ -c Observations.cpp -oObservations.o $(CFLAGS)
 
 Arms.o: Arms.cpp Arms.h
 	g++ -c Arms.cpp -oArms.o $(CFLAGS)

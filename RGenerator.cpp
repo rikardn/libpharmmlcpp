@@ -482,13 +482,39 @@ namespace PharmML
     std::string RGenerator::visit(Sampling *node) {
         std::string s = node->getOid() + " = list(";
         
+        s += "times = " + node->getTimes()->accept(this);
         if (node->getOidRef() != "") {
-            s += "oidRef = \"" + node->getOidRef() + "\"" + ", ";
+            s += ", oidRef = \"" + node->getOidRef() + "\"";
         }
         if (node->getNumber()) {
-            s += "number = " + node->getNumber()->accept(this) + ", ";
+            s += ", number = " + node->getNumber()->accept(this);
         }
-        s += "times = " + node->getTimes()->accept(this);
+        if (!node->getContinuousVariables().empty()) {
+            s += ", cont_vars = list(";
+            bool first = true;
+            for (SymbRef *symbol : node->getContinuousVariables()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                s += symbol->accept(this);
+            }
+            s += ")";
+        }
+        if (!node->getDiscreteVariables().empty()) {
+            s += ", disc_vars = list(";
+            bool first = true;
+            for (SymbRef *symbol : node->getDiscreteVariables()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                s += symbol->accept(this);
+            }
+            s += ")";
+        }
         
         return (s + ")");
     }

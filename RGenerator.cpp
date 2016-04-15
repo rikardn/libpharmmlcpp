@@ -497,6 +497,24 @@ namespace PharmML
         return(s + ")");
     }
     
+    std::string RGenerator::visit(Interventions *node) {
+        std::string s;
+        
+        // <Administration>'s
+        std::vector<Administration *> administrations = node->getAdministrations();
+        if (!administrations.empty()) {
+            s += "# Administration\n";
+            std::vector<std::string> adm_oids;
+            for (Administration *adm : administrations) {
+                s += adm->accept(this) + "\n";
+                adm_oids.push_back(adm->getOid());
+            }
+            s += "administration_oids = " + formatVector(adm_oids, "c") + "\n";
+        }
+
+        return(s);
+    }
+    
     // Class Observations and all its content
     std::string RGenerator::visit(Observation *node) {
         std::string s = node->getOid() + " = list(";
@@ -509,7 +527,7 @@ namespace PharmML
             s += ", number = " + node->getNumber()->accept(this);
         }
         if (!node->getContinuousVariables().empty()) {
-            s += ", cont_vars = list(";
+            s += ", cont_vars = c(";
             bool first = true;
             for (SymbRef *symbol : node->getContinuousVariables()) {
                 if (first) {
@@ -517,12 +535,12 @@ namespace PharmML
                 } else {
                     s += ", ";
                 }
-                s += symbol->accept(this);
+                s += "'" + symbol->accept(this) + "'";
             }
             s += ")";
         }
         if (!node->getDiscreteVariables().empty()) {
-            s += ", disc_vars = list(";
+            s += ", disc_vars = c(";
             bool first = true;
             for (SymbRef *symbol : node->getDiscreteVariables()) {
                 if (first) {
@@ -530,9 +548,20 @@ namespace PharmML
                 } else {
                     s += ", ";
                 }
-                s += symbol->accept(this);
+                s += "'" + symbol->accept(this) + "'";
             }
             s += ")";
+        }
+        
+        return (s + ")");
+    }
+    
+    std::string RGenerator::visit(ObservationCombination *node) {
+        std::string s = node->getOid() + " = list(";
+        
+        s += "refs = " + formatVector(node->getOidRefs(), "c");
+        if (node->getRelative()) {
+            s += ", relative = " + node->getRelative()->accept(this);
         }
         
         return (s + ")");
@@ -552,12 +581,12 @@ namespace PharmML
         std::vector<Observation *> observations = node->getObservations();
         if (!observations.empty()) {
             s += "# Observation\n";
-            std::vector<std::string> observation_oids;
+            std::vector<std::string> obs_oids;
             for (Observation *observation : observations) {
                 s += observation->accept(this) + "\n";
-                observation_oids.push_back(observation->getOid());
+                obs_oids.push_back(observation->getOid());
             }
-            s += "observation_oids = " + formatVector(observation_oids, "c") + "\n";
+            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
@@ -575,17 +604,6 @@ namespace PharmML
         }
         
         return(s + ")" + "\n");
-    }
-    
-    std::string RGenerator::visit(ObservationCombination *node) {
-        std::string s = node->getOid() + " = list(";
-        
-        s += "refs = " + formatVector(node->getOidRefs(), "c");
-        if (node->getRelative()) {
-            s += ", relative = " + node->getRelative()->accept(this);
-        }
-        
-        return (s + ")");
     }
     
     // Class Arms and all its contents
@@ -611,11 +629,15 @@ namespace PharmML
         return(s + ")");
     }
     
+    std::string RGenerator::visit(OccasionSequence *node) {
+        return("[WIP]"); // Not implemented
+    }
+    
     std::string RGenerator::visit(Arm *node) {
         std::string s = node->getOid() + " = ";
         std::vector<std::string> list;
         
-        if (!(node->getOidRef() != "")) {
+        if (node->getOidRef() != "") {
             list.push_back("oidRef = '" + node->getOidRef() + "'");
         }
         if (node->getArmSize()) {
@@ -643,6 +665,20 @@ namespace PharmML
             }
             list.push_back(s + ")");
         }
+        if (!node->getObservationSequences().empty()) {
+            std::string s = "observation_seq = c(";
+            bool first = true;
+            for (ObservationSequence *seq : node->getObservationSequences()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                s += seq->accept(this);
+            }
+            list.push_back(s + ")");
+        }
+        // TODO: Implement output of node->getOccasionSequences
         
         s += formatVector(list, "list", "");
         return(s + ")");

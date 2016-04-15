@@ -2,11 +2,39 @@
 #define PHARMML_ARMS_H_
 
 #include "Variable.h"
-
+#include "symbols.h"
 #include "xml.h"
 
 namespace PharmML
 {
+    class VariabilityReference
+    {
+        PharmML::PharmMLContext *context;
+        SymbRef *symbRef = nullptr;
+        SymbRef *mappedSymbRef = nullptr;
+        
+        public:
+        VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        SymbRef *getSymbRef();
+        SymbRef *getMappedSymbRef();
+        //~ std::string accept(AbstractVisitor *visitor);
+    };
+    
+    class OccasionType
+    {
+        PharmML::PharmMLContext *context;
+        AstNode *start = nullptr;
+        AstNode *end = nullptr;
+        
+        public:
+        OccasionType(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        AstNode *getStart();
+        AstNode *getEnd();
+        //~ std::string accept(AbstractVisitor *visitor);
+    };
+    
     class InterventionSequence
     {
         PharmML::PharmMLContext *context;
@@ -35,6 +63,20 @@ namespace PharmML
         std::string accept(AbstractVisitor *visitor);
     };
     
+    class OccasionSequence
+    {
+        PharmML::PharmMLContext *context;
+        VariabilityReference *variabilityReference;
+        std::vector<OccasionType *> occasions;
+        
+        public:
+        OccasionSequence(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        VariabilityReference *getVariabilityReference();
+        std::vector<OccasionType *> getOccasions();
+        std::string accept(AbstractVisitor *visitor);
+    };
+    
     class Arm
     {
         PharmML::PharmMLContext *context;
@@ -46,7 +88,7 @@ namespace PharmML
         AstNode *sameTimes = nullptr;
         std::vector<InterventionSequence *> interventionSequences;
         std::vector<ObservationSequence *> observationSequences;
-        //~ std::vector<OccasionSequence *> occasionSequences;
+        std::vector<OccasionSequence *> occasionSequences;
         
         public:
         Arm(PharmML::PharmMLContext *context, xml::Node node);
@@ -58,6 +100,7 @@ namespace PharmML
         AstNode *getNumTimes();
         AstNode *getSameTimes();
         std::vector<InterventionSequence *> getInterventionSequences();
+        std::vector<ObservationSequence *> getObservationSequences();
         std::string accept(AbstractVisitor *visitor);
     };
     

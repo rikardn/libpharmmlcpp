@@ -1,5 +1,5 @@
-#ifndef PHARMML_INTERVENTION_H_
-#define PHARMML_INTERVENTION_H_
+#ifndef PHARMML_INTERVENTIONS_H_
+#define PHARMML_INTERVENTIONS_H_
 
 #include "xml.h"
 #include "PharmMLContext.h"
@@ -70,15 +70,16 @@ namespace PharmML
         std::string accept(AbstractVisitor *visitor);
     };
     
-    class Intervention
+    class Interventions
     {
         PharmML::PharmMLContext *context;
         std::vector<PharmML::Administration *> Administrations;
 
         public:
-        Intervention(PharmMLContext *context, xml::Node node);
+        Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<Administration *> getAdministrations();
+        std::string accept(AbstractVisitor *visitor);
     };
 }
 

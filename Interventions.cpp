@@ -1,9 +1,4 @@
-#include <iostream>
-#include "Intervention.h"
-#include "PharmMLContext.h"
-#include "AstNodeFactory.h"
-#include "AstNode.h"
-#include "symbols.h"
+#include "Interventions.h"
 
 namespace PharmML
 {
@@ -73,6 +68,7 @@ namespace PharmML
         return visitor->visit(this);
     }
     
+    // Administration class
     Administration::Administration(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
@@ -156,12 +152,13 @@ namespace PharmML
         return visitor->visit(this);
     }
     
-    Intervention::Intervention(PharmMLContext *context, xml::Node node) {
+    // Interventions class
+    Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
     
-    void Intervention::parse(xml::Node node) {
+    void Interventions::parse(xml::Node node) {
         std::vector<xml::Node> array = this->context->getElements(node, ".//design:Administration");
         for (xml::Node n : array) {
             PharmML::Administration *adm = new PharmML::Administration(this->context, n);
@@ -169,7 +166,11 @@ namespace PharmML
         }
     }
     
-    std::vector <Administration *> Intervention::getAdministrations() {
+    std::vector <Administration *> Interventions::getAdministrations() {
         return Administrations;
+    }
+    
+    std::string Interventions::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
     }
 }

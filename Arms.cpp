@@ -2,6 +2,65 @@
 
 namespace PharmML
 {
+    // VariabilityReference and OccasionType class (for OccasionSequence class)
+    // TODO: VariabilityReference is also read in class RandomVariable. Use this 'official class'?
+    VariabilityReference::VariabilityReference(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void VariabilityReference::parse(xml::Node node) {
+        // Get SymbRef
+        xml::Node symbRef = this->context->getSingleElement(node, "./ct:SymbRef");
+        this->symbRef = new SymbRef(symbRef);
+        
+        // Get random effect mapping (also a symbref)
+        xml::Node mappedSymbRef = this->context->getSingleElement(node, "./ct:RandomEffectMapping/ct:SymbRef");
+        if (mappedSymbRef.exists()) {
+            this->mappedSymbRef = new SymbRef(mappedSymbRef);
+        }
+    }
+    
+    SymbRef *VariabilityReference::getSymbRef() {
+        return this->symbRef;
+    }
+    
+    SymbRef *VariabilityReference::getMappedSymbRef() {
+        return this->mappedSymbRef;
+    }
+    
+    //~ std::string VariabilityReference::accept(AbstractVisitor *visitor) {
+        //~ return visitor->visit(this);
+    //~ }
+    
+    // TODO: Occasion is also used on top-level of TrialDesign
+    OccasionType::OccasionType(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void OccasionType::parse(xml::Node node) {
+        // Get start
+        xml::Node assign = this->context->getSingleElement(node, "./design:Start/ct:Assign");
+        this->start = this->context->factory.create(assign.getChild());
+        
+        // Get end
+        assign = this->context->getSingleElement(node, "./design:End/ct:Assign");
+        this->end = this->context->factory.create(assign.getChild());
+    }
+    
+    AstNode *OccasionType::getStart() {
+        return this->start;
+    }
+    
+    AstNode *OccasionType::getEnd() {
+        return this->end;
+    }
+    
+    //~ std::string OccasionType::accept(AbstractVisitor *visitor) {
+        //~ return visitor->visit(this);
+    //~ }
+    
     // InterventionSequence class
     InterventionSequence::InterventionSequence(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -68,6 +127,38 @@ namespace PharmML
         return visitor->visit(this);
     }
     
+    // OccassionSequence class
+    OccasionSequence::OccasionSequence(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void OccasionSequence::parse(xml::Node node) {
+        xml::Node occasionList = this->context->getSingleElement(node, "./design:OccasionList");
+        
+        // Get variability reference
+        xml::Node varRef = this->context->getSingleElement(occasionList, "./ct:VariabilityReference");
+        this->variabilityReference = new VariabilityReference(this->context, varRef);
+        
+        // Get occasions
+        std::vector<xml::Node> occasions = this->context->getElements(occasionList, "./design:Occasion");
+        for (xml::Node occ : occasions) {
+            this->occasions.push_back(new OccasionType(this->context, occ));
+        }
+    }
+    
+    VariabilityReference *OccasionSequence::getVariabilityReference() {
+        return this->variabilityReference;
+    }
+    
+    std::vector<OccasionType *> OccasionSequence::getOccasions() {
+        return this->occasions;
+    }
+    
+    std::string OccasionSequence::accept(AbstractVisitor *visitor) {
+        return visitor->visit(this);
+    }
+    
     // Arm class
     Arm::Arm(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -123,10 +214,10 @@ namespace PharmML
         
         // Get occasion sequences
         sequence = this->context->getElements(node, "./design:OccasionSequence");
-        //~ for (xml::Node node : sequence) {
-            //~ OccasionSequence *sequence = new OccasionSequence(this->context, node);
-            //~ this->occasionSequences.push_back(sequence);
-        //~ }
+        for (xml::Node node : sequence) {
+            OccasionSequence *sequence = new OccasionSequence(this->context, node);
+            this->occasionSequences.push_back(sequence);
+        }
     }
     
     std::string Arm::getOid(){
@@ -155,6 +246,10 @@ namespace PharmML
     
     std::vector<InterventionSequence *> Arm::getInterventionSequences(){
         return this->interventionSequences;
+    }
+    
+    std::vector<ObservationSequence *> Arm::getObservationSequences(){
+        return this->observationSequences;
     }
     
     std::string Arm::accept(AbstractVisitor *visitor) {

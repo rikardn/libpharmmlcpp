@@ -102,23 +102,11 @@ int main(int argc, char **argv)
     std::cout << std::endl;
     
     // Interventions output
-    Intervention *intervention = model->getTrialDesign()->getIntervention();
-    std::cout << "# Interventions" << std::endl;
-    if (intervention) {
-        // Administrations (<Administration>)
-        std::vector<std::string> adm_oids;
-        std::vector<Administration *> administrations = intervention->getAdministrations();
-        for (Administration *adm : administrations) {
-            std::cout << adm->accept(&gen) << std::endl;
-            adm_oids.push_back(adm->getOid());
-        }
-        std::cout << "administration_oids = c(";
-        for (std::string oid : adm_oids) {
-            std::cout << "'" << oid << "'";
-        }
-        std::cout << ")" << std::endl;
+    Interventions *interventions = model->getTrialDesign()->getInterventions();
+    std::cout << "## Interventions" << std::endl;
+    if (interventions) {
+        std::cout << interventions->accept(&gen) << std::endl;
     }
-    std::cout << std::endl;
     
     // Observations output
     Observations *obs = model->getTrialDesign()->getObservations();

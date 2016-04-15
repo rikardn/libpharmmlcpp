@@ -22,7 +22,7 @@
 #include "RandomVariable.h"
 #include "Distribution.h"
 #include "ColumnMapping.h"
-#include "Intervention.h"
+#include "Interventions.h"
 #include "Observations.h"
 #include "Arms.h"
 
@@ -137,6 +137,7 @@ namespace PharmML
             virtual std::string visit(Distribution *node);
             virtual std::string visit(ColumnMapping *node);
             
+            virtual std::string visit(Interventions *node);
             virtual std::string visit(Administration *node);
             
             virtual std::string visit(Observations *node);
@@ -147,6 +148,7 @@ namespace PharmML
             virtual std::string visit(Arm *node);
             virtual std::string visit(InterventionSequence *node);
             virtual std::string visit(ObservationSequence *node);
+            virtual std::string visit(OccasionSequence *node);
     };
 }
 

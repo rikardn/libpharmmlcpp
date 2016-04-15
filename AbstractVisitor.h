@@ -106,6 +106,7 @@ namespace PharmML
     class Distribution;
     class ColumnMapping;
     
+    class Interventions;
     class Administration;
     
     class Observations;
@@ -116,6 +117,7 @@ namespace PharmML
     class Arm;
     class InterventionSequence;
     class ObservationSequence;
+    class OccasionSequence;
 
     class AbstractVisitor
     {
@@ -223,6 +225,7 @@ namespace PharmML
             virtual std::string visit(Distribution *node) = 0;
             virtual std::string visit(ColumnMapping *node) = 0;
             
+            virtual std::string visit(Interventions *node) = 0;
             virtual std::string visit(Administration *node) = 0;
             
             virtual std::string visit(Observations *node) = 0;
@@ -233,6 +236,7 @@ namespace PharmML
             virtual std::string visit(Arm *node) = 0;
             virtual std::string visit(InterventionSequence *node) = 0;
             virtual std::string visit(ObservationSequence *node) = 0;
+            virtual std::string visit(OccasionSequence *node) = 0;
     };
 }
 

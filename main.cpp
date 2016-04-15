@@ -151,5 +151,7 @@ int main(int argc, char **argv)
     std::cout << "..." << std::endl;
     std::cout << "We will probably also need it for other objects that may lack oids" << std::endl;
 
+    model->write("out.xml");
+
     return 0;
 }

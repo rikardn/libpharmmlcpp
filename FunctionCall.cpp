@@ -2,8 +2,8 @@
 
 namespace PharmML
 {
-    std::string FunctionCall::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void FunctionCall::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
     void FunctionCall::setFunctionName(AstNode *node) {
@@ -38,7 +38,7 @@ namespace PharmML
         return this->Argument;
     }
 
-    std::string FunctionArgument::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void FunctionArgument::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

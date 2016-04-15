@@ -30,7 +30,7 @@ namespace PharmML
         AstNode *getCovariate();
         AstNode *getAssignment();
         bool isStructured();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

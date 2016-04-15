@@ -14,7 +14,7 @@ namespace PharmML
         IndependentVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getSymbId();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

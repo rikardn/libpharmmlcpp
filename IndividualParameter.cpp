@@ -80,7 +80,7 @@ namespace PharmML
         return this->is_structured;
     }
 
-    std::string IndividualParameter::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void IndividualParameter::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

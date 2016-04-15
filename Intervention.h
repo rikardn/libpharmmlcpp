@@ -22,7 +22,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         AstNode *getSymbRef();
-        virtual std::string accept(AbstractVisitor *visitor);
+        virtual void accept(AbstractVisitor *visitor);
     };
     
     // TODO: Move elsewhere (Dataset.h when implemented)
@@ -41,7 +41,7 @@ namespace PharmML
         std::string getType();
         std::string getBlkIdRef();
         std::string getRef();
-        virtual std::string accept(AbstractVisitor *visitor);
+        virtual void accept(AbstractVisitor *visitor);
     };
     
     
@@ -67,7 +67,7 @@ namespace PharmML
         AstNode *getSteady();
         AstNode *getDuration();
         AstNode *getRate();
-        std::string accept(AbstractVisitor *visitor);
+        virtual void accept(AbstractVisitor *visitor);
     };
     
     class Intervention

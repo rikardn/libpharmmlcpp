@@ -23,7 +23,7 @@ namespace PharmML
         AstNode *getErrorModel();
         AstNode *getResidualError();
         void parse(xml::Node node);
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

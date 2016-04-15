@@ -19,7 +19,7 @@ namespace PharmML
         std::string getSymbId();
         std::vector<std::string> getArguments();
         AstNode *getAssignment();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

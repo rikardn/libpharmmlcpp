@@ -18,8 +18,8 @@ namespace PharmML
         return std::to_string(value); 
     } 
 
-    std::string ScalarInt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ScalarInt::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
     ScalarReal::ScalarReal(double value) {
@@ -38,7 +38,7 @@ namespace PharmML
         return std::to_string(value); 
     } 
 
-    std::string ScalarReal::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ScalarReal::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

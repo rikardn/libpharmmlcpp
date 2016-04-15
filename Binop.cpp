@@ -19,97 +19,85 @@ namespace PharmML
         return this->right;
     }
 
-    std::string Binop::acceptLeft(AbstractVisitor *visitor) {
-        return this->left->accept(visitor);
-    }
-
-    std::string Binop::acceptRight(AbstractVisitor *visitor) {
-        return this->right->accept(visitor);
-    }
-
-    std::string Binop::infix(AbstractVisitor *visitor, const char *op) {
-        return "(" + this->acceptLeft(visitor) + op + this->acceptRight(visitor) + ")";
-    }
-    
     // Ordinary binops
-    std::string BinopPlus::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopPlus::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
-    std::string BinopMinus::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopMinus::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
-    std::string BinopDivide::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopDivide::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
-    std::string BinopTimes::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopTimes::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopPower::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopPower::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopLogx::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopLogx::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopRoot::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopRoot::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopMin::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopMin::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopMax::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopMax::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopRem::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopRem::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string BinopAtan2::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void BinopAtan2::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     // Logic binops
-    std::string LogicBinopLt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopLt::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
-    std::string LogicBinopLeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopLeq::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopGt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopGt::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopGeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopGeq::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopEq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopEq::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopNeq::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopNeq::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopAnd::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopAnd::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopOr::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopOr::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
-    std::string LogicBinopXor::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicBinopXor::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

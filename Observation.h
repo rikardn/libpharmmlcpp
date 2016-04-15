@@ -27,7 +27,7 @@ namespace PharmML
         AstNode *getTimes();
         std::vector<PharmML::SymbRef *> getContinuousVariables();
         std::vector<PharmML::SymbRef *> getDiscreteVariables();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
     
     class ObservationCombination
@@ -43,7 +43,7 @@ namespace PharmML
         std::string getOid();
         std::vector<std::string> getOidRefs();
         AstNode *getRelative();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
     
     class Observation
@@ -61,7 +61,7 @@ namespace PharmML
         std::vector<PharmML::Variable *> getDesignParameters();
         std::vector<PharmML::Sampling *> getSamplings();
         std::vector<PharmML::ObservationCombination *> getObservationCombinations();
-        //~ std::string accept(AbstractVisitor *visitor);
+        //~ void accept(AbstractVisitor *visitor);
     };
 }
 

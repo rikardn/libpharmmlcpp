@@ -22,7 +22,7 @@ namespace PharmML
         return this->columnIdRef;
     }
     
-    std::string ColumnMapping::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ColumnMapping::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

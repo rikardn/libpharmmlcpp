@@ -29,7 +29,7 @@ namespace PharmML
         return this->assignment;
     }
     
-    std::string Covariate::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Covariate::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

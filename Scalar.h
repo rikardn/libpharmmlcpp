@@ -17,11 +17,11 @@ namespace PharmML
             int value;
 
         public:
-            virtual std::string accept(AbstractVisitor *visitor);
             ScalarInt(int value);
             ScalarInt(std::string s);
             ScalarInt(xml::Node xml_node);
             std::string toString();
+            virtual void accept(AbstractVisitor *visitor);
     };
 
     class ScalarReal : public Scalar
@@ -34,7 +34,7 @@ namespace PharmML
             ScalarReal(std::string s);
             ScalarReal(xml::Node xml_node);
             std::string toString();
-            virtual std::string accept(AbstractVisitor *visitor);
+            virtual void accept(AbstractVisitor *visitor);
     };
 }
 

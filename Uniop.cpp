@@ -10,190 +10,186 @@ namespace PharmML
         delete child;
         this->child = node;
     }
-    
-    std::string Uniop::acceptChild(AbstractVisitor *visitor) {
-        return this->child->accept(visitor);
-    }
-    
+
     // Ordinary uniops
-    std::string UniopLog::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopLog::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopLog2::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopLog2::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopLog10::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopLog10::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
 
-    std::string UniopExp::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopExp::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
 
-    std::string UniopMinus::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopMinus::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopAbs::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopAbs::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSqrt::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSqrt::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopLogistic::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopLogistic::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopLogit::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopLogit::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopProbit::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopProbit::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopNormcdf::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopNormcdf::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopFactorial::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopFactorial::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopFactln::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopFactln::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopGamma::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopGamma::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopGammaln::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopGammaln::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSin::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSin::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSinh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSinh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCos::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCos::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCosh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCosh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopTan::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopTan::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopTanh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopTanh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCot::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCot::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCoth::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCoth::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSec::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSec::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSech::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSech::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCsc::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCsc::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCsch::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCsch::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArcsin::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArcsin::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArcsinh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArcsinh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccos::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccos::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccosh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccosh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArctan::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArctan::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArctanh::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArctanh::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccot::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccot::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccoth::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccoth::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArcsec::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArcsec::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArcsech::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArcsech::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccsc::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccsc::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopArccsch::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopArccsch::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopHeaviside::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopHeaviside::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopSign::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopSign::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopFloor::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopFloor::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string UniopCeiling::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void UniopCeiling::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
     // Logic uniops
-    std::string LogicUniopIsdefined::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicUniopIsdefined::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
     
-    std::string LogicUniopNot::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void LogicUniopNot::accept(AbstractVisitor *visitor) {
+         visitor->visit(this);
     }
 }

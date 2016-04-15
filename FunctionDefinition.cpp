@@ -32,7 +32,7 @@ namespace PharmML
         return this->assignment;
     }
 
-    std::string FunctionDefinition::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void FunctionDefinition::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

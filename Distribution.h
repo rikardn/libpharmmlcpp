@@ -19,7 +19,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getName();
         std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

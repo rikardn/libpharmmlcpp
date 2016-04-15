@@ -43,7 +43,7 @@ namespace PharmML
         return this->ResidualError;
     }
 
-    std::string ObservationModel::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ObservationModel::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

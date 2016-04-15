@@ -37,7 +37,7 @@ namespace PharmML
         return this->parameters;
     }
 
-    std::string Distribution::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Distribution::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

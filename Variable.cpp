@@ -29,7 +29,7 @@ namespace PharmML
         return this->deps;
     }
 
-    std::string Variable::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Variable::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

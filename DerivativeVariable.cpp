@@ -30,7 +30,7 @@ namespace PharmML
         return this->initial_time;
     }
 
-    std::string DerivativeVariable::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void DerivativeVariable::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

@@ -12,8 +12,8 @@ namespace PharmML
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
     }
 
-    std::string SymbRef::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void SymbRef::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
     std::string SymbRef::toString() {
@@ -30,8 +30,8 @@ namespace PharmML
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }
 
-    std::string ColumnRef::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ColumnRef::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
     std::string ColumnRef::toString() {

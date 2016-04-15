@@ -15,7 +15,7 @@ namespace PharmML
         return this->symbId;
     }
 
-    std::string IndependentVariable::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void IndependentVariable::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

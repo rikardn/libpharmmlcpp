@@ -50,7 +50,7 @@ namespace PharmML
         return this->elements;
     }
     
-    std::string Vector::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Vector::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

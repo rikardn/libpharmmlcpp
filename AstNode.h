@@ -9,7 +9,7 @@ namespace PharmML
     class AstNode
     {
         public:
-            virtual std::string accept(AbstractVisitor *visitor) = 0;
+            virtual void accept(AbstractVisitor *visitor) = 0;
     };
 }
 

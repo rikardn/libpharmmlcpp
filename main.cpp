@@ -22,7 +22,8 @@ int main(int argc, char **argv)
     
     // Parameter definitions output
     std::cout << "# Parameter definitions" << std::endl;
-    std::cout << model->getIndependentVariable()->accept(&gen) << std::endl;
+    model->getIndependentVariable()->accept(&gen);
+    std::cout << gen.getValue() << std::endl;
     std::cout << "PopulationParameters = c(";
     bool first = true;
     for (PopulationParameter *p : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
@@ -31,19 +32,22 @@ int main(int argc, char **argv)
         } else {
             std::cout << ", ";
         }
-        std::cout << p->accept(&gen);
+        p->accept(&gen);
+        std::cout << gen.getValue(); 
     }
     std::cout << ")" << std::endl;
 
     for (RandomVariable *r : model->getModelDefinition()->getParameterModel()->getRandomVariables()) {
-        std::cout << r->accept(&gen) << std::endl;
+        r->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
     std::cout << std::endl;
     
     // Function definitions output
     std::cout << "# Function definitions" << std::endl;
     for (FunctionDefinition *f : model->getFunctionDefinitions()) {
-        std::cout << f->accept(&gen) << std::endl;
+        f->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
     std::cout << std::endl;
     
@@ -52,7 +56,8 @@ int main(int argc, char **argv)
     if (cov_mod) {
         std::cout << "# Covariates" << std::endl;
         for (Covariate *cov : cov_mod->getCovariates()) {
-            std::cout << cov->accept(&gen) << std::endl;
+            cov->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
         }
         std::cout << std::endl;
     }
@@ -60,14 +65,16 @@ int main(int argc, char **argv)
     // Individual parameters output
     std::cout << "# Individual parameters" << std::endl;
     for (IndividualParameter *ind : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
-        std::cout << ind->accept(&gen) << std::endl;
+        ind->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
     std::cout << std::endl;
     
     // Data column mapping output
     std::cout << "# Data column mappings" << std::endl;
     for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
-        std::cout << col->accept(&gen) << std::endl;
+        col->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
     std::cout << std::endl;
     
@@ -92,13 +99,15 @@ int main(int argc, char **argv)
         }
     }
     for (CommonVariable *v : ordered) {
-        std::cout << v->accept(&gen) << std::endl;
+        v->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
     }
     std::cout << std::endl;
     
     // Observation model output
     std::cout << "# Observation model" << std::endl;
-    std::cout << model->getModelDefinition()->getObservationModel()->accept(&gen) << std::endl;
+    model->getModelDefinition()->getObservationModel()->accept(&gen); 
+    std::cout << gen.getValue() << std::endl;
     std::cout << std::endl;
     
     // Interventions output
@@ -109,7 +118,8 @@ int main(int argc, char **argv)
         std::vector<std::string> adm_oids;
         std::vector<Administration *> administrations = intervention->getAdministrations();
         for (Administration *adm : administrations) {
-            std::cout << adm->accept(&gen) << std::endl;
+            adm->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
             adm_oids.push_back(adm->getOid());
         }
         std::cout << "administration_oids = c(";
@@ -127,13 +137,15 @@ int main(int argc, char **argv)
         // Design parameters (<DesignParameter>)
         std::vector<Variable *> variables = observation->getDesignParameters();
         for (Variable *var : variables) {
-            std::cout << var->accept(&gen) << std::endl;
+            var->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
         }
         // Samplings (<Observation>)
         std::vector<std::string> sampling_oids;
         std::vector<Sampling *> samplings = observation->getSamplings();
         for (Sampling *sampling : samplings) {
-            std::cout << sampling->accept(&gen) << std::endl;
+            sampling->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
             sampling_oids.push_back(sampling->getOid());
         }
         std::cout << "sampling_oids = c(";
@@ -145,7 +157,8 @@ int main(int argc, char **argv)
         std::vector<std::string> comb_oids;
         std::vector<ObservationCombination *> combinations = observation->getObservationCombinations();
         for (ObservationCombination *comb : combinations) {
-            std::cout << comb->accept(&gen) << std::endl;
+            comb->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
             comb_oids.push_back(comb->getOid());
         }
         std::cout << "combination_oids = c(";

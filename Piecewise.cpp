@@ -30,8 +30,8 @@ namespace PharmML
         return otherwise;
     }
 
-    std::string Piece::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Piece::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 
     Piecewise::Piecewise() {
@@ -46,7 +46,7 @@ namespace PharmML
         return this->pieces;
     }
 
-    std::string Piecewise::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Piecewise::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

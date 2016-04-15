@@ -21,14 +21,14 @@ namespace PharmML
         AstNode *getAssignment();
         Dependencies& getDependencies();
         std::string getSymbId();
-        virtual std::string accept(AbstractVisitor *visitor) = 0;
+        virtual void accept(AbstractVisitor *visitor) = 0;
     };
 
     class Variable : public CommonVariable
     {
         public:
         Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) {};
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

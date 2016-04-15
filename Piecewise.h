@@ -22,7 +22,7 @@ namespace PharmML
         AstNode *getExpression();
         AstNode *getCondition();
         bool isOtherwise();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 
     class Piecewise : public AstNode
@@ -33,7 +33,7 @@ namespace PharmML
         Piecewise();
         void addPiece(Piece *piece);
         std::vector<Piece *> getPieces();
-        std::string accept(AbstractVisitor *visitor);
+        void accept(AbstractVisitor *visitor);
     };
 }
 

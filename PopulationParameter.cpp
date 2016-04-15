@@ -15,7 +15,7 @@ namespace PharmML
         return this->symbId;
     }
 
-    std::string PopulationParameter::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void PopulationParameter::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

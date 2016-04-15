@@ -32,7 +32,7 @@ namespace PharmML
         return this->Distribution;
     }
 
-    std::string RandomVariable::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void RandomVariable::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
 }

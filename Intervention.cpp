@@ -33,8 +33,8 @@ namespace PharmML
         return this->symbRef;
     }
 
-    std::string SteadyStateParameter::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void SteadyStateParameter::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     // TODO: Move elsewhere (Dataset.h when implemented)
@@ -69,8 +69,8 @@ namespace PharmML
         return this->ref;
     }
     
-    std::string TargetMapping::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void TargetMapping::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     Administration::Administration(PharmMLContext *context, xml::Node node) {
@@ -152,8 +152,8 @@ namespace PharmML
         return this->rate;
     }
     
-    std::string Administration::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Administration::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     Intervention::Intervention(PharmMLContext *context, xml::Node node) {

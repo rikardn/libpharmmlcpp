@@ -12,304 +12,323 @@ namespace PharmML
     }
 
     std::string RGenerator::acceptLeft(Binop *binop) {
-        return binop->getLeft()->accept(this);
+        binop->getLeft()->accept(this);
+        return this->getValue();
     }
 
     std::string RGenerator::acceptRight(Binop *binop) {
-        return binop->getRight()->accept(this);
+        binop->getRight()->accept(this);
+        return this->getValue();
     }
 
+    std::string RGenerator::infix(Binop *binop, std::string op) {
+        std::string result;
+        binop->getLeft()->accept(this);
+        result = "(" + this->getValue() + op;
+        binop->getRight()->accept(this);
+        result += this->getValue() + ")";
+        return result;
+    }
+
+    std::string RGenerator::acceptChild(Uniop *uniop) {
+        uniop->getChild()->accept(this);
+        return this->getValue();
+    }
 
     // public
-    std::string RGenerator::visit(SymbRef *node) {
-        return node->toString();
+    void RGenerator::visit(SymbRef *node) {
+        this->setValue(node->toString());
     }
     
-    std::string RGenerator::visit(SteadyStateParameter *node) {
-        return node->getSymbRef()->accept(this) + " = " + node->getAssignment()->accept(this);
+    void RGenerator::visit(SteadyStateParameter *node) {
+        node->getSymbRef()->accept(this);
+        std::string symbref = this->getValue();
+        node->getAssignment()->accept(this);
+        std::string assignment = this->getValue();
+        this->setValue(symbref + " = " + assignment);
     }
     
-    std::string RGenerator::visit(ColumnRef *node) {
-        return node->toString();
+    void RGenerator::visit(ColumnRef *node) {
+        this->setValue(node->toString());
     }
 
-    std::string RGenerator::visit(TargetMapping *node) {
+    void RGenerator::visit(TargetMapping *node) {
         std::string type = "type=\"" + node->getType() + "\"";
         std::string blkIdRef = "blkIdRef=\"" + node->getBlkIdRef() + "\"";
         std::string ref = "ref=\"" + node->getRef() + "\"";
-        return "list(" + type + ", " + blkIdRef + ", " + ref + ")";
+        this->setValue("list(" + type + ", " + blkIdRef + ", " + ref + ")");
     }
 
-    std::string RGenerator::visit(UniopLog *node) {
-        return("log(" + node->acceptChild(this) + ")");
+    void RGenerator::visit(UniopLog *node) {
+        this->setValue("log(" + this->acceptChild(node) + ")");
     }
     
-    std::string RGenerator::visit(UniopLog2 *node) {
-        return("log2(" + node->acceptChild(this) + ")");
+    void RGenerator::visit(UniopLog2 *node) {
+        this->setValue("log2(" + this->acceptChild(node) + ")");
     }
     
-    std::string RGenerator::visit(UniopLog10 *node) {
-        return("log10(" + node->acceptChild(this) + ")");
+    void RGenerator::visit(UniopLog10 *node) {
+        this->setValue("log10(" + this->acceptChild(node) + ")");
     }
 
-    std::string RGenerator::visit(UniopExp *node) {
-        return("exp(" + node->acceptChild(this) + ")");
+    void RGenerator::visit(UniopExp *node) {
+        this->setValue("exp(" + this->acceptChild(node) + ")");
     }
 
-    std::string RGenerator::visit(UniopMinus *node) {
-        return("(-" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopAbs *node) {
-        return("abs(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopSqrt *node) {
-        return("sqrt(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopLogistic *node) {
-        return("(1/(1 + exp(-" + node->acceptChild(this) + ")))");
-    }
-    
-    std::string RGenerator::visit(UniopLogit *node) {
-        return("log((" + node->acceptChild(this) + ")/(1 - " + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopProbit *node) {
-        return("qnorm(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopNormcdf *node) {
-        return("pnorm(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopFactorial *node) {
-        return("factorial(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopFactln *node) {
-        return("lfactorial(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopGamma *node) {
-        return("gamma(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopGammaln *node) {
-        return("lgamma(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopSin *node) {
-        return("sin(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopSinh *node) {
-        return("sinh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopCos *node) {
-        return("cos(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopCosh *node) {
-        return("cosh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopTan *node) {
-        return("tan(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopTanh *node) {
-        return("tanh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopCot *node) {
-        return("(1/tan(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopCoth *node) {
-        return("(1/tanh(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopSec *node) {
-        return("(1/cos(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopSech *node) {
-        return("(1/cosh(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopCsc *node) {
-        return("(1/sin(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopCsch *node) {
-        return("(1/sinh(" + node->acceptChild(this) + "))");
-    }
-    
-    std::string RGenerator::visit(UniopArcsin *node) {
-        return("asin(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArcsinh *node) {
-        return("asinh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccos *node) {
-        return("acos(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccosh *node) {
-        return("acosh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArctan *node) {
-        return("atan(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArctanh *node) {
-        return("atanh(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccot *node) {
-        return("atan(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccoth *node) {
-        return("atanh(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArcsec *node) {
-        return("acos(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArcsech *node) {
-        return("acosh(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccsc *node) {
-        return("asin(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopArccsch *node) {
-        return("asinh(1/" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopHeaviside *node) {
-        return("((sign(" + node->acceptChild(this) + ") + 1) / 2)");
-    }
-    
-    std::string RGenerator::visit(UniopSign *node) {
-        return("sign(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopFloor *node) {
-        return("floor(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(UniopCeiling *node) {
-        return("ceiling(" + node->acceptChild(this) + ")");
+    void RGenerator::visit(UniopMinus *node) {
+        this->setValue("(-" + this->acceptChild(node) + ")");
     }
 
-    std::string RGenerator::visit(ScalarInt *node) {
-        return("(" + node->toString() + ")");
+    void RGenerator::visit(UniopAbs *node) {
+        this->setValue("abs(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopSqrt *node) {
+        this->setValue("sqrt(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopLogistic *node) {
+        this->setValue("(1/(1 + exp(-" + this->acceptChild(node) + ")))");
+    }
+    
+    void RGenerator::visit(UniopLogit *node) {
+        this->setValue("log((" + this->acceptChild(node) + ")/(1 - " + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopProbit *node) {
+        this->setValue("qnorm(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopNormcdf *node) {
+        this->setValue("pnorm(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopFactorial *node) {
+        this->setValue("factorial(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopFactln *node) {
+        this->setValue("lfactorial(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopGamma *node) {
+        this->setValue("gamma(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopGammaln *node) {
+        this->setValue("lgamma(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopSin *node) {
+        this->setValue("sin(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopSinh *node) {
+        this->setValue("sinh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopCos *node) {
+        this->setValue("cos(" + this->acceptChild(node) + ")");
     }
 
-    std::string RGenerator::visit(ScalarReal *node) {
-        return("(" + node->toString() + ")");
+    void RGenerator::visit(UniopCosh *node) {
+        this->setValue("cosh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopTan *node) {
+        this->setValue("tan(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopTanh *node) {
+        this->setValue("tanh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopCot *node) {
+        this->setValue("(1/tan(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopCoth *node) {
+        this->setValue("(1/tanh(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopSec *node) {
+        this->setValue("(1/cos(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopSech *node) {
+        this->setValue("(1/cosh(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopCsc *node) {
+        this->setValue("(1/sin(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopCsch *node) {
+        this->setValue("(1/sinh(" + this->acceptChild(node) + "))");
+    }
+    
+    void RGenerator::visit(UniopArcsin *node) {
+        this->setValue("asin(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArcsinh *node) {
+        this->setValue("asinh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccos *node) {
+        this->setValue("acos(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccosh *node) {
+        this->setValue("acosh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArctan *node) {
+        this->setValue("atan(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArctanh *node) {
+        this->setValue("atanh(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccot *node) {
+        this->setValue("atan(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccoth *node) {
+        this->setValue("atanh(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArcsec *node) {
+        this->setValue("acos(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArcsech *node) {
+        this->setValue("acosh(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccsc *node) {
+        this->setValue("asin(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopArccsch *node) {
+        this->setValue("asinh(1/" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopHeaviside *node) {
+        this->setValue("((sign(" + this->acceptChild(node) + ") + 1) / 2)");
+    }
+    
+    void RGenerator::visit(UniopSign *node) {
+        this->setValue("sign(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopFloor *node) {
+        this->setValue("floor(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(UniopCeiling *node) {
+        this->setValue("ceiling(" + this->acceptChild(node) + ")");
     }
 
-    std::string RGenerator::visit(BinopPlus *node) {
-        return("(" + this->acceptLeft(node) + " + " + node->acceptRight(this) + ")");
+    void RGenerator::visit(ScalarInt *node) {
+        this->setValue("(" + node->toString() + ")");
     }
 
-    std::string RGenerator::visit(BinopMinus *node) {
-        return("(" + node->acceptLeft(this) + " - " + node->acceptRight(this) + ")");
+    void RGenerator::visit(ScalarReal *node) {
+        this->setValue("(" + node->toString() + ")");
     }
 
-    std::string RGenerator::visit(BinopDivide *node) {
-        return("(" + node->acceptLeft(this) + " / " + node->acceptRight(this) + ")");
+    void RGenerator::visit(BinopPlus *node) {
+        this->setValue("(" + this->acceptLeft(node) + " + " + this->acceptRight(node) + ")");
     }
 
-    std::string RGenerator::visit(BinopTimes *node) {
-        return("(" + node->acceptLeft(this) + " * " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopPower *node) {
-        return("(" + node->acceptLeft(this) + " ^ " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopLogx *node) {
-        return("log(" + node->acceptLeft(this) + ", base = " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopRoot *node) {
-        return("(" + node->acceptLeft(this) + " ^ (1/" + node->acceptRight(this) + "))");
-    }
-    
-    std::string RGenerator::visit(BinopMin *node) {
-        return("min(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopMax *node) {
-        return("max(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopRem *node) {
-        return("(" + node->acceptLeft(this) + " %% " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(BinopAtan2 *node) {
-        return("atan2(" + node->acceptLeft(this) + ", " + node->acceptRight(this) + ")");
-    }
-    
-    std::string RGenerator::visit(LogicUniopIsdefined *node) {
-        return("!is.null(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(LogicUniopNot *node) {
-        return("!(" + node->acceptChild(this) + ")");
-    }
-    
-    std::string RGenerator::visit(LogicBinopLt *node) {
-        return(node->infix(this, " < "));
+    void RGenerator::visit(BinopMinus *node) {
+        this->setValue("(" + this->acceptLeft(node) + " - " + this->acceptRight(node) + ")");
     }
 
-    std::string RGenerator::visit(LogicBinopLeq *node) {
-        return(node->infix(this, " <= "));
+    void RGenerator::visit(BinopDivide *node) {
+        this->setValue("(" + this->acceptLeft(node) + " / " + this->acceptRight(node) + ")");
+    }
+
+    void RGenerator::visit(BinopTimes *node) {
+        this->setValue("(" + this->acceptLeft(node) + " * " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopGt *node) {
-        return(node->infix(this, " > "));
+    void RGenerator::visit(BinopPower *node) {
+        this->setValue("(" + this->acceptLeft(node) + " ^ " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopGeq *node) {
-        return(node->infix(this, " >= "));
+    void RGenerator::visit(BinopLogx *node) {
+        this->setValue("log(" + this->acceptLeft(node) + ", base = " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopEq *node) {
-        return(node->infix(this, " == "));
+    void RGenerator::visit(BinopRoot *node) {
+        this->setValue("(" + this->acceptLeft(node) + " ^ (1/" + this->acceptRight(node) + "))");
     }
     
-    std::string RGenerator::visit(LogicBinopNeq *node) {
-        return(node->infix(this, " != "));
+    void RGenerator::visit(BinopMin *node) {
+        this->setValue("min(" + this->acceptLeft(node) + ", " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopAnd *node) {
-        return(node->infix(this, " && "));
+    void RGenerator::visit(BinopMax *node) {
+        this->setValue("max(" + this->acceptLeft(node) + ", " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopOr *node) {
-        return(node->infix(this, " || "));
+    void RGenerator::visit(BinopRem *node) {
+        this->setValue("(" + this->acceptLeft(node) + " %% " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(LogicBinopXor *node) {
-        return("((" + node->acceptLeft(this) + " || " + node->acceptRight(this) + ")" +
-            " && !(" + node->acceptLeft(this) + " && " + node->acceptRight(this) + "))");
+    void RGenerator::visit(BinopAtan2 *node) {
+        this->setValue("atan2(" + this->acceptLeft(node) + ", " + this->acceptRight(node) + ")");
     }
     
-    std::string RGenerator::visit(Vector *node) {
+    void RGenerator::visit(LogicUniopIsdefined *node) {
+        this->setValue("!is.null(" + this->acceptChild(node) + ")");
+    }
+    
+    void RGenerator::visit(LogicUniopNot *node) {
+        this->setValue("!(" + this->acceptChild(node) + ")");
+    }
+
+    void RGenerator::visit(LogicBinopLt *node) {
+        this->setValue(this->infix(node, " < "));
+    }
+
+    void RGenerator::visit(LogicBinopLeq *node) {
+        this->setValue(this->infix(node, " <= "));
+    }
+    
+    void RGenerator::visit(LogicBinopGt *node) {
+        this->setValue(this->infix(node, " > "));
+    }
+    
+    void RGenerator::visit(LogicBinopGeq *node) {
+        this->setValue(this->infix(node, " >= "));
+    }
+    
+    void RGenerator::visit(LogicBinopEq *node) {
+        this->setValue(this->infix(node, " == "));
+    }
+    
+    void RGenerator::visit(LogicBinopNeq *node) {
+        this->setValue(this->infix(node, " != "));
+    }
+    
+    void RGenerator::visit(LogicBinopAnd *node) {
+        this->setValue(this->infix(node, " && "));
+    }
+    
+    void RGenerator::visit(LogicBinopOr *node) {
+        this->setValue(this->infix(node, " || "));
+    }
+    
+    void RGenerator::visit(LogicBinopXor *node) {
+        this->setValue("((" + this->acceptLeft(node) + " || " + this->acceptRight(node) + ")" +
+            " && !(" + this->acceptLeft(node) + " && " + this->acceptRight(node) + "))");
+    }
+    
+    void RGenerator::visit(Vector *node) {
         std::vector<AstNode *> elements = node->getElements();
         std::string s = "c(";
         bool first = true;
@@ -319,18 +338,20 @@ namespace PharmML
             } else {
                 s += ", ";
             }
-            s += element->accept(this);
+            element->accept(this);
+            s += this->getValue();
         }
-        return(s += ")");
+        this->setValue(s + ")");
     }
     
-    std::string RGenerator::visit(Piecewise *node) {
+    void RGenerator::visit(Piecewise *node) {
         std::vector<Piece *> pieces = node->getPieces();
         Piece *otherwise = nullptr;
         std::string s = "ifelse(";
         for (Piece *p : pieces) {
             if (!p->isOtherwise()) {
-                s += p->accept(this) + ", (";
+                p->accept(this);
+                s += this->getValue() + ", (";
             } else {
                 otherwise = p; // Only one otherwise per Piece
             }
@@ -338,38 +359,44 @@ namespace PharmML
         if (otherwise == nullptr) {
             // And the missing otherwise said, Let it be 'NULL'. And all was good.
             NullValue *null = new NullValue();
-            s += null->accept(this) + ")";
+            null->accept(this);
+            s += this->getValue() + ")";
         } else {
-            s += otherwise->getExpression()->accept(this);
+            otherwise->getExpression()->accept(this);
+            s += this->getValue();
         }
-        return(s + std::string(pieces.size(), ')'));
+        this->setValue(s + std::string(pieces.size(), ')'));
     }
 
-    std::string RGenerator::visit(Piece *node) {
-        return(node->getCondition()->accept(this) + ", " + node->getExpression()->accept(this));
+    void RGenerator::visit(Piece *node) {
+        node->getCondition()->accept(this);
+        std::string cond = this->getValue();
+        node->getExpression()->accept(this);
+        std::string expr = this->getValue();
+        this->setValue(cond + ", " + expr);
     }
     
-    std::string RGenerator::visit(LogicFalse *node) {
-        return("(FALSE)");
+    void RGenerator::visit(LogicFalse *node) {
+        this->setValue("(FALSE)");
     }
     
-    std::string RGenerator::visit(LogicTrue *node) {
-        return("(TRUE)");
+    void RGenerator::visit(LogicTrue *node) {
+        this->setValue("(TRUE)");
     }
     
-    std::string RGenerator::visit(Pi *node) {
-        return("(pi)");
+    void RGenerator::visit(Pi *node) {
+        this->setValue("(pi)");
     }
     
-    std::string RGenerator::visit(Exponentiale *node) {
-        return("exp(1)");
+    void RGenerator::visit(Exponentiale *node) {
+        this->setValue("exp(1)");
     }
     
-    std::string RGenerator::visit(NullValue *node) {
-        return("NULL");
+    void RGenerator::visit(NullValue *node) {
+        this->setValue("NULL");
     }
 
-    std::string RGenerator::visit(FunctionCall *node) {
+    void RGenerator::visit(FunctionCall *node) {
         bool first = true;
         std::string argument_list;
         for (FunctionArgument *arg : node->getFunctionArguments()) {
@@ -378,16 +405,19 @@ namespace PharmML
             } else {
                 argument_list += ", ";
             }
-            argument_list += arg->accept(this);
+            arg->accept(this);
+            argument_list += this->getValue();
         }
-        return node->getFunctionName()->accept(this) + "(" + argument_list + ")";
+        node->getFunctionName()->accept(this);
+        this->setValue(this->getValue() + "(" + argument_list + ")");
     }
 
-    std::string RGenerator::visit(FunctionArgument *node) {
-        return node->getSymbId() + "=" + node->getArgument()->accept(this);
+    void RGenerator::visit(FunctionArgument *node) {
+        node->getArgument()->accept(this);
+        this->setValue(node->getSymbId() + "=" + this->getValue());
     }
 
-    std::string RGenerator::visit(FunctionDefinition *node) {
+    void RGenerator::visit(FunctionDefinition *node) {
         std::string head = node->getSymbId() + " <- function(";
         std::vector<std::string> args = node->getArguments();
         for (int i = 0; i < args.size(); i++) {
@@ -397,116 +427,145 @@ namespace PharmML
             }
         }
         head += ") {\n";
-        std::string code = "  " + node->getAssignment()->accept(this) + "\n}";
-        return(head + code);
+        node->getAssignment()->accept(this);
+        std::string code = "  " + this->getValue() + "\n}";
+        this->setValue(head + code);
     }
 
-    std::string RGenerator::visit(Covariate *node) {
-        return(node->getTransformedName() + " <- " + node->getAssignment()->accept(this));
+    void RGenerator::visit(Covariate *node) {
+        node->getAssignment()->accept(this);
+        this->setValue(node->getTransformedName() + " <- " + this->getValue());
     }
 
-    std::string RGenerator::visit(PopulationParameter *node) {
-        return "\"" + node->getSymbId() + "\"";
+    void RGenerator::visit(PopulationParameter *node) {
+        this->setValue("\"" + node->getSymbId() + "\"");
     }
 
-    std::string RGenerator::visit(IndividualParameter *node) {
+    void RGenerator::visit(IndividualParameter *node) {
         std::string result;
 
         if (node->isStructured()) {
-            std::string pop = node->getPopulationValue()->accept(this);
+            node->getPopulationValue()->accept(this);
+            std::string pop = this->getValue();
             if (node->getTransformation() != "") {
                 pop = node->getTransformation() + "(" + pop + ")";
             }
             std::string cov;
             if (node->getFixedEffect()) {
-                cov = " + " + node->getFixedEffect()->accept(this) + " * " + node->getCovariate()->accept(this);
+                node->getFixedEffect()->accept(this);
+                std::string fe = this->getValue();
+                node->getCovariate()->accept(this);
+                std::string cov = this->getValue();
+                cov = " + " + fe + " * " + cov;
             }
-            
-            result = node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + node->getRandomEffects()->accept(this);
+            node->getRandomEffects()->accept(this); 
+            result = node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + this->getValue();
         } else {
-            result = node->getSymbId() + " = " + node->getAssignment()->accept(this);
+            node->getAssignment()->accept(this);
+            result = node->getSymbId() + " = " + this->getValue();
         }
-        return result;
+        this->setValue(result);
     }
 
-    std::string RGenerator::visit(RandomVariable *node) {
-        std::string var_ref = "variability_reference=\"" + node->getVariabilityReference()->accept(this) + "\"";
-        std::string dist = node->getDistribution()->accept(this);
-        return node->getSymbId() + " = list(" + var_ref + ", " + dist + ")";
+    void RGenerator::visit(RandomVariable *node) {
+        node->getVariabilityReference()->accept(this);
+        std::string var_ref = "variability_reference=\"" + this->getValue() + "\"";
+        node->getDistribution()->accept(this);
+        std::string dist = this->getValue();
+        this->setValue(node->getSymbId() + " = list(" + var_ref + ", " + dist + ")");
     }
 
-    std::string RGenerator::visit(IndependentVariable *node) {
-        return "IndependentVariable = \"" + node->getSymbId() + "\"";
+    void RGenerator::visit(IndependentVariable *node) {
+        this->setValue("IndependentVariable = \"" + node->getSymbId() + "\"");
     }
 
-    std::string RGenerator::visit(Variable *node) {
+    void RGenerator::visit(Variable *node) {
         if (node->getAssignment()) {
-            return(node->getSymbId() + " <- " + node->getAssignment()->accept(this));
+            node->getAssignment()->accept(this);
+            this->setValue(node->getSymbId() + " <- " + this->getValue());
         } else {
-            return std::string();
+            this->setValue(std::string());
         }
     }
     
-    std::string RGenerator::visit(DerivativeVariable *node) {
+    void RGenerator::visit(DerivativeVariable *node) {
         std::string expr;
         if (node->getAssignment()) {
-            expr = node->getSymbId() + " <- " + node->getAssignment()->accept(this);
+            node->getAssignment()->accept(this);
+            expr = node->getSymbId() + " <- " + this->getValue();
         } else {
             expr = std::string();
         }
-        std::string init_val = "x0=" + node->getInitialValue()->accept(this);
-        std::string init_t = "t0=" + node->getInitialTime()->accept(this);
-        return "deriv(" + expr + ", iv=" + node->getIndependentVariable()->accept(this) + ", " + init_val + ", " + init_t + ")";
+        node->getInitialValue()->accept(this);
+        std::string init_val = "x0=" + this->getValue();
+        node->getInitialTime()->accept(this);
+        std::string init_t = "t0=" + this->getValue();
+        node->getIndependentVariable()->accept(this);
+        this->setValue("deriv(" + expr + ", iv=" + this->getValue() + ", " + init_val + ", " + init_t + ")");
     }
 
-    std::string RGenerator::visit(ObservationModel *node) {
-        std::string error = "W = " + node->getErrorModel()->accept(this);
-        std::string y = node->getSymbId() + " = " + node->getOutput()->accept(this) + " + W * " + node->getResidualError()->accept(this);
-        return error + "\n" + y;
+    void RGenerator::visit(ObservationModel *node) {
+        node->getErrorModel()->accept(this);
+        std::string error = "W = " + this->getValue();
+        node->getOutput()->accept(this);
+        std::string output = this->getValue();
+        node->getResidualError()->accept(this);
+        std::string res = this->getValue();
+        std::string y = node->getSymbId() + " = " + output + " + W * " + res;
+        this->setValue(error + "\n" + y);
     }
 
-    std::string RGenerator::visit(Distribution *node) {
+    void RGenerator::visit(Distribution *node) {
         std::string result = "distribution=\"" + node->getName() + "\"";
         for (DistributionParameter *p : node->getDistributionParameters()) {
-            result += ", " + p->getName() + "=" + p->getAssignment()->accept(this);
+            p->getAssignment()->accept(this);
+            result += ", " + p->getName() + "=" + this->getValue();
         }
-        return result;
+        this->setValue(result);
     }
 
-    std::string RGenerator::visit(ColumnMapping *node) {
-        return node->getColumnIdRef() + " = " + node->getAssignment()->accept(this);
+    void RGenerator::visit(ColumnMapping *node) {
+        node->getAssignment()->accept(this);
+        this->setValue(node->getColumnIdRef() + " = " + this->getValue());
     }
     
-    std::string RGenerator::visit(Administration *node) {
+    void RGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " = list(";
         
         s += "type = \"" + node->getType() + "\"";
-        s += ", target = " + node->getTarget()->accept(this);
+        node->getTarget()->accept(this);
+        s += ", target = " + this->getValue();
         if (node->getTimes()) {
-            s += ", times = " + node->getTimes()->accept(this);
+            node->getTimes()->accept(this);
+            s += ", times = " + this->getValue();
         }
         if (node->getSteady()) {
-            s += ", steady = " + node->getSteady()->accept(this);
+            node->getSteady()->accept(this);
+            s += ", steady = " + this->getValue();
         }
         if (node->getDuration()) {
-            s += ", duration = " + node->getDuration()->accept(this);
+            node->getDuration()->accept(this);
+            s += ", duration = " + this->getValue();
         }
         if (node->getRate()) {
-            s += ", rate = " + node->getRate()->accept(this);
+            node->getRate()->accept(this);
+            s += ", rate = " + this->getValue();
         }
 
-        return(s + ")");
+        this->setValue(s + ")");
     }
     
-    std::string RGenerator::visit(Sampling *node) {
+    void RGenerator::visit(Sampling *node) {
         std::string s = node->getOid() + " = list(";
         
-        s += "times = " + node->getTimes()->accept(this);
+        node->getTimes()->accept(this);
+        s += "times = " + this->getValue();
         if (node->getOidRef() != "") {
             s += ", oidRef = \"" + node->getOidRef() + "\"";
         }
         if (node->getNumber()) {
-            s += ", number = " + node->getNumber()->accept(this);
+            node->getNumber()->accept(this);
+            s += ", number = " + this->getValue();
         }
         if (!node->getContinuousVariables().empty()) {
             s += ", cont_vars = list(";
@@ -517,7 +576,8 @@ namespace PharmML
                 } else {
                     s += ", ";
                 }
-                s += symbol->accept(this);
+                symbol->accept(this);
+                s += this->getValue();
             }
             s += ")";
         }
@@ -530,15 +590,16 @@ namespace PharmML
                 } else {
                     s += ", ";
                 }
-                s += symbol->accept(this);
+                symbol->accept(this);
+                s += this->getValue();
             }
             s += ")";
         }
         
-        return (s + ")");
+        this->setValue(s + ")");
     }
     
-    std::string RGenerator::visit(ObservationCombination *node) {
+    void RGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " = list(";
         
         if (!node->getOidRefs().empty()) {
@@ -555,9 +616,10 @@ namespace PharmML
             s += ")";
         }
         if (node->getRelative()) {
-            s += ", relative = " + node->getRelative()->accept(this);
+            node->getRelative()->accept(this);
+            s += ", relative = " + this->getValue();
         }
         
-        return (s + ")");
+        this->setValue(s + ")");
     }
 }

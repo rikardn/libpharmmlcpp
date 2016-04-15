@@ -77,8 +77,8 @@ namespace PharmML
         return this->discreteVariables;
     }
     
-    std::string Sampling::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void Sampling::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     ObservationCombination::ObservationCombination(PharmMLContext *context, xml::Node node) {
@@ -119,8 +119,8 @@ namespace PharmML
         return this->relative;
     }
     
-    std::string ObservationCombination::accept(AbstractVisitor *visitor) {
-        return visitor->visit(this);
+    void ObservationCombination::accept(AbstractVisitor *visitor) {
+        visitor->visit(this);
     }
     
     Observation::Observation(PharmMLContext *context, xml::Node node) {

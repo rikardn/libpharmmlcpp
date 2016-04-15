@@ -133,6 +133,23 @@ int main(int argc, char **argv)
         arms->accept(&gen);
         std::cout << gen.getValue() << std::endl;
     }
+    
+    // DesignSpaces output
+    DesignSpaces *ds = model->getTrialDesign()->getDesignSpaces();
+    std::cout << "## Design spaces" << std::endl;
+    if (ds) {
+        ds->accept(&gen);
+        std::cout << gen.getValue() << std::endl;
+    }
+    std::cout << "We have a serious problem here. Apparently not all objects" << std::endl;
+    std::cout << "have proper oids. That didn't occur to me before. We need to" << std::endl;
+    std::cout << "implement an index number as alternative when this happens" << std::endl;
+    std::cout << "and that index must be resolved to e.g. an R vector whenever" << std::endl;
+    std::cout << "no oid is defined. Like this maybe:" << std::endl;
+    std::cout << " design_spaces[0] = list(intervention_refs = c('admin2'), observation_refs = c(), arm_refs = c()))" << std::endl;
+    std::cout << " design_spaces[1] = list(intervention_refs = c(), observation_refs = c('window1'), arm_refs = c()))" << std::endl;
+    std::cout << "..." << std::endl;
+    std::cout << "We will probably also need it for other objects that may lack oids" << std::endl;
 
     return 0;
 }

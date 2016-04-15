@@ -455,6 +455,118 @@
 				</Observations>
 			</ObservationsCombination>
 		</Observations>
+		<DesignSpaces>
+            <DesignSpace>
+                <InterventionRef oidRef="admin2"/>
+                <DoseAmount>
+                    <ct:Assign>
+                        <ct:Vector>
+                            <ct:VectorElements>
+                                <ct:Real>100</ct:Real>
+                                <ct:Real>200</ct:Real>
+                            </ct:VectorElements>
+                        </ct:Vector>
+                    </ct:Assign>
+                </DoseAmount>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="window1"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>1</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>3</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="window1"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>0.5</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint>
+                                <ct:Assign>
+                                    <ct:Real>24</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="window2"/>
+                <NumberTimes>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>1</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>3</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </NumberTimes>
+            </DesignSpace>
+            <DesignSpace>
+                <ObservationRef oidRef="window2"/>
+                <ObservationTimes>
+                    <ct:Assign>
+                        <ct:Interval>
+                            <ct:LeftEndpoint type="closed">
+                                <ct:Assign>
+                                    <ct:Real>0.5</ct:Real>
+                                </ct:Assign>
+                            </ct:LeftEndpoint>
+                            <ct:RightEndpoint type="open"> <!--[0,1)-->
+                                <ct:Assign>
+                                    <ct:Real>30</ct:Real>
+                                </ct:Assign>
+                            </ct:RightEndpoint>
+                        </ct:Interval>
+                    </ct:Assign>
+                </ObservationTimes>
+            </DesignSpace>
+            <DesignSpace>               <!-- Reference not required here: space applies for all arms! -->
+                <NumberArms>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>1</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>10</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </NumberArms>
+            </DesignSpace>
+            <DesignSpace>
+                <ArmRef oidRef="arm1"/>
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>0</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>30</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </ArmSize>
+            </DesignSpace>
+            <DesignSpace>
+                <ArmRef oidRef="arm2"/>
+                <ArmSize>
+                    <ct:Assign>
+                        <ct:Sequence>
+                            <ct:Begin><ct:Real>10</ct:Real></ct:Begin>
+                            <ct:StepSize><ct:Real>1</ct:Real></ct:StepSize>
+                            <ct:End><ct:Real>30</ct:Real></ct:End>
+                        </ct:Sequence>
+                    </ct:Assign>
+                </ArmSize>
+            </DesignSpace>
+        </DesignSpaces>
 		<Arms>
 			<Arm oid="arm1">
 				<ArmSize>

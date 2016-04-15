@@ -25,6 +25,7 @@
 #include "Interventions.h"
 #include "Observations.h"
 #include "Arms.h"
+#include "DesignSpaces.h"
 
 namespace PharmML
 {
@@ -158,6 +159,9 @@ namespace PharmML
             virtual void visit(InterventionSequence *node);
             virtual void visit(ObservationSequence *node);
             virtual void visit(OccasionSequence *node);
+            
+            virtual void visit(DesignSpaces *node);
+            virtual void visit(DesignSpace *node);
     };
 }
 

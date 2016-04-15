@@ -25,9 +25,15 @@ namespace PharmML
         if (observations_node.exists()) {
             this->Observations = new PharmML::Observations(this->context, observations_node);
         }
+        
         xml::Node arms_node = this->context->getSingleElement(node, ".//design:Arms");
         if (arms_node.exists()) {
             this->Arms = new PharmML::Arms(this->context, arms_node);
+        }
+        
+        xml::Node ds_node = this->context->getSingleElement(node, ".//design:DesignSpaces");
+        if (ds_node.exists()) {
+            this->DesignSpaces = new PharmML::DesignSpaces(this->context, ds_node);
         }
     }
 
@@ -45,5 +51,9 @@ namespace PharmML
 
     PharmML::Arms *TrialDesign::getArms() {
         return this->Arms;
+    }
+    
+    PharmML::DesignSpaces *TrialDesign::getDesignSpaces() {
+        return this->DesignSpaces;
     }
 }

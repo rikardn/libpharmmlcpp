@@ -854,4 +854,44 @@ namespace PharmML
         
         this->setValue(s + ")" + "\n");
     }
+    
+    // Class DesignSpaces and all its content
+    void RGenerator::visit(DesignSpace *node) {
+        std::string s = node->getOid() + " = ";
+        std::vector<std::string> list;
+        
+        list.push_back("intervention_refs = " + formatVector(node->getInterventionRefs(), "c"));
+        list.push_back("observation_refs = " + formatVector(node->getObservationRefs(), "c"));
+        list.push_back("arm_refs = " + formatVector(node->getArmRefs(), "c"));
+        
+        s += formatVector(list, "list", "");
+        this->setValue(s + ")");
+    }
+    
+    void RGenerator::visit(DesignSpaces *node) {
+        std::string s;
+        
+        std::vector<Variable *> variables = node->getDesignParameters();
+        if (!variables.empty()) {
+            s += "# Design parameters\n";
+            for (Variable *var : variables) {
+                var->accept(this);
+                s += this->getValue() + "\n";
+            }
+        }
+        
+        std::vector<DesignSpace *> designSpaces = node->getDesignSpaces();
+        if (!designSpaces.empty()) {
+            s += "# Design spaces\n";
+            std::vector<std::string> ds_oids;
+            for (DesignSpace *ds : designSpaces) {
+                ds->accept(this);
+                s += this->getValue() + "\n";
+                ds_oids.push_back(ds->getOid());
+            }
+            s += "designspace_oids = " + formatVector(ds_oids, "c") + "\n";
+        }
+        
+        this->setValue(s + ")" + "\n");
+    }
 }

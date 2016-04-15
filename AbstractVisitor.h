@@ -118,6 +118,9 @@ namespace PharmML
     class InterventionSequence;
     class ObservationSequence;
     class OccasionSequence;
+    
+    class DesignSpaces;
+    class DesignSpace;
 
     class AbstractVisitor
     {
@@ -237,6 +240,9 @@ namespace PharmML
             virtual void visit(InterventionSequence *node) = 0;
             virtual void visit(ObservationSequence *node) = 0;
             virtual void visit(OccasionSequence *node) = 0;
+            
+            virtual void visit(DesignSpaces *node) = 0;
+            virtual void visit(DesignSpace *node) = 0;
     };
 }
 

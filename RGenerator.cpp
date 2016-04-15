@@ -2,6 +2,25 @@
 
 namespace PharmML
 {
+    // private
+    void RGenerator::setValue(std::string str) {
+        this->value = str;
+    }
+
+    std::string RGenerator::getValue() {
+        return this->value;
+    }
+
+    std::string RGenerator::acceptLeft(Binop *binop) {
+        return binop->getLeft()->accept(this);
+    }
+
+    std::string RGenerator::acceptRight(Binop *binop) {
+        return binop->getRight()->accept(this);
+    }
+
+
+    // public
     std::string RGenerator::visit(SymbRef *node) {
         return node->toString();
     }
@@ -202,7 +221,7 @@ namespace PharmML
     }
 
     std::string RGenerator::visit(BinopPlus *node) {
-        return("(" + node->acceptLeft(this) + " + " + node->acceptRight(this) + ")");
+        return("(" + this->acceptLeft(node) + " + " + node->acceptRight(this) + ")");
     }
 
     std::string RGenerator::visit(BinopMinus *node) {

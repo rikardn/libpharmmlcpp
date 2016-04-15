@@ -29,6 +29,13 @@ namespace PharmML
 {
     class RGenerator : public AbstractVisitor
     {
+        private:
+            std::string value;
+            void setValue(std::string str);
+            std::string getValue();
+            std::string acceptLeft(Binop *binop);
+            std::string acceptRight(Binop *binop);
+
         public:
             virtual std::string visit(SymbRef *node);
             virtual std::string visit(SteadyStateParameter *node);

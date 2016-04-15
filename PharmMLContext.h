@@ -31,6 +31,7 @@ namespace PharmML
 
         PharmMLContext(const char *filename);
         ~PharmMLContext();
+        void write(const char *filename); 
     };
 }
 

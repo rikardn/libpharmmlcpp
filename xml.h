@@ -38,6 +38,7 @@ namespace xml
         std::string getText();
         Node getSingleElement(xmlXPathContext *xpath_context, const char *xpath);
         std::vector<xml::Node> getElements(xmlXPathContext *xpath_context, const char *xpath);
+        xml::Node createChild();
     };
 }
 

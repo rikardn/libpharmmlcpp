@@ -138,4 +138,8 @@ namespace xml
         xmlXPathFreeObject(obj);
         return results;
     }
+
+    xml::Node Node::createChild() {
+        
+    } 
 }

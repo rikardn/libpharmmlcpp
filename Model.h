@@ -24,6 +24,7 @@ namespace PharmML
         public:
         Model(const char *filename);
         ~Model();
+        void write(const char *filename);
         PharmML::IndependentVariable *getIndependentVariable();
         std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
         PharmML::ModelDefinition *getModelDefinition();

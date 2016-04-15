@@ -107,6 +107,10 @@ leave:
         return node.getElements(this->xpath_context, xpath);
     }
 
+    void PharmMLContext::write(const char *filename) {
+        xmlSaveFormatFileEnc(filename, this->doc, "UTF-8", 1);
+    }
+
     PharmMLContext::~PharmMLContext() {
         if (this->xpath_context) {
             xmlXPathFreeContext(xpath_context);

@@ -53,6 +53,10 @@ namespace PharmML
         delete context;
     }
 
+    void Model::write(const char *filename) {
+        this->context->write(filename);
+    }
+
     PharmML::IndependentVariable *Model::getIndependentVariable() {
         return this->IndependentVariable;
     }

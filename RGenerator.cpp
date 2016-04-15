@@ -2,6 +2,26 @@
 
 namespace PharmML
 {
+    // Helper function to reduce redundant code
+    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
+    std::string RGenerator::formatVector(std::vector<std::string> vector, bool asList) {
+        std::string s = "c(";
+        if (asList) {
+            s = "list(";
+        }
+        
+        bool first = true;
+        for (std::string element : vector) {
+            if (first) {
+                first = false;
+            } else {
+                s += ", ";
+            }
+            s += "'" + element + "'";
+        }
+        return(s + ")");
+    }
+    
     std::string RGenerator::visit(SymbRef *node) {
         return node->toString();
     }
@@ -522,23 +542,83 @@ namespace PharmML
     std::string RGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " = list(";
         
-        if (!node->getOidRefs().empty()) {
-            s += "oidRefs = c(";
-            bool first = true;
-            for (std::string ref : node->getOidRefs()) {
-                if (first) {
-                    first = false;
-                } else {
-                    s += ", ";
-                }
-                s += "\"" + ref + "\"";
-            }
-            s += ")";
-        }
+        s += "refs = " + formatVector(node->getOidRefs(), false);
         if (node->getRelative()) {
             s += ", relative = " + node->getRelative()->accept(this);
         }
         
         return (s + ")");
+    }
+    
+    std::string RGenerator::visit(InterventionSequence *node) {
+        std::string s = "list(";
+        
+        s += "refs = " + formatVector(node->getOidRefs(), false);
+        if (node->getStart()) {
+            s += ", start = " + node->getStart()->accept(this);
+        }
+        
+        return(s + ")");
+    }
+    
+    std::string RGenerator::visit(ObservationSequence *node) {
+        std::string s = "list(";
+        
+        s += "refs = " + formatVector(node->getOidRefs(), false);
+        if (node->getStart()) {
+            s += ", start = " + node->getStart()->accept(this);
+        }
+        
+        return(s + ")");
+    }
+    
+    std::string RGenerator::visit(Arm *node) {
+        std::string s = node->getOid() + " = list(";
+        
+        s += "oidRef = '" + node->getOidRef() + "'"; // What if missing? How format that?
+        if (node->getArmSize()) {
+            s += ", size = " + node->getArmSize()->accept(this);
+        }
+        if (node->getNumSamples()) {
+            s += ", samples = " + node->getNumSamples()->accept(this);
+        }
+        if (node->getNumTimes()) {
+            s += ", times = " + node->getNumTimes()->accept(this);
+        }
+        if (node->getSameTimes()) {
+            s += ", same_times = " + node->getSameTimes()->accept(this);
+        }
+        if (!node->getInterventionSequences().empty()) {
+            s += ", intervention_seq = c(";
+            bool first = true;
+            for (InterventionSequence *seq : node->getInterventionSequences()) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                }
+                s += seq->accept(this);
+            }
+            s += ")";
+        }
+
+        return(s + ")");
+    }
+    
+    std::string RGenerator::visit(Arms *node) {
+        std::string s;
+        
+        // Arm (<Arm>)
+        std::vector<std::string> arm_oids;
+        std::vector<Arm *> arms = node->getArms();
+        for (Arm *arm : arms) {
+            s += arm->accept(this) + '\n';
+            arm_oids.push_back(arm->getOid());
+        }
+        s += "arm_oids = c(";
+        for (std::string oid : arm_oids) {
+            s += "'" + oid + "'";
+        }
+        return(s + ")" + '\n');
     }
 }

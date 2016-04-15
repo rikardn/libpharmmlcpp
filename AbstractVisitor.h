@@ -108,8 +108,14 @@ namespace PharmML
     
     class Administration;
     //~ class Observation;
+    
     class Sampling;
     class ObservationCombination;
+    
+    class Arms;
+    class Arm;
+    class InterventionSequence;
+    class ObservationSequence;
 
     class AbstractVisitor
     {
@@ -219,8 +225,14 @@ namespace PharmML
             
             virtual std::string visit(Administration *node) = 0;
             //~ virtual std::string visit(Observation *node) = 0;
+            
             virtual std::string visit(Sampling *node) = 0;
             virtual std::string visit(ObservationCombination *node) = 0;
+            
+            virtual std::string visit(Arms *node) = 0;
+            virtual std::string visit(Arm *node) = 0;
+            virtual std::string visit(InterventionSequence *node) = 0;
+            virtual std::string visit(ObservationSequence *node) = 0;
     };
 }
 

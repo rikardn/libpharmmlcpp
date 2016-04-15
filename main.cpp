@@ -155,6 +155,13 @@ int main(int argc, char **argv)
         std::cout << ")" << std::endl;
     }
     std::cout << std::endl;
+    
+    // Arms output
+    Arms *arms = model->getTrialDesign()->getArms();
+    std::cout << "# Arms" << std::endl;
+    if (arms) {
+        std::cout << arms->accept(&gen) << std::endl;
+    }
 
     return 0;
 }

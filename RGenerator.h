@@ -24,12 +24,16 @@
 #include "ColumnMapping.h"
 #include "Intervention.h"
 #include "Observation.h"
+#include "Arms.h"
 
 namespace PharmML
 {
     class RGenerator : public AbstractVisitor
     {
         public:
+            // Helper function to reduce redundant code
+            std::string formatVector(std::vector<std::string> vector, bool asList);
+            
             virtual std::string visit(SymbRef *node);
             virtual std::string visit(SteadyStateParameter *node);
             virtual std::string visit(ColumnRef *node);
@@ -135,8 +139,14 @@ namespace PharmML
             
             virtual std::string visit(Administration *node);
             //~ virtual std::string visit(Observation *node);
+            
             virtual std::string visit(Sampling *node);
             virtual std::string visit(ObservationCombination *node);
+            
+            virtual std::string visit(Arms *node);
+            virtual std::string visit(Arm *node);
+            virtual std::string visit(InterventionSequence *node);
+            virtual std::string visit(ObservationSequence *node);
     };
 }
 

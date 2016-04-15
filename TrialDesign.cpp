@@ -25,10 +25,10 @@ namespace PharmML
         if (observation_node.exists()) {
             this->Observation = new PharmML::Observation(this->context, observation_node);
         }
-        //~ xml::Node arm_node = this->context->getSingleElement(node, ".//mdef:Arms");
-        //~ if (arm_node.exists()) {
-            //~ this->Arm = new PharmML::Arm(this->context, arm_node);
-        //~ }
+        xml::Node arms_node = this->context->getSingleElement(node, ".//design:Arms");
+        if (arms_node.exists()) {
+            this->Arms = new PharmML::Arms(this->context, arms_node);
+        }
     }
 
     PharmML::ExternalDataset *TrialDesign::getExternalDataset() {
@@ -43,7 +43,7 @@ namespace PharmML
         return this->Observation;
     }
 
-    //~ PharmML::Arm *TrialDesign::getArm() {
-        //~ return this->Arm;
-    //~ }
+    PharmML::Arms *TrialDesign::getArms() {
+        return this->Arms;
+    }
 }

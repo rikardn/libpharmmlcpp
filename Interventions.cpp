@@ -78,13 +78,15 @@ namespace PharmML
         this->oid = node.getAttribute("oid").getValue();
         xml::Node dose = node.getChild();
         this->type = dose.getName();
-        
+
         // Get dose amount
         xml::Node amount = this->context->getSingleElement(dose, ".//design:DoseAmount");
         xml::Node assign = this->context->getSingleElement(dose, ".//design:DoseAmount/ct:Assign");
-        xml::Node tree = assign.getChild();
-        this->amount = this->context->factory.create(tree);
-        
+        if (assign.exists()) {
+            xml::Node tree = assign.getChild();
+            this->amount = this->context->factory.create(tree);
+        }
+
         // Get dose target ('target' should probably be of parent class of SymbRef/TargetMapping).
         std::string targetType = amount.getAttribute("inputTarget").getValue();
         xml::Node symbref = this->context->getSingleElement(dose, ".//design:DoseAmount/ct:SymbRef");
@@ -94,7 +96,7 @@ namespace PharmML
         } else if (mapping.exists()) {
             this->target = new TargetMapping(this->context, targetType, mapping);
         }
-        
+
         // Get dose times/steady state
         xml::Node times = this->context->getSingleElement(dose, ".//design:DosingTimes");
         xml::Node steady = this->context->getSingleElement(dose, ".//design:SteadyState");

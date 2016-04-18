@@ -2,6 +2,7 @@
 #define PHARMML_XML_H_
 
 #include <vector>
+#include <string>
 #include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/parser.h>

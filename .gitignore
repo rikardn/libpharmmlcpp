@@ -4,3 +4,4 @@ main
 libpharmmlc.a
 test/test
 out.xml
+windep

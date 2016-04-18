@@ -1,7 +1,10 @@
 *.o
 *.swp
 main
+main.exe
 libpharmmlc.a
 test/test
 out.xml
+
 windep
+release

@@ -1,12 +1,19 @@
-LIBS = -lxml2
-CC = g++
-CFLAGS = -std=c++11 -g `xml2-config --cflags`
-#CC = x86_64-w64-mingw32-g++
-#CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -I./windep/include
+TARGET = UNIX
 
+LIBS = -lxml2
+
+ifeq ($(TARGET), UNIX)
+  CC = g++
+  CFLAGS = -std=c++11 -g `xml2-config --cflags`
+  OUTPUT = main
+else
+  CC = x86_64-w64-mingw32-g++
+  CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -I./windep/include
+  OUTPUT = main.exe
+endif
 
 main: main.o libpharmmlc.a
-	$(CC) main.o -omain -lpharmmlc $(CFLAGS) -L. $(LIBS)
+	$(CC) main.o -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 libpharmmlc.a: PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
 	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o xml.o
@@ -130,7 +137,16 @@ clean:
 	rm -f *.o
 	rm -f libpharmmlc.a
 	rm -f main
+	rm -f main.exe
 
+
+
+.PHONY: release
+release:
+	mkdir -p release
+	cp main.exe release
+	cp windep/lib/*.dll release
+	cp Executable_Simeoni_2004_oncology_TGI_trialdesign.xml release	
 
 
 .PHONY: windep

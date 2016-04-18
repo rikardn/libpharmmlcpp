@@ -1,8 +1,8 @@
 LIBS = -lxml2
-#CC = g++
-#CFLAGS = -std=c++11 -g `xml2-config --cflags`
-CC = x86_64-w64-mingw32-g++
-CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -I./windep/include
+CC = g++
+CFLAGS = -std=c++11 -g `xml2-config --cflags`
+#CC = x86_64-w64-mingw32-g++
+#CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -I./windep/include
 
 
 main: main.o libpharmmlc.a

@@ -82,11 +82,13 @@ int main(int argc, char **argv)
     
     // Data column mapping output
     std::cout << "# Data column mappings" << std::endl;
-    for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
-        col->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
+    if (model->getTrialDesign()->getExternalDataset()) {
+        for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
+            col->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
     
     // Structural model output
     std::cout << "# Structural model" << std::endl;

@@ -39,7 +39,7 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::vector<std::string> oidRefs;
-        AstNode *start;
+        AstNode *start = nullptr;
         
         public:
         InterventionSequence(PharmML::PharmMLContext *context, xml::Node node);
@@ -53,7 +53,7 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::vector<std::string> oidRefs;
-        AstNode *start;
+        AstNode *start = nullptr;
         
         public:
         ObservationSequence(PharmML::PharmMLContext *context, xml::Node node);

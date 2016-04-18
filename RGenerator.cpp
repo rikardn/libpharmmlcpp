@@ -847,7 +847,13 @@ namespace PharmML
                 arm_oids.push_back(arm->getOid());
             }
             s += "arm_oids = c(";
+            bool first = true;
             for (std::string oid : arm_oids) {
+                if (first) {
+                    first = false;
+                } else {
+                    s += ", ";
+                } 
                 s += "'" + oid + "'";
             }
         }

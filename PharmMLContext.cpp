@@ -25,6 +25,9 @@ namespace PharmML
 
     PharmMLContext::PharmMLContext(const char *filename) {
         this->doc = xmlReadFile(filename, NULL, 0);
+        if (!this->doc) {
+            throw std::runtime_error("File " + std::string(filename) + " not found");
+        }
         //~ this->validateDocument(); // DesignSpaces is not validating and I don't have time to try to put together a proper one right now man
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();

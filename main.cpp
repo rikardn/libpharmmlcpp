@@ -1,4 +1,5 @@
 #include <iostream>
+#include <exception>
 #include "Model.h"
 #include "Scalar.h"
 #include "RGenerator.h"
@@ -16,7 +17,16 @@ int main(int argc, char **argv)
     } else {
         filename = argv[1];
     }
-    Model *model = new Model(filename);
+
+    Model *model;
+    try {
+        model = new Model(filename);
+    } 
+    catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
+        return 5;
+    }
+
 
     RGenerator gen;
     

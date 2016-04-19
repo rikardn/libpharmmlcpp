@@ -885,7 +885,7 @@ namespace PharmML
     
     // Class DesignSpaces and all its content
     void RGenerator::visit(DesignSpace *node) {
-        std::string s = node->getOid() + " = ";
+        std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
         
         list.push_back("intervention_refs = " + formatVector(node->getInterventionRefs(), "c"));
@@ -897,7 +897,7 @@ namespace PharmML
         }
         
         s += formatVector(list, "list", "");
-        this->setValue(s + ")");
+        this->setValue(s);
     }
     
     void RGenerator::visit(DesignSpaces *node) {
@@ -915,15 +915,15 @@ namespace PharmML
         std::vector<DesignSpace *> designSpaces = node->getDesignSpaces();
         if (!designSpaces.empty()) {
             s += "# Design spaces\n";
-            std::vector<std::string> ds_oids;
+            s += "design_spaces <- vector(mode=\"list\", length=" + std::to_string(designSpaces.size()) + ")\n";
+            int i = 1;
             for (DesignSpace *ds : designSpaces) {
                 ds->accept(this);
-                s += this->getValue() + "\n";
-                ds_oids.push_back(ds->getOid());
+                s += "design_space[" + std::to_string(i) + "]" + this->getValue() + "\n";
+                i++;
             }
-            s += "designspace_oids = " + formatVector(ds_oids, "c") + "\n";
         }
         
-        this->setValue(s + ")" + "\n");
+        this->setValue(s + "\n");
     }
 }

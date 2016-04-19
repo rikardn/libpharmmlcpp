@@ -919,7 +919,7 @@ namespace PharmML
             int i = 1;
             for (DesignSpace *ds : designSpaces) {
                 ds->accept(this);
-                s += "design_space[" + std::to_string(i) + "]" + this->getValue() + "\n";
+                s += "design_spaces[[" + std::to_string(i) + "]]" + this->getValue() + "\n";
                 i++;
             }
         }

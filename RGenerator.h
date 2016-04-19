@@ -17,6 +17,7 @@
 #include "Variable.h"
 #include "DerivativeVariable.h"
 #include "FunctionCall.h"
+#include "Interval.h"
 #include "ObservationModel.h"
 #include "IndependentVariable.h"
 #include "RandomVariable.h"
@@ -38,8 +39,10 @@ namespace PharmML
             std::string acceptRight(Binop *binop);
             std::string infix(Binop *binop, std::string op); 
             std::string acceptChild(Uniop *uniop);
+            std::string accept(AstNode *node);
             // Helper function to reduce redundant code
             std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'");
+            std::string getLogicLiteral(bool value);
 
         public:
             std::string getValue();
@@ -134,6 +137,7 @@ namespace PharmML
             
             virtual void visit(FunctionCall *node);
             virtual void visit(FunctionArgument *node);
+            virtual void visit(Interval *node);
             
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);

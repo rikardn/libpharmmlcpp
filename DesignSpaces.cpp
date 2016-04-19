@@ -1,4 +1,5 @@
 #include "DesignSpaces.h"
+#include <iostream>
 
 namespace PharmML
 {
@@ -23,6 +24,10 @@ namespace PharmML
         for (xml::Node ref : refs) {
             this->armRefs.push_back(ref.getAttribute("oidRef").getValue());
         }
+        xml::Node dosing_times = this->context->getSingleElement(node, "./design:DosingTimes");
+        if (dosing_times.exists()) {
+            this->dosingTimes = this->context->factory.create(dosing_times.getChild().getChild());
+        }
     }
     
     std::string DesignSpace::getOid() {
@@ -39,6 +44,10 @@ namespace PharmML
     
     std::vector<std::string> DesignSpace::getArmRefs() {
         return this->armRefs;
+    }
+        
+    AstNode *DesignSpace::getDosingTimes() {
+        return this->dosingTimes;
     }
     
     void DesignSpace::accept(AbstractVisitor *visitor) {

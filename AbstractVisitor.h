@@ -93,6 +93,7 @@ namespace PharmML
     
     class FunctionCall;
     class FunctionArgument;
+    class Interval;
     
     class FunctionDefinition;
     class PopulationParameter;
@@ -215,6 +216,7 @@ namespace PharmML
             
             virtual void visit(FunctionCall *node) = 0;
             virtual void visit(FunctionArgument *node) = 0;
+            virtual void visit(Interval *node) = 0;
             
             virtual void visit(FunctionDefinition *node) = 0;
             virtual void visit(PopulationParameter *node) = 0;

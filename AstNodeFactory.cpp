@@ -12,6 +12,7 @@
 #include "Vector.h"
 #include "Piecewise.h"
 #include "FunctionCall.h"
+#include "Interval.h"
 
 namespace PharmML
 {
@@ -267,6 +268,19 @@ namespace PharmML
                 arg->setArgument(this->create(n.getChild(), deps));
             }
             instance = fcall;
+        } else if (name == "Interval") {
+            Interval *interval = new Interval();
+            xml::Node left_endpoint = node.getChild();
+            xml::Node right_endpoint = node.getLastChild();
+            interval->setLeftEndpoint(this->create(left_endpoint.getChild().getChild()));
+            if (left_endpoint.getAttribute("type").getValue() == "open") {
+                interval->setLeftEndpointOpen(true);
+            }
+            interval->setRightEndpoint(this->create(right_endpoint.getChild().getChild()));
+            if (right_endpoint.getAttribute("type").getValue() == "open") {
+                interval->setRightEndpointOpen(true);
+            }
+            instance = interval;
         } 
 
         return instance;

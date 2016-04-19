@@ -30,7 +30,12 @@ namespace PharmML
         uniop->getChild()->accept(this);
         return this->getValue();
     }
-    
+   
+    std::string RGenerator::accept(AstNode *node) {
+        node->accept(this);
+        return this->getValue();
+    }
+
     // Helper function to reduce redundant code
     // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
     std::string RGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote) {
@@ -46,6 +51,14 @@ namespace PharmML
             s += quote + element + quote;
         }
         return(s + ")");
+    }
+
+    std::string RGenerator::getLogicLiteral(bool value) {
+        if (value) {
+            return "TRUE";
+        } else {
+            return "FALSE";
+        }
     }
 
     // public
@@ -447,6 +460,15 @@ namespace PharmML
         node->getAssignment()->accept(this);
         std::string code = "  " + this->getValue() + "\n}";
         this->setValue(head + code);
+    }
+
+    void RGenerator::visit(Interval *node) {
+        std::string result = "list(left=" + this->accept(node->getLeftEndpoint());
+        result += ", right=" + this->accept(node->getRightEndpoint());
+        result += ", openleft=" + this->getLogicLiteral(node->isLeftEndpointOpen());
+        result += ", openright=" + this->getLogicLiteral(node->isRightEndpointOpen());
+        result += ")";
+        this->setValue(result);
     }
 
     void RGenerator::visit(Covariate *node) {
@@ -869,6 +891,10 @@ namespace PharmML
         list.push_back("intervention_refs = " + formatVector(node->getInterventionRefs(), "c"));
         list.push_back("observation_refs = " + formatVector(node->getObservationRefs(), "c"));
         list.push_back("arm_refs = " + formatVector(node->getArmRefs(), "c"));
+        AstNode *dosing_times = node->getDosingTimes();
+        if (dosing_times) {
+            list.push_back("dosing_times=" + this->accept(dosing_times));
+        }
         
         s += formatVector(list, "list", "");
         this->setValue(s + ")");

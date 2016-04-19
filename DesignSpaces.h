@@ -4,6 +4,7 @@
 #include "xml.h"
 #include "PharmMLContext.h"
 #include "Variable.h"
+#include "AstNode.h"
 
 namespace PharmML
 {
@@ -14,6 +15,7 @@ namespace PharmML
         std::vector<std::string> interventionRefs;
         std::vector<std::string> observationRefs;
         std::vector<std::string> armRefs;
+        AstNode *dosingTimes = nullptr;
         
         public:
         DesignSpace(PharmMLContext *context, xml::Node node);
@@ -22,6 +24,7 @@ namespace PharmML
         std::vector<std::string> getInterventionRefs();
         std::vector<std::string> getObservationRefs();
         std::vector<std::string> getArmRefs();
+        AstNode *getDosingTimes();
         void accept(AbstractVisitor *visitor);
     };
     

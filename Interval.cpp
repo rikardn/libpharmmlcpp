@@ -19,6 +19,19 @@
 
 namespace PharmML
 {
+    Interval::Interval(xml::Node node) {
+        xml::Node left_endpoint = node.getChild();
+        xml::Node right_endpoint = node.getLastChild();
+        this->setLeftEndpoint(AstNodeFactory::create(left_endpoint.getChild().getChild()));
+        if (left_endpoint.getAttribute("type").getValue() == "open") {
+            this->setLeftEndpointOpen(true);
+        }
+        this->setRightEndpoint(AstNodeFactory::create(right_endpoint.getChild().getChild()));
+        if (right_endpoint.getAttribute("type").getValue() == "open") {
+            this->setRightEndpointOpen(true);
+        }
+    }
+
     AstNode *Interval::getLeftEndpoint() {
         return this->LeftEndpoint;
     }

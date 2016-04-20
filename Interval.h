@@ -31,6 +31,7 @@ namespace PharmML
         bool openRightEndpoint = false;
 
         public:
+        Interval(xml::Node node);
         AstNode *getLeftEndpoint();
         AstNode *getRightEndpoint();
         void setLeftEndpoint(AstNode *node);

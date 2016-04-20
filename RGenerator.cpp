@@ -498,10 +498,10 @@ namespace PharmML
                 cov = " + " + fe + " * " + cov;
             }
             node->getRandomEffects()->accept(this); 
-            result = node->getTransformation() + node->getSymbId() + " = " + pop + cov + " + " + this->getValue();
+            result = node->getTransformation() + node->getSymbId() + " <- " + pop + cov + " + " + this->getValue();
         } else {
             node->getAssignment()->accept(this);
-            result = node->getSymbId() + " = " + this->getValue();
+            result = node->getSymbId() + " <- " + this->getValue();
         }
         this->setValue(result);
     }
@@ -511,11 +511,11 @@ namespace PharmML
         std::string var_ref = "variability_reference=\"" + this->getValue() + "\"";
         node->getDistribution()->accept(this);
         std::string dist = this->getValue();
-        this->setValue(node->getSymbId() + " = list(" + var_ref + ", " + dist + ")");
+        this->setValue(node->getSymbId() + " <- list(" + var_ref + ", " + dist + ")");
     }
 
     void RGenerator::visit(IndependentVariable *node) {
-        this->setValue("IndependentVariable = \"" + node->getSymbId() + "\"");
+        this->setValue("IndependentVariable <- \"" + node->getSymbId() + "\"");
     }
 
     void RGenerator::visit(Variable *node) {
@@ -545,12 +545,12 @@ namespace PharmML
 
     void RGenerator::visit(ObservationModel *node) {
         node->getErrorModel()->accept(this);
-        std::string error = "W = " + this->getValue();
+        std::string error = "W <- " + this->getValue();
         node->getOutput()->accept(this);
         std::string output = this->getValue();
         node->getResidualError()->accept(this);
         std::string res = this->getValue();
-        std::string y = node->getSymbId() + " = " + output + " + W * " + res;
+        std::string y = node->getSymbId() + " <- " + output + " + W * " + res;
         this->setValue(error + "\n" + y);
     }
 
@@ -565,12 +565,12 @@ namespace PharmML
 
     void RGenerator::visit(ColumnMapping *node) {
         node->getAssignment()->accept(this);
-        this->setValue(node->getColumnIdRef() + " = " + this->getValue());
+        this->setValue(node->getColumnIdRef() + " <- " + this->getValue());
     }
     
     // Class Interventions and all its content
     void RGenerator::visit(Administration *node) {
-        std::string s = node->getOid() + " = list(";
+        std::string s = node->getOid() + " <- list(";
         
         s += "type = \"" + node->getType() + "\"";
         node->getTarget()->accept(this);
@@ -608,7 +608,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 adm_oids.push_back(adm->getOid());
             }
-            s += "administration_oids = " + formatVector(adm_oids, "c") + "\n";
+            s += "administration_oids <- " + formatVector(adm_oids, "c") + "\n";
         }
 
         this->setValue(s);
@@ -616,7 +616,7 @@ namespace PharmML
     
     // Class Observations and all its content
     void RGenerator::visit(Observation *node) {
-        std::string s = node->getOid() + " = list(";
+        std::string s = node->getOid() + " <- list(";
         
         node->getTimes()->accept(this);
         s += "times = " + this->getValue();
@@ -660,7 +660,7 @@ namespace PharmML
     }
     
     void RGenerator::visit(ObservationCombination *node) {
-        std::string s = node->getOid() + " = list(";
+        std::string s = node->getOid() + " <- list(";
         
         s += "refs = " + formatVector(node->getOidRefs(), "c");
         if (node->getRelative()) {
@@ -692,7 +692,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 obs_oids.push_back(observation->getOid());
             }
-            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n";
+            s += "observation_oids <- " + formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
@@ -704,7 +704,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 comb_oids.push_back(comb->getOid());
             }
-            s += "combination_oids = c(";
+            s += "combination_oids <- c(";
             for (std::string oid : comb_oids) {
                 s += "'" + oid + "'";
             }
@@ -743,7 +743,7 @@ namespace PharmML
     }
     
     void RGenerator::visit(Arm *node) {
-        std::string s = node->getOid() + " = ";
+        std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
         
         if (node->getOidRef() != "") {
@@ -791,7 +791,7 @@ namespace PharmML
                 seq->accept(this);
                 s += this->getValue();
             }
-            list.push_back(s + ")");
+            list.push_back(s);
         }
         // TODO: Implement output of node->getOccasionSequences
         
@@ -868,7 +868,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 arm_oids.push_back(arm->getOid());
             }
-            s += "arm_oids = c(";
+            s += "arm_oids <- c(";
             bool first = true;
             for (std::string oid : arm_oids) {
                 if (first) {

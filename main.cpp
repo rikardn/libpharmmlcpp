@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     std::cout << "# Parameter definitions" << std::endl;
     model->getIndependentVariable()->accept(&gen);
     std::cout << gen.getValue() << std::endl;
-    std::cout << "PopulationParameters = c(";
+    std::cout << "PopulationParameters <- c(";
     bool first = true;
     for (PopulationParameter *p : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
         if (first) {

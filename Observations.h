@@ -6,9 +6,12 @@
 #include "AstNode.h"
 #include "Variable.h"
 #include "symbols.h"
+#include "ColumnMapping.h"
+//~ #include "ExternalDataset.h" // Check comments in this file
 
 namespace PharmML
 {
+    // Observation class
     class Observation
     {
         PharmML::PharmMLContext *context;
@@ -31,6 +34,23 @@ namespace PharmML
         void accept(AbstractVisitor *visitor);
     };
     
+    // IndividualObservations class
+    class IndividualObservations
+    {
+        PharmML::PharmMLContext *context;
+        std::string oid;
+        std::vector<PharmML::ColumnMapping *> ColumnMappings;
+        // TODO: Support ds:Dataset (data for each subject within the study)
+
+        public:
+        IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        std::string getOid();
+        std::vector<PharmML::ColumnMapping *> getColumnMappings();
+        void accept(AbstractVisitor *visitor);
+    };
+    
+    // ObservationCombination class
     class ObservationCombination
     {
         PharmML::PharmMLContext *context;
@@ -47,12 +67,13 @@ namespace PharmML
         void accept(AbstractVisitor *visitor);
     };
     
+    // Observations class (contains objects of classes above)
     class Observations
     {
         PharmML::PharmMLContext *context;
         std::vector<PharmML::Variable *> designParameters;
-        std::vector<PharmML::Observation *> observations;
-        // TODO: Implement support for IndividualObservations according to schema
+        std::vector<PharmML::Observation *> simulationObservations;
+        std::vector<PharmML::IndividualObservations *> datasetObservations;
         // TODO: Implement support for LookupTable according to schema
         std::vector<ObservationCombination *> observationCombinations;
 
@@ -60,7 +81,8 @@ namespace PharmML
         Observations(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<PharmML::Variable *> getDesignParameters();
-        std::vector<PharmML::Observation *> getObservations();
+        std::vector<PharmML::Observation *> getObservations(); // Or getSimulationObservations()?
+        std::vector<PharmML::IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?
         std::vector<PharmML::ObservationCombination *> getObservationCombinations();
         void accept(AbstractVisitor *visitor);
     };

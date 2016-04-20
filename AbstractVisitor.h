@@ -112,6 +112,7 @@ namespace PharmML
     
     class Observations;
     class Observation;
+    class IndividualObservations;
     class ObservationCombination;
     
     class Arms;
@@ -235,6 +236,7 @@ namespace PharmML
             
             virtual void visit(Observations *node) = 0;
             virtual void visit(Observation *node) = 0;
+            virtual void visit(IndividualObservations *node) = 0;
             virtual void visit(ObservationCombination *node) = 0;
             
             virtual void visit(Arms *node) = 0;

@@ -659,6 +659,10 @@ namespace PharmML
         this->setValue(s + ")");
     }
     
+    void RGenerator::visit(IndividualObservations *node) {
+        // Don't really know how to output ColumnMapping objects
+    }
+    
     void RGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " = list(";
         
@@ -692,7 +696,19 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 obs_oids.push_back(observation->getOid());
             }
-            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n";
+            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n"; // Or simulation_observation_oids?
+        }
+        
+        std::vector<IndividualObservations *> ind_observations = node->getIndividualObservations();
+        if (!ind_observations.empty()) {
+            s += "# Individual observations\n";
+            std::vector<std::string> obs_oids;
+            for (IndividualObservations *ind_observation : ind_observations) {
+                ind_observation->accept(this);
+                s += this->getValue() + "\n";
+                obs_oids.push_back(ind_observation->getOid());
+            }
+            s += "individual_observation_oids = " + formatVector(obs_oids, "c") + "\n"; // Or dataset_observation_oids?
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();

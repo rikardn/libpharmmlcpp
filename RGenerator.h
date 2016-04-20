@@ -156,6 +156,7 @@ namespace PharmML
             
             virtual void visit(Observations *node);
             virtual void visit(Observation *node);
+            virtual void visit(IndividualObservations *node);
             virtual void visit(ObservationCombination *node);
             
             virtual void visit(Arms *node);

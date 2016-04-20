@@ -27,7 +27,7 @@ namespace PharmML
     class AstNodeFactory
     {
         public:
-        AstNode *create(xml::Node node, Dependencies *deps = nullptr);
+        static AstNode *create(xml::Node node, Dependencies *deps = nullptr);
     };
 }
 

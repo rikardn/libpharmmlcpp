@@ -133,7 +133,7 @@ namespace PharmML
             } else if (op == "not") {
                 uniop = new LogicUniopNot();
             }
-            uniop->setChild(this->create(node.getChild(), deps));
+            uniop->setChild(AstNodeFactory::create(node.getChild(), deps));
             instance = uniop;
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
@@ -181,8 +181,8 @@ namespace PharmML
             } else if (op == "xor") {
                 binop = new LogicBinopXor();
             }
-            binop->setLeft(this->create(node.getChild(), deps));
-            binop->setRight(this->create(node.getLastChild(), deps));
+            binop->setLeft(AstNodeFactory::create(node.getChild(), deps));
+            binop->setRight(AstNodeFactory::create(node.getLastChild(), deps));
             instance = binop;
         } else if (name == "False") {
             instance = new LogicFalse();
@@ -237,14 +237,14 @@ namespace PharmML
                 xml::Node elements_node = vectorElements[0];
                 std::vector<xml::Node> elements = elements_node.getChildren();
                 for (xml::Node element : elements) {
-                    vector->addElement(this->create(element, deps));
+                    vector->addElement(AstNodeFactory::create(element, deps));
                 }
             } else if (!(vectorCells.empty() && vectorSegments.empty())) {
                 // Build vector from cells
                 for (xml::Node cell : vectorCells) {
                     std::vector<xml::Node> children = cell.getChildren();
                     int cellIndex = std::stoi(children[0].getText());
-                    AstNode *cellContent = this->create(children[1], deps);
+                    AstNode *cellContent = AstNodeFactory::create(children[1], deps);
                     
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
@@ -264,8 +264,8 @@ namespace PharmML
                 // Assumes expression is first child and condition last child
                 xml::Node expression = n.getChild();
                 xml::Node condition = n.getLastChild().getChild();
-                piece->setExpression(this->create(expression, deps));
-                piece->setCondition(this->create(condition, deps));
+                piece->setExpression(AstNodeFactory::create(expression, deps));
+                piece->setCondition(AstNodeFactory::create(condition, deps));
                 // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
                 if (condition.getName() == "Otherwise") {
                     piece->setOtherwise();
@@ -277,23 +277,23 @@ namespace PharmML
             std::vector<xml::Node> children = node.getChildren();
             xml::Node name_node = children[0];
             children.erase(children.begin());
-            fcall->setFunctionName(this->create(name_node, deps));
+            fcall->setFunctionName(AstNodeFactory::create(name_node, deps));
             for (xml::Node n : children) {
                 FunctionArgument *arg = new FunctionArgument();
                 fcall->addFunctionArgument(arg);
                 arg->setSymbId(n.getAttribute("symbId").getValue());
-                arg->setArgument(this->create(n.getChild(), deps));
+                arg->setArgument(AstNodeFactory::create(n.getChild(), deps));
             }
             instance = fcall;
         } else if (name == "Interval") {
             Interval *interval = new Interval();
             xml::Node left_endpoint = node.getChild();
             xml::Node right_endpoint = node.getLastChild();
-            interval->setLeftEndpoint(this->create(left_endpoint.getChild().getChild()));
+            interval->setLeftEndpoint(AstNodeFactory::create(left_endpoint.getChild().getChild()));
             if (left_endpoint.getAttribute("type").getValue() == "open") {
                 interval->setLeftEndpointOpen(true);
             }
-            interval->setRightEndpoint(this->create(right_endpoint.getChild().getChild()));
+            interval->setRightEndpoint(AstNodeFactory::create(right_endpoint.getChild().getChild()));
             if (right_endpoint.getAttribute("type").getValue() == "open") {
                 interval->setRightEndpointOpen(true);
             }

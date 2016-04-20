@@ -149,6 +149,7 @@ release:
 	mkdir -p release
 	cp main.exe release
 	cp windep/lib/*.dll release
+	cp -r pharmml_internalRelease_0_8_1 release
 	cp Executable_Simeoni_2004_oncology_TGI_trialdesign.xml release	
 
 

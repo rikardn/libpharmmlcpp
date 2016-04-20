@@ -45,7 +45,7 @@ namespace PharmML
         if (!this->doc) {
             throw std::runtime_error("File " + std::string(filename) + " not found");
         }
-        //~ this->validateDocument(); // DesignSpaces is not validating and I don't have time to try to put together a proper one right now man
+        this->validateDocument();
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());

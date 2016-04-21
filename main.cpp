@@ -19,7 +19,8 @@
 #include <exception>
 #include "Model.h"
 #include "Scalar.h"
-#include "RGenerator.h"
+#include "RAstGenerator.h"
+#include "RPharmMLGenerator.h"
 #include "Variable.h"
 #include "PopulationParameter.h"
 
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
     }
 
 
-    RGenerator gen;
+    RPharmMLGenerator gen;
     
     // Parameter definitions output
     std::cout << "# Parameter definitions" << std::endl;

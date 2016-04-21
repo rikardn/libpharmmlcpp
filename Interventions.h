@@ -22,6 +22,7 @@
 #include "PharmMLContext.h"
 #include "AstNode.h"
 #include "symbols.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -86,7 +87,7 @@ namespace PharmML
         AstNode *getSteady();
         AstNode *getDuration();
         AstNode *getRate();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
     
     class Interventions
@@ -98,7 +99,7 @@ namespace PharmML
         Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<Administration *> getAdministrations();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

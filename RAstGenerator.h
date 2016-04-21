@@ -27,27 +27,16 @@
 #include "Constant.h"
 #include "Vector.h"
 #include "Piecewise.h"
-#include "FunctionDefinition.h"
-#include "PopulationParameter.h"
-#include "IndividualParameter.h"
-#include "Covariate.h"
-#include "Variable.h"
 #include "DerivativeVariable.h"
 #include "FunctionCall.h"
 #include "Interval.h"
-#include "ObservationModel.h"
-#include "IndependentVariable.h"
-#include "RandomVariable.h"
 #include "Distribution.h"
 #include "ColumnMapping.h"
 #include "Interventions.h"
-#include "Observations.h"
-#include "Arms.h"
-#include "DesignSpaces.h"
 
 namespace PharmML
 {
-    class RGenerator : public AstNodeVisitor
+    class RAstGenerator : public AstNodeVisitor
     {
         private:
             std::string value;
@@ -155,35 +144,6 @@ namespace PharmML
             virtual void visit(FunctionCall *node);
             virtual void visit(FunctionArgument *node);
             virtual void visit(Interval *node);
-            
-            virtual void visit(FunctionDefinition *node);
-            virtual void visit(PopulationParameter *node);
-            virtual void visit(IndividualParameter *node);
-            virtual void visit(RandomVariable *node);
-            virtual void visit(Covariate *node);
-            virtual void visit(IndependentVariable *node);
-            virtual void visit(Variable *node);
-            virtual void visit(DerivativeVariable *node);
-            virtual void visit(ObservationModel *node);
-            virtual void visit(Distribution *node);
-            virtual void visit(ColumnMapping *node);
-            
-            virtual void visit(Interventions *node);
-            virtual void visit(Administration *node);
-            
-            virtual void visit(Observations *node);
-            virtual void visit(Observation *node);
-            virtual void visit(IndividualObservations *node);
-            virtual void visit(ObservationCombination *node);
-            
-            virtual void visit(Arms *node);
-            virtual void visit(Arm *node);
-            virtual void visit(InterventionSequence *node);
-            virtual void visit(ObservationSequence *node);
-            virtual void visit(OccasionSequence *node);
-            
-            virtual void visit(DesignSpaces *node);
-            virtual void visit(DesignSpace *node);
     };
 }
 

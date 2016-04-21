@@ -39,7 +39,7 @@ namespace PharmML
         return this->columnIdRef;
     }
     
-    void ColumnMapping::accept(AstNodeVisitor *visitor) {
+    void ColumnMapping::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

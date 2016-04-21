@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include "AstNode.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -36,7 +37,7 @@ namespace PharmML
         std::string getSymbId();
         std::vector<std::string> getArguments();
         AstNode *getAssignment();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

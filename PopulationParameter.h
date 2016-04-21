@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include "xml.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -32,7 +33,7 @@ namespace PharmML
         PopulationParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getSymbId();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

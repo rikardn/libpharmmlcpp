@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include "Variable.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -35,7 +36,7 @@ namespace PharmML
         AstNode *getInitialValue();
         AstNode *getInitialTime();
         void parse(xml::Node node);
-        void accept(AstNodeVisitor *visitor); 
+        void accept(PharmMLVisitor *visitor); 
     };
 }
 

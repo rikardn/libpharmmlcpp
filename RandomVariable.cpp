@@ -49,7 +49,7 @@ namespace PharmML
         return this->Distribution;
     }
 
-    void RandomVariable::accept(AstNodeVisitor *visitor) {
+    void RandomVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

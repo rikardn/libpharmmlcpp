@@ -21,6 +21,7 @@
 #include "PharmMLContext.h"
 #include "xml.h"
 #include "AstNode.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -47,7 +48,7 @@ namespace PharmML
         AstNode *getCovariate();
         AstNode *getAssignment();
         bool isStructured();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

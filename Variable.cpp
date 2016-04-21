@@ -46,7 +46,7 @@ namespace PharmML
         return this->deps;
     }
 
-    void Variable::accept(AstNodeVisitor *visitor) {
+    void Variable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

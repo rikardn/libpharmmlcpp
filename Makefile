@@ -18,8 +18,8 @@ main: main.cpp libpharmmlc.a
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o Interval.o xml.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o Interval.o xml.o
+libpharmmlc.a: PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o Interval.o xml.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o ExternalDataset.o ColumnMapping.o Interval.o xml.o
 
 Interval.o: Interval.cpp Interval.h
 	$(CC) -c Interval.cpp -oInterval.o $(CFLAGS)
@@ -93,8 +93,11 @@ StructuralModel.o: StructuralModel.cpp StructuralModel.h
 Variable.o: Variable.cpp Variable.h
 	$(CC) -c Variable.cpp -oVariable.o $(CFLAGS)
 
-RGenerator.o: RGenerator.cpp RGenerator.h
-	$(CC) -c RGenerator.cpp -oRGenerator.o $(CFLAGS)
+RPharmMLGenerator.o: RPharmMLGenerator.cpp RPharmMLGenerator.h
+	$(CC) -c RPharmMLGenerator.cpp -oRPharmMLGenerator.o $(CFLAGS)
+
+RAstGenerator.o: RAstGenerator.cpp RAstGenerator.h
+	$(CC) -c RAstGenerator.cpp -oRAstGenerator.o $(CFLAGS)
 
 symbols.o: symbols.cpp symbols.h
 	$(CC) -c symbols.cpp -osymbols.o $(CFLAGS)

@@ -21,6 +21,7 @@
 #include "xml.h"
 #include "PharmMLContext.h"
 #include "AstNode.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -35,7 +36,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getTransformedName();
         AstNode *getAssignment();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

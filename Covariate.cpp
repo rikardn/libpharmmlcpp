@@ -46,7 +46,7 @@ namespace PharmML
         return this->assignment;
     }
     
-    void Covariate::accept(AstNodeVisitor *visitor) {
+    void Covariate::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

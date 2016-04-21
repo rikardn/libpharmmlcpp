@@ -176,7 +176,7 @@ namespace PharmML
         return this->rate;
     }
     
-    void Administration::accept(AstNodeVisitor *visitor) {
+    void Administration::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -198,7 +198,7 @@ namespace PharmML
         return Administrations;
     }
     
-    void Interventions::accept(AstNodeVisitor *visitor) {
+    void Interventions::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

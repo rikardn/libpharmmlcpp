@@ -21,6 +21,7 @@
 #include "PharmMLContext.h"
 #include "AstNode.h"
 #include "xml.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -40,7 +41,7 @@ namespace PharmML
         AstNode *getErrorModel();
         AstNode *getResidualError();
         void parse(xml::Node node);
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

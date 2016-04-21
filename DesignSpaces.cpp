@@ -67,7 +67,7 @@ namespace PharmML
         return this->dosingTimes;
     }
     
-    void DesignSpace::accept(AstNodeVisitor *visitor) {
+    void DesignSpace::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -101,7 +101,7 @@ namespace PharmML
         return this->designSpaces;
     }
     
-    void DesignSpaces::accept(AstNodeVisitor *visitor) {
+    void DesignSpaces::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

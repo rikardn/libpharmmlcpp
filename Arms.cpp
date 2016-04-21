@@ -107,7 +107,7 @@ namespace PharmML
         return this->start;
     }
     
-    void InterventionSequence::accept(AstNodeVisitor *visitor) {
+    void InterventionSequence::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -140,7 +140,7 @@ namespace PharmML
         return this->start;
     }
     
-    void ObservationSequence::accept(AstNodeVisitor *visitor) {
+    void ObservationSequence::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -172,7 +172,7 @@ namespace PharmML
         return this->occasions;
     }
     
-    void OccasionSequence::accept(AstNodeVisitor *visitor) {
+    void OccasionSequence::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -269,7 +269,7 @@ namespace PharmML
         return this->observationSequences;
     }
     
-    void Arm::accept(AstNodeVisitor *visitor) {
+    void Arm::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -384,7 +384,7 @@ namespace PharmML
         return this->arms;
     }
     
-    void Arms::accept(AstNodeVisitor *visitor) {
+    void Arms::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

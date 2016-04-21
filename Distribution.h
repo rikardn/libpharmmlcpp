@@ -22,6 +22,7 @@
 #include "DistributionParameter.h"
 #include "Scalar.h"
 #include "symbols.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -36,7 +37,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getName();
         std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmML::PharmMLVisitor *visitor);
     };
 }
 

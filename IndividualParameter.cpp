@@ -97,7 +97,7 @@ namespace PharmML
         return this->is_structured;
     }
 
-    void IndividualParameter::accept(AstNodeVisitor *visitor) {
+    void IndividualParameter::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

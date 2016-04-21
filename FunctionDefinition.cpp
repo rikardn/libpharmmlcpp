@@ -49,7 +49,7 @@ namespace PharmML
         return this->assignment;
     }
 
-    void FunctionDefinition::accept(AstNodeVisitor *visitor) {
+    void FunctionDefinition::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

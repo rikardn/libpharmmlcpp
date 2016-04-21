@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include "Distribution.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -36,7 +37,7 @@ namespace PharmML
         std::string getSymbId();
         AstNode *getVariabilityReference();
         PharmML::Distribution *getDistribution();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

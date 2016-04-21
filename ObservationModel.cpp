@@ -60,7 +60,7 @@ namespace PharmML
         return this->ResidualError;
     }
 
-    void ObservationModel::accept(AstNodeVisitor *visitor) {
+    void ObservationModel::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

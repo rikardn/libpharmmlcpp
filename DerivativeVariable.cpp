@@ -47,7 +47,7 @@ namespace PharmML
         return this->initial_time;
     }
 
-    void DerivativeVariable::accept(AstNodeVisitor *visitor) {
+    void DerivativeVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
 }

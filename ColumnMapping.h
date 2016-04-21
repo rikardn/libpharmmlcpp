@@ -19,6 +19,7 @@
 #define PHARMML_COLUMNMAPPING_H_
 
 #include "PharmMLContext.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -33,7 +34,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         std::string getColumnIdRef();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

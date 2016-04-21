@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_ABSTRACTVISITOR_H_
-#define PHARMML_ABSTRACTVISITOR_H_
+#ifndef PHARMML_ASTNODEVISITOR_H_
+#define PHARMML_ASTNODEVISITOR_H_
 
 namespace PharmML
 {
@@ -112,35 +112,6 @@ namespace PharmML
     class FunctionArgument;
     class Interval;
     
-    class FunctionDefinition;
-    class PopulationParameter;
-    class IndividualParameter;
-    class RandomVariable;
-    class Variable;
-    class DerivativeVariable;
-    class IndependentVariable;
-    class Covariate;
-    class ObservationModel;
-    class Distribution;
-    class ColumnMapping;
-    
-    class Interventions;
-    class Administration;
-    
-    class Observations;
-    class Observation;
-    class IndividualObservations;
-    class ObservationCombination;
-    
-    class Arms;
-    class Arm;
-    class InterventionSequence;
-    class ObservationSequence;
-    class OccasionSequence;
-    
-    class DesignSpaces;
-    class DesignSpace;
-
     class AstNodeVisitor
     {
         public:
@@ -235,35 +206,6 @@ namespace PharmML
             virtual void visit(FunctionCall *node) = 0;
             virtual void visit(FunctionArgument *node) = 0;
             virtual void visit(Interval *node) = 0;
-            
-            virtual void visit(FunctionDefinition *node) = 0;
-            virtual void visit(PopulationParameter *node) = 0;
-            virtual void visit(IndividualParameter *node) = 0;
-            virtual void visit(RandomVariable *node) = 0;
-            virtual void visit(Covariate *node) = 0;
-            virtual void visit(IndependentVariable *node) = 0;
-            virtual void visit(Variable *node) = 0;
-            virtual void visit(DerivativeVariable *node) = 0;
-            virtual void visit(ObservationModel *node) = 0;
-            virtual void visit(Distribution *node) = 0;
-            virtual void visit(ColumnMapping *node) = 0;
-            
-            virtual void visit(Interventions *node) = 0;
-            virtual void visit(Administration *node) = 0;
-            
-            virtual void visit(Observations *node) = 0;
-            virtual void visit(Observation *node) = 0;
-            virtual void visit(IndividualObservations *node) = 0;
-            virtual void visit(ObservationCombination *node) = 0;
-            
-            virtual void visit(Arms *node) = 0;
-            virtual void visit(Arm *node) = 0;
-            virtual void visit(InterventionSequence *node) = 0;
-            virtual void visit(ObservationSequence *node) = 0;
-            virtual void visit(OccasionSequence *node) = 0;
-            
-            virtual void visit(DesignSpaces *node) = 0;
-            virtual void visit(DesignSpace *node) = 0;
     };
 }
 

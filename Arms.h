@@ -63,7 +63,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::vector <std::string> getOidRefs();
         AstNode *getStart();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
     
     class ObservationSequence
@@ -77,7 +77,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::vector <std::string> getOidRefs();
         AstNode *getStart();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
     
     class OccasionSequence
@@ -91,7 +91,7 @@ namespace PharmML
         void parse(xml::Node node);
         VariabilityReference *getVariabilityReference();
         std::vector<OccasionType *> getOccasions();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
     
     class Arm
@@ -118,7 +118,7 @@ namespace PharmML
         AstNode *getSameTimes();
         std::vector<InterventionSequence *> getInterventionSequences();
         std::vector<ObservationSequence *> getObservationSequences();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
     
     class Arms
@@ -148,7 +148,7 @@ namespace PharmML
         AstNode *getTotalSize();
         std::vector<Arm *> getArms();
         void parse(xml::Node node);
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

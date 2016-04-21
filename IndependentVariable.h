@@ -19,6 +19,7 @@
 #define PHARMML_INDEPENDENTVARIABLE_H_H
 
 #include "PharmMLContext.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -31,7 +32,7 @@ namespace PharmML
         IndependentVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getSymbId();
-        void accept(AstNodeVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

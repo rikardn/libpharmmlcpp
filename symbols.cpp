@@ -37,13 +37,15 @@ namespace PharmML
         return symbIdRef;
     }
 
+    std::string SymbRef::getBlkId() {
+        return this->blkIdRef;
+    }
+
     ColumnRef::ColumnRef(std::string ref) {
         this->columnIdRef = ref;
     }
 
     ColumnRef::ColumnRef(xml::Node node) {
-        // Why duplicate lines?
-        this->columnIdRef = node.getAttribute("columnIdRef").getValue();
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }
 

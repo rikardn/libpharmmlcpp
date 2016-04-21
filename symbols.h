@@ -34,6 +34,7 @@ namespace PharmML
         SymbRef(xml::Node node);
         virtual void accept(AstNodeVisitor *visitor);
         std::string toString();
+        std::string getBlkId();
     };
     
     class ColumnRef : public AstNode

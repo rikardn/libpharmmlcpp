@@ -21,7 +21,7 @@
 #include <vector>
 #include "AstNode.h"
 #include "xml.h"
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 
 namespace PharmML
 {
@@ -39,7 +39,7 @@ namespace PharmML
         AstNode *getExpression();
         AstNode *getCondition();
         bool isOtherwise();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 
     class Piecewise : public AstNode
@@ -50,7 +50,7 @@ namespace PharmML
         Piecewise();
         void addPiece(Piece *piece);
         std::vector<Piece *> getPieces();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

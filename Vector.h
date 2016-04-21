@@ -48,7 +48,7 @@ namespace PharmML
         void addElement(AstNode *element);
         void populateCell(VectorCell *cell);
         std::vector<AstNode *> getElements();
-        virtual void accept(AbstractVisitor *visitor);
+        virtual void accept(AstNodeVisitor *visitor);
     };
 }
 

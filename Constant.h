@@ -20,7 +20,7 @@
 
 #include <string>
 #include "AstNode.h"
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 
 namespace PharmML
 {
@@ -33,33 +33,33 @@ namespace PharmML
     class NullValue : public Constant
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     // Boolean primitives
     class LogicFalse : public Constant
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicTrue : public Constant
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     // Pi and Euler's constant
     class Pi : public Constant
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class Exponentiale : public Constant
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 }
 

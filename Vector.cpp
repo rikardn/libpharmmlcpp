@@ -67,7 +67,7 @@ namespace PharmML
         return this->elements;
     }
     
-    void Vector::accept(AbstractVisitor *visitor) {
+    void Vector::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

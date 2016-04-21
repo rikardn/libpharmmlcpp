@@ -20,25 +20,25 @@
 namespace PharmML
 {
     // Null value (example usage: missing otherwise piece)
-    void NullValue::accept(AbstractVisitor *visitor) {
+    void NullValue::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
     // Boolean primitives
-    void LogicFalse::accept(AbstractVisitor *visitor) {
+    void LogicFalse::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicTrue::accept(AbstractVisitor *visitor) {
+    void LogicTrue::accept(AstNodeVisitor *visitor) {
         return visitor->visit(this);
     }
     
     // Pi and Euler's constant
-    void Pi::accept(AbstractVisitor *visitor) {
+    void Pi::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void Exponentiale::accept(AbstractVisitor *visitor) {
+    void Exponentiale::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

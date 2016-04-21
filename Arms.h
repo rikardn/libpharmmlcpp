@@ -35,7 +35,7 @@ namespace PharmML
         void parse(xml::Node node);
         SymbRef *getSymbRef();
         SymbRef *getMappedSymbRef();
-        //~ void accept(AbstractVisitor *visitor);
+        //~ void accept(AstNodeVisitor *visitor);
     };
     
     class OccasionType
@@ -49,7 +49,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getStart();
         AstNode *getEnd();
-        //~ void accept(AbstractVisitor *visitor);
+        //~ void accept(AstNodeVisitor *visitor);
     };
     
     class InterventionSequence
@@ -63,7 +63,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::vector <std::string> getOidRefs();
         AstNode *getStart();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class ObservationSequence
@@ -77,7 +77,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::vector <std::string> getOidRefs();
         AstNode *getStart();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class OccasionSequence
@@ -91,7 +91,7 @@ namespace PharmML
         void parse(xml::Node node);
         VariabilityReference *getVariabilityReference();
         std::vector<OccasionType *> getOccasions();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class Arm
@@ -118,7 +118,7 @@ namespace PharmML
         AstNode *getSameTimes();
         std::vector<InterventionSequence *> getInterventionSequences();
         std::vector<ObservationSequence *> getObservationSequences();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class Arms
@@ -148,7 +148,7 @@ namespace PharmML
         AstNode *getTotalSize();
         std::vector<Arm *> getArms();
         void parse(xml::Node node);
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

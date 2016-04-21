@@ -19,7 +19,7 @@
 
 namespace PharmML
 {
-    void FunctionCall::accept(AbstractVisitor *visitor) {
+    void FunctionCall::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
@@ -55,7 +55,7 @@ namespace PharmML
         return this->Argument;
     }
 
-    void FunctionArgument::accept(AbstractVisitor *visitor) {
+    void FunctionArgument::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

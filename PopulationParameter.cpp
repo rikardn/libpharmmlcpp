@@ -32,7 +32,7 @@ namespace PharmML
         return this->symbId;
     }
 
-    void PopulationParameter::accept(AbstractVisitor *visitor) {
+    void PopulationParameter::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

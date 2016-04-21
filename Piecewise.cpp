@@ -47,7 +47,7 @@ namespace PharmML
         return otherwise;
     }
 
-    void Piece::accept(AbstractVisitor *visitor) {
+    void Piece::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
@@ -63,7 +63,7 @@ namespace PharmML
         return this->pieces;
     }
 
-    void Piecewise::accept(AbstractVisitor *visitor) {
+    void Piecewise::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

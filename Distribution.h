@@ -36,7 +36,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getName();
         std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

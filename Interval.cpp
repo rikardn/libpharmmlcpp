@@ -64,7 +64,7 @@ namespace PharmML
         this->openRightEndpoint = open;
     }
 
-    void Interval::accept(AbstractVisitor *visitor) {
+    void Interval::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

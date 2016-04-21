@@ -19,14 +19,14 @@
 #define PHARMML_ASTNODE_H_
 
 #include <string>
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 
 namespace PharmML
 {
     class AstNode
     {
         public:
-            virtual void accept(AbstractVisitor *visitor) = 0;
+            virtual void accept(AstNodeVisitor *visitor) = 0;
     };
 }
 

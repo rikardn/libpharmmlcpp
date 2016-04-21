@@ -19,7 +19,7 @@
 #define PHARMML_VARIABLE_H_
 
 #include "PharmMLContext.h"
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 
 namespace PharmML
 {
@@ -38,14 +38,14 @@ namespace PharmML
         AstNode *getAssignment();
         Dependencies& getDependencies();
         std::string getSymbId();
-        virtual void accept(AbstractVisitor *visitor) = 0;
+        virtual void accept(AstNodeVisitor *visitor) = 0;
     };
 
     class Variable : public CommonVariable
     {
         public:
         Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) {};
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

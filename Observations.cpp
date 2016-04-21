@@ -93,7 +93,7 @@ namespace PharmML
         return this->discreteVariables;
     }
     
-    void Observation::accept(AbstractVisitor *visitor) {
+    void Observation::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -120,7 +120,7 @@ namespace PharmML
         return this->ColumnMappings;
     }
     
-    void IndividualObservations::accept(AbstractVisitor *visitor) {
+    void IndividualObservations::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -163,7 +163,7 @@ namespace PharmML
         return this->relative;
     }
     
-    void ObservationCombination::accept(AbstractVisitor *visitor) {
+    void ObservationCombination::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -223,7 +223,7 @@ namespace PharmML
         return this->observationCombinations;
     }
     
-    void Observations::accept(AbstractVisitor *visitor) {
+    void Observations::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

@@ -35,7 +35,7 @@ namespace PharmML
         return std::to_string(value); 
     } 
 
-    void ScalarInt::accept(AbstractVisitor *visitor) {
+    void ScalarInt::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
@@ -55,7 +55,7 @@ namespace PharmML
         return std::to_string(value); 
     } 
 
-    void ScalarReal::accept(AbstractVisitor *visitor) {
+    void ScalarReal::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

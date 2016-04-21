@@ -19,7 +19,7 @@
 #define PHARMML_RGENERATOR_H_
 
 #include <string>
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 #include "symbols.h"
 #include "Uniop.h"
 #include "Binop.h"
@@ -47,7 +47,7 @@
 
 namespace PharmML
 {
-    class RGenerator : public AbstractVisitor
+    class RGenerator : public AstNodeVisitor
     {
         private:
             std::string value;

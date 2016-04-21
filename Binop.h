@@ -19,7 +19,7 @@
 #define PHARMML_BINOP_H_
 
 #include "AstNode.h"
-#include "AbstractVisitor.h"
+#include "AstNodeVisitor.h"
 
 namespace PharmML
 {
@@ -39,67 +39,67 @@ namespace PharmML
     class BinopPlus : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 
     class BinopMinus : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 
     class BinopDivide : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 
     class BinopTimes : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopPower : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopLogx : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopRoot : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopMin : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopMax : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopRem : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class BinopAtan2 : public Binop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     // Logic binops
@@ -111,55 +111,55 @@ namespace PharmML
     class LogicBinopLt : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 
     class LogicBinopLeq : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopGt : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopGeq : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopEq : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopNeq : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopAnd : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopOr : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
     
     class LogicBinopXor : public LogicBinop
     {
         public:
-            virtual void accept(AbstractVisitor *visitor);
+            virtual void accept(AstNodeVisitor *visitor);
     };
 }
 

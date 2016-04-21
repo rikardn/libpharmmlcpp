@@ -46,7 +46,7 @@ namespace PharmML
         return this->symbRef;
     }
 
-    void SteadyStateParameter::accept(AbstractVisitor *visitor) {
+    void SteadyStateParameter::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -82,7 +82,7 @@ namespace PharmML
         return this->ref;
     }
     
-    void TargetMapping::accept(AbstractVisitor *visitor) {
+    void TargetMapping::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -176,7 +176,7 @@ namespace PharmML
         return this->rate;
     }
     
-    void Administration::accept(AbstractVisitor *visitor) {
+    void Administration::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
@@ -198,7 +198,7 @@ namespace PharmML
         return Administrations;
     }
     
-    void Interventions::accept(AbstractVisitor *visitor) {
+    void Interventions::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

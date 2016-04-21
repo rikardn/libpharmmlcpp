@@ -32,7 +32,7 @@ namespace PharmML
         public:
         SymbRef(std::string ref);
         SymbRef(xml::Node node);
-        virtual void accept(AbstractVisitor *visitor);
+        virtual void accept(AstNodeVisitor *visitor);
         std::string toString();
     };
     
@@ -43,7 +43,7 @@ namespace PharmML
         public:
         ColumnRef(std::string ref);
         ColumnRef(xml::Node node);
-        virtual void accept(AbstractVisitor *visitor);
+        virtual void accept(AstNodeVisitor *visitor);
         std::string toString();
     };
 }

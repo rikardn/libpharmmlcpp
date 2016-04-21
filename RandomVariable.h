@@ -36,7 +36,7 @@ namespace PharmML
         std::string getSymbId();
         AstNode *getVariabilityReference();
         PharmML::Distribution *getDistribution();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

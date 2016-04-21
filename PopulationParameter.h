@@ -32,7 +32,7 @@ namespace PharmML
         PopulationParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getSymbId();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

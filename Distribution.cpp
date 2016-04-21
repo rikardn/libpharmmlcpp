@@ -54,7 +54,7 @@ namespace PharmML
         return this->parameters;
     }
 
-    void Distribution::accept(AbstractVisitor *visitor) {
+    void Distribution::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

@@ -35,7 +35,7 @@ namespace PharmML
         AstNode *getInitialValue();
         AstNode *getInitialTime();
         void parse(xml::Node node);
-        void accept(AbstractVisitor *visitor); 
+        void accept(AstNodeVisitor *visitor); 
     };
 }
 

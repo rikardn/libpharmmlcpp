@@ -42,7 +42,7 @@ namespace PharmML
         std::vector<std::string> getObservationRefs();
         std::vector<std::string> getArmRefs();
         AstNode *getDosingTimes();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class DesignSpaces
@@ -56,7 +56,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::vector<PharmML::Variable *> getDesignParameters();
         std::vector<PharmML::DesignSpace *> getDesignSpaces();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

@@ -35,7 +35,7 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getTransformedName();
         AstNode *getAssignment();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

@@ -29,7 +29,7 @@ namespace PharmML
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
     }
 
-    void SymbRef::accept(AbstractVisitor *visitor) {
+    void SymbRef::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
@@ -47,7 +47,7 @@ namespace PharmML
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }
 
-    void ColumnRef::accept(AbstractVisitor *visitor) {
+    void ColumnRef::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 

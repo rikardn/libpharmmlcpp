@@ -39,7 +39,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         AstNode *getSymbRef();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     // TODO: Move elsewhere (Dataset.h when implemented)
@@ -58,7 +58,7 @@ namespace PharmML
         std::string getType();
         std::string getBlkIdRef();
         std::string getRef();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     
@@ -86,7 +86,7 @@ namespace PharmML
         AstNode *getSteady();
         AstNode *getDuration();
         AstNode *getRate();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
     
     class Interventions
@@ -98,7 +98,7 @@ namespace PharmML
         Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<Administration *> getAdministrations();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

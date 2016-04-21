@@ -37,84 +37,84 @@ namespace PharmML
     }
 
     // Ordinary binops
-    void BinopPlus::accept(AbstractVisitor *visitor) {
+    void BinopPlus::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
-    void BinopMinus::accept(AbstractVisitor *visitor) {
+    void BinopMinus::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
-    void BinopDivide::accept(AbstractVisitor *visitor) {
+    void BinopDivide::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
-    void BinopTimes::accept(AbstractVisitor *visitor) {
+    void BinopTimes::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopPower::accept(AbstractVisitor *visitor) {
+    void BinopPower::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopLogx::accept(AbstractVisitor *visitor) {
+    void BinopLogx::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopRoot::accept(AbstractVisitor *visitor) {
+    void BinopRoot::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopMin::accept(AbstractVisitor *visitor) {
+    void BinopMin::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopMax::accept(AbstractVisitor *visitor) {
+    void BinopMax::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopRem::accept(AbstractVisitor *visitor) {
+    void BinopRem::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void BinopAtan2::accept(AbstractVisitor *visitor) {
+    void BinopAtan2::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
     // Logic binops
-    void LogicBinopLt::accept(AbstractVisitor *visitor) {
+    void LogicBinopLt::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
-    void LogicBinopLeq::accept(AbstractVisitor *visitor) {
+    void LogicBinopLeq::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopGt::accept(AbstractVisitor *visitor) {
+    void LogicBinopGt::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopGeq::accept(AbstractVisitor *visitor) {
+    void LogicBinopGeq::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopEq::accept(AbstractVisitor *visitor) {
+    void LogicBinopEq::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopNeq::accept(AbstractVisitor *visitor) {
+    void LogicBinopNeq::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopAnd::accept(AbstractVisitor *visitor) {
+    void LogicBinopAnd::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopOr::accept(AbstractVisitor *visitor) {
+    void LogicBinopOr::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
     
-    void LogicBinopXor::accept(AbstractVisitor *visitor) {
+    void LogicBinopXor::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

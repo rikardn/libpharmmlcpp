@@ -29,184 +29,184 @@ namespace PharmML
     }
 
     // Ordinary uniops
-    void UniopLog::accept(AbstractVisitor *visitor) {
+    void UniopLog::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopLog2::accept(AbstractVisitor *visitor) {
+    void UniopLog2::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopLog10::accept(AbstractVisitor *visitor) {
+    void UniopLog10::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
 
-    void UniopExp::accept(AbstractVisitor *visitor) {
+    void UniopExp::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
 
-    void UniopMinus::accept(AbstractVisitor *visitor) {
+    void UniopMinus::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopAbs::accept(AbstractVisitor *visitor) {
+    void UniopAbs::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSqrt::accept(AbstractVisitor *visitor) {
+    void UniopSqrt::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopLogistic::accept(AbstractVisitor *visitor) {
+    void UniopLogistic::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopLogit::accept(AbstractVisitor *visitor) {
+    void UniopLogit::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopProbit::accept(AbstractVisitor *visitor) {
+    void UniopProbit::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopNormcdf::accept(AbstractVisitor *visitor) {
+    void UniopNormcdf::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopFactorial::accept(AbstractVisitor *visitor) {
+    void UniopFactorial::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopFactln::accept(AbstractVisitor *visitor) {
+    void UniopFactln::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopGamma::accept(AbstractVisitor *visitor) {
+    void UniopGamma::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopGammaln::accept(AbstractVisitor *visitor) {
+    void UniopGammaln::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSin::accept(AbstractVisitor *visitor) {
+    void UniopSin::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSinh::accept(AbstractVisitor *visitor) {
+    void UniopSinh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCos::accept(AbstractVisitor *visitor) {
+    void UniopCos::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCosh::accept(AbstractVisitor *visitor) {
+    void UniopCosh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopTan::accept(AbstractVisitor *visitor) {
+    void UniopTan::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopTanh::accept(AbstractVisitor *visitor) {
+    void UniopTanh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCot::accept(AbstractVisitor *visitor) {
+    void UniopCot::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCoth::accept(AbstractVisitor *visitor) {
+    void UniopCoth::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSec::accept(AbstractVisitor *visitor) {
+    void UniopSec::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSech::accept(AbstractVisitor *visitor) {
+    void UniopSech::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCsc::accept(AbstractVisitor *visitor) {
+    void UniopCsc::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCsch::accept(AbstractVisitor *visitor) {
+    void UniopCsch::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArcsin::accept(AbstractVisitor *visitor) {
+    void UniopArcsin::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArcsinh::accept(AbstractVisitor *visitor) {
+    void UniopArcsinh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccos::accept(AbstractVisitor *visitor) {
+    void UniopArccos::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccosh::accept(AbstractVisitor *visitor) {
+    void UniopArccosh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArctan::accept(AbstractVisitor *visitor) {
+    void UniopArctan::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArctanh::accept(AbstractVisitor *visitor) {
+    void UniopArctanh::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccot::accept(AbstractVisitor *visitor) {
+    void UniopArccot::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccoth::accept(AbstractVisitor *visitor) {
+    void UniopArccoth::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArcsec::accept(AbstractVisitor *visitor) {
+    void UniopArcsec::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArcsech::accept(AbstractVisitor *visitor) {
+    void UniopArcsech::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccsc::accept(AbstractVisitor *visitor) {
+    void UniopArccsc::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopArccsch::accept(AbstractVisitor *visitor) {
+    void UniopArccsch::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopHeaviside::accept(AbstractVisitor *visitor) {
+    void UniopHeaviside::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopSign::accept(AbstractVisitor *visitor) {
+    void UniopSign::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopFloor::accept(AbstractVisitor *visitor) {
+    void UniopFloor::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void UniopCeiling::accept(AbstractVisitor *visitor) {
+    void UniopCeiling::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
     // Logic uniops
-    void LogicUniopIsdefined::accept(AbstractVisitor *visitor) {
+    void LogicUniopIsdefined::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
     
-    void LogicUniopNot::accept(AbstractVisitor *visitor) {
+    void LogicUniopNot::accept(AstNodeVisitor *visitor) {
          visitor->visit(this);
     }
 }

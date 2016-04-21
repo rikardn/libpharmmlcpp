@@ -141,7 +141,7 @@ namespace PharmML
     class DesignSpaces;
     class DesignSpace;
 
-    class AbstractVisitor
+    class AstNodeVisitor
     {
         public:
             virtual void visit(UniopLog *node) = 0;

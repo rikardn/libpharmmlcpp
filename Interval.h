@@ -40,7 +40,7 @@ namespace PharmML
         bool isRightEndpointOpen();
         void setLeftEndpointOpen(bool open);
         void setRightEndpointOpen(bool open);
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

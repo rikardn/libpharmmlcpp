@@ -33,7 +33,7 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         std::string getColumnIdRef();
-        void accept(AbstractVisitor *visitor);
+        void accept(AstNodeVisitor *visitor);
     };
 }
 

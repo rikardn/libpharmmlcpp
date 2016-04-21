@@ -41,6 +41,7 @@ namespace PharmML
     }
 
     PharmMLContext::PharmMLContext(const char *filename) {
+        xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
         this->doc = xmlReadFile(filename, NULL, 0);
         if (!this->doc) {
             throw std::runtime_error("File " + std::string(filename) + " not found");

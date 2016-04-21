@@ -46,9 +46,13 @@ namespace xml
         xmlNode *node;
 
         public:
+        Node();
         Node(xmlNode *node);
+        Node(std::string name);
+        //Node(const Node& rhs);
         bool exists();
         Attribute getAttribute(const char *name);
+        void setAttribute(std::string name, std::string value);
         std::string getName();
         xml::Node getChild();
         xml::Node getLastChild();
@@ -56,7 +60,8 @@ namespace xml
         std::string getText();
         Node getSingleElement(xmlXPathContext *xpath_context, const char *xpath);
         std::vector<xml::Node> getElements(xmlXPathContext *xpath_context, const char *xpath);
-        xml::Node createChild();
+        void replaceNode(xml::Node new_node);
+        xml::Node createChild(std::string name);
     };
 }
 

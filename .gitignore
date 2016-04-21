@@ -4,7 +4,10 @@ main
 main.exe
 libpharmmlc.a
 test/test
-out.xml
+
+output
+output.xml
+
 
 windep
 release

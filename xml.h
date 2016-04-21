@@ -49,7 +49,6 @@ namespace xml
         Node();
         Node(xmlNode *node);
         Node(std::string name);
-        //Node(const Node& rhs);
         bool exists();
         Attribute getAttribute(const char *name);
         void setAttribute(std::string name, std::string value);

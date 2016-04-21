@@ -138,6 +138,7 @@ clean:
 	rm -f *.o
 	rm -f libpharmmlc.a
 	rm -f main
+	rm -f output
 	rm -f main.exe
 
 

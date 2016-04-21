@@ -13,7 +13,7 @@ else
 endif
 
 main: main.cpp libpharmmlc.a
-	$(CC) main.o -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
+	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)

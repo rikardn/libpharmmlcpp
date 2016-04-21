@@ -44,9 +44,21 @@ namespace xml
         this->name = name;
     }
 
+    Node::Node() {
+    }
+
     Node::Node(xmlNode *node) {
         this->node = node;
     }
+
+    // FIXME: Must add namespace
+    Node::Node(std::string name) {
+        this->node = xmlNewNode(NULL, BAD_CAST name.c_str());
+    }
+
+    /*Node(const Node& rhs) {
+        this->node = rhs->node;
+    }*/
 
     bool Node::exists() {
         return (bool) this->node;
@@ -67,6 +79,10 @@ namespace xml
 
         xmlFree(value);
         return attr;
+    }
+
+    void Node::setAttribute(std::string name, std::string value) {
+        xmlSetProp(this->node, BAD_CAST name.c_str(), BAD_CAST value.c_str());
     }
 
     std::string Node::getName() {
@@ -156,7 +172,14 @@ namespace xml
         return results;
     }
 
-    xml::Node Node::createChild() {
-        
+    void Node::replaceNode(xml::Node new_node) {
+        xmlReplaceNode(this->node, new_node.node);
+        xmlFreeNode(this->node);
+        this->node = new_node.node;
+    }
+
+    xml::Node Node::createChild(std::string name) {
+        xmlNode *child = xmlNewChild(this->node, NULL, BAD_CAST name.c_str(), NULL);
+        return xml::Node(child); 
     } 
 }

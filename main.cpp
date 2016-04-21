@@ -139,36 +139,42 @@ int main(int argc, char **argv)
     std::cout << gen.getValue() << std::endl;
     std::cout << std::endl;
     
-    // Interventions output
-    Interventions *interventions = model->getTrialDesign()->getInterventions();
-    std::cout << "## Interventions" << std::endl;
-    if (interventions) {
-        interventions->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
-    }
-    
-    // Observations output
-    Observations *obs = model->getTrialDesign()->getObservations();
-    std::cout << "## Observations" << std::endl;
-    if (obs) {
-        obs->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
-    }
-    
-    // Arms output
-    Arms *arms = model->getTrialDesign()->getArms();
-    std::cout << "## Arms" << std::endl;
-    if (arms) {
-        arms->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
-    }
-    
-    // DesignSpaces output
-    DesignSpaces *ds = model->getTrialDesign()->getDesignSpaces();
-    std::cout << "## Design spaces" << std::endl;
-    if (ds) {
-        ds->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
+    // TRIAL DESIGN output
+    TrialDesign *td = model->getTrialDesign();
+    if (td) {
+        std::cout << "# [TRIAL DESIGN]" << std::endl;
+        
+        // Interventions output
+        Interventions *interventions = td->getInterventions();
+        if (interventions) {
+            std::cout << "## Interventions" << std::endl;
+            interventions->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
+        
+        // Observations output
+        Observations *obs = td->getObservations();
+        if (obs) {
+            std::cout << "## Observations" << std::endl;
+            obs->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
+        
+        // Arms output
+        Arms *arms = td->getArms();
+        if (arms) {
+            std::cout << "## Arms" << std::endl;
+            arms->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
+        
+        // DesignSpaces output
+        DesignSpaces *ds = td->getDesignSpaces();
+        if (ds) {
+            std::cout << "## Design spaces" << std::endl;
+            ds->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
     }
 
     return 0;

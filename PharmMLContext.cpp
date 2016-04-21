@@ -1,3 +1,20 @@
+/* libpharmmlcpp - Library to handle PharmML
+ * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ * 
+ * his library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -28,7 +45,7 @@ namespace PharmML
         if (!this->doc) {
             throw std::runtime_error("File " + std::string(filename) + " not found");
         }
-        //~ this->validateDocument(); // DesignSpaces is not validating and I don't have time to try to put together a proper one right now man
+        this->validateDocument();
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());

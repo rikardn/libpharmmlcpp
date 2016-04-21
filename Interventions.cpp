@@ -93,13 +93,6 @@ namespace PharmML
         this->parse(node);
     }
    
-    void Administration::update() {
-        xml::Node adm("Administration");
-        adm.setAttribute("oid", this->oid);
-        xml::Node type = adm.createChild(this->type);
-        this->xml_node.replaceNode(adm);
-    }
-
     void Administration::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         xml::Node dose = node.getChild();
@@ -147,7 +140,20 @@ namespace PharmML
             }
         }
     }
-    
+
+    void Administration::update() {
+        xml::Node adm("Administration");
+        adm.setAttribute("oid", this->oid);
+        xml::Node type = adm.createChild(this->type);
+        if (this->target) {
+            xml::Node da = type.createChild("DoseAmount"); 
+            XMLAstVisitor xml;
+            this->target->accept(&xml);
+            da.addChild(xml.getValue());
+        }
+        this->xml_node.replaceNode(adm);
+    }
+
     std::string Administration::getOid() {
         return this->oid;
     }

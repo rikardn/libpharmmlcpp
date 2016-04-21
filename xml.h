@@ -49,6 +49,7 @@ namespace xml
         Node();
         Node(xmlNode *node);
         Node(std::string name);
+        Node(std::string name, std::string content);
         bool exists();
         Attribute getAttribute(const char *name);
         void setAttribute(std::string name, std::string value);
@@ -61,6 +62,7 @@ namespace xml
         std::vector<xml::Node> getElements(xmlXPathContext *xpath_context, const char *xpath);
         void replaceNode(xml::Node new_node);
         xml::Node createChild(std::string name);
+        void addChild(xml::Node child);
     };
 }
 

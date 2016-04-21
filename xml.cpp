@@ -56,9 +56,10 @@ namespace xml
         this->node = xmlNewNode(NULL, BAD_CAST name.c_str());
     }
 
-    /*Node(const Node& rhs) {
-        this->node = rhs->node;
-    }*/
+    Node::Node(std::string name, std::string content) {
+        this->node = xmlNewNode(NULL, BAD_CAST name.c_str());
+        xmlNodeSetContent(this->node, BAD_CAST content.c_str());
+    }
 
     bool Node::exists() {
         return (bool) this->node;
@@ -182,4 +183,8 @@ namespace xml
         xmlNode *child = xmlNewChild(this->node, NULL, BAD_CAST name.c_str(), NULL);
         return xml::Node(child); 
     } 
+
+    void Node::addChild(xml::Node child) {
+        xmlAddChild(this->node, child.node);
+    }
 }

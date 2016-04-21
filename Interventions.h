@@ -23,6 +23,7 @@
 #include "AstNode.h"
 #include "symbols.h"
 #include "PharmMLVisitor.h"
+#include "XMLAstVisitor.h"
 
 namespace PharmML
 {
@@ -78,8 +79,8 @@ namespace PharmML
         
         public:
         Administration(PharmMLContext *context, xml::Node node);
-        void update();
         void parse(xml::Node node);
+        void update();
         std::string getOid();
         std::string getType();
         AstNode *getTarget();

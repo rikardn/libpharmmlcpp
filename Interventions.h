@@ -65,6 +65,7 @@ namespace PharmML
     class Administration
     {
         PharmML::PharmMLContext *context;
+        xml::Node xml_node;
         std::string oid;
         std::string type;
         AstNode *amount = nullptr;
@@ -76,6 +77,7 @@ namespace PharmML
         
         public:
         Administration(PharmMLContext *context, xml::Node node);
+        void update();
         void parse(xml::Node node);
         std::string getOid();
         std::string getType();

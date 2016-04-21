@@ -582,7 +582,7 @@ namespace PharmML
 
     void RGenerator::visit(ColumnMapping *node) {
         node->getAssignment()->accept(this);
-        this->setValue(node->getColumnIdRef() + " <- " + this->getValue());
+        this->setValue(node->getColumnIdRef() + " -> " + this->getValue());
     }
     
     // Class Interventions and all its content
@@ -677,7 +677,20 @@ namespace PharmML
     }
     
     void RGenerator::visit(IndividualObservations *node) {
-        // Don't really know how to output ColumnMapping objects
+        // Still don't really know how to output ColumnMapping objects in any context. bquote and .()
+        // might be worth checking out in the future to evaluate expressions at run-time (e.g. symbols
+        // to column's they are mapped to).
+        std::string s = node->getOid() + " <- ";
+        std::vector<std::string> list;
+        
+        std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
+        for (ColumnMapping *map : column_mappings) {
+            map->accept(this);
+            list.push_back(this->getValue());
+        }
+        s += formatVector(list, "list");
+        
+        this->setValue(s);
     }
     
     void RGenerator::visit(ObservationCombination *node) {
@@ -706,26 +719,26 @@ namespace PharmML
         
         std::vector<Observation *> observations = node->getObservations();
         if (!observations.empty()) {
-            s += "# Observation\n";
+            s += "# Simulation observations\n";
             std::vector<std::string> obs_oids;
             for (Observation *observation : observations) {
                 observation->accept(this);
                 s += this->getValue() + "\n";
                 obs_oids.push_back(observation->getOid());
             }
-            s += "observation_oids = " + formatVector(obs_oids, "c") + "\n"; // Or simulation_observation_oids?
+            s += "simulation_obs_oids = " + formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<IndividualObservations *> ind_observations = node->getIndividualObservations();
         if (!ind_observations.empty()) {
-            s += "# Individual observations\n";
+            s += "# Dataset observations\n";
             std::vector<std::string> obs_oids;
             for (IndividualObservations *ind_observation : ind_observations) {
                 ind_observation->accept(this);
                 s += this->getValue() + "\n";
                 obs_oids.push_back(ind_observation->getOid());
             }
-            s += "individual_observation_oids = " + formatVector(obs_oids, "c") + "\n"; // Or dataset_observation_oids?
+            s += "dataset_obs_oids = " + formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
@@ -737,13 +750,10 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 comb_oids.push_back(comb->getOid());
             }
-            s += "combination_oids <- c(";
-            for (std::string oid : comb_oids) {
-                s += "'" + oid + "'";
-            }
+            s += "combination_oids <- " + formatVector(comb_oids, "c") + "\n";
         }
         
-        this->setValue(s + ")" + "\n");
+        this->setValue(s);
     }
     
     // Class Arms and all its contents

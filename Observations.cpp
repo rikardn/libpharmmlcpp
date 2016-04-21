@@ -105,19 +105,20 @@ namespace PharmML
 
     void IndividualObservations::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
-        std::vector<xml::Node> array = this->context->getElements(node, ".//design:ColumnMapping");
-        for (xml::Node n : array) {
-            PharmML::ColumnMapping *col = new PharmML::ColumnMapping(this->context, n);
-            this->ColumnMappings.push_back(col);
+        std::vector<xml::Node> nodes = this->context->getElements(node, ".//design:ColumnMapping");
+        for (xml::Node node : nodes) {
+            ColumnMapping *map = new ColumnMapping(this->context, node);
+            this->columnMappings.push_back(map);
         }
+        // TODO: Support ds:Dataset (data for each subject within the study)
     }
     
     std::string IndividualObservations::getOid() {
         return this->oid;
     }
 
-    std::vector<PharmML::ColumnMapping *> IndividualObservations::getColumnMappings() {
-        return this->ColumnMappings;
+    std::vector<ColumnMapping *> IndividualObservations::getColumnMappings() {
+        return this->columnMappings;
     }
     
     void IndividualObservations::accept(PharmMLVisitor *visitor) {

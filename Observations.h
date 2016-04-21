@@ -56,7 +56,7 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::string oid;
-        std::vector<PharmML::ColumnMapping *> ColumnMappings;
+        std::vector<PharmML::ColumnMapping *> columnMappings;
         // TODO: Support ds:Dataset (data for each subject within the study)
 
         public:
@@ -88,19 +88,19 @@ namespace PharmML
     class Observations
     {
         PharmML::PharmMLContext *context;
-        std::vector<PharmML::Variable *> designParameters;
-        std::vector<PharmML::Observation *> simulationObservations;
-        std::vector<PharmML::IndividualObservations *> datasetObservations;
+        std::vector<Variable *> designParameters;
+        std::vector<Observation *> simulationObservations;
+        std::vector<IndividualObservations *> datasetObservations;
         // TODO: Implement support for LookupTable according to schema
         std::vector<ObservationCombination *> observationCombinations;
 
         public:
         Observations(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::vector<PharmML::Variable *> getDesignParameters();
-        std::vector<PharmML::Observation *> getObservations(); // Or getSimulationObservations()?
-        std::vector<PharmML::IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?
-        std::vector<PharmML::ObservationCombination *> getObservationCombinations();
+        std::vector<Variable *> getDesignParameters();
+        std::vector<Observation *> getObservations(); // Or getSimulationObservations()?
+        std::vector<IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?
+        std::vector<ObservationCombination *> getObservationCombinations();
         void accept(PharmMLVisitor *visitor);
     };
 }

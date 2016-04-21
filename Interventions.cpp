@@ -186,6 +186,39 @@ namespace PharmML
         visitor->visit(this);
     }
     
+    // IndividualAdministration class
+    IndividualAdministration::IndividualAdministration(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void IndividualAdministration::parse(xml::Node node) {
+        // Get intervention (oid) reference (for which individual times/amounts will be defined)
+        xml::Node interventionRef = this->context->getSingleElement(node, "./design:InterventionRef");
+        if (interventionRef.exists()) {
+            this->oidRef = interventionRef.getAttribute("oidRef").getValue();
+        }
+        
+        std::vector<xml::Node> nodes = this->context->getElements(node, "./design:ColumnMapping");
+        for (xml::Node node : nodes) {
+            PharmML::ColumnMapping *map = new PharmML::ColumnMapping(this->context, node);
+            this->columnMappings.push_back(map);
+        }
+        // TODO: Support ds:Dataset (data for each subject within the study)
+    }
+    
+    std::string IndividualAdministration::getOidRef() {
+        return this->oidRef;
+    }
+    
+    std::vector<ColumnMapping *> IndividualAdministration::getColumnMappings() {
+        return this->columnMappings;
+    }
+    
+    void IndividualAdministration::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+    
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -193,15 +226,27 @@ namespace PharmML
     }
     
     void Interventions::parse(xml::Node node) {
-        std::vector<xml::Node> array = this->context->getElements(node, ".//design:Administration");
-        for (xml::Node n : array) {
-            PharmML::Administration *adm = new PharmML::Administration(this->context, n);
-            this->Administrations.push_back(adm);
+        // Get administrations (treatments)
+        std::vector<xml::Node> adm_nodes = this->context->getElements(node, "./design:Administration");
+        for (xml::Node node : adm_nodes) {
+            PharmML::Administration *adm = new PharmML::Administration(this->context, node);
+            this->administrations.push_back(adm);
+        }
+        
+        // Get individual administrations (time-dependent administration information on subject level)
+        std::vector<xml::Node> ind_adm_nodes = this->context->getElements(node, "./design:IndividualAdministration");
+        for (xml::Node node : ind_adm_nodes) {
+            PharmML::IndividualAdministration *adm = new PharmML::IndividualAdministration(this->context, node);
+            this->individualAdministrations.push_back(adm);
         }
     }
     
     std::vector <Administration *> Interventions::getAdministrations() {
-        return Administrations;
+        return administrations;
+    }
+    
+    std::vector <IndividualAdministration *> Interventions::getIndividualAdministrations() {
+        return individualAdministrations;
     }
     
     void Interventions::accept(PharmMLVisitor *visitor) {

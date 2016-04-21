@@ -91,15 +91,34 @@ namespace PharmML
         void accept(PharmMLVisitor *visitor);
     };
     
+    class IndividualAdministration
+    {
+        PharmML::PharmMLContext *context;
+        xml::Node xml_node;
+        std::string oidRef;
+        std::vector<PharmML::ColumnMapping *> columnMappings;
+        // TODO: Support ds:Dataset (data for each subject within the study)
+        
+        public:
+        IndividualAdministration(PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        void update();
+        std::string getOidRef();
+        std::vector<PharmML::ColumnMapping *> getColumnMappings();
+        void accept(PharmMLVisitor *visitor);
+    };
+    
     class Interventions
     {
         PharmML::PharmMLContext *context;
-        std::vector<PharmML::Administration *> Administrations;
+        std::vector<PharmML::Administration *> administrations;
+        std::vector<PharmML::IndividualAdministration *> individualAdministrations;
 
         public:
         Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<Administration *> getAdministrations();
+        std::vector<IndividualAdministration *> getIndividualAdministrations();
         void accept(PharmMLVisitor *visitor);
     };
 }

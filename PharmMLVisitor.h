@@ -34,6 +34,7 @@ namespace PharmML
     
     class Interventions;
     class Administration;
+    class IndividualAdministration;
     
     class Observations;
     class Observation;
@@ -66,6 +67,7 @@ namespace PharmML
             
             virtual void visit(Interventions *node) = 0;
             virtual void visit(Administration *node) = 0;
+            virtual void visit(IndividualAdministration *node) = 0;
             
             virtual void visit(Observations *node) = 0;
             virtual void visit(Observation *node) = 0;

@@ -167,20 +167,54 @@ namespace PharmML
         this->setValue(s + ")");
     }
     
+    void RPharmMLGenerator::visit(IndividualAdministration *node) {
+        std::string s = " = list(";
+        std::vector<std::string> list;
+        
+        if (node->getOidRef() != "") {
+            std::string s = "intervention_ref = '" + node->getOidRef() + "', ";
+            std::vector<std::string> list;
+        }
+        
+        // See IndividualObservations visitor for confusion of formatting
+        s += "mappings = ";
+        std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
+        for (ColumnMapping *map : column_mappings) {
+            map->accept(this);
+            list.push_back(this->getValue());
+        }
+        s += formatVector(list, "c");
+        
+        this->setValue(s + ")");
+    }
+    
     void RPharmMLGenerator::visit(Interventions *node) {
         std::string s;
         
         // <Administration>'s
-        std::vector<Administration *> administrations = node->getAdministrations();
-        if (!administrations.empty()) {
-            s += "# Administration\n";
+        std::vector<Administration *> adms = node->getAdministrations();
+        if (!adms.empty()) {
+            s += "# Administrations\n";
             std::vector<std::string> adm_oids;
-            for (Administration *adm : administrations) {
+            for (Administration *adm : adms) {
                 adm->accept(this);
                 s += this->getValue() + "\n";
                 adm_oids.push_back(adm->getOid());
             }
             s += "administration_oids <- " + formatVector(adm_oids, "c") + "\n";
+        }
+        
+        // <IndividualAdministration>'s
+        std::vector<IndividualAdministration *> ind_adms = node->getIndividualAdministrations();
+        if (!ind_adms.empty()) {
+            s += "# Individual administrations\n";
+            s += "individual_administrations <- vector(mode=\"list\", length=" + std::to_string(ind_adms.size()) + ")\n";
+            int i = 1;
+            for (IndividualAdministration *ind_adm : ind_adms) {
+                ind_adm->accept(this);
+                s += "individual_administrations[[" + std::to_string(i) + "]]" + this->getValue() + "\n";
+                i++;
+            }
         }
 
         this->setValue(s);
@@ -231,17 +265,18 @@ namespace PharmML
         // Still don't really know how to output ColumnMapping objects in any context. bquote and .()
         // might be worth checking out in the future to evaluate expressions at run-time (e.g. symbols
         // to column's they are mapped to).
-        std::string s = node->getOid() + " <- ";
+        std::string s = node->getOid() + " <- list(";
         std::vector<std::string> list;
         
         std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
+        s += "mappings = ";
         for (ColumnMapping *map : column_mappings) {
             map->accept(this);
             list.push_back(this->getValue());
         }
-        s += formatVector(list, "list");
+        s += formatVector(list, "c");
         
-        this->setValue(s);
+        this->setValue(s + ")");
     }
     
     void RPharmMLGenerator::visit(ObservationCombination *node) {

@@ -20,6 +20,15 @@
 
 namespace xml
 {
+    std::string nsToPrefix(Namespace ns) {
+        switch (ns) {
+            case Namespace::ds:
+                return "ds:";
+            case Namespace::math:
+                return "math:";
+        }
+    }
+    
     bool Attribute::exists() {
         return does_exist;
     }
@@ -54,6 +63,10 @@ namespace xml
     // FIXME: Must add namespace
     Node::Node(std::string name) {
         this->node = xmlNewNode(NULL, BAD_CAST name.c_str());
+    }
+
+    Node::Node(std::string name, Namespace ns) {
+        this->node = xmlNewNode(NULL, BAD_CAST (nsToPrefix(ns) + name).c_str()); 
     }
 
     Node::Node(std::string name, std::string content) {

@@ -26,6 +26,9 @@
 
 namespace xml
 {
+    enum class Namespace { ds, math };
+    std::string nsToPrefix(Namespace ns);
+
     class Attribute
     {
         bool does_exist;
@@ -49,6 +52,7 @@ namespace xml
         Node();
         Node(xmlNode *node);
         Node(std::string name);
+        Node(std::string name, Namespace ns);
         Node(std::string name, std::string content);
         bool exists();
         Attribute getAttribute(const char *name);

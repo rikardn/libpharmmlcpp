@@ -50,7 +50,7 @@ namespace PharmML
     }
     
     void XMLAstVisitor::visit(SymbRef *node) {
-        xml::Node symbref("SymbRef");
+        xml::Node symbref("SymbRef", xml::Namespace::ds);
         symbref.setAttribute("blkIdRef", node->getBlkId());
         symbref.setAttribute("symbIdRef", node->toString());
         this->setValue(symbref);

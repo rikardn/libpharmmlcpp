@@ -45,6 +45,10 @@ namespace PharmML
             xml::Node acceptRight(Binop *binop);
             xml::Node acceptChild(Uniop *uniop);
             xml::Node accept(AstNode *node);
+            void createUniop(Uniop *node, std::string op);
+            void createLogicUniop(LogicUniop *node, std::string op);
+            void createBinop(Binop *node, std::string op);
+            void createLogicBinop(Binop *node, std::string op);
 
         public:
             xml::Node getValue();

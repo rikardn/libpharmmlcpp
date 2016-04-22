@@ -22,6 +22,8 @@ namespace xml
 {
     std::string nsToPrefix(Namespace ns) {
         switch (ns) {
+            case Namespace::ct:
+                return "ct:";
             case Namespace::ds:
                 return "ds:";
             case Namespace::math:
@@ -199,5 +201,10 @@ namespace xml
 
     void Node::addChild(xml::Node child) {
         xmlAddChild(this->node, child.node);
+    }
+
+
+    void Node::setContent(std::string content) {
+        xmlNodeSetContent(this->node, BAD_CAST content.c_str());
     }
 }

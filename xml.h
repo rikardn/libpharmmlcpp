@@ -26,7 +26,7 @@
 
 namespace xml
 {
-    enum class Namespace { ds, math };
+    enum class Namespace { ct, ds, math };
     std::string nsToPrefix(Namespace ns);
 
     class Attribute
@@ -67,6 +67,7 @@ namespace xml
         void replaceNode(xml::Node new_node);
         xml::Node createChild(std::string name);
         void addChild(xml::Node child);
+        void setContent(std::string content);
     };
 }
 

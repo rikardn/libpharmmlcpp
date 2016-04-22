@@ -44,6 +44,36 @@ namespace PharmML
         return this->getValue();
     }
 
+    void XMLAstVisitor::createUniop(Uniop *node, std::string op) {
+        xml::Node uniop("Uniop", xml::Namespace::math);
+        uniop.setAttribute("op", op);
+        uniop.addChild(this->accept(node->getChild()));
+        this->setValue(uniop);
+    }
+
+    void XMLAstVisitor::createLogicUniop(LogicUniop *node, std::string op) {
+        xml::Node uniop("LogicUniop", xml::Namespace::math);
+        uniop.setAttribute("op", op);
+        uniop.addChild(this->accept(node->getChild()));
+        this->setValue(uniop);
+    }
+
+    void XMLAstVisitor::createBinop(Binop *node, std::string op) {
+        xml::Node binop("Binop", xml::Namespace::math);
+        binop.setAttribute("op", op);
+        binop.addChild(this->accept(node->getLeft()));
+        binop.addChild(this->accept(node->getRight()));
+        this->setValue(binop);
+    }
+
+    void XMLAstVisitor::createLogicBinop(Binop *node, std::string op) {
+        xml::Node binop("LogicBinop", xml::Namespace::math);
+        binop.setAttribute("op", op);
+        binop.addChild(this->accept(node->getLeft()));
+        binop.addChild(this->accept(node->getRight()));
+        this->setValue(binop);
+    }
+
     // public
     xml::Node XMLAstVisitor::getValue() {
         return this->value;
@@ -66,204 +96,275 @@ namespace PharmML
     }
 
     void XMLAstVisitor::visit(UniopLog *node) {
+        this->createUniop(node, "log");
     }
     
     void XMLAstVisitor::visit(UniopLog2 *node) {
+        this->createUniop(node, "log2");
     }
     
     void XMLAstVisitor::visit(UniopLog10 *node) {
+        this->createUniop(node, "log10");
     }
 
     void XMLAstVisitor::visit(UniopExp *node) {
+        this->createUniop(node, "exp");
     }
 
     void XMLAstVisitor::visit(UniopMinus *node) {
+        this->createUniop(node, "minus");
     }
 
     void XMLAstVisitor::visit(UniopAbs *node) {
+        this->createUniop(node, "abs");
     }
     
     void XMLAstVisitor::visit(UniopSqrt *node) {
+        this->createUniop(node, "sqrt");
     }
     
     void XMLAstVisitor::visit(UniopLogistic *node) {
+        this->createUniop(node, "logistic");
     }
     
     void XMLAstVisitor::visit(UniopLogit *node) {
+        this->createUniop(node, "logit");
     }
     
     void XMLAstVisitor::visit(UniopProbit *node) {
+        this->createUniop(node, "probit");
     }
     
     void XMLAstVisitor::visit(UniopNormcdf *node) {
+        this->createUniop(node, "normcdf");
     }
     
     void XMLAstVisitor::visit(UniopFactorial *node) {
+        this->createUniop(node, "factorial");
     }
     
     void XMLAstVisitor::visit(UniopFactln *node) {
+        this->createUniop(node, "factln");
     }
     
     void XMLAstVisitor::visit(UniopGamma *node) {
+        this->createUniop(node, "gamma");
     }
     
     void XMLAstVisitor::visit(UniopGammaln *node) {
+        this->createUniop(node, "gammaln");
     }
     
     void XMLAstVisitor::visit(UniopSin *node) {
+        this->createUniop(node, "sin");
     }
     
     void XMLAstVisitor::visit(UniopSinh *node) {
+        this->createUniop(node, "sinh");
     }
     
     void XMLAstVisitor::visit(UniopCos *node) {
+        this->createUniop(node, "cos");
     }
 
     void XMLAstVisitor::visit(UniopCosh *node) {
+        this->createUniop(node, "cosh");
     }
     
     void XMLAstVisitor::visit(UniopTan *node) {
+        this->createUniop(node, "tan");
     }
     
     void XMLAstVisitor::visit(UniopTanh *node) {
+        this->createUniop(node, "tanh");
     }
     
     void XMLAstVisitor::visit(UniopCot *node) {
+        this->createUniop(node, "cot");
     }
     
     void XMLAstVisitor::visit(UniopCoth *node) {
+        this->createUniop(node, "coth");
     }
     
     void XMLAstVisitor::visit(UniopSec *node) {
+        this->createUniop(node, "sec");
     }
     
     void XMLAstVisitor::visit(UniopSech *node) {
+        this->createUniop(node, "sech");
     }
     
     void XMLAstVisitor::visit(UniopCsc *node) {
+        this->createUniop(node, "csc");
     }
     
     void XMLAstVisitor::visit(UniopCsch *node) {
+        this->createUniop(node, "csch");
     }
     
     void XMLAstVisitor::visit(UniopArcsin *node) {
+        this->createUniop(node, "arcsin");
     }
     
     void XMLAstVisitor::visit(UniopArcsinh *node) {
+        this->createUniop(node, "arcsinh");
     }
     
     void XMLAstVisitor::visit(UniopArccos *node) {
+        this->createUniop(node, "arccos");
     }
     
     void XMLAstVisitor::visit(UniopArccosh *node) {
+        this->createUniop(node, "arccosh");
     }
     
     void XMLAstVisitor::visit(UniopArctan *node) {
+        this->createUniop(node, "arctan");
     }
     
     void XMLAstVisitor::visit(UniopArctanh *node) {
+        this->createUniop(node, "arctanh");
     }
     
     void XMLAstVisitor::visit(UniopArccot *node) {
+        this->createUniop(node, "arccot");
     }
     
     void XMLAstVisitor::visit(UniopArccoth *node) {
+        this->createUniop(node, "arccoth");
     }
     
     void XMLAstVisitor::visit(UniopArcsec *node) {
+        this->createUniop(node, "arcsec");
     }
     
     void XMLAstVisitor::visit(UniopArcsech *node) {
+        this->createUniop(node, "arcsech");
     }
     
     void XMLAstVisitor::visit(UniopArccsc *node) {
+        this->createUniop(node, "arccsc");
     }
     
     void XMLAstVisitor::visit(UniopArccsch *node) {
+        this->createUniop(node, "arccsch");
     }
     
     void XMLAstVisitor::visit(UniopHeaviside *node) {
+        this->createUniop(node, "heaviside");
     }
     
     void XMLAstVisitor::visit(UniopSign *node) {
+        this->createUniop(node, "sign");
     }
     
     void XMLAstVisitor::visit(UniopFloor *node) {
+        this->createUniop(node, "floor");
     }
     
     void XMLAstVisitor::visit(UniopCeiling *node) {
+        this->createUniop(node, "ceiling");
     }
 
     void XMLAstVisitor::visit(ScalarInt *node) {
+        xml::Node scalar_int("Int", xml::Namespace::ct);
+        scalar_int.setContent(node->toString());
+        this->setValue(scalar_int);
     }
 
     void XMLAstVisitor::visit(ScalarReal *node) {
+        xml::Node scalar_real("Real", xml::Namespace::ct);
+        scalar_real.setContent(node->toString());
+        this->setValue(scalar_real);
     }
 
     void XMLAstVisitor::visit(BinopPlus *node) {
+        this->createBinop(node, "plus");
     }
 
     void XMLAstVisitor::visit(BinopMinus *node) {
+        this->createBinop(node, "minus");
     }
 
     void XMLAstVisitor::visit(BinopDivide *node) {
+        this->createBinop(node, "divide");
     }
 
     void XMLAstVisitor::visit(BinopTimes *node) {
+        this->createBinop(node, "node");
     }
     
     void XMLAstVisitor::visit(BinopPower *node) {
+        this->createBinop(node, "power");
     }
     
     void XMLAstVisitor::visit(BinopLogx *node) {
+        this->createBinop(node, "logx");
     }
     
     void XMLAstVisitor::visit(BinopRoot *node) {
+        this->createBinop(node, "root");
     }
     
     void XMLAstVisitor::visit(BinopMin *node) {
+        this->createBinop(node, "min");
     }
     
     void XMLAstVisitor::visit(BinopMax *node) {
+        this->createBinop(node, "max");
     }
     
     void XMLAstVisitor::visit(BinopRem *node) {
+        this->createBinop(node, "rem");
     }
     
     void XMLAstVisitor::visit(BinopAtan2 *node) {
+        this->createBinop(node, "atan2");
     }
     
     void XMLAstVisitor::visit(LogicUniopIsdefined *node) {
+        this->createLogicUniop(node, "isDefined");
     }
     
     void XMLAstVisitor::visit(LogicUniopNot *node) {
+        this->createLogicUniop(node, "not");
     }
 
     void XMLAstVisitor::visit(LogicBinopLt *node) {
+        this->createLogicBinop(node, "lt");
     }
 
     void XMLAstVisitor::visit(LogicBinopLeq *node) {
+        this->createLogicBinop(node, "leq");
     }
     
     void XMLAstVisitor::visit(LogicBinopGt *node) {
+        this->createLogicBinop(node, "gt");
     }
     
     void XMLAstVisitor::visit(LogicBinopGeq *node) {
+        this->createLogicBinop(node, "geq");
     }
     
     void XMLAstVisitor::visit(LogicBinopEq *node) {
+        this->createLogicBinop(node, "eq");
     }
     
     void XMLAstVisitor::visit(LogicBinopNeq *node) {
+        this->createLogicBinop(node, "neq");
     }
     
     void XMLAstVisitor::visit(LogicBinopAnd *node) {
+        this->createLogicBinop(node, "and");
     }
     
     void XMLAstVisitor::visit(LogicBinopOr *node) {
+        this->createLogicBinop(node, "or");
     }
     
     void XMLAstVisitor::visit(LogicBinopXor *node) {
+        this->createLogicBinop(node, "xor");
     }
     
     void XMLAstVisitor::visit(Vector *node) {

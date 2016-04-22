@@ -205,7 +205,17 @@ namespace PharmML
         }
         // TODO: Support ds:Dataset (data for each subject within the study)
     }
-    
+   
+    xml::Node IndividualAdministration::xml() {
+        xml::Node ia("IndividualAdministration");
+        xml::Node iref = ia.createChild("InterventionRef");
+        iref.setAttribute("oidRef", this->oidRef);
+        for (ColumnMapping *cm : this->columnMappings) {
+            ia.addChild(cm->xml());
+        }
+        return ia;
+    }
+
     std::string IndividualAdministration::getOidRef() {
         return this->oidRef;
     }
@@ -245,6 +255,9 @@ namespace PharmML
         xml::Node inter("Interventions");
         for (Administration *adm : this->administrations) {
             inter.addChild(adm->xml());
+        }
+        for (IndividualAdministration *iadm : this->individualAdministrations) {
+            inter.addChild(iadm->xml());
         }
         this->xml_node.replaceNode(inter);
     }

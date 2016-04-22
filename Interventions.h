@@ -101,7 +101,7 @@ namespace PharmML
         public:
         IndividualAdministration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::string getOidRef();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         void accept(PharmMLVisitor *visitor);

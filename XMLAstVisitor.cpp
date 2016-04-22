@@ -80,7 +80,7 @@ namespace PharmML
     }
     
     void XMLAstVisitor::visit(SymbRef *node) {
-        xml::Node symbref("SymbRef", xml::Namespace::ds);
+        xml::Node symbref("SymbRef", xml::Namespace::ct);
         symbref.setAttribute("blkIdRef", node->getBlkId());
         symbref.setAttribute("symbIdRef", node->toString());
         this->setValue(symbref);
@@ -90,6 +90,9 @@ namespace PharmML
     }
     
     void XMLAstVisitor::visit(ColumnRef *node) {
+        xml::Node ref("ColumnRef", xml::Namespace::ds);
+        ref.setAttribute("columnIdRef", node->toString());
+        this->setValue(ref);
     }
 
     void XMLAstVisitor::visit(TargetMapping *node) {
@@ -398,5 +401,22 @@ namespace PharmML
     }
 
     void XMLAstVisitor::visit(Interval *node) {
+        xml::Node interval("Interval", xml::Namespace::ct);
+        xml::Node le("LeftEndpoint", xml::Namespace::ct);
+        if (node->isLeftEndpointOpen()) {
+            le.setAttribute("type", "open");
+        }
+        xml::Node re("RightEndpoint", xml::Namespace::ct);
+        if (node->isRightEndpointOpen()) {
+            re.setAttribute("type", "open");
+        }
+        interval.addChild(le);
+        interval.addChild(re);
+        xml::Node le_assign("Assign", xml::Namespace::ct);
+        le.addChild(le_assign);
+        xml::Node re_assign("Assign", xml::Namespace::ct);
+        re.addChild(re_assign);
+        le_assign.addChild(this->accept(node->getLeftEndpoint()));
+        re_assign.addChild(this->accept(node->getRightEndpoint()));
     }
 }

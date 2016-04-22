@@ -99,6 +99,17 @@ namespace PharmML
         }
     }
     
+    xml::Node InterventionSequence::xml() {
+        xml::Node iseq("InterventionSequence");
+        xml::Node ilist = iseq.createChild("InterventionList");
+        xml::Node child;
+        for (std::string ref : this->oidRefs) {
+            child = ilist.createChild("InterventionRef");
+            child.setAttribute("oidref", ref);
+        }
+        return iseq;
+    }
+
     std::vector<std::string> InterventionSequence::getOidRefs() {
         return this->oidRefs;
     }
@@ -131,7 +142,18 @@ namespace PharmML
             this->start = this->context->factory.create(assign.getChild());
         }
     }
-    
+   
+    xml::Node ObservationSequence::xml() {
+        xml::Node oseq("ObservationSequence");
+        xml::Node olist = oseq.createChild("ObservationList");
+        xml::Node child;
+        for (std::string ref : this->oidRefs) {
+            child = olist.createChild("ObservationRef");
+            child.setAttribute("oidref", ref);
+        }
+        return oseq;
+    }
+
     std::vector<std::string> ObservationSequence::getOidRefs() {
         return this->oidRefs;
     }
@@ -179,6 +201,7 @@ namespace PharmML
     // Arm class
     Arm::Arm(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -236,7 +259,20 @@ namespace PharmML
             this->occasionSequences.push_back(sequence);
         }
     }
-    
+   
+    void Arm::update() {
+        xml::Node arm("Arm");
+        arm.setAttribute("oid", this->oid);
+        for (InterventionSequence *seq : this->interventionSequences) {
+            arm.addChild(seq->xml());
+        }
+        for (ObservationSequence *seq : this->observationSequences) {
+            arm.addChild(seq->xml());
+        }
+        this->xml_node.replaceNode(arm);
+    }
+
+
     std::string Arm::getOid(){
         return this->oid;
     }

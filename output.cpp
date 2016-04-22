@@ -43,15 +43,11 @@ int main(int argc, char **argv)
         return 5;
     }
 
-    Administration *admin = model->getTrialDesign()->getInterventions()->getAdministrations()[0];
-    admin->update();
-
+    model->getTrialDesign()->getInterventions()->update();
     model->getTrialDesign()->getArms()->update();
-
     model->getTrialDesign()->getDesignSpaces()->update();
 
     model->write("output.xml");
-
 
     return 0;
 }

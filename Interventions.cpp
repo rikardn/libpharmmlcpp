@@ -89,7 +89,6 @@ namespace PharmML
     // Administration class
     Administration::Administration(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
    
@@ -141,7 +140,7 @@ namespace PharmML
         }
     }
 
-    void Administration::update() {
+    xml::Node Administration::xml() {
         xml::Node adm("Administration");
         adm.setAttribute("oid", this->oid);
         xml::Node type = adm.createChild(this->type);
@@ -151,7 +150,7 @@ namespace PharmML
             this->target->accept(&xml);
             da.addChild(xml.getValue());
         }
-        this->xml_node.replaceNode(adm);
+        return adm;
     }
 
     std::string Administration::getOid() {
@@ -222,6 +221,7 @@ namespace PharmML
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -241,6 +241,14 @@ namespace PharmML
         }
     }
     
+    void Interventions::update() {
+        xml::Node inter("Interventions");
+        for (Administration *adm : this->administrations) {
+            inter.addChild(adm->xml());
+        }
+        this->xml_node.replaceNode(inter);
+    }
+
     std::vector <Administration *> Interventions::getAdministrations() {
         return administrations;
     }

@@ -418,5 +418,6 @@ namespace PharmML
         re.addChild(re_assign);
         le_assign.addChild(this->accept(node->getLeftEndpoint()));
         re_assign.addChild(this->accept(node->getRightEndpoint()));
+        this->setValue(interval);
     }
 }

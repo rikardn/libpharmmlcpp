@@ -46,8 +46,9 @@ int main(int argc, char **argv)
     Administration *admin = model->getTrialDesign()->getInterventions()->getAdministrations()[0];
     admin->update();
 
-    Arms *arms = model->getTrialDesign()->getArms();
-    arms->update();
+    model->getTrialDesign()->getArms()->update();
+
+    model->getTrialDesign()->getDesignSpaces()->update();
 
     model->write("output.xml");
 

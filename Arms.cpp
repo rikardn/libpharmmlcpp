@@ -201,7 +201,6 @@ namespace PharmML
     // Arm class
     Arm::Arm(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
     
@@ -260,7 +259,7 @@ namespace PharmML
         }
     }
    
-    void Arm::update() {
+    xml::Node Arm::xml() {
         xml::Node arm("Arm");
         arm.setAttribute("oid", this->oid);
         for (InterventionSequence *seq : this->interventionSequences) {
@@ -269,7 +268,7 @@ namespace PharmML
         for (ObservationSequence *seq : this->observationSequences) {
             arm.addChild(seq->xml());
         }
-        this->xml_node.replaceNode(arm);
+        return arm;
     }
 
 
@@ -312,6 +311,7 @@ namespace PharmML
     // Arms class
     Arms::Arms(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -379,7 +379,15 @@ namespace PharmML
             this->arms.push_back(arm);
         }
     }
-    
+   
+    void Arms::update() {
+        xml::Node arms("Arms");
+        for (Arm *arm : this->arms) {
+            arms.addChild(arm->xml());
+        }
+        this->xml_node.replaceNode(arms);
+    }
+
     std::vector<Variable *> Arms::getDesignParameters() {
         return this->designParameters;
     }

@@ -145,6 +145,22 @@ namespace PharmML
         this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getAssignment()));
     }
     
+    // Class ExternalFile
+    void RPharmMLGenerator::visit(ExternalFile *node) {
+        std::string s = "READ_EXT_RESOURCE_" + node->getOid() + " <- function() {\n";
+        s += "  format <- " + node->getFormat() + "\n";
+        if (node->getFormat() == "CSV") {
+            s += "  data <- read.csv(";
+            s += "file = '" + node->getPath() + "'";
+            s += ", header = TRUE"; // TODO: Check header definition!
+            s += ", sep = '" + node->getDelimiter() + "'";
+            s += ")\n";
+            s += "  return(data)\n";
+        }
+        s += "}";
+        setValue(s);
+    }
+    
     // Class DataColumn
     void RPharmMLGenerator::visit(DataColumn *node) {
         std::string s = node->getDefinition()->getId() + " = ";
@@ -160,11 +176,23 @@ namespace PharmML
     // Class Dataset
     void RPharmMLGenerator::visit(Dataset *node) {
         std::string name = node->getName();
-        std::string s = name + " = data.frame()\n";
-        std::vector<DataColumn *> columns = node->getColumns();
-        for (DataColumn *column : columns) {
-            column->accept(this);
-            s += name + "$" + this->getValue();
+        std::string s;
+        if (!node->isExternal()) {
+            s += name + " = data.frame()\n";
+            std::vector<DataColumn *> columns = node->getColumns();
+            for (DataColumn *column : columns) {
+                column->accept(this);
+                s += name + "$" + this->getValue();
+            }
+        } else {
+            // TODO: Improve support for external resource
+            // First, output reading function
+            ExternalFile *extFile = node->getExternal();
+            extFile->accept(this);
+            s += this->getValue() + "\n";
+            
+            // Then output call to reading function (yes, it's not perfect)
+            s += name + " = READ_EXT_RESOURCE_" + extFile->getOid() + "()\n";
         }
         setValue(s);
     }

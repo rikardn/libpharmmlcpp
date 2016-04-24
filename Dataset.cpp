@@ -121,6 +121,56 @@ namespace PharmML
         }
     }
     
+    // class ExternalFile (data is stored externally)
+    ExternalFile::ExternalFile(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    std::string ExternalFile::getOid() {
+        return this->oid;
+    }
+    
+    std::string ExternalFile::getPath() {
+        return this->path;
+    }
+    
+    std::string ExternalFile::getFormat() {
+        return this->format;
+    }
+    
+    std::string ExternalFile::getDelimiter() {
+        return this->delimiter;
+    }
+
+    void ExternalFile::parse(xml::Node node) {
+        this->oid = node.getAttribute("oid").getValue();
+        // Get path, format and delimiter
+        xml::Node path_node = this->context->getSingleElement(node, "./ds:path");
+        this->path = path_node.getText();
+        xml::Node format_node = this->context->getSingleElement(node, "./ds:format");
+        this->format = format_node.getText();
+        xml::Node delimiter_node = this->context->getSingleElement(node, "./ds:delimiter");
+        std::string delimiter = delimiter_node.getText();
+        
+        // Parse predefined delimiter options
+        if (delimiter == "TAB") {
+            this->delimiter = "\t";
+        } else if (delimiter == "SPACE") {
+            this->delimiter = " ";
+        } else if (delimiter == "COMMA") {
+            this->delimiter = ",";
+        } else if (delimiter == "SEMICOLON") {
+            this->delimiter = ";";
+        } else {
+            this->delimiter = delimiter;
+        }
+    }
+    
+    void ExternalFile::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+    
     // Class DataColumn (single column with its definition)
     // Preliminary class (forced conversion of all scalars into AstNode's)
     // TODO: Improve DataColumn data structure typing
@@ -178,8 +228,11 @@ namespace PharmML
                 DataColumn *column = new DataColumn(this->context, table, definition);
                 columns.push_back(column);
             }
-        } // (else we have an external dataset)
-        // TODO: Support ds:ExternalFile instead of ds:Table
+        } else {
+            xml::Node ext_file = this->context->getSingleElement(node, "./ds:ExternalFile");
+            ExternalFile *externalFile = new ExternalFile(this->context, ext_file);
+            this->externalFile = externalFile;
+        }
     }
     
     // A defined name might be required for visitors
@@ -193,6 +246,14 @@ namespace PharmML
 
     DatasetDefinition *Dataset::getDefinition() {
         return this->definition;
+    }
+    
+    bool Dataset::isExternal() {
+        return (externalFile != nullptr);
+    }
+    
+    ExternalFile *Dataset::getExternal() {
+        return externalFile;
     }
     
     std::vector<DataColumn *> Dataset::getColumns() {

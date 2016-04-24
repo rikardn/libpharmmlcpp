@@ -391,8 +391,8 @@
 				</ColumnMapping>
 				<DataSet xmlns="http://www.pharmml.org/pharmml/0.8/Dataset">
 					<Definition>
-						<Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
-						<Column columnId="DOSE" columnType="dose" valueType="real" columnNum="3"/>
+						<Column columnId="TIME" columnType="idv" valueType="real" columnNum="1"/>
+						<Column columnId="DOSE" columnType="dose" valueType="real" columnNum="2"/>
 					</Definition>
 					<Table>
 						<Row><ct:Real>8</ct:Real><ct:Real>30</ct:Real></Row>

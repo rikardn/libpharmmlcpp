@@ -31,6 +31,17 @@ namespace PharmML
         this->assignment = this->context->factory.create(assign_ref);
     }
 
+    xml::Node ColumnMapping::xml() {
+        xml::Node cm("ColumnMapping");
+        xml::Node idref("ColumnIdRef", xml::Namespace::ds);
+        idref.setAttribute("columnIdRef", this->columnIdRef);
+        cm.addChild(idref);
+        XMLAstVisitor xml;
+        this->assignment->accept(&xml);
+        cm.addChild(xml.getValue());
+        return cm;
+    }
+
     AstNode *ColumnMapping::getAssignment() {
         return this->assignment;
     }

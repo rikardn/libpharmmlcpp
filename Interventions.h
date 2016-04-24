@@ -68,7 +68,6 @@ namespace PharmML
     class Administration
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         std::string oid;
         std::string type;
         AstNode *amount = nullptr;
@@ -81,7 +80,7 @@ namespace PharmML
         public:
         Administration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::string getOid();
         std::string getType();
         AstNode *getTarget();
@@ -103,7 +102,7 @@ namespace PharmML
         public:
         IndividualAdministration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::string getOidRef();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
@@ -113,12 +112,14 @@ namespace PharmML
     class Interventions
     {
         PharmML::PharmMLContext *context;
+        xml::Node xml_node;
         std::vector<PharmML::Administration *> administrations;
         std::vector<PharmML::IndividualAdministration *> individualAdministrations;
 
         public:
         Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void update();
         std::vector<Administration *> getAdministrations();
         std::vector<IndividualAdministration *> getIndividualAdministrations();
         void accept(PharmMLVisitor *visitor);

@@ -31,6 +31,7 @@
 #include "RandomVariable.h"
 #include "Distribution.h"
 #include "ColumnMapping.h"
+#include "Dataset.h"
 #include "Interventions.h"
 #include "Observations.h"
 #include "Arms.h"
@@ -63,6 +64,9 @@ namespace PharmML
             virtual void visit(ObservationModel *node);
             virtual void visit(Distribution *node);
             virtual void visit(ColumnMapping *node);
+            
+            virtual void visit(DataColumn *node);
+            virtual void visit(Dataset *node);
             
             virtual void visit(Interventions *node);
             virtual void visit(Administration *node);

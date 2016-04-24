@@ -24,6 +24,7 @@
 #include "Variable.h"
 #include "symbols.h"
 #include "ColumnMapping.h"
+#include "Dataset.h"
 //~ #include "ExternalDataset.h" // Check comments in this file
 
 namespace PharmML
@@ -57,13 +58,14 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         std::vector<PharmML::ColumnMapping *> columnMappings;
-        // TODO: Support ds:Dataset (data for each subject within the study)
+        Dataset *dataset;
 
         public:
         IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
+        Dataset *getDataset();
         void accept(PharmMLVisitor *visitor);
     };
     

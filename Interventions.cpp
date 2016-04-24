@@ -194,17 +194,22 @@ namespace PharmML
     
     void IndividualAdministration::parse(xml::Node node) {
         // Get intervention (oid) reference (for which individual times/amounts will be defined)
-        xml::Node interventionRef = this->context->getSingleElement(node, "./design:InterventionRef");
-        if (interventionRef.exists()) {
-            this->oidRef = interventionRef.getAttribute("oidRef").getValue();
+        xml::Node ref_node = this->context->getSingleElement(node, "./design:InterventionRef");
+        if (ref_node.exists()) {
+            this->oidRef = ref_node.getAttribute("oidRef").getValue();
         }
         
-        std::vector<xml::Node> nodes = this->context->getElements(node, "./design:ColumnMapping");
-        for (xml::Node node : nodes) {
-            PharmML::ColumnMapping *map = new PharmML::ColumnMapping(this->context, node);
+        // Get column mappings
+        std::vector<xml::Node> map_nodes = this->context->getElements(node, "./design:ColumnMapping");
+        for (xml::Node map_node : map_nodes) {
+            PharmML::ColumnMapping *map = new PharmML::ColumnMapping(this->context, map_node);
             this->columnMappings.push_back(map);
         }
-        // TODO: Support ds:Dataset (data for each subject within the study)
+        
+        // Get dataset
+        xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
+        PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
+        this->dataset = ds;
     }
     
     std::string IndividualAdministration::getOidRef() {
@@ -213,6 +218,10 @@ namespace PharmML
     
     std::vector<ColumnMapping *> IndividualAdministration::getColumnMappings() {
         return this->columnMappings;
+    }
+    
+    Dataset *IndividualAdministration::getDataset() {
+        return this->dataset;
     }
     
     void IndividualAdministration::accept(PharmMLVisitor *visitor) {

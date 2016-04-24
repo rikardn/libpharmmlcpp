@@ -24,6 +24,7 @@
 #include "symbols.h"
 #include "PharmMLVisitor.h"
 #include "XMLAstVisitor.h"
+#include "Dataset.h"
 
 namespace PharmML
 {
@@ -97,7 +98,7 @@ namespace PharmML
         xml::Node xml_node;
         std::string oidRef;
         std::vector<PharmML::ColumnMapping *> columnMappings;
-        // TODO: Support ds:Dataset (data for each subject within the study)
+        Dataset *dataset;
         
         public:
         IndividualAdministration(PharmMLContext *context, xml::Node node);
@@ -105,6 +106,7 @@ namespace PharmML
         void update();
         std::string getOidRef();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
+        Dataset *getDataset();
         void accept(PharmMLVisitor *visitor);
     };
     

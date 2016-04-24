@@ -32,6 +32,9 @@ namespace PharmML
     class Distribution;
     class ColumnMapping;
     
+    class DataColumn;
+    class Dataset;
+    
     class Interventions;
     class Administration;
     class IndividualAdministration;
@@ -64,6 +67,9 @@ namespace PharmML
             virtual void visit(ObservationModel *node) = 0;
             virtual void visit(Distribution *node) = 0;
             virtual void visit(ColumnMapping *node) = 0;
+            
+            virtual void visit(DataColumn *node) = 0;
+            virtual void visit(Dataset *node) = 0;
             
             virtual void visit(Interventions *node) = 0;
             virtual void visit(Administration *node) = 0;

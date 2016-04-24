@@ -1,0 +1,205 @@
+/* libpharmmlcpp - Library to handle PharmML
+ * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ * 
+ * his library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "Dataset.h"
+
+namespace PharmML
+{
+    // Class HeaderDefinition (single header specification of dataset)
+    HeaderDefinition::HeaderDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void HeaderDefinition::parse(xml::Node node) {
+        // Get name, header type and row number
+        this->name = node.getAttribute("name").getValue();
+        // TODO: Support headerType (some symbolId stuff)
+        //~ this->headerType = node.getAttribute("headerType").getValue();
+        this->rowNumber = std::stoi(node.getAttribute("rowNumber").getValue());
+    }
+    
+    void addHeaderRow(xml::Node node) {
+        // TODO: Support this (from DataColumn parent class maybe)
+    }
+    
+    std::string HeaderDefinition::getName() {
+        return this->name;
+    }
+    
+    int HeaderDefinition::getRowNumber() {
+        return this->rowNumber;
+    }
+    
+    // Class ColumnDefinition (single column specification of dataset)
+    ColumnDefinition::ColumnDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void ColumnDefinition::parse(xml::Node node) {
+        // Get attributes of column
+        this->id = node.getAttribute("columnId").getValue();
+        this->type = node.getAttribute("columnType").getValue();
+        this->level = node.getAttribute("level").getValue();
+        this->valueType = node.getAttribute("valueType").getValue();
+        this->num = std::stoi(node.getAttribute("columnNum").getValue());
+    }
+    
+    std::string ColumnDefinition::getId() {
+        return this->id;
+    }
+    
+    std::string ColumnDefinition::getType() {
+        return this->type;
+    }
+    
+    std::string ColumnDefinition::getLevel() {
+        return this->level;
+    }
+    
+    std::string ColumnDefinition::getValueType() {
+        return this->valueType;
+    }
+    
+    int ColumnDefinition::getNum() {
+        return this->num;
+    }
+    
+    // Class DatasetDefinition (header/column specifications of dataset)
+    DatasetDefinition::DatasetDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    ColumnDefinition *DatasetDefinition::getColumnDefinition(int colNum) {
+        return this->columns[colNum-1];
+    }
+    
+    int DatasetDefinition::getNumColumns() {
+        return this->columns.size();
+    }
+
+    void DatasetDefinition::parse(xml::Node node) {
+        // Get header definitions
+        std::vector<xml::Node> headers = this->context->getElements(node, "./ds:Header");
+        for (xml::Node header_node : headers) {
+            HeaderDefinition *header = new HeaderDefinition(this->context, header_node);
+            this->headers.push_back(header);
+        }
+        
+        // Get column definitions
+        std::vector<xml::Node> columns = this->context->getElements(node, "./ds:Column");
+        for (xml::Node column_node : columns) {
+            ColumnDefinition *column = new ColumnDefinition(this->context, column_node);
+            this->columns.push_back(column);
+        }
+        
+        // Get ignore condition and/or ignore symbols
+        xml::Node ignore = this->context->getSingleElement(node, "./ds:IgnoreLineType");
+        if (ignore.exists()) {
+            xml::Node condition = this->context->getSingleElement(node, "./math:Condition");
+            if (condition.exists()) {
+                // TODO: Include deps below via moving creation of AstNode to Factory
+                this->ignoreCondition = AstNodeFactory::create(condition);
+            }
+            this->ignoreSymbols = node.getAttribute("symbol").getValue();
+        }
+    }
+    
+    // Class DataColumn (single column with its definition)
+    // Preliminary class (forced conversion of all scalars into AstNode's)
+    // TODO: Improve DataColumn data structure typing
+    DataColumn::DataColumn(PharmML::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition) {
+        this->context = context;
+        this->definition = definition;
+        this->parse(table_node);
+    }
+    
+    std::vector<AstNode *> DataColumn::getData() {
+        return this->column;
+    }
+    
+    ColumnDefinition *DataColumn::getDefinition() {
+        return this->definition;
+    }
+
+    void DataColumn::parse(xml::Node table_node) {
+        // Get values for column from each row element
+        int colIndex = (this->definition->getNum() - 1); // Column numbers start at 1
+        std::vector<xml::Node> rows = this->context->getElements(table_node, "./ds:Row");
+        for (xml::Node row_node : rows) {
+            std::vector<xml::Node> values = row_node.getChildren();
+            xml::Node value_node = values[colIndex];
+            column.push_back(AstNodeFactory::create(value_node));
+        }
+        
+        // TODO: Support HeaderRow (HeaderDefinition defines HeaderRow as ColumnDefinition defines Row)
+    }
+    
+    void DataColumn::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+    
+    // Class Dataset (top-level of above)
+    Dataset::Dataset(PharmML::PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void Dataset::parse(xml::Node node) {
+        // Get definition (specifies headers/columns)
+        xml::Node def_node = this->context->getSingleElement(node, "./ds:Definition");
+        if (def_node.exists()) {
+            DatasetDefinition *def = new DatasetDefinition(this->context, def_node);
+            this->definition = def;
+        }
+        
+        // Get the table and create (generic) columns
+        xml::Node table = this->context->getSingleElement(node, "./ds:Table");
+        if (table.exists()) {
+            int numColumns = this->definition->getNumColumns();
+            for (int colNum = 1; colNum <= numColumns; colNum++) {
+                ColumnDefinition *definition = this->definition->getColumnDefinition(colNum);
+                DataColumn *column = new DataColumn(this->context, table, definition);
+                columns.push_back(column);
+            }
+        } // (else we have an external dataset)
+        // TODO: Support ds:ExternalFile instead of ds:Table
+    }
+    
+    // A defined name might be required for visitors
+    void Dataset::setName(std::string name) {
+        this->name = name;
+    }
+    
+    std::string Dataset::getName() {
+        return this->name;
+    }
+
+    DatasetDefinition *Dataset::getDefinition() {
+        return this->definition;
+    }
+    
+    std::vector<DataColumn *> Dataset::getColumns() {
+        return this->columns;
+    }
+    
+    void Dataset::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+}

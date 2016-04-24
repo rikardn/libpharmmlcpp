@@ -145,6 +145,30 @@ namespace PharmML
         this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getAssignment()));
     }
     
+    // Class DataColumn
+    void RPharmMLGenerator::visit(DataColumn *node) {
+        std::string s = node->getDefinition()->getId() + " = ";
+        std::vector<std::string> list;
+        std::vector<AstNode *> data = node->getData();
+        for (AstNode *element: data) {
+            list.push_back(this->accept(element));
+        }
+        s += formatVector(list, "c", "");
+        setValue(s + "\n");
+    }
+    
+    // Class Dataset
+    void RPharmMLGenerator::visit(Dataset *node) {
+        std::string name = node->getName();
+        std::string s = name + " = data.frame()\n";
+        std::vector<DataColumn *> columns = node->getColumns();
+        for (DataColumn *column : columns) {
+            column->accept(this);
+            s += name + "$" + this->getValue();
+        }
+        setValue(s);
+    }
+    
     // Class Interventions and all its content
     void RPharmMLGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " <- list(";
@@ -183,7 +207,9 @@ namespace PharmML
             map->accept(this);
             list.push_back(this->getValue());
         }
-        s += formatVector(list, "c");
+        s += formatVector(list, "c") + ", ";
+        
+        s += "dataset = " + node->getDataset()->getName();
         
         this->setValue(s + ")");
     }
@@ -211,8 +237,14 @@ namespace PharmML
             s += "individual_administrations <- vector(mode=\"list\", length=" + std::to_string(ind_adms.size()) + ")\n";
             int i = 1;
             for (IndividualAdministration *ind_adm : ind_adms) {
+                std::string iteration = std::to_string(i);
+                // PharmML dataset has no oid so we generate a name here and accept the dataset separately
+                ind_adm->getDataset()->setName("ind_adm_" + iteration + "_ds");
+                ind_adm->getDataset()->accept(this);
+                s += this->getValue();
+                // Accept complete node
                 ind_adm->accept(this);
-                s += "individual_administrations[[" + std::to_string(i) + "]]" + this->getValue() + "\n";
+                s += "individual_administrations[[" + iteration + "]]" + this->getValue() + "\n";
                 i++;
             }
         }
@@ -274,7 +306,9 @@ namespace PharmML
             map->accept(this);
             list.push_back(this->getValue());
         }
-        s += formatVector(list, "c");
+        s += formatVector(list, "c") + ", ";
+        
+        s += "dataset = " + node->getDataset()->getName();
         
         this->setValue(s + ")");
     }
@@ -319,9 +353,15 @@ namespace PharmML
             s += "# Dataset observations\n";
             std::vector<std::string> obs_oids;
             for (IndividualObservations *ind_observation : ind_observations) {
+                std::string oid = ind_observation->getOid();
+                obs_oids.push_back(oid);
+                // PharmML dataset has no oid so we generate a name here and accept the dataset separately
+                ind_observation->getDataset()->setName("dataset_obs_" + oid + "_ds");
+                ind_observation->getDataset()->accept(this);
+                s += this->getValue();
+                // Accept complete node
                 ind_observation->accept(this);
                 s += this->getValue() + "\n";
-                obs_oids.push_back(ind_observation->getOid());
             }
             s += "dataset_obs_oids = " + formatVector(obs_oids, "c") + "\n";
         }

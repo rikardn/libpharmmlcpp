@@ -65,6 +65,7 @@ namespace PharmML
             virtual void visit(Distribution *node);
             virtual void visit(ColumnMapping *node);
             
+            virtual void visit(ExternalFile *node);
             virtual void visit(DataColumn *node);
             virtual void visit(Dataset *node);
             

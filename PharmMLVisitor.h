@@ -32,6 +32,7 @@ namespace PharmML
     class Distribution;
     class ColumnMapping;
     
+    class ExternalFile;
     class DataColumn;
     class Dataset;
     
@@ -68,6 +69,7 @@ namespace PharmML
             virtual void visit(Distribution *node) = 0;
             virtual void visit(ColumnMapping *node) = 0;
             
+            virtual void visit(ExternalFile *node) = 0;
             virtual void visit(DataColumn *node) = 0;
             virtual void visit(Dataset *node) = 0;
             

@@ -34,10 +34,10 @@ namespace PharmML
 
         public:
         HeaderDefinition(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
         void addHeaderRow(xml::Node node);
         std::string getName();
         int getRowNumber();
-        void parse(xml::Node node);
     };
     
     // Class ColumnDefinition (single column specification of dataset)
@@ -51,12 +51,12 @@ namespace PharmML
         
         public:
         ColumnDefinition(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
         std::string getId();
         std::string getType();
         std::string getLevel();
         std::string getValueType();
         int getNum();
-        void parse(xml::Node node);
     };
     
     // Class DatasetDefinition (header/column specifications of dataset)
@@ -69,9 +69,28 @@ namespace PharmML
 
         public:
         DatasetDefinition(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
         ColumnDefinition *getColumnDefinition(int colNum);
         int getNumColumns();
+    };
+    
+    // class ExternalFile (data is stored externally)
+    class ExternalFile {
+        PharmML::PharmMLContext *context;
+        std::string oid;
+        std::string path;
+        std::string format;
+        std::string delimiter;
+        // TODO: Support MissingDataMapType
+        
+        public:
+        ExternalFile(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        std::string getOid();
+        std::string getPath();
+        std::string getFormat();
+        std::string getDelimiter();
+        void accept(PharmMLVisitor *visitor);
     };
     
     // Class DataColumn (single column with its definition)
@@ -82,9 +101,9 @@ namespace PharmML
         
         public:
         DataColumn(PharmML::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition);
+        void parse(xml::Node table_node);
         std::vector<AstNode *> getData();
         ColumnDefinition *getDefinition();
-        void parse(xml::Node table_node);
         void accept(PharmMLVisitor *visitor);
     };
     
@@ -93,17 +112,20 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         DatasetDefinition *definition;
+        ExternalFile *externalFile = nullptr;
         std::vector<DataColumn *> columns;
         std::string name;
         
         public:
         Dataset(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
         std::string getOid();
         DatasetDefinition *getDefinition();
+        bool isExternal();
+        ExternalFile *getExternal();
         std::vector<DataColumn *> getColumns();
         void setName(std::string name);
         std::string getName();
-        void parse(xml::Node node);
         void accept(PharmMLVisitor *visitor);
     };
 }

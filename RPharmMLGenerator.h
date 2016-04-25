@@ -47,7 +47,7 @@ namespace PharmML
             std::string value;
             void setValue(std::string str);
             // Helper function to reduce redundant code
-            std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'");
+            std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
             std::string accept(AstNode *);
 
         public:

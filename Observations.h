@@ -91,7 +91,6 @@ namespace PharmML
     class Observations
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         std::vector<Variable *> designParameters;
         std::vector<Observation *> simulationObservations;
         std::vector<IndividualObservations *> datasetObservations;
@@ -101,7 +100,7 @@ namespace PharmML
         public:
         Observations(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::vector<Variable *> getDesignParameters();
         std::vector<Observation *> getObservations(); // Or getSimulationObservations()?
         std::vector<IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?

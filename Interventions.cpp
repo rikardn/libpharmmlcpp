@@ -240,7 +240,6 @@ namespace PharmML
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
     
@@ -260,7 +259,7 @@ namespace PharmML
         }
     }
     
-    void Interventions::update() {
+    xml::Node Interventions::xml() {
         xml::Node inter("Interventions");
         for (Administration *adm : this->administrations) {
             inter.addChild(adm->xml());
@@ -268,7 +267,7 @@ namespace PharmML
         for (IndividualAdministration *iadm : this->individualAdministrations) {
             inter.addChild(iadm->xml());
         }
-        this->xml_node.replaceNode(inter);
+        return inter;
     }
 
     std::vector <Administration *> Interventions::getAdministrations() {

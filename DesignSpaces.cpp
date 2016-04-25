@@ -90,7 +90,6 @@ namespace PharmML
     
     DesignSpaces::DesignSpaces(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
     
@@ -111,12 +110,12 @@ namespace PharmML
         }
     }
    
-    void DesignSpaces::update() {
+    xml::Node DesignSpaces::xml() {
         xml::Node ds("DesignSpaces");
         for (DesignSpace *space : this->designSpaces) {
             ds.addChild(space->xml());
         }
-        this->xml_node.replaceNode(ds);
+        return ds;
     }
 
     std::vector<Variable *> DesignSpaces::getDesignParameters() {

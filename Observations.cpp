@@ -190,7 +190,6 @@ namespace PharmML
     // Observations class (contains objects of classes above)
     Observations::Observations(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
     
@@ -228,12 +227,12 @@ namespace PharmML
         }
     }
     
-    void Observations::update() {
+    xml::Node Observations::xml() {
         xml::Node obs("Observations");
         for (IndividualObservations *io : this->getIndividualObservations()) {
             obs.addChild(io->xml());
         }
-        this->xml_node.replaceNode(obs);
+        return obs;
     }
 
     std::vector<Variable *> Observations::getDesignParameters() {

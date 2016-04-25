@@ -43,10 +43,7 @@ int main(int argc, char **argv)
         return 5;
     }
 
-    model->getTrialDesign()->getInterventions()->update();
-    model->getTrialDesign()->getObservations()->update();
-    model->getTrialDesign()->getArms()->update();
-    model->getTrialDesign()->getDesignSpaces()->update();
+    model->getTrialDesign()->update();
 
     model->write("output.xml");
 

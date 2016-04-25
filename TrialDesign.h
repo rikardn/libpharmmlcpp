@@ -32,6 +32,7 @@ namespace PharmML
     class TrialDesign
     {
         PharmML::PharmMLContext *context;
+        xml::Node xml_node;
         PharmML::Interventions *Interventions = nullptr;
         PharmML::ExternalDataset *ExternalDataset = nullptr;
         PharmML::Observations *Observations = nullptr;
@@ -39,13 +40,14 @@ namespace PharmML
         PharmML::DesignSpaces *DesignSpaces = nullptr;
 
         public:
+        TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        void update();
         PharmML::ExternalDataset *getExternalDataset();
         PharmML::Interventions *getInterventions();
         PharmML::Observations *getObservations();
         PharmML::Arms *getArms();
         PharmML::DesignSpaces *getDesignSpaces();
-        TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
     };
 }
 

@@ -112,14 +112,13 @@ namespace PharmML
     class Interventions
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         std::vector<PharmML::Administration *> administrations;
         std::vector<PharmML::IndividualAdministration *> individualAdministrations;
 
         public:
         Interventions(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::vector<Administration *> getAdministrations();
         std::vector<IndividualAdministration *> getIndividualAdministrations();
         void accept(PharmMLVisitor *visitor);

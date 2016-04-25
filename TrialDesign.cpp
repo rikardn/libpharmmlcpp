@@ -25,6 +25,7 @@ namespace PharmML
 {
     TrialDesign::TrialDesign(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
 
@@ -52,6 +53,21 @@ namespace PharmML
         if (ds_node.exists()) {
             this->DesignSpaces = new PharmML::DesignSpaces(this->context, ds_node);
         }
+    }
+
+    void TrialDesign::update() {
+        xml::Node td("TrialDesign");
+        td.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/TrialDesign");
+        if (this->Interventions)
+            td.addChild(this->Interventions->xml());
+        if (this->Observations)
+            td.addChild(this->Observations->xml());
+        if (this->DesignSpaces)
+            td.addChild(this->DesignSpaces->xml());
+        if (this->Arms) 
+            td.addChild(this->Arms->xml());
+        
+        this->xml_node.replaceNode(td);
     }
 
     PharmML::ExternalDataset *TrialDesign::getExternalDataset() {

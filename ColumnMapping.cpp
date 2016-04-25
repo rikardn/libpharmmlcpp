@@ -68,7 +68,7 @@ namespace PharmML
 
     xml::Node ColumnMapping::xml() {
         xml::Node cm("ColumnMapping");
-        xml::Node idref("ColumnIdRef", xml::Namespace::ds);
+        xml::Node idref("ColumnRef", xml::Namespace::ds);
         idref.setAttribute("columnIdRef", this->columnIdRef);
         cm.addChild(idref);
         XMLAstVisitor xml;

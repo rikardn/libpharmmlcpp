@@ -105,7 +105,7 @@ namespace PharmML
         xml::Node child;
         for (std::string ref : this->oidRefs) {
             child = ilist.createChild("InterventionRef");
-            child.setAttribute("oidref", ref);
+            child.setAttribute("oidRef", ref);
         }
         return iseq;
     }
@@ -149,7 +149,7 @@ namespace PharmML
         xml::Node child;
         for (std::string ref : this->oidRefs) {
             child = olist.createChild("ObservationRef");
-            child.setAttribute("oidref", ref);
+            child.setAttribute("oidRef", ref);
         }
         return oseq;
     }
@@ -311,7 +311,6 @@ namespace PharmML
     // Arms class
     Arms::Arms(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
     
@@ -380,12 +379,12 @@ namespace PharmML
         }
     }
    
-    void Arms::update() {
+    xml::Node Arms::xml() {
         xml::Node arms("Arms");
         for (Arm *arm : this->arms) {
             arms.addChild(arm->xml());
         }
-        this->xml_node.replaceNode(arms);
+        return arms;
     }
 
     std::vector<Variable *> Arms::getDesignParameters() {

@@ -127,7 +127,6 @@ namespace PharmML
     class Arms
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         std::vector<PharmML::Variable *> designParameters;
         AstNode *armSize = nullptr;
         AstNode *costFunction = nullptr;
@@ -152,7 +151,7 @@ namespace PharmML
         AstNode *getTotalSize();
         std::vector<Arm *> getArms();
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         void accept(PharmMLVisitor *visitor);
     };
 }

@@ -50,14 +50,13 @@ namespace PharmML
     class DesignSpaces
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         std::vector<PharmML::Variable *> designParameters;
         std::vector<PharmML::DesignSpace *> designSpaces;
 
         public:
         DesignSpaces(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        void update();
+        xml::Node xml();
         std::vector<PharmML::Variable *> getDesignParameters();
         std::vector<PharmML::DesignSpace *> getDesignSpaces();
         void accept(PharmMLVisitor *visitor);

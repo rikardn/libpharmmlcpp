@@ -63,6 +63,7 @@ namespace PharmML
         public:
         IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        xml::Node xml();
         std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
@@ -99,6 +100,7 @@ namespace PharmML
         public:
         Observations(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        xml::Node xml();
         std::vector<Variable *> getDesignParameters();
         std::vector<Observation *> getObservations(); // Or getSimulationObservations()?
         std::vector<IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?

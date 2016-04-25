@@ -147,9 +147,8 @@ namespace PharmML
         for (HeaderDefinition *header : this->headers) {
             def.addChild(header->xml());
         }
-        xml::Node cdef = def.createChild("Column");
         for (ColumnDefinition *column : this->columns) {
-            cdef.addChild(column->xml());
+            def.addChild(column->xml());
         }
         if (this->ignoreSymbols != "") {
             xml::Node ignore = def.createChild("IgnoreLineType");
@@ -288,7 +287,8 @@ namespace PharmML
     }
     
     xml::Node Dataset::xml() {
-        xml::Node ds("Dataset");
+        xml::Node ds("DataSet");
+	    ds.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/Dataset");
         if (this->oid != "") {
             ds.setAttribute("oid", this->oid);
         }

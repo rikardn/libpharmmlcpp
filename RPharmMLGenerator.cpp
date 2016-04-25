@@ -26,15 +26,19 @@ namespace PharmML
 
     // Helper function to reduce redundant code
     // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string RPharmMLGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote) {
+    std::string RPharmMLGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
         std::string s = prefix + "(";
+        std::string sep = ", ";
+        if (pre_indent > 0) {
+            sep = ",\n" + std::string(pre_indent + s.size(), ' ');
+        }
         
         bool first = true;
         for (std::string element : vector) {
             if (first) {
                 first = false;
             } else {
-                s += ", ";
+                s += sep;
             }
             s += quote + element + quote;
         }
@@ -171,7 +175,7 @@ namespace PharmML
             list.push_back(this->accept(element));
         }
         s += formatVector(list, "c", "");
-        setValue(s + "\n");
+        setValue(s);
     }
     
     // Class Dataset
@@ -179,12 +183,14 @@ namespace PharmML
         std::string name = node->getName();
         std::string s;
         if (!node->isExternal()) {
-            s += name + " = data.frame()\n";
+            std::vector<std::string> list;
             std::vector<DataColumn *> columns = node->getColumns();
             for (DataColumn *column : columns) {
                 column->accept(this);
-                s += name + "$" + this->getValue();
+                list.push_back(this->getValue());
             }
+            s += name + " = ";
+            s += formatVector(list, "data.frame", "", s.size());
         } else {
             // TODO: Improve support for external resource
             // First, output reading function
@@ -193,9 +199,9 @@ namespace PharmML
             s += this->getValue() + "\n";
             
             // Then output call to reading function (yes, it's not perfect)
-            s += name + " = READ_EXT_RESOURCE_" + extFile->getOid() + "()\n";
+            s += name + " = READ_EXT_RESOURCE_" + extFile->getOid() + "()";
         }
-        setValue(s);
+        setValue(s + "\n");
     }
     
     // Class Interventions and all its content

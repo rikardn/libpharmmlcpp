@@ -33,6 +33,13 @@ namespace PharmML
         this->rowNumber = std::stoi(node.getAttribute("rowNumber").getValue());
     }
     
+    xml::Node HeaderDefinition::xml() {
+        xml::Node def("Header");
+        def.setAttribute("name", this->name);
+        def.setAttribute("rowNumber", std::to_string(this->rowNumber));
+        return def;
+    }
+    
     void addHeaderRow(xml::Node node) {
         // TODO: Support this (from DataColumn parent class maybe)
     }
@@ -58,6 +65,16 @@ namespace PharmML
         this->level = node.getAttribute("level").getValue();
         this->valueType = node.getAttribute("valueType").getValue();
         this->num = std::stoi(node.getAttribute("columnNum").getValue());
+    }
+    
+    xml::Node ColumnDefinition::xml() {
+        xml::Node def("Column");
+        def.setAttribute("columnId", this->id);
+        def.setAttribute("columnType", this->type);
+        def.setAttribute("level", this->level);
+        def.setAttribute("valueType", this->valueType);
+        def.setAttribute("columnNum", std::to_string(this->num));
+        return def;
     }
     
     std::string ColumnDefinition::getId() {
@@ -112,13 +129,35 @@ namespace PharmML
         // Get ignore condition and/or ignore symbols
         xml::Node ignore = this->context->getSingleElement(node, "./ds:IgnoreLineType");
         if (ignore.exists()) {
-            xml::Node condition = this->context->getSingleElement(node, "./math:Condition");
+            xml::Node condition = this->context->getSingleElement(ignore, "./math:Condition");
             if (condition.exists()) {
                 // TODO: Include deps below via moving creation of AstNode to Factory
                 this->ignoreCondition = AstNodeFactory::create(condition);
             }
-            this->ignoreSymbols = node.getAttribute("symbol").getValue();
+            this->ignoreSymbols = ignore.getAttribute("symbol").getValue();
         }
+    }
+    
+    xml::Node DatasetDefinition::xml() {
+        xml::Node def("Definition");
+        for (HeaderDefinition *header : this->headers) {
+            def.addChild(header->xml());
+        }
+        xml::Node cdef = def.createChild("Column");
+        for (ColumnDefinition *column : this->columns) {
+            cdef.addChild(column->xml());
+        }
+        if (this->ignoreSymbols != "") {
+            xml::Node ignore = def.createChild("IgnoreLineType");
+            ignore.setAttribute("symbol", this->ignoreSymbols);
+            if (this->ignoreCondition) {
+                xml::Node cond = ignore.createChild("Condition"); 
+                XMLAstVisitor xml;
+                this->ignoreCondition->accept(&xml);
+                cond.addChild(xml.getValue());
+            }
+        }
+        return def;
     }
     
     // class ExternalFile (data is stored externally)
@@ -180,18 +219,11 @@ namespace PharmML
         this->parse(table_node);
     }
     
-    std::vector<AstNode *> DataColumn::getData() {
-        return this->column;
-    }
-    
-    ColumnDefinition *DataColumn::getDefinition() {
-        return this->definition;
-    }
-
     void DataColumn::parse(xml::Node table_node) {
         // Get values for column from each row element
         int colIndex = (this->definition->getNum() - 1); // Column numbers start at 1
         std::vector<xml::Node> rows = this->context->getElements(table_node, "./ds:Row");
+        this->numRows = rows.size();
         for (xml::Node row_node : rows) {
             std::vector<xml::Node> values = row_node.getChildren();
             xml::Node value_node = values[colIndex];
@@ -199,6 +231,22 @@ namespace PharmML
         }
         
         // TODO: Support HeaderRow (HeaderDefinition defines HeaderRow as ColumnDefinition defines Row)
+    }
+    
+    std::vector<AstNode *> DataColumn::getData() {
+        return this->column;
+    }
+    
+    ColumnDefinition *DataColumn::getDefinition() {
+        return this->definition;
+    }
+    
+    AstNode *DataColumn::getElement(int row) {
+        return this->column[row - 1];
+    }
+    
+    int DataColumn::getNumRows() {
+        return this->numRows;
     }
     
     void DataColumn::accept(PharmMLVisitor *visitor) {
@@ -233,6 +281,34 @@ namespace PharmML
             ExternalFile *externalFile = new ExternalFile(this->context, ext_file);
             this->externalFile = externalFile;
         }
+    }
+    
+    xml::Node Dataset::xml() {
+        xml::Node ds("Dataset");
+        if (this->oid != "") {
+            ds.setAttribute("oid", this->oid);
+        }
+        if (this->definition) {
+            ds.addChild(this->definition->xml());
+        }
+        // TODO: Table/external
+        if (this->isExternal()) {
+            //~ ds.addChild(this->externalFile->xml());
+        } else {
+            xml::Node table = ds.createChild("Table");
+            int numRows = columns[0]->getNumRows(); // TODO: Better?
+            // Columns can't generate the rows so do it all here
+            for (int rowNum = 1; rowNum <= numRows; rowNum++) {
+                xml::Node row = table.createChild("Row");
+                for (DataColumn *column : columns) {
+                    AstNode *element = column->getElement(rowNum);
+                    XMLAstVisitor xml;
+                    element->accept(&xml);
+                    row.addChild(xml.getValue());
+                }
+            }
+        }
+        return ds;
     }
     
     // A defined name might be required for visitors

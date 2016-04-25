@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     }
 
     model->getTrialDesign()->getInterventions()->update();
+    model->getTrialDesign()->getObservations()->update();
     model->getTrialDesign()->getArms()->update();
     model->getTrialDesign()->getDesignSpaces()->update();
 

@@ -68,7 +68,8 @@ namespace PharmML
             }
         }
     }
-    
+
+
     std::string Observation::getOid() {
         return this->oid;
     }
@@ -116,6 +117,15 @@ namespace PharmML
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
         PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
         this->dataset = ds;
+    }
+
+    xml::Node IndividualObservations::xml() {
+        xml::Node io("IndividualObservations");
+        io.setAttribute("oid", this->getOid());
+        for (ColumnMapping *cm : this->getColumnMappings()) {
+            io.addChild(cm->xml());
+        }
+        return io;
     }
     
     std::string IndividualObservations::getOid() {
@@ -180,6 +190,7 @@ namespace PharmML
     // Observations class (contains objects of classes above)
     Observations::Observations(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -217,6 +228,14 @@ namespace PharmML
         }
     }
     
+    void Observations::update() {
+        xml::Node obs("Observations");
+        for (IndividualObservations *io : this->getIndividualObservations()) {
+            obs.addChild(io->xml());
+        }
+        this->xml_node.replaceNode(obs);
+    }
+
     std::vector<Variable *> Observations::getDesignParameters() {
         return this->designParameters;
     }

@@ -105,7 +105,7 @@ namespace PharmML
         xml::Node child;
         for (std::string ref : this->oidRefs) {
             child = ilist.createChild("InterventionRef");
-            child.setAttribute("oidref", ref);
+            child.setAttribute("oidRef", ref);
         }
         return iseq;
     }
@@ -149,7 +149,7 @@ namespace PharmML
         xml::Node child;
         for (std::string ref : this->oidRefs) {
             child = olist.createChild("ObservationRef");
-            child.setAttribute("oidref", ref);
+            child.setAttribute("oidRef", ref);
         }
         return oseq;
     }

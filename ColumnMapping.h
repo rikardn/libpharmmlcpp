@@ -27,13 +27,18 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::string columnIdRef;
-        AstNode *assignment;
+        AstNode *assignment = nullptr;
+        AstNode *assignedSymbol = nullptr;
+        AstNode *findSymbRef(xml::Node node);
 
         public:
         ColumnMapping(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         AstNode *getAssignment();
         std::string getColumnIdRef();
+        
+        AstNode *getFirstSymbol();
+        
         void accept(PharmMLVisitor *visitor);
     };
 }

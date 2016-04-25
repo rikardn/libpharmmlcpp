@@ -22,6 +22,7 @@
 #include "PharmMLContext.h"
 #include "Variable.h"
 #include "AstNode.h"
+#include "XMLAstVisitor.h"
 
 namespace PharmML
 {
@@ -37,6 +38,7 @@ namespace PharmML
         public:
         DesignSpace(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        xml::Node xml();
         std::string getOid();
         std::vector<std::string> getInterventionRefs();
         std::vector<std::string> getObservationRefs();
@@ -48,12 +50,14 @@ namespace PharmML
     class DesignSpaces
     {
         PharmML::PharmMLContext *context;
+        xml::Node xml_node;
         std::vector<PharmML::Variable *> designParameters;
         std::vector<PharmML::DesignSpace *> designSpaces;
 
         public:
         DesignSpaces(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void update();
         std::vector<PharmML::Variable *> getDesignParameters();
         std::vector<PharmML::DesignSpace *> getDesignSpaces();
         void accept(PharmMLVisitor *visitor);

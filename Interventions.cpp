@@ -89,7 +89,6 @@ namespace PharmML
     // Administration class
     Administration::Administration(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->xml_node = node;
         this->parse(node);
     }
    
@@ -141,7 +140,7 @@ namespace PharmML
         }
     }
 
-    void Administration::update() {
+    xml::Node Administration::xml() {
         xml::Node adm("Administration");
         adm.setAttribute("oid", this->oid);
         xml::Node type = adm.createChild(this->type);
@@ -151,7 +150,7 @@ namespace PharmML
             this->target->accept(&xml);
             da.addChild(xml.getValue());
         }
-        this->xml_node.replaceNode(adm);
+        return adm;
     }
 
     std::string Administration::getOid() {
@@ -211,7 +210,17 @@ namespace PharmML
         PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
         this->dataset = ds;
     }
-    
+   
+    xml::Node IndividualAdministration::xml() {
+        xml::Node ia("IndividualAdministration");
+        xml::Node iref = ia.createChild("InterventionRef");
+        iref.setAttribute("oidRef", this->oidRef);
+        for (ColumnMapping *cm : this->columnMappings) {
+            ia.addChild(cm->xml());
+        }
+        return ia;
+    }
+
     std::string IndividualAdministration::getOidRef() {
         return this->oidRef;
     }
@@ -231,6 +240,7 @@ namespace PharmML
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -250,6 +260,17 @@ namespace PharmML
         }
     }
     
+    void Interventions::update() {
+        xml::Node inter("Interventions");
+        for (Administration *adm : this->administrations) {
+            inter.addChild(adm->xml());
+        }
+        for (IndividualAdministration *iadm : this->individualAdministrations) {
+            inter.addChild(iadm->xml());
+        }
+        this->xml_node.replaceNode(inter);
+    }
+
     std::vector <Administration *> Interventions::getAdministrations() {
         return administrations;
     }

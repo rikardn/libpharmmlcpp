@@ -61,7 +61,8 @@ namespace PharmML
         public:
         InterventionSequence(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::vector <std::string> getOidRefs();
+        xml::Node xml();
+        std::vector<std::string> getOidRefs();
         AstNode *getStart();
         void accept(PharmMLVisitor *visitor);
     };
@@ -75,6 +76,7 @@ namespace PharmML
         public:
         ObservationSequence(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        xml::Node xml();
         std::vector <std::string> getOidRefs();
         AstNode *getStart();
         void accept(PharmMLVisitor *visitor);
@@ -110,6 +112,7 @@ namespace PharmML
         public:
         Arm(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        xml::Node xml();
         std::string getOid();
         std::string getOidRef();
         AstNode *getArmSize();
@@ -124,6 +127,7 @@ namespace PharmML
     class Arms
     {
         PharmML::PharmMLContext *context;
+        xml::Node xml_node;
         std::vector<PharmML::Variable *> designParameters;
         AstNode *armSize = nullptr;
         AstNode *costFunction = nullptr;
@@ -148,6 +152,7 @@ namespace PharmML
         AstNode *getTotalSize();
         std::vector<Arm *> getArms();
         void parse(xml::Node node);
+        void update();
         void accept(PharmMLVisitor *visitor);
     };
 }

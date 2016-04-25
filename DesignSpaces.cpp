@@ -46,7 +46,24 @@ namespace PharmML
             this->dosingTimes = this->context->factory.create(dosing_times.getChild().getChild());
         }
     }
-    
+   
+    xml::Node DesignSpace::xml() {
+        xml::Node ds("DesignSpace");
+        for (std::string ref : this->interventionRefs) {
+            xml::Node iref = ds.createChild("InterventionRef");
+            iref.setAttribute("oidRef", ref);
+        }
+        if (this->dosingTimes) {
+            xml::Node dt = ds.createChild("DosingTimes");
+            xml::Node assign("Assign", xml::Namespace::ct);
+            dt.addChild(assign);
+            XMLAstVisitor xml;
+            this->dosingTimes->accept(&xml);
+            assign.addChild(xml.getValue());
+        }
+        return ds;
+    }
+
     std::string DesignSpace::getOid() {
         return this->oid;
     }
@@ -73,6 +90,7 @@ namespace PharmML
     
     DesignSpaces::DesignSpaces(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -92,7 +110,15 @@ namespace PharmML
             this->designSpaces.push_back(space);
         }
     }
-    
+   
+    void DesignSpaces::update() {
+        xml::Node ds("DesignSpaces");
+        for (DesignSpace *space : this->designSpaces) {
+            ds.addChild(space->xml());
+        }
+        this->xml_node.replaceNode(ds);
+    }
+
     std::vector<Variable *> DesignSpaces::getDesignParameters() {
         return this->designParameters;
     }

@@ -99,6 +99,17 @@ namespace PharmML
         }
     }
     
+    xml::Node InterventionSequence::xml() {
+        xml::Node iseq("InterventionSequence");
+        xml::Node ilist = iseq.createChild("InterventionList");
+        xml::Node child;
+        for (std::string ref : this->oidRefs) {
+            child = ilist.createChild("InterventionRef");
+            child.setAttribute("oidref", ref);
+        }
+        return iseq;
+    }
+
     std::vector<std::string> InterventionSequence::getOidRefs() {
         return this->oidRefs;
     }
@@ -131,7 +142,18 @@ namespace PharmML
             this->start = this->context->factory.create(assign.getChild());
         }
     }
-    
+   
+    xml::Node ObservationSequence::xml() {
+        xml::Node oseq("ObservationSequence");
+        xml::Node olist = oseq.createChild("ObservationList");
+        xml::Node child;
+        for (std::string ref : this->oidRefs) {
+            child = olist.createChild("ObservationRef");
+            child.setAttribute("oidref", ref);
+        }
+        return oseq;
+    }
+
     std::vector<std::string> ObservationSequence::getOidRefs() {
         return this->oidRefs;
     }
@@ -236,7 +258,20 @@ namespace PharmML
             this->occasionSequences.push_back(sequence);
         }
     }
-    
+   
+    xml::Node Arm::xml() {
+        xml::Node arm("Arm");
+        arm.setAttribute("oid", this->oid);
+        for (InterventionSequence *seq : this->interventionSequences) {
+            arm.addChild(seq->xml());
+        }
+        for (ObservationSequence *seq : this->observationSequences) {
+            arm.addChild(seq->xml());
+        }
+        return arm;
+    }
+
+
     std::string Arm::getOid(){
         return this->oid;
     }
@@ -276,6 +311,7 @@ namespace PharmML
     // Arms class
     Arms::Arms(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->xml_node = node;
         this->parse(node);
     }
     
@@ -343,7 +379,15 @@ namespace PharmML
             this->arms.push_back(arm);
         }
     }
-    
+   
+    void Arms::update() {
+        xml::Node arms("Arms");
+        for (Arm *arm : this->arms) {
+            arms.addChild(arm->xml());
+        }
+        this->xml_node.replaceNode(arms);
+    }
+
     std::vector<Variable *> Arms::getDesignParameters() {
         return this->designParameters;
     }

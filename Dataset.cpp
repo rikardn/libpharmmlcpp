@@ -70,8 +70,12 @@ namespace PharmML
     xml::Node ColumnDefinition::xml() {
         xml::Node def("Column");
         def.setAttribute("columnId", this->id);
-        def.setAttribute("columnType", this->type);
-        def.setAttribute("level", this->level);
+        if (this->type != "") {
+            def.setAttribute("columnType", this->type);
+        }
+        if (this->level != "") {
+            def.setAttribute("level", this->level);
+        }
         def.setAttribute("valueType", this->valueType);
         def.setAttribute("columnNum", std::to_string(this->num));
         return def;

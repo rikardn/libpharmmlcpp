@@ -125,6 +125,7 @@ namespace PharmML
         for (ColumnMapping *cm : this->getColumnMappings()) {
             io.addChild(cm->xml());
         }
+        io.addChild(this->dataset->xml());
         return io;
     }
     

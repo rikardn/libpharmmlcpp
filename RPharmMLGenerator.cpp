@@ -142,7 +142,8 @@ namespace PharmML
     }
 
     void RPharmMLGenerator::visit(ColumnMapping *node) {
-        this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getAssignment()));
+        //~ this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getAssignment()));
+        this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getFirstSymbol()));
     }
     
     // Class ExternalFile

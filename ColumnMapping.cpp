@@ -25,10 +25,45 @@ namespace PharmML
     }
 
     void ColumnMapping::parse(xml::Node node) {
-        xml::Node column_ref = node.getChild();
-        this->columnIdRef = column_ref.getAttribute("columnIdRef").getValue();
-        xml::Node assign_ref = node.getLastChild();     // Currently can support one symbref or one piecewise
-        this->assignment = this->context->factory.create(assign_ref);
+        //~ xml::Node column_ref = node.getChild();
+        //~ this->columnIdRef = column_ref.getAttribute("columnIdRef").getValue();
+        //~ xml::Node assign_ref = node.getLastChild();     // Currently can support one symbref or one piecewise
+        //~ this->assignment = this->context->factory.create(assign_ref);
+        this->columnIdRef = this->context->getSingleElement(node, "./ds:ColumnRef").getAttribute("columnIdRef").getValue();
+        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+        xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
+        xml::Node piecewise_node= this->context->getSingleElement(node, "./math:Piecewise");
+        
+        // Heuristic to find symbol mapping to column (the reverse is useful for code generation)
+        if (symbref_node.exists()) {
+            this->assignment = this->context->factory.create(symbref_node);
+            this->assignedSymbol = this->context->factory.create(symbref_node);
+        } else if (assign_node.exists()) {
+            this->assignment = this->context->factory.create(assign_node);
+            assignedSymbol = findSymbRef(assign_node);
+        } else if (piecewise_node.exists()) {
+            this->assignment = this->context->factory.create(piecewise_node);
+            assignedSymbol = findSymbRef(piecewise_node);
+        }
+    }
+    
+    AstNode *ColumnMapping::findSymbRef(xml::Node node) {
+        AstNode *symbRef = nullptr;
+        // Iterate through this level in search of a SymbRef
+        std::vector<xml::Node> children = node.getChildren();
+        for (xml::Node child : children) {
+            if (child.getName() == "SymbRef") {
+                symbRef = this->context->factory.create(child);
+            }
+        }
+        // If no SymbRef yet, iterate recursively on children
+        if (!symbRef) {
+            for (xml::Node child : children) {
+                symbRef = findSymbRef(child);
+            }
+        }
+        // Return SymbRef if found, otherwise nullptr
+        return symbRef;
     }
 
     xml::Node ColumnMapping::xml() {
@@ -48,6 +83,11 @@ namespace PharmML
 
     std::string ColumnMapping::getColumnIdRef() {
         return this->columnIdRef;
+    }
+    
+    // TEST:
+    AstNode *ColumnMapping::getFirstSymbol() {
+        return this->assignedSymbol;
     }
     
     void ColumnMapping::accept(PharmMLVisitor *visitor) {

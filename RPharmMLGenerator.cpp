@@ -153,7 +153,7 @@ namespace PharmML
     // Class ExternalFile
     void RPharmMLGenerator::visit(ExternalFile *node) {
         std::string s = "READ_EXT_RESOURCE_" + node->getOid() + " <- function() {\n";
-        s += "  format <- " + node->getFormat() + "\n";
+        s += "  format <- '" + node->getFormat() + "'\n";
         if (node->getFormat() == "CSV") {
             s += "  data <- read.csv(";
             s += "file = '" + node->getPath() + "'";

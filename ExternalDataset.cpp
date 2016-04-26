@@ -26,11 +26,23 @@ namespace PharmML
 
     void ExternalDataset::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
-        std::vector<xml::Node> array = this->context->getElements(node, ".//design:ColumnMapping");
+        std::vector<xml::Node> array = this->context->getElements(node, "./design:ColumnMapping");
         for (xml::Node n : array) {
             PharmML::ColumnMapping *col = new PharmML::ColumnMapping(this->context, n);
             this->ColumnMappings.push_back(col);
         }
+        // TODO: Support ColumnTransformation
+        // TODO: Support MultipleDVMapping
+        std::vector<xml::Node> ds_nodes = this->context->getElements(node, "./ds:DataSet");
+        if (!ds_nodes.empty()) {
+            for (xml::Node ds_node : ds_nodes) {
+                PharmML::Dataset *dataset = new PharmML::Dataset(this->context, ds_node);
+                datasets.push_back(dataset);
+            }
+        } else {
+            // TODO: Support CodeInjection
+        }
+        this->toolName = node.getAttribute("toolName").getValue();
     }
     
     std::string ExternalDataset::getOid() {
@@ -39,5 +51,13 @@ namespace PharmML
 
     std::vector<PharmML::ColumnMapping *> ExternalDataset::getColumnMappings() {
         return this->ColumnMappings;
+    }
+    
+    std::vector<Dataset *> ExternalDataset::getDatasets() {
+        return this->datasets;
+    }
+    
+    void ExternalDataset::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
     }
 }

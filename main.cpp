@@ -98,16 +98,6 @@ int main(int argc, char **argv)
     }
     std::cout << std::endl;
     
-    // Data column mapping output
-    std::cout << "# Data column mappings" << std::endl;
-    if (model->getTrialDesign()->getExternalDataset()) {
-        for (ColumnMapping *col : model->getTrialDesign()->getExternalDataset()->getColumnMappings()) {
-            col->accept(&gen);
-            std::cout << gen.getValue() << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    
     // Structural model output
     std::cout << "# Structural model" << std::endl;
     // Separate dependency resolution for variables. Should be moved to other place.
@@ -144,6 +134,14 @@ int main(int argc, char **argv)
     TrialDesign *td = model->getTrialDesign();
     if (td) {
         std::cout << "# [TRIAL DESIGN]" << std::endl;
+        
+        // External datasets
+        ExternalDataset *ext_ds = td->getExternalDataset();
+        if (ext_ds) {
+            std::cout << "## External datasets" << std::endl;
+            ext_ds->accept(&gen);
+            std::cout << gen.getValue() << std::endl;
+        }
         
         // Interventions output
         Interventions *interventions = td->getInterventions();

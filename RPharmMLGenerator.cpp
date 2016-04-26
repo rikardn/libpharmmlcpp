@@ -204,6 +204,35 @@ namespace PharmML
         setValue(s + "\n");
     }
     
+    // Class ExternalDataset
+    void RPharmMLGenerator::visit(ExternalDataset *node) {
+        std::string s;
+        
+        std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
+        if (!col_maps.empty()) {
+            s += "# Data column mappings\n";
+            for (ColumnMapping *col_map : col_maps) {
+                col_map->accept(this);
+                s += this->getValue() + "\n";
+            }
+        }
+        
+        std::vector<Dataset *> datasets = node->getDatasets();
+        if (!datasets.empty()) {
+            s += "# Datasets\n";
+            s += "datasets <- vector(mode=\"list\", length=" + std::to_string(datasets.size()) + ")\n";
+            int i = 1;
+            for (Dataset *ds : datasets) {
+                ds->setName("datasets[[" + std::to_string(i) + "]]");
+                ds->accept(this);
+                s += this->getValue() + "\n";
+                i++;
+            }
+        }
+        
+        this->setValue(s + "\n");
+    }
+    
     // Class Interventions and all its content
     void RPharmMLGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " <- list(";

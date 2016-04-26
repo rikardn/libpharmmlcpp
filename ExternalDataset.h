@@ -32,14 +32,17 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         std::vector<PharmML::ColumnMapping *> ColumnMappings;
-        // TODO: Support ds:Dataset (data for each subject within the study)
+        std::vector<Dataset *> datasets;
         // Why don't we even have an accept for this?
+        std::string toolName;
 
         public:
         ExternalDataset(PharmML::PharmMLContext *context, xml::Node node);
         std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
+        std::vector<Dataset *> getDatasets();
         void parse(xml::Node node);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

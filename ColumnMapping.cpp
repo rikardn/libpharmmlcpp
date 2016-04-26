@@ -25,14 +25,11 @@ namespace PharmML
     }
 
     void ColumnMapping::parse(xml::Node node) {
-        //~ xml::Node column_ref = node.getChild();
-        //~ this->columnIdRef = column_ref.getAttribute("columnIdRef").getValue();
-        //~ xml::Node assign_ref = node.getLastChild();     // Currently can support one symbref or one piecewise
-        //~ this->assignment = this->context->factory.create(assign_ref);
-        this->columnIdRef = this->context->getSingleElement(node, "./ds:ColumnRef").getAttribute("columnIdRef").getValue();
+        xml::Node ref_node = this->context->getSingleElement(node, "./ds:ColumnRef");
+        this->columnIdRef = ref_node.getAttribute("columnIdRef").getValue();
         xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
         xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
-        xml::Node piecewise_node= this->context->getSingleElement(node, "./math:Piecewise");
+        xml::Node piecewise_node= this->context->getSingleElement(node, "./ds:Piecewise");
         
         // Heuristic to find symbol mapping to column (the reverse is useful for code generation)
         if (symbref_node.exists()) {

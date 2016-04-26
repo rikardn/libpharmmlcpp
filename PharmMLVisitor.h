@@ -36,6 +36,8 @@ namespace PharmML
     class DataColumn;
     class Dataset;
     
+    class ExternalDataset;
+    
     class Interventions;
     class Administration;
     class IndividualAdministration;
@@ -72,6 +74,8 @@ namespace PharmML
             virtual void visit(ExternalFile *node) = 0;
             virtual void visit(DataColumn *node) = 0;
             virtual void visit(Dataset *node) = 0;
+            
+            virtual void visit(ExternalDataset *node) = 0;
             
             virtual void visit(Interventions *node) = 0;
             virtual void visit(Administration *node) = 0;

@@ -69,6 +69,8 @@ namespace PharmML
             virtual void visit(DataColumn *node);
             virtual void visit(Dataset *node);
             
+            virtual void visit(ExternalDataset *node);
+            
             virtual void visit(Interventions *node);
             virtual void visit(Administration *node);
             virtual void visit(IndividualAdministration *node);

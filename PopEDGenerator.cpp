@@ -69,6 +69,7 @@ namespace PharmML
         std::string s = "sfg <- function(x, a, bpop, b, bocc) {\n";
         std::vector<std::string> list;
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
+            // FIXME: Don't need accept here as we already know the type. Could as well put code here?
             parameter->accept(this);
             list.push_back(this->getValue());
         }
@@ -79,7 +80,17 @@ namespace PharmML
     std::string PopEDGenerator::genStructuralModelFunc() {
         std::string s = "ff <- function(model_switch, xt, parameters, poped.db) {\n";
 
-        return s + "}";
+        std::vector<std::string> list;
+        for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {
+            var->accept(&this->r_gen);
+            list.push_back(this->r_gen.getValue());
+        }
+        s += this->formatVector(list, "Q", "Y", 1);
+        s += "\n}\n\n";
+
+        s += this->r_gen.derivatives.genODEFunc();
+
+        return s;
     }
 
     void PopEDGenerator::visit(FunctionDefinition *node) {}

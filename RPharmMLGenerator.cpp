@@ -19,6 +19,65 @@
 
 namespace PharmML
 {
+    std::string Indenter::getIndentation() {
+        return std::string(this->indentationLevel * 4, ' ');
+    }
+
+    void Indenter::addRow(std::string str) {
+        this->rows.push_back(this->getIndentation() + str);
+    }
+
+    void Indenter::addRowIndent(std::string str) {
+        this->addRow(str);
+        this->openIndent();
+    }
+
+    void Indenter::addRowOutdent(std::string str) {
+        this->closeIndent();
+        this->addRow(str);
+    }
+
+    void Indenter::openIndent() {
+        this->indentationLevel++;
+    }
+
+    void Indenter::closeIndent() {
+        this->indentationLevel--;
+    }
+
+    std::string Indenter::createString() {
+        std::string result;
+        for (std::string s : this->rows) {
+            result += s + "\n";
+        }
+        return result;
+    }
+
+    void Derivatives::addDerivative(std::string y, std::string x, std::string y0, std::string x0) {
+        this->y.push_back(y);
+        this->x.push_back(x);
+        this->y0.push_back(y0);
+        this->x0.push_back(x0);
+    }
+
+    std::string Derivatives::genODEFunc() {
+        Indenter ind;
+        ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
+        ind.addRowIndent("with(as.list(c(State, Pars)), {");
+
+        std::vector<std::string> name_list;
+        for (int i = 0; i < this->y.size(); i++) {
+            ind.addRow("d" + this->y[i] + " <- " + this->x[i]);
+            name_list.push_back("d" + this->y[i]);
+        }
+        ind.addRowOutdent("}");
+
+        ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
+        ind.addRowOutdent("}");
+
+        return ind.createString(); 
+    }
+
     // private
     void RPharmMLGenerator::setValue(std::string str) {
         this->value = str;
@@ -118,7 +177,12 @@ namespace PharmML
     }
     
     void RPharmMLGenerator::visit(DerivativeVariable *node) {
-        std::string expr;
+        this->derivatives.addDerivative(node->getSymbId(),
+                this->accept(node->getAssignment()),
+                this->accept(node->getInitialTime()),
+                this->accept(node->getInitialValue())); 
+        
+        /*        std::string expr;
         if (node->getAssignment()) {
             expr = node->getSymbId() + " <- " + this->accept(node->getAssignment());
         } else {
@@ -126,7 +190,7 @@ namespace PharmML
         }
         std::string init_val = "x0=" + this->accept(node->getInitialValue());
         std::string init_t = "t0=" + this->accept(node->getInitialTime());
-        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");
+        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");*/
     }
 
     void RPharmMLGenerator::visit(ObservationModel *node) {

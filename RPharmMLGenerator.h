@@ -40,6 +40,35 @@
 
 namespace PharmML
 {
+    class Indenter
+    {
+        private:
+            int indentationLevel = 0;
+            std::vector<std::string> rows;
+            std::string getIndentation();
+
+        public:
+            void addRow(std::string str);
+            void addRowIndent(std::string str);
+            void addRowOutdent(std::string str);
+            void openIndent();
+            void closeIndent();
+            std::string createString();
+    };
+
+    class Derivatives
+    {
+        private:
+            std::vector<std::string> x0;
+            std::vector<std::string> y0;
+            std::vector<std::string> y;
+            std::vector<std::string> x;
+
+        public:
+            void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
+            std::string genODEFunc();
+    };
+
     class RPharmMLGenerator : public PharmMLVisitor
     {
         private:
@@ -47,11 +76,13 @@ namespace PharmML
             std::string value;
             void setValue(std::string str);
             // Helper function to reduce redundant code
-            std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
             std::string accept(AstNode *);
 
         public:
+            Derivatives derivatives;
+
             std::string getValue();
+            static std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
 
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);

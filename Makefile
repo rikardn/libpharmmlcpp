@@ -15,17 +15,14 @@ endif
 main: main.cpp libpharmmlc.a
 	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-pharmml2poped: pharmml2poped.cpp libpharmmlc.a
-	$(CC) pharmml2poped.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
+pharmml2poped: pharmml2poped.cpp PopEDGenerator.cpp PopEDGenerator.h libpharmmlc.a
+	$(CC) pharmml2poped.cpp PopEDGenerator.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o pharmml2poped.o xml.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o pharmml2poped.o xml.o
-
-pharmml2poped.o: pharmml2poped.cpp pharmml2poped.h
-	$(CC) -c pharmml2poped.cpp -opharmml2poped.o $(CFLAGS)
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o xml.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o xml.o
 
 XMLAstVisitor.o: XMLAstVisitor.cpp XMLAstVisitor.h
 	$(CC) -c XMLAstVisitor.cpp -oXMLAstVisitor.o $(CFLAGS)

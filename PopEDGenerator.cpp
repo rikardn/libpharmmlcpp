@@ -32,7 +32,7 @@ namespace PharmML
         if (pre_indent > 0) {
             sep = ",\n" + std::string(pre_indent + s.size(), ' ');
         }
-        
+
         bool first = true;
         for (std::string element : vector) {
             if (first) {
@@ -54,13 +54,49 @@ namespace PharmML
     std::string PopEDGenerator::getValue() {
         return this->value;
     }
-    
+
     std::string PopEDGenerator::genParameterModelFunc() {
         std::string s = "function(x,a,bpop,b,bocc) {\n";
-        std::vector list;
-        for (parameter :) {
-            list.push_back(
-        }
-        return(s + "}");
+        std::vector<std::string> list;
+        /*for (parameter :) {
+          list.push_back(
+          }
+          return(s + "}");*/
     }
+
+    void PopEDGenerator::visit(FunctionDefinition *node) {}
+    void PopEDGenerator::visit(PopulationParameter *node) {}
+    void PopEDGenerator::visit(IndividualParameter *node) {}
+    void PopEDGenerator::visit(RandomVariable *node) {}
+    void PopEDGenerator::visit(Covariate *node) {}
+    void PopEDGenerator::visit(IndependentVariable *node) {}
+    void PopEDGenerator::visit(Variable *node) {}
+    void PopEDGenerator::visit(DerivativeVariable *node) {}
+    void PopEDGenerator::visit(ObservationModel *node) {}
+    void PopEDGenerator::visit(Distribution *node) {}
+    void PopEDGenerator::visit(ColumnMapping *node) {}
+
+    void PopEDGenerator::visit(ExternalFile *node) {}
+    void PopEDGenerator::visit(DataColumn *node) {}
+    void PopEDGenerator::visit(Dataset *node) {}
+
+    void PopEDGenerator::visit(ExternalDataset *node) {}
+
+    void PopEDGenerator::visit(Interventions *node) {}
+    void PopEDGenerator::visit(Administration *node) {}
+    void PopEDGenerator::visit(IndividualAdministration *node) {}
+
+    void PopEDGenerator::visit(Observations *node) {}
+    void PopEDGenerator::visit(Observation *node) {}
+    void PopEDGenerator::visit(IndividualObservations *node) {}
+    void PopEDGenerator::visit(ObservationCombination *node) {}
+
+    void PopEDGenerator::visit(Arms *node) {}
+    void PopEDGenerator::visit(Arm *node) {}
+    void PopEDGenerator::visit(InterventionSequence *node) {}
+    void PopEDGenerator::visit(ObservationSequence *node) {}
+    void PopEDGenerator::visit(OccasionSequence *node) {}
+
+    void PopEDGenerator::visit(DesignSpaces *node) {}
+    void PopEDGenerator::visit(DesignSpace *node) {}
 }

@@ -45,7 +45,7 @@ namespace PharmML
     }
 
     Model::Model(const char *filename) {
-        this->context = new PharmMLContext(filename);
+        this->context = new PharmMLContext(filename, this);
         this->parse(this->context->getRoot());
     }
 

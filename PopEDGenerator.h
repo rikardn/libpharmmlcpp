@@ -25,6 +25,7 @@
 #include "Variable.h"
 #include "RAstGenerator.h"
 #include "RPharmMLGenerator.h"
+#include "PharmMLVisitor.h"
 
 namespace PharmML
 {
@@ -42,6 +43,41 @@ namespace PharmML
         public:
             std::string getValue();
             std::string genParameterModelFunc();
+            virtual void visit(FunctionDefinition *node);
+            virtual void visit(PopulationParameter *node);
+            virtual void visit(IndividualParameter *node);
+            virtual void visit(RandomVariable *node);
+            virtual void visit(Covariate *node);
+            virtual void visit(IndependentVariable *node);
+            virtual void visit(Variable *node);
+            virtual void visit(DerivativeVariable *node);
+            virtual void visit(ObservationModel *node);
+            virtual void visit(Distribution *node);
+            virtual void visit(ColumnMapping *node);
+            
+            virtual void visit(ExternalFile *node);
+            virtual void visit(DataColumn *node);
+            virtual void visit(Dataset *node);
+            
+            virtual void visit(ExternalDataset *node);
+            
+            virtual void visit(Interventions *node);
+            virtual void visit(Administration *node);
+            virtual void visit(IndividualAdministration *node);
+            
+            virtual void visit(Observations *node);
+            virtual void visit(Observation *node);
+            virtual void visit(IndividualObservations *node);
+            virtual void visit(ObservationCombination *node);
+            
+            virtual void visit(Arms *node);
+            virtual void visit(Arm *node);
+            virtual void visit(InterventionSequence *node);
+            virtual void visit(ObservationSequence *node);
+            virtual void visit(OccasionSequence *node);
+            
+            virtual void visit(DesignSpaces *node);
+            virtual void visit(DesignSpace *node);
     };
 }
 

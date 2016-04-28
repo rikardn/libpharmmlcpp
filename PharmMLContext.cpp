@@ -15,13 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-#include <iostream>
-#include "xml.h"
 #include "PharmMLContext.h"
+#include "Model.h"
 
 namespace PharmML
 {
@@ -40,13 +35,14 @@ namespace PharmML
         return version;
     }
 
-    PharmMLContext::PharmMLContext(const char *filename) {
+    PharmMLContext::PharmMLContext(const char *filename, Model *model) {
+        this->model = model;
         xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
         this->doc = xmlReadFile(filename, NULL, 0);
         if (!this->doc) {
             throw std::runtime_error("File " + std::string(filename) + " not found");
         }
-        this->validateDocument();
+        //this->validateDocument();
         this->xpath_context = xmlXPathNewContext(this->doc);
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());

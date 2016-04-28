@@ -18,7 +18,10 @@
 #ifndef PHARMML_MODEL_H_
 #define PHARMML_MODEL_H_
 
+#ifndef PHARMML_PHARMMLCONTEXT_H_
 #include "PharmMLContext.h"
+#endif
+
 #include "IndependentVariable.h"
 #include "FunctionDefinition.h"
 #include "ModelDefinition.h"

@@ -2,6 +2,7 @@
 *.swp
 main
 main.exe
+pharmml2poped
 libpharmmlc.a
 test/test
 

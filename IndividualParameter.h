@@ -22,10 +22,11 @@
 #include "xml.h"
 #include "AstNode.h"
 #include "PharmMLVisitor.h"
+#include "PharmMLSection.h"
 
 namespace PharmML
 {
-    class IndividualParameter
+    class IndividualParameter : public PharmMLSection
     {
         PharmMLContext *context;
         std::string symbId;

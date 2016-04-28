@@ -24,14 +24,16 @@
 #include <libxml/valid.h>
 #include <libxml/xmlschemas.h>
 #include <libxml/catalog.h>
-
+#include <libxml/xpath.h>
 #include "xml.h"
 #include "AstNodeFactory.h"
 
 namespace PharmML
 {
+    class Model;
     class PharmMLContext
     {
+        Model *model;
         xmlDoc *doc;
         xmlXPathContext *xpath_context;
 
@@ -46,7 +48,7 @@ namespace PharmML
         xml::Node getSingleElement(xml::Node, const char *xpath);
         std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
-        PharmMLContext(const char *filename);
+        PharmMLContext(const char *filename, Model *model);
         ~PharmMLContext();
         void write(const char *filename); 
     };

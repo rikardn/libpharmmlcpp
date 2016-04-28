@@ -55,18 +55,40 @@ namespace PharmML
         return this->value;
     }
 
+    // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level
+    std::string PopEDGenerator::generateModel(Model *model) {
+        this->model = model;
+
+        std::string s;
+        s += this->genParameterModelFunc();
+        s += "\n\n" + this->genStructuralModelFunc();
+        return s;
+    }
+
     std::string PopEDGenerator::genParameterModelFunc() {
-        std::string s = "function(x,a,bpop,b,bocc) {\n";
+        std::string s = "sfg <- function(x, a, bpop, b, bocc) {\n";
         std::vector<std::string> list;
-        /*for (parameter :) {
-          list.push_back(
-          }
-          return(s + "}");*/
+        for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
+            parameter->accept(this);
+            list.push_back(this->getValue());
+        }
+        s += this->formatVector(list, "    parameters=c", "", 1);
+        return(s + "\n    return(parameters)\n}");
+    }
+
+    std::string PopEDGenerator::genStructuralModelFunc() {
+        std::string s = "ff <- function(model_switch, xt, parameters, poped.db) {\n";
+
+        return s + "}";
     }
 
     void PopEDGenerator::visit(FunctionDefinition *node) {}
     void PopEDGenerator::visit(PopulationParameter *node) {}
-    void PopEDGenerator::visit(IndividualParameter *node) {}
+    void PopEDGenerator::visit(IndividualParameter *node) {
+        std::string result = node->getSymbId() + "=bpop[" + std::to_string(this->parameter_count) + "]";
+        this->parameter_count++;
+        this->setValue(result);
+    }
     void PopEDGenerator::visit(RandomVariable *node) {}
     void PopEDGenerator::visit(Covariate *node) {}
     void PopEDGenerator::visit(IndependentVariable *node) {}

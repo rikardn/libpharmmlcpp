@@ -26,6 +26,7 @@
 #include "RAstGenerator.h"
 #include "RPharmMLGenerator.h"
 #include "PharmMLVisitor.h"
+#include "Model.h"
 
 namespace PharmML
 {
@@ -34,15 +35,19 @@ namespace PharmML
         private:
             RAstGenerator ast_gen;
             RPharmMLGenerator r_gen;
+            Model *model;
             std::string value;
             void setValue(std::string str);
             // Helper function to reduce redundant code
             std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
             std::string accept(AstNode *);
+            int parameter_count = 1;
+            std::string genParameterModelFunc();
+            std::string genStructuralModelFunc();
 
         public:
             std::string getValue();
-            std::string genParameterModelFunc();
+            std::string generateModel(Model *model);
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);

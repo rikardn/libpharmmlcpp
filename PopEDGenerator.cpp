@@ -79,9 +79,11 @@ namespace PharmML
     
     std::string PopEDGenerator::genODEFunc() {
         Consolidator::Indenter ind;
+        // Function header
         ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
         ind.addRowIndent("with(as.list(c(State, Pars)), {");
-
+        
+        // Derivative definitions
         std::vector<std::string> name_list;
         std::vector<std::string> symbols = this->r_gen.derivatives.getSymbols();
         std::vector<std::string> assigns = this->r_gen.derivatives.getAssigns();
@@ -89,9 +91,10 @@ namespace PharmML
             ind.addRow("d" + symbols[i] + " <- " + assigns[i]);
             name_list.push_back("d" + symbols[i]);
         }
-        ind.addRowOutdent("})");
-
+        
+        // Return list
         ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
+        ind.addRowOutdent("})");
         ind.addRowOutdent("}");
 
         return ind.createString(); 
@@ -103,16 +106,43 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
         
-        // Generate ff function
         Consolidator::Indenter ind;
+        
+        // Function header
         ind.addRowIndent("ff <- function(model_switch, xt, parameters, poped.db) {");
         ind.addRowIndent("with(as.list(parameters), {");
+        
+        // Init values
+        ind.addRow("d_ini <- " + this->r_gen.derivatives.genInitVector());
+        
+        // Dose times
+        ind.addRow("times_xt <- drop(xt)");
+        // TODO: Consolidate dosing times (from TrialDesign) and use actual information (not a sequence!)
+        ind.addRow("dose_times = seq(from=0,to=max(times_xt),by=TAU)");
+        
+        // Event data
+        // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
+        ind.addRowIndent("eventdat <- data.frame(var = c('A1'),");
+        ind.addRow("time = dose_times,");
+        ind.addRow("value = c(DOSE), method = c('add'))");
+        ind.closeIndent();
+        
+        // ODE call
+        ind.addRow("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+        
+        // Y definition
+        // TODO: Get structural part (only?) of observation model and resolv derivative symbol references to this form
+        ind.addRow("y = out[, 'A2']/(V/Favail)");
+        ind.addRow("y=y[match(times_xt,out[,'time'])]");
+        ind.addRow("y=cbind(y)");
+        
+        // Return list
         ind.addBlock(this->r_gen.variables.genStatements());
-        ind.addRowOutdent("})");
         ind.addRow("return(list(y=y,poped.db=poped.db))");
+        ind.addRowOutdent("})");
         ind.addRowOutdent("}");
 
-        // Generate ODE function
+        // Generate separate ODE function
         ind.addBlock(this->genODEFunc());
 
         return ind.createString();

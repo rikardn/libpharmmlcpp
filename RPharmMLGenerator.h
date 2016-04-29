@@ -71,6 +71,7 @@ namespace Consolidator
             void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
             std::vector<std::string> getSymbols();
             std::vector<std::string> getAssigns();
+            std::string genInitVector();
     };
     
     class Variables

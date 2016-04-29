@@ -102,6 +102,16 @@ namespace Consolidator
         return this->x;
     }
     
+    std::string Derivatives::genInitVector() {
+        std::vector<std::string> pairs;
+        for (int i = 0; i < this->y.size(); i++) {
+            std::string pair = this->y[i] + "=" + this->y0[i];
+            pairs.push_back(pair);
+        }
+        // TODO: Figure out place for helpers
+        return PharmML::RPharmMLGenerator::formatVector(pairs, "c", "");
+    }
+    
     // Variables consolidator (visits to Variable builds)
     void Variables::addVariable(std::string symbol, std::string assign) {
         this->symbols.push_back(symbol);

@@ -17,17 +17,28 @@
 
 #include "RPharmMLGenerator.h"
 
-namespace PharmML
+/* Experiment in separating the PharmML side (visits) from classes consolidating
+ * the code into information needed (possibly cross-class) for each single-unit
+ * output. Preferably, this Consolidator should be relatively agnostic of different
+ * R code generators and maybe of abstract type higher up (in the future) for completely
+ * different code generators altogether (say MDL).*/
+namespace Consolidator
 {
+    /* Indented code generator helper class
+     * Not really suitable here, but better than earlier PharmML association.
+     * Should likely live alongside formatVector in some third place of such
+     * completely general and agnostic classes. */
     std::string Indenter::getIndentation() {
         return std::string(this->indentationLevel * 4, ' ');
     }
 
     void Indenter::addRow(std::string str) {
+        // Add a single row (at current indentation level)
         this->rows.push_back(this->getIndentation() + str);
     }
     
     void Indenter::addBlock(std::string str) {
+        // Split multi-line string into rows and then add them
         std::stringstream ss(str);
         std::string row;
         std::vector<std::string> rows;
@@ -40,17 +51,20 @@ namespace PharmML
     }
     
     void Indenter::addBlock(std::vector<std::string> strs) {
+        // Add each row
         for (std::string row : strs) {
-            this->rows.push_back(this->getIndentation() + row);
+            this->addRow(row);
         }
     }
 
     void Indenter::addRowIndent(std::string str) {
+        // Add row and THEN increase indent
         this->addRow(str);
         this->openIndent();
     }
 
     void Indenter::addRowOutdent(std::string str) {
+        // Decrease indent and THEN add row
         this->closeIndent();
         this->addRow(str);
     }
@@ -64,13 +78,15 @@ namespace PharmML
     }
 
     std::string Indenter::createString() {
+        // Create a single multi-line string from all rows
         std::string result;
         for (std::string s : this->rows) {
             result += s + "\n";
         }
         return result;
     }
-
+    
+    // Derivatives consolidator (visits to DerivativeVariable builds)
     void Derivatives::addDerivative(std::string y, std::string x, std::string y0, std::string x0) {
         this->y.push_back(y);
         this->x.push_back(x);
@@ -86,12 +102,14 @@ namespace PharmML
         return this->x;
     }
     
+    // Variables consolidator (visits to Variable builds)
     void Variables::addVariable(std::string symbol, std::string assign) {
         this->symbols.push_back(symbol);
         this->assigns.push_back(assign);
     }
     
     std::string Variables::genStatements() {
+        // Generate standard R assigns of all symbols and expressions
         Indenter ind;
 
         for (int i = 0; i < symbols.size(); i++) {
@@ -100,7 +118,10 @@ namespace PharmML
 
         return ind.createString(); 
     }
+}
 
+namespace PharmML
+{
     // private
     void RPharmMLGenerator::setValue(std::string str) {
         this->value = str;

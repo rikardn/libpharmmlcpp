@@ -39,7 +39,7 @@
 #include "DesignSpaces.h"
 #include "RAstGenerator.h"
 
-namespace PharmML
+namespace Consolidator
 {
     class Indenter
     {
@@ -83,7 +83,10 @@ namespace PharmML
             void addVariable(std::string symbol, std::string assign);
             std::string genStatements();
     };
+}
 
+namespace PharmML
+{
     class RPharmMLGenerator : public PharmMLVisitor
     {
         private:
@@ -94,8 +97,8 @@ namespace PharmML
             std::string accept(AstNode *);
 
         public:
-            Derivatives derivatives;
-            Variables variables;
+            Consolidator::Derivatives derivatives;
+            Consolidator::Variables variables;
 
             std::string getValue();
             static std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);

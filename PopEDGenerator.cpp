@@ -78,7 +78,7 @@ namespace PharmML
     }
     
     std::string PopEDGenerator::genODEFunc() {
-        Indenter ind;
+        Consolidator::Indenter ind;
         ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
         ind.addRowIndent("with(as.list(c(State, Pars)), {");
 
@@ -104,7 +104,7 @@ namespace PharmML
         }
         
         // Generate ff function
-        Indenter ind;
+        Consolidator::Indenter ind;
         ind.addRowIndent("ff <- function(model_switch, xt, parameters, poped.db) {");
         ind.addRowIndent("with(as.list(parameters), {");
         ind.addBlock(this->r_gen.variables.genStatements());

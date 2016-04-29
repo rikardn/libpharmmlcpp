@@ -77,6 +77,21 @@ namespace PharmML
 
         return ind.createString(); 
     }
+    
+    void Variables::addStatement(std::string symbol, std::string assign) {
+        this->symbols.push_back(symbol);
+        this->assigns.push_back(assign);
+    }
+    
+    std::string Variables::genStatements() {
+        Indenter ind;
+
+        for (int i = 0; i < symbols.size(); i++) {
+            ind.addRow(this->symbols[i] + " <- " + this->assigns[i]);
+        }
+
+        return ind.createString(); 
+    }
 
     // private
     void RPharmMLGenerator::setValue(std::string str) {
@@ -191,6 +206,7 @@ namespace PharmML
         std::string init_val = "x0=" + this->accept(node->getInitialValue());
         std::string init_t = "t0=" + this->accept(node->getInitialTime());
         this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");*/
+        setValue(""); // FIXME: Just. Fix. It.
     }
 
     void RPharmMLGenerator::visit(ObservationModel *node) {

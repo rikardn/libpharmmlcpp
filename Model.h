@@ -37,10 +37,10 @@ namespace PharmML
         std::vector<PharmML::FunctionDefinition *> FunctionDefinitions; 
         PharmML::ModelDefinition *ModelDefinition;
         PharmML::TrialDesign *TrialDesign;
-
+        
         private:
         void parse(xml::Node node);
-
+        
         public:
         Model(const char *filename);
         ~Model();

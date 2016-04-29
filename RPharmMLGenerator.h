@@ -68,6 +68,17 @@ namespace PharmML
             void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
             std::string genODEFunc();
     };
+    
+    class Variables
+    {
+        private:
+            std::vector<std::string> symbols;
+            std::vector<std::string> assigns;
+
+        public:
+            void addStatement(std::string symbol, std::string assign);
+            std::string genStatements();
+    };
 
     class RPharmMLGenerator : public PharmMLVisitor
     {

@@ -39,7 +39,9 @@
 #include "DesignSpaces.h"
 #include "RAstGenerator.h"
 
-namespace Consolidator
+#include "RPharmMLConsolidator.h"
+
+namespace Text
 {
     class Indenter
     {
@@ -59,32 +61,8 @@ namespace Consolidator
             std::string createString();
     };
 
-    class Derivatives
-    {
-        private:
-            std::vector<std::string> x0;
-            std::vector<std::string> y0;
-            std::vector<std::string> y;
-            std::vector<std::string> x;
-
-        public:
-            void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
-            std::vector<std::string> getSymbols();
-            std::vector<std::string> getAssigns();
-            std::string genInitVector();
-    };
-    
-    class Variables
-    {
-        private:
-            std::vector<std::string> symbols;
-            std::vector<std::string> assigns;
-
-        public:
-            void addVariable(std::string symbol, std::string assign);
-            std::string genStatements();
-    };
-}
+    std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
+};
 
 namespace PharmML
 {
@@ -94,15 +72,12 @@ namespace PharmML
             RAstGenerator ast_gen;
             std::string value;
             void setValue(std::string str);
-            // Helper function to reduce redundant code
             std::string accept(AstNode *);
 
         public:
-            Consolidator::Derivatives derivatives;
-            Consolidator::Variables variables;
+            Consolidator consol;
 
             std::string getValue();
-            static std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
 
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);

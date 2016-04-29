@@ -78,22 +78,22 @@ namespace PharmML
     }
     
     std::string PopEDGenerator::genODEFunc() {
-        Consolidator::Indenter ind;
+        Text::Indenter ind;
         // Function header
         ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
         ind.addRowIndent("with(as.list(c(State, Pars)), {");
         
         // Derivative definitions
         std::vector<std::string> name_list;
-        std::vector<std::string> symbols = this->r_gen.derivatives.getSymbols();
-        std::vector<std::string> assigns = this->r_gen.derivatives.getAssigns();
+        std::vector<std::string> symbols = this->r_gen.consol.derivs.getSymbols();
+        std::vector<std::string> assigns = this->r_gen.consol.derivs.getAssigns();
         for (int i = 0; i < symbols.size(); i++) {
             ind.addRow("d" + symbols[i] + " <- " + assigns[i]);
             name_list.push_back("d" + symbols[i]);
         }
         
         // Return list
-        ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
+        ind.addRow("return(list(" + Text::formatVector(name_list, "c", "") + "))");
         ind.addRowOutdent("})");
         ind.addRowOutdent("}");
 
@@ -101,19 +101,19 @@ namespace PharmML
     }
 
     std::string PopEDGenerator::genStructuralModel() {
-        // Visit all CommonVariable's to build consolidating classes
+        // Visit all CommonVariable's to build consolidating objects
         for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {
             var->accept(&this->r_gen);
         }
         
-        Consolidator::Indenter ind;
+        Text::Indenter ind;
         
         // Function header
         ind.addRowIndent("ff <- function(model_switch, xt, parameters, poped.db) {");
         ind.addRowIndent("with(as.list(parameters), {");
         
         // Init values
-        ind.addRow("d_ini <- " + this->r_gen.derivatives.genInitVector());
+        ind.addRow("d_ini <- " + this->r_gen.consol.derivs.genInitVector());
         
         // Dose times
         ind.addRow("times_xt <- drop(xt)");
@@ -137,7 +137,7 @@ namespace PharmML
         ind.addRow("y=cbind(y)");
         
         // Return list
-        ind.addBlock(this->r_gen.variables.genStatements());
+        ind.addBlock(this->r_gen.consol.vars.genStatements());
         ind.addRow("return(list(y=y,poped.db=poped.db))");
         ind.addRowOutdent("})");
         ind.addRowOutdent("}");

@@ -26,6 +26,24 @@ namespace PharmML
     void Indenter::addRow(std::string str) {
         this->rows.push_back(this->getIndentation() + str);
     }
+    
+    void Indenter::addBlock(std::string str) {
+        std::stringstream ss(str);
+        std::string row;
+        std::vector<std::string> rows;
+        
+        while(std::getline(ss,row,'\n')){
+            rows.push_back(row);
+        }
+
+        this->addBlock(rows);
+    }
+    
+    void Indenter::addBlock(std::vector<std::string> strs) {
+        for (std::string row : strs) {
+            this->rows.push_back(this->getIndentation() + row);
+        }
+    }
 
     void Indenter::addRowIndent(std::string str) {
         this->addRow(str);
@@ -70,7 +88,7 @@ namespace PharmML
             ind.addRow("d" + this->y[i] + " <- " + this->x[i]);
             name_list.push_back("d" + this->y[i]);
         }
-        ind.addRowOutdent("}");
+        ind.addRowOutdent("})");
 
         ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
         ind.addRowOutdent("}");
@@ -78,7 +96,7 @@ namespace PharmML
         return ind.createString(); 
     }
     
-    void Variables::addStatement(std::string symbol, std::string assign) {
+    void Variables::addVariable(std::string symbol, std::string assign) {
         this->symbols.push_back(symbol);
         this->assigns.push_back(assign);
     }
@@ -184,11 +202,13 @@ namespace PharmML
     }
 
     void RPharmMLGenerator::visit(Variable *node) {
-        if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
-        } else {
-            this->setValue(std::string());
-        }
+        this->variables.addVariable(node->getSymbId(), this->accept(node->getAssignment())); 
+        //~ if (node->getAssignment()) {
+            //~ this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
+        //~ } else {
+            //~ this->setValue(std::string());
+        //~ }
+        setValue(""); // FIXME: Just. Fix. It.
     }
     
     void RPharmMLGenerator::visit(DerivativeVariable *node) {

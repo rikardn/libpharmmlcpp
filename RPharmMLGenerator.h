@@ -19,6 +19,7 @@
 #define PHARMML_RPHARMMLGENERATOR_H_
 
 #include <string>
+#include <sstream>
 #include "AstNodeVisitor.h"
 #include "FunctionDefinition.h"
 #include "PopulationParameter.h"
@@ -49,6 +50,8 @@ namespace PharmML
 
         public:
             void addRow(std::string str);
+            void addBlock(std::string str);
+            void addBlock(std::vector<std::string> strs);
             void addRowIndent(std::string str);
             void addRowOutdent(std::string str);
             void openIndent();
@@ -76,7 +79,7 @@ namespace PharmML
             std::vector<std::string> assigns;
 
         public:
-            void addStatement(std::string symbol, std::string assign);
+            void addVariable(std::string symbol, std::string assign);
             std::string genStatements();
     };
 
@@ -91,6 +94,7 @@ namespace PharmML
 
         public:
             Derivatives derivatives;
+            Variables variables;
 
             std::string getValue();
             static std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);

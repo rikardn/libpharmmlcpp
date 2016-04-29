@@ -42,8 +42,8 @@ namespace PharmML
             std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
             std::string accept(AstNode *);
             int parameter_count = 1;
-            std::string genParameterModelFunc();
-            std::string genStructuralModelFunc();
+            std::string genParameterModel();
+            std::string genStructuralModel();
 
         public:
             std::string getValue();

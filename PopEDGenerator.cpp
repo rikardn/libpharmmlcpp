@@ -60,12 +60,12 @@ namespace PharmML
         this->model = model;
 
         std::string s;
-        s += this->genParameterModelFunc();
-        s += "\n\n" + this->genStructuralModelFunc();
+        s += this->genParameterModel();
+        s += "\n\n" + this->genStructuralModel();
         return s;
     }
 
-    std::string PopEDGenerator::genParameterModelFunc() {
+    std::string PopEDGenerator::genParameterModel() {
         std::string s = "sfg <- function(x, a, bpop, b, bocc) {\n";
         std::vector<std::string> list;
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
@@ -77,20 +77,25 @@ namespace PharmML
         return(s + "\n    return(parameters)\n}");
     }
 
-    std::string PopEDGenerator::genStructuralModelFunc() {
-        std::string s = "ff <- function(model_switch, xt, parameters, poped.db) {\n";
-
-        std::vector<std::string> list;
+    std::string PopEDGenerator::genStructuralModel() {
+        // Visit all CommonVariable's to build consolidating classes
         for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {
             var->accept(&this->r_gen);
-            list.push_back(this->r_gen.getValue());
         }
-        s += this->formatVector(list, "Q", "Y", 1);
-        s += "\n}\n\n";
+        
+        // Generate ff function
+        Indenter ind;
+        ind.addRowIndent("ff <- function(model_switch, xt, parameters, poped.db) {");
+        ind.addRowIndent("with(as.list(parameters), {");
+        ind.addBlock(this->r_gen.variables.genStatements());
+        ind.addRowOutdent("})");
+        ind.addRow("return(list(y=y,poped.db=poped.db))");
+        ind.addRowOutdent("}");
 
-        s += this->r_gen.derivatives.genODEFunc();
+        // Generate ODE function
+        ind.addBlock(this->r_gen.derivatives.genODEFunc());
 
-        return s;
+        return ind.createString();
     }
 
     void PopEDGenerator::visit(FunctionDefinition *node) {}

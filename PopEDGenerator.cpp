@@ -76,6 +76,26 @@ namespace PharmML
         s += this->formatVector(list, "    parameters=c", "", 1);
         return(s + "\n    return(parameters)\n}");
     }
+    
+    std::string PopEDGenerator::genODEFunc() {
+        Indenter ind;
+        ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
+        ind.addRowIndent("with(as.list(c(State, Pars)), {");
+
+        std::vector<std::string> name_list;
+        std::vector<std::string> symbols = this->r_gen.derivatives.getSymbols();
+        std::vector<std::string> assigns = this->r_gen.derivatives.getAssigns();
+        for (int i = 0; i < symbols.size(); i++) {
+            ind.addRow("d" + symbols[i] + " <- " + assigns[i]);
+            name_list.push_back("d" + symbols[i]);
+        }
+        ind.addRowOutdent("})");
+
+        ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
+        ind.addRowOutdent("}");
+
+        return ind.createString(); 
+    }
 
     std::string PopEDGenerator::genStructuralModel() {
         // Visit all CommonVariable's to build consolidating classes
@@ -93,7 +113,7 @@ namespace PharmML
         ind.addRowOutdent("}");
 
         // Generate ODE function
-        ind.addBlock(this->r_gen.derivatives.genODEFunc());
+        ind.addBlock(this->genODEFunc());
 
         return ind.createString();
     }

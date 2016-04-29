@@ -77,23 +77,13 @@ namespace PharmML
         this->y0.push_back(y0);
         this->x0.push_back(x0);
     }
-
-    std::string Derivatives::genODEFunc() {
-        Indenter ind;
-        ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
-        ind.addRowIndent("with(as.list(c(State, Pars)), {");
-
-        std::vector<std::string> name_list;
-        for (int i = 0; i < this->y.size(); i++) {
-            ind.addRow("d" + this->y[i] + " <- " + this->x[i]);
-            name_list.push_back("d" + this->y[i]);
-        }
-        ind.addRowOutdent("})");
-
-        ind.addRow("return(list(" + RPharmMLGenerator::formatVector(name_list, "c", "") + "))");
-        ind.addRowOutdent("}");
-
-        return ind.createString(); 
+    
+    std::vector<std::string> Derivatives::getSymbols() {
+        return this->y;
+    }
+    
+    std::vector<std::string> Derivatives::getAssigns() {
+        return this->x;
     }
     
     void Variables::addVariable(std::string symbol, std::string assign) {

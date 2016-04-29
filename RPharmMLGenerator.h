@@ -69,7 +69,8 @@ namespace PharmML
 
         public:
             void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
-            std::string genODEFunc();
+            std::vector<std::string> getSymbols();
+            std::vector<std::string> getAssigns();
     };
     
     class Variables

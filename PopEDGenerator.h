@@ -43,6 +43,7 @@ namespace PharmML
             std::string accept(AstNode *);
             int parameter_count = 1;
             std::string genParameterModel();
+            std::string genODEFunc();
             std::string genStructuralModel();
 
         public:

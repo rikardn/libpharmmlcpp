@@ -213,22 +213,26 @@ namespace PharmML
     }
 
     void RPharmMLGenerator::visit(Variable *node) {
+        // Consolidato for more powerful output
         this->variables.addVariable(node->getSymbId(), this->accept(node->getAssignment())); 
-        //~ if (node->getAssignment()) {
-            //~ this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
-        //~ } else {
-            //~ this->setValue(std::string());
-        //~ }
-        setValue(""); // FIXME: Just. Fix. It.
+        
+        // General (non-mandatory) output
+        if (node->getAssignment()) {
+            this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
+        } else {
+            this->setValue(std::string());
+        }
     }
     
     void RPharmMLGenerator::visit(DerivativeVariable *node) {
+        // Consolidate for more powerful output
         this->derivatives.addDerivative(node->getSymbId(),
                 this->accept(node->getAssignment()),
                 this->accept(node->getInitialTime()),
                 this->accept(node->getInitialValue())); 
         
-        /*        std::string expr;
+        // General (non-mandatory) output
+        std::string expr;
         if (node->getAssignment()) {
             expr = node->getSymbId() + " <- " + this->accept(node->getAssignment());
         } else {
@@ -236,8 +240,7 @@ namespace PharmML
         }
         std::string init_val = "x0=" + this->accept(node->getInitialValue());
         std::string init_t = "t0=" + this->accept(node->getInitialTime());
-        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");*/
-        setValue(""); // FIXME: Just. Fix. It.
+        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");
     }
 
     void RPharmMLGenerator::visit(ObservationModel *node) {

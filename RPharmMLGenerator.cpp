@@ -48,17 +48,18 @@ namespace Text
     // Methods to add units (csv, rows, appends, blocks)
     void Indenter::addCSV(std::string str) {
         str = str + ",";
-        if (multilineCSV) {
+        if (this->multilineCSV) {
             // Multiple lines; add row (with indent)
             this->addRow(str);
         } else {
             // Single line; push back on last row (without indent)
-            if (firstCSV) {
-                this->firstCSV = false;
-            } else {
+            if (this->firstCSV == false) {
                 str = " " + str;
             }
             this->appendRow(str);
+        }
+        if (this->firstCSV) {
+            this->firstCSV = false;
         }
     }
 
@@ -116,7 +117,7 @@ namespace Text
     
     void Indenter::closeCSVlist() {
         // Pop last applied separator and reset flag to close the list
-        if (firstCSV != true) {
+        if (this->firstCSV == false) {
             std::string &last_row = this->rows.back();
             last_row.pop_back();
             this->firstCSV = true;

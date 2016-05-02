@@ -38,6 +38,7 @@
 #include "Arms.h"
 #include "DesignSpaces.h"
 #include "RAstGenerator.h"
+#include "Model.h"
 
 #include "RPharmMLConsolidator.h"
 
@@ -78,7 +79,9 @@ namespace PharmML
             Consolidator consol;
 
             std::string getValue();
-
+            
+            std::vector<std::string> genFunctionDefinitions(Model *model);
+            
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);

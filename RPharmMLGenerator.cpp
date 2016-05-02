@@ -117,18 +117,29 @@ namespace PharmML
         return this->value;
     }
     
-    void RPharmMLGenerator::visit(FunctionDefinition *node) {
-        std::string head = node->getSymbId() + " <- function(";
-        std::vector<std::string> args = node->getArguments();
-        for (int i = 0; i < args.size(); i++) {
-            head += args[i];
-            if (i != args.size() - 1) {
-                head += ", ";
-            }
+    // General generators
+    std::vector<std::string> RPharmMLGenerator::genFunctionDefinitions(Model *model) {
+        // Generate R code for each function definition in model
+        std::vector<std::string> result;
+        for (FunctionDefinition *f : model->getFunctionDefinitions()) {
+            f->accept(this);
+            result.push_back(this->getValue());
         }
-        head += ") {\n";
-        std::string code = "  " + this->accept(node->getAssignment()) + "\n}";
-        this->setValue(head + code);
+        return result;
+    }
+    
+    // Visitors
+    void RPharmMLGenerator::visit(FunctionDefinition *node) {
+        Text::Indenter ind;
+        
+        std::string head = node->getSymbId() + " <- ";
+        std::vector<std::string> args = node->getArguments();
+        ind.addRowIndent(head + Text::formatVector(args, "function", "") + " {");
+        
+        ind.addRow("return " + this->accept(node->getAssignment()));
+        ind.addRowOutdent("}");
+        
+        this->setValue(ind.createString());
     }
 
     void RPharmMLGenerator::visit(Covariate *node) {

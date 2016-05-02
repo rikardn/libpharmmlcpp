@@ -24,27 +24,6 @@ namespace PharmML
         this->value = str;
     }
 
-    // Helper function to reduce redundant code
-    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string PopEDGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
-        std::string s = prefix + "(";
-        std::string sep = ", ";
-        if (pre_indent > 0) {
-            sep = ",\n" + std::string(pre_indent + s.size(), ' ');
-        }
-
-        bool first = true;
-        for (std::string element : vector) {
-            if (first) {
-                first = false;
-            } else {
-                s += sep;
-            }
-            s += quote + element + quote;
-        }
-        return(s + ")");
-    }
-
     std::string PopEDGenerator::accept(AstNode *node) {
         node->accept(&this->ast_gen);
         return ast_gen.getValue();
@@ -73,7 +52,7 @@ namespace PharmML
             parameter->accept(this);
             list.push_back(this->getValue());
         }
-        s += this->formatVector(list, "    parameters=c", "", 1);
+        s += Text::formatVector(list, "    parameters=c", "", 1);
         return(s + "\n    return(parameters)\n}");
     }
     

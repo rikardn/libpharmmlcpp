@@ -24,6 +24,14 @@
 
 namespace PharmML
 {
+    class Symbol {
+        public:
+            std::string getSymbId();
+
+        protected:
+            std::string symbId;
+    };
+
     class SymbRef : public AstNode
     {
         std::string blkIdRef;

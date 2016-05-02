@@ -27,6 +27,8 @@
 #include <libxml/xpath.h>
 #include "xml.h"
 #include "AstNodeFactory.h"
+#include "symbols.h"
+#include <unordered_map>
 
 namespace PharmML
 {
@@ -41,6 +43,7 @@ namespace PharmML
         std::string getNamespaceVersion();
 
         public:
+        std::unordered_map<std::string, Symbol *> symbRefMap;
         AstNodeFactory factory;
         xmlDoc *getDocument();
         void validateDocument();

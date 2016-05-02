@@ -20,6 +20,11 @@
 
 namespace PharmML
 {
+
+    std::string Symbol::getSymbId() {
+        return this->symbId;
+    }
+
     SymbRef::SymbRef(std::string ref) {
         this->symbIdRef = ref;
     }

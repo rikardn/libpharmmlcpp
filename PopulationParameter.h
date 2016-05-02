@@ -18,21 +18,22 @@
 #ifndef PHARMML_POPULATIONPARAMETER_H_
 #define PHARMML_POPULATIONPARAMETER_H_
 
+#include "symbols.h"
 #include "PharmMLContext.h"
 #include "xml.h"
 #include "PharmMLVisitor.h"
 
 namespace PharmML
 {
-    class PopulationParameter
+    class PopulationParameter : public Symbol
     {
         PharmMLContext *context;
-        std::string symbId;
+        //std::string symbId;
 
         public:
         PopulationParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getSymbId();
+        //std::string getSymbId();
         void accept(PharmMLVisitor *visitor);
     };
 }

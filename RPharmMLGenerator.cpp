@@ -41,15 +41,50 @@ namespace Text
     }
     
     // Indented code generator helper class
-    std::string Indenter::getIndentation() {
-        return std::string(this->indentationLevel * 4, ' ');
+    std::string Indenter::genIndentation() {
+        return std::string(this->indentLevel * this->indentSize, this->indentSymbol);
+    }
+    
+    // Methods to add units (csv, rows, appends, blocks)
+    void Indenter::addCSV(std::string str) {
+        str = str + ",";
+        if (multilineCSV) {
+            // Multiple lines; add row (with indent)
+            this->addRow(str);
+        } else {
+            // Single line; push back on last row (without indent)
+            if (firstCSV) {
+                this->firstCSV = false;
+            } else {
+                str = " " + str;
+            }
+            this->appendRow(str);
+        }
     }
 
     void Indenter::addRow(std::string str) {
         // Add a single row (at current indentation level)
-        this->rows.push_back(this->getIndentation() + str);
+        this->rows.push_back(this->genIndentation() + str);
+    }
+    
+    void Indenter::appendRow(std::string str) {
+        // Append last row added
+        std::string &last_row = this->rows.back();
+        last_row.append(str);
     }
 
+    void Indenter::addRowIndent(std::string str) {
+        // Add row and THEN increase indent
+        this->addRow(str);
+        this->openIndent();
+    }
+
+    void Indenter::addRowOutdent(std::string str) {
+        // Decrease indent and THEN add row
+        this->closeIndent();
+        this->addRow(str);
+    }
+    
     void Indenter::addBlock(std::string str) {
         // Split multi-line string into rows and then add them
         std::stringstream ss(str);
@@ -69,27 +104,37 @@ namespace Text
             this->addRow(row);
         }
     }
-
-    void Indenter::addRowIndent(std::string str) {
-        // Add row and THEN increase indent
-        this->addRow(str);
-        this->openIndent();
-    }
-
-    void Indenter::addRowOutdent(std::string str) {
-        // Decrease indent and THEN add row
-        this->closeIndent();
-        this->addRow(str);
-    }
-
+    
+    // Methods to open and close (indent, csv)
     void Indenter::openIndent() {
-        this->indentationLevel++;
+        this->indentLevel++;
     }
 
     void Indenter::closeIndent() {
-        this->indentationLevel--;
+        this->indentLevel--;
     }
-
+    
+    void Indenter::closeCSVlist() {
+        // Pop last applied separator and reset flag to close the list
+        if (firstCSV != true) {
+            std::string &last_row = this->rows.back();
+            last_row.pop_back();
+            this->firstCSV = true;
+        }
+    }
+    
+    // Methods to setup indenter
+    void Indenter::setCSVformat(bool multiline, char separator) {
+        this->multilineCSV = multiline;
+        this->separator = separator;
+    }
+    
+    void Indenter::setIndent(int size, char symbol) {
+        this->indentSize = size;
+        this->indentSymbol = symbol;
+    }
+    
+    // Call to produce final multilined result
     std::string Indenter::createString() {
         // Create a single multi-line string from all rows
         std::string result;
@@ -117,7 +162,7 @@ namespace PharmML
         return this->value;
     }
     
-    // General generators
+    // General R generators
     std::vector<std::string> RPharmMLGenerator::genFunctionDefinitions(Model *model) {
         // Generate R code for each function definition in model
         std::vector<std::string> result;
@@ -128,7 +173,7 @@ namespace PharmML
         return result;
     }
     
-    // Visitors
+    // General R visitors
     void RPharmMLGenerator::visit(FunctionDefinition *node) {
         Text::Indenter ind;
         

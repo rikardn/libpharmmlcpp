@@ -45,10 +45,17 @@ namespace PharmML
         for (std::string function_def : this->r_gen.genFunctionDefinitions(model)) {
             ind.addBlock(function_def);
         }
+        ind.addRow("");
         
+        // Generate the three PopED functions
         ind.addBlock(this->genParameterModel());
         ind.addBlock(this->genStructuralModel());
         ind.addBlock(this->genErrorFunction());
+        ind.addRow("");
+        
+        // Generate PopED database call (initial design and space)
+        ind.addBlock(this->genDatabaseCall());
+        
         return ind.createString();
     }
 
@@ -157,6 +164,33 @@ namespace PharmML
         // Return list
         ind.addRow("return(list(y=y,poped.db=poped.db))");
         ind.addRowOutdent("}");
+        
+        return ind.createString();
+    }
+    
+    std::string PopEDGenerator::genDatabaseCall() {
+        Text::Indenter ind;
+        
+        ind.addRowIndent("poped.db <- create.poped.database(");
+        
+        ind.setCSVformat(true);
+        ind.addCSV("ff_file = 'ff'");
+        ind.addCSV("fg_file = 'sfg'");
+        ind.addCSV("fError_file_file = 'feps'");
+        ind.addCSV("bpop = NULL");
+        ind.addCSV("notfixed_bpop = NULL");
+        ind.addCSV("d = NULL");
+        ind.addCSV("sigma = NULL");
+        ind.addCSV("groupsize = NULL");
+        ind.addCSV("xt = NULL");
+        ind.addCSV("minxt = NULL");
+        ind.addCSV("maxxt = NULL");
+        ind.addCSV("a = NULL");
+        ind.addCSV("mina = NULL");
+        ind.addCSV("maxa = NULL");
+        ind.closeCSVlist();
+        
+        ind.addRowOutdent(")");
         
         return ind.createString();
     }

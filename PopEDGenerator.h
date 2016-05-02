@@ -47,6 +47,7 @@ namespace PharmML
             std::string genODEFunc();
             std::string genStructuralModel();
             std::string genErrorFunction();
+            std::string genDatabaseCall();
 
         public:
             std::string getValue();

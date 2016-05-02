@@ -47,18 +47,31 @@ namespace Text
     class Indenter
     {
         private:
-            int indentationLevel = 0;
+            int indentLevel = 0;
+            int indentSize = 4;
+            char indentSymbol = ' ';
+            bool multilineCSV = false;
+            bool firstCSV = true;
+            char separator = ',';
             std::vector<std::string> rows;
-            std::string getIndentation();
+            std::string genIndentation();
 
         public:
+            void addCSV(std::string str);
             void addRow(std::string str);
-            void addBlock(std::string str);
-            void addBlock(std::vector<std::string> strs);
+            void appendRow(std::string str);
             void addRowIndent(std::string str);
             void addRowOutdent(std::string str);
+            void addBlock(std::string str);
+            void addBlock(std::vector<std::string> strs);
+            
             void openIndent();
             void closeIndent();
+            void closeCSVlist();
+            
+            void setCSVformat(bool multiline, char separator = ',');
+            void setIndent(int size, char symbol = ' ');
+            
             std::string createString();
     };
 

@@ -23,6 +23,7 @@ namespace PharmML
     IndividualParameter::IndividualParameter(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->IndividualParameter::parse(node);
+        this->context->symbols[this->symbId] = this;
     }
 
     void IndividualParameter::parse(xml::Node node) {

@@ -37,6 +37,7 @@ namespace PharmML
     {
         std::string blkIdRef;
         std::string symbIdRef;
+        Symbol *symbol;
 
         public:
         SymbRef(std::string ref);
@@ -44,6 +45,8 @@ namespace PharmML
         virtual void accept(AstNodeVisitor *visitor);
         std::string toString();
         std::string getBlkId();
+        void setSymbol(Symbol *symbol);
+        Symbol *getSymbol();
     };
     
     class ColumnRef : public AstNode

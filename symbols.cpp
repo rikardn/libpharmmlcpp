@@ -49,6 +49,14 @@ namespace PharmML
         return this->blkIdRef;
     }
 
+    void SymbRef::setSymbol(Symbol *symbol) {
+        this->symbol = symbol;
+    }
+
+    Symbol *SymbRef::getSymbol() {
+        return this->symbol;
+    }
+
     ColumnRef::ColumnRef(std::string ref) {
         this->columnIdRef = ref;
     }

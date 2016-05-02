@@ -55,6 +55,7 @@ namespace PharmML
         PharmMLContext(const char *filename, Model *model);
         ~PharmMLContext();
         void write(const char *filename); 
+        void fillSymbRefs();
     };
 }
 

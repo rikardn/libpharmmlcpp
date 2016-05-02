@@ -129,6 +129,15 @@ leave:
         xmlSaveFormatFileEnc(filename, this->doc, "UTF-8", 1);
     }
 
+    void PharmMLContext::fillSymbRefs() {
+        for (SymbRef *symbref : this->symbRefs) {
+            std::string symbId = symbref->toString();
+            if (this->symbols.count(symbId) != 0) {
+                symbref->setSymbol(this->symbols[symbId]);
+            }
+        }
+    }
+
     PharmMLContext::~PharmMLContext() {
         if (this->xpath_context) {
             xmlXPathFreeContext(xpath_context);

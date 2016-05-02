@@ -24,17 +24,15 @@
 
 namespace PharmML
 {
-    class RandomVariable
+    class RandomVariable : public Symbol
     {
         PharmMLContext *context;
-        std::string symbId;
         AstNode *VariabilityReference;
         PharmML::Distribution *Distribution;
 
         public:
         RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getSymbId();
         AstNode *getVariabilityReference();
         PharmML::Distribution *getDistribution();
         void accept(PharmMLVisitor *visitor);

@@ -23,15 +23,13 @@
 
 namespace PharmML
 {
-    class IndependentVariable
+    class IndependentVariable : public Symbol
     {
         PharmMLContext *context;
-        std::string symbId;
         
         public:
         IndependentVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getSymbId();
         void accept(PharmMLVisitor *visitor);
     };
 }

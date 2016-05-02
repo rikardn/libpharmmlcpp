@@ -28,12 +28,10 @@ namespace PharmML
     class PopulationParameter : public Symbol
     {
         PharmMLContext *context;
-        //std::string symbId;
 
         public:
         PopulationParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        //std::string getSymbId();
         void accept(PharmMLVisitor *visitor);
     };
 }

@@ -21,11 +21,11 @@ namespace PharmML
 {
     RandomVariable::RandomVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->parse(node);
+        this->RandomVariable::parse(node);
     }
 
     void RandomVariable::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
+        this->Symbol::parse(node);
         xml::Node n = this->context->getSingleElement(node, ".//ct:VariabilityReference");
         if (n.exists()) {
             this->VariabilityReference = this->context->factory.create(n.getChild());
@@ -35,10 +35,6 @@ namespace PharmML
             this->Distribution = new PharmML::Distribution(context, dist_node.getChild());
         }
 
-    }
-
-    std::string RandomVariable::getSymbId() {
-        return this->symbId;
     }
 
     AstNode *RandomVariable::getVariabilityReference() {

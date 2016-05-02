@@ -21,16 +21,12 @@ namespace PharmML
 {
     IndependentVariable::IndependentVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->parse(node);
+        this->IndependentVariable::parse(node);
     }
 
     void IndependentVariable::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
+        this->Symbol::parse(node);
     } 
-
-    std::string IndependentVariable::getSymbId() {
-        return this->symbId;
-    }
 
     void IndependentVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);

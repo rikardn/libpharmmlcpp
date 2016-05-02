@@ -30,6 +30,7 @@ namespace PharmML
 
         protected:
             std::string symbId;
+            void parse(xml::Node node);
     };
 
     class SymbRef : public AstNode

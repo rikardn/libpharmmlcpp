@@ -22,11 +22,11 @@ namespace PharmML
 {
     IndividualParameter::IndividualParameter(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->parse(node);
+        this->IndividualParameter::parse(node);
     }
 
     void IndividualParameter::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
+        this->Symbol::parse(node);
 
         xml::Node structured_model = this->context->getSingleElement(node, ".//mdef:StructuredModel");
         if (structured_model.exists()) {
@@ -62,10 +62,6 @@ namespace PharmML
             this->assignment = this->context->factory.create(node.getChild().getChild());
             this->is_structured = false;
         }
-    }
-
-    std::string IndividualParameter::getSymbId() {
-        return this->symbId;
     }
 
     std::string IndividualParameter::getTransformation() {

@@ -26,10 +26,9 @@
 
 namespace PharmML
 {
-    class IndividualParameter : public PharmMLSection
+    class IndividualParameter : public PharmMLSection, public Symbol
     {
         PharmMLContext *context;
-        std::string symbId;
         std::string transformation;
         bool is_structured;
         AstNode *PopulationValue;
@@ -41,7 +40,6 @@ namespace PharmML
         public:
         IndividualParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getSymbId();
         std::string getTransformation();
         AstNode *getPopulationValue();
         AstNode *getRandomEffects();

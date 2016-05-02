@@ -21,17 +21,13 @@ namespace PharmML
 {
     PopulationParameter::PopulationParameter(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->parse(node);
+        this->PopulationParameter::parse(node);
         this->context->symbRefMap[this->symbId] = this;
     }
 
     void PopulationParameter::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
+        this->Symbol::parse(node);
     }
-
-    /*std::string PopulationParameter::getSymbId() {
-        return this->symbId;
-    }*/
 
     void PopulationParameter::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);

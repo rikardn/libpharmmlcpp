@@ -23,10 +23,9 @@
 
 namespace PharmML
 {
-    class CommonVariable
+    class CommonVariable : public Symbol
     {
         AstNode *assignment = nullptr;
-        std::string symbId;
 
         protected:
         PharmML::PharmMLContext *context;
@@ -37,7 +36,6 @@ namespace PharmML
         void parse(xml::Node node);
         AstNode *getAssignment();
         Dependencies& getDependencies();
-        std::string getSymbId();
         virtual void accept(PharmMLVisitor *visitor) = 0;
     };
 

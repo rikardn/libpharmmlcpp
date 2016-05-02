@@ -205,12 +205,13 @@ namespace PharmML
             }
             instance = constant;
         } else if (name == "SymbRef") {
-            instance = new SymbRef(node);
-            PharmML::AstNodeFactory::context->symbRefs.push_back(instance);
+            SymbRef *symbref = new SymbRef(node);
+            PharmML::AstNodeFactory::context->symbRefs.push_back(symbref);
             if (deps) {
                 std::string symbol = node.getAttribute("symbIdRef").getValue();
                 deps->addDependency(symbol);
             }
+            instance = symbref;
         } else if (name == "ColumnRef") { 
             std::string symbol = node.getAttribute("columnIdRef").getValue();
             instance = new ColumnRef(symbol);

@@ -24,27 +24,6 @@ namespace PharmML
         this->value = str;
     }
 
-    // Helper function to reduce redundant code
-    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string PopEDGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
-        std::string s = prefix + "(";
-        std::string sep = ", ";
-        if (pre_indent > 0) {
-            sep = ",\n" + std::string(pre_indent + s.size(), ' ');
-        }
-
-        bool first = true;
-        for (std::string element : vector) {
-            if (first) {
-                first = false;
-            } else {
-                s += sep;
-            }
-            s += quote + element + quote;
-        }
-        return(s + ")");
-    }
-
     std::string PopEDGenerator::accept(AstNode *node) {
         node->accept(&this->ast_gen);
         return ast_gen.getValue();
@@ -54,15 +33,23 @@ namespace PharmML
     std::string PopEDGenerator::getValue() {
         return this->value;
     }
-
-    // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level
+    
+    // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
+        // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
+        // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
-
-        std::string s;
-        s += this->genParameterModel();
-        s += "\n\n" + this->genStructuralModel();
-        return s;
+        Text::Indenter ind;
+        
+        // Output function definitions (e.g. MDL proportionalError function)
+        for (std::string function_def : this->r_gen.genFunctionDefinitions(model)) {
+            ind.addBlock(function_def);
+        }
+        
+        ind.addBlock(this->genParameterModel());
+        ind.addBlock(this->genStructuralModel());
+        ind.addBlock(this->genErrorFunction());
+        return ind.createString();
     }
 
     std::string PopEDGenerator::genParameterModel() {
@@ -73,7 +60,7 @@ namespace PharmML
             parameter->accept(this);
             list.push_back(this->getValue());
         }
-        s += this->formatVector(list, "    parameters=c", "", 1);
+        s += Text::formatVector(list, "    parameters=c", "", 1);
         return(s + "\n    return(parameters)\n}");
     }
     
@@ -131,13 +118,17 @@ namespace PharmML
         ind.addRow("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
         
         // Y definition
+        ind.addBlock(this->r_gen.consol.vars.genStatements());
         // TODO: Get structural part (only?) of observation model and resolv derivative symbol references to this form
         ind.addRow("y = out[, 'A2']/(V/Favail)");
         ind.addRow("y=y[match(times_xt,out[,'time'])]");
         ind.addRow("y=cbind(y)");
+        // Just set the output part of the obs model for now (seems to be how PopED does it)
+        // TODO: Develop complete structural Y resolve
+        std::string out = this->accept(model->getModelDefinition()->getObservationModel()->getOutput());
+        ind.addRow("y = " + out);
         
         // Return list
-        ind.addBlock(this->r_gen.consol.vars.genStatements());
         ind.addRow("return(list(y=y,poped.db=poped.db))");
         ind.addRowOutdent("})");
         ind.addRowOutdent("}");
@@ -147,7 +138,30 @@ namespace PharmML
 
         return ind.createString();
     }
-
+    
+    std::string PopEDGenerator::genErrorFunction() {
+        Text::Indenter ind;
+        
+        ind.addRowIndent("feps <- function(model_switch,xt,parameters,epsi,poped.db) {");
+        ind.addRow("y <- ff(model_switch,xt,parameters,poped.db)[[1]]");
+        
+        // Get weight definition
+        // TODO: Figure out how to get the dependencies of w in here
+        ObservationModel *node = model->getModelDefinition()->getObservationModel();
+        ind.addRow("w <- " + this->accept(node->getErrorModel()));
+        
+        // Increase y by error fraction (weight * epsilon)
+        // TODO: Figure out how to resolve this with multiple EPS
+        ind.addRow("y = y + w*epsi[,1]");
+        
+        // Return list
+        ind.addRow("return(list(y=y,poped.db=poped.db))");
+        ind.addRowOutdent("}");
+        
+        return ind.createString();
+    }
+    
+    // Visitors
     void PopEDGenerator::visit(FunctionDefinition *node) {}
     void PopEDGenerator::visit(PopulationParameter *node) {}
     void PopEDGenerator::visit(IndividualParameter *node) {

@@ -73,11 +73,10 @@ int main(int argc, char **argv)
     
     // Function definitions output
     std::cout << "# Function definitions" << std::endl;
-    for (FunctionDefinition *f : model->getFunctionDefinitions()) {
-        f->accept(&gen);
-        std::cout << gen.getValue() << std::endl;
+    std::vector<std::string> function_defs = gen.genFunctionDefinitions(model);
+    for (std::string function_def : function_defs) {
+        std::cout << function_def << std::endl;
     }
-    std::cout << std::endl;
     
     // Covariates output
     CovariateModel *cov_mod = model->getModelDefinition()->getCovariateModel();

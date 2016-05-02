@@ -26,6 +26,7 @@
 #include "RAstGenerator.h"
 #include "RPharmMLGenerator.h"
 #include "PharmMLVisitor.h"
+#include "ObservationModel.h"
 #include "Model.h"
 
 namespace PharmML
@@ -45,6 +46,7 @@ namespace PharmML
             std::string genParameterModel();
             std::string genODEFunc();
             std::string genStructuralModel();
+            std::string genErrorFunction();
 
         public:
             std::string getValue();

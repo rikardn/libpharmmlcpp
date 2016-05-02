@@ -36,6 +36,7 @@ namespace PharmML
     }
 
     PharmMLContext::PharmMLContext(const char *filename, Model *model) {
+        this->factory.setContext(this);
         this->model = model;
         xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
         this->doc = xmlReadFile(filename, NULL, 0);

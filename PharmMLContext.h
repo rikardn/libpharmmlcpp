@@ -43,7 +43,8 @@ namespace PharmML
         std::string getNamespaceVersion();
 
         public:
-        std::unordered_map<std::string, Symbol *> symbRefMap;
+        std::unordered_map<std::string, Symbol *> symbols;
+        std::vector<SymbRef *> symbRefs;
         AstNodeFactory factory;
         xmlDoc *getDocument();
         void validateDocument();

@@ -30,9 +30,16 @@
 #include "Piecewise.h"
 #include "FunctionCall.h"
 #include "Interval.h"
+#include "PharmMLContext.h"
 
 namespace PharmML
 {
+    PharmMLContext *AstNodeFactory::context;
+
+    void AstNodeFactory::setContext(PharmMLContext *context) {
+        AstNodeFactory::context = context;
+    }
+
     AstNode *AstNodeFactory::create(xml::Node node, Dependencies *deps) {
         AstNode *instance = nullptr;
 
@@ -199,6 +206,7 @@ namespace PharmML
             instance = constant;
         } else if (name == "SymbRef") {
             instance = new SymbRef(node);
+            PharmML::AstNodeFactory::context->symbRefs.push_back(instance);
             if (deps) {
                 std::string symbol = node.getAttribute("symbIdRef").getValue();
                 deps->addDependency(symbol);

@@ -15,39 +15,28 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <exception>
-#include <PharmML/Model.h>
-#include <AST/Scalar.h>
-#include <symbols/Variable.h>
-#include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDGenerator.h>
+#ifndef PHARMML_RANDOMVARIABLE_H_
+#define PHARMML_RANDOMVARIABLE_H_
 
-using namespace PharmML;
+#include <PharmML/PharmMLContext.h>
+#include <PharmML/Distribution.h>
+#include <visitors/PharmMLVisitor.h>
 
-int main(int argc, char **argv)
+namespace PharmML
 {
-    const char *filename;
-    if (argc < 2) {
-        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
-    } else {
-        filename = argv[1];
-    }
+    class RandomVariable : public Symbol
+    {
+        PharmMLContext *context;
+        AstNode *VariabilityReference;
+        PharmML::Distribution *Distribution;
 
-    Model *model;
-    try {
-        model = new Model(filename);
-    } 
-    catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-        return 5;
-    }
-
-
-    PopEDGenerator pgen; 
-
-    std::cout << pgen.generateModel(model) << std::endl;
-
-    return 0;
+        public:
+        RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        AstNode *getVariabilityReference();
+        PharmML::Distribution *getDistribution();
+        void accept(PharmMLVisitor *visitor);
+    };
 }
+
+#endif

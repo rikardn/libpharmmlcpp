@@ -17,12 +17,12 @@
 
 #include <iostream>
 #include <exception>
-#include "Model.h"
-#include "Scalar.h"
-#include "RAstGenerator.h"
-#include "RPharmMLGenerator.h"
-#include "Variable.h"
-#include "PopulationParameter.h"
+#include <PharmML/Model.h>
+#include <AST/Scalar.h>
+#include <generators/R/RAstGenerator.h>
+#include <generators/R/RPharmMLGenerator.h>
+#include <symbols/Variable.h>
+#include <symbols/PopulationParameter.h>
 
 using namespace PharmML;
 

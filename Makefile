@@ -4,19 +4,19 @@ LIBS = -lxml2
 
 ifeq ($(TARGET), UNIX)
   CC = g++
-  CFLAGS = -std=c++11 -g `xml2-config --cflags`
+  CFLAGS = -std=c++11 -g -Isrc `xml2-config --cflags`
   OUTPUT = main
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -I./windep/include
+  CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = main.exe
 endif
 
 main: main.cpp libpharmmlc.a
 	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-pharmml2poped: pharmml2poped.cpp PopEDAstGenerator.cpp PopEDAstGenerator.h PopEDGenerator.cpp PopEDGenerator.h libpharmmlc.a
-	$(CC) pharmml2poped.cpp PopEDAstGenerator.cpp PopEDGenerator.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
+pharmml2poped: pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h libpharmmlc.a
+	$(CC) pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
@@ -24,131 +24,131 @@ output: output.cpp libpharmmlc.a
 libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o xml.o
 	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o xml.o
 
-XMLAstVisitor.o: XMLAstVisitor.cpp XMLAstVisitor.h
-	$(CC) -c XMLAstVisitor.cpp -oXMLAstVisitor.o $(CFLAGS)
+XMLAstVisitor.o: src/visitors/XMLAstVisitor.cpp src/visitors/XMLAstVisitor.h
+	$(CC) -c src/visitors/XMLAstVisitor.cpp -oXMLAstVisitor.o $(CFLAGS)
 
-Interval.o: Interval.cpp Interval.h
-	$(CC) -c Interval.cpp -oInterval.o $(CFLAGS)
+Interval.o: src/AST/Interval.cpp src/AST/Interval.h
+	$(CC) -c src/AST/Interval.cpp -oInterval.o $(CFLAGS)
 
-ColumnMapping.o: ColumnMapping.cpp ColumnMapping.h
-	$(CC) -c ColumnMapping.cpp -oColumnMapping.o $(CFLAGS)
+ColumnMapping.o: src/PharmML/ColumnMapping.cpp src/PharmML/ColumnMapping.h
+	$(CC) -c src/PharmML/ColumnMapping.cpp -oColumnMapping.o $(CFLAGS)
 
-Dataset.o: Dataset.cpp Dataset.h
-	$(CC) -c Dataset.cpp -oDataset.o $(CFLAGS)
+Dataset.o: src/PharmML/Dataset.cpp src/PharmML/Dataset.h
+	$(CC) -c src/PharmML/Dataset.cpp -oDataset.o $(CFLAGS)
 
-ExternalDataset.o: ExternalDataset.cpp ExternalDataset.h
-	$(CC) -c ExternalDataset.cpp -oExternalDataset.o $(CFLAGS)
+ExternalDataset.o: src/PharmML/ExternalDataset.cpp src/PharmML/ExternalDataset.h
+	$(CC) -c src/PharmML/ExternalDataset.cpp -oExternalDataset.o $(CFLAGS)
 
-Dependencies.o: Dependencies.cpp Dependencies.h
-	$(CC) -c Dependencies.cpp -oDependencies.o $(CFLAGS)
+Dependencies.o: src/PharmML/Dependencies.cpp src/PharmML/Dependencies.h
+	$(CC) -c src/PharmML/Dependencies.cpp -oDependencies.o $(CFLAGS)
 
-DerivativeVariable.o: DerivativeVariable.cpp DerivativeVariable.h
-	$(CC) -c DerivativeVariable.cpp -oDerivativeVariable.o $(CFLAGS)
+DerivativeVariable.o: src/symbols/DerivativeVariable.cpp src/symbols/DerivativeVariable.h
+	$(CC) -c src/symbols/DerivativeVariable.cpp -oDerivativeVariable.o $(CFLAGS)
 
-DistributionParameter.o: DistributionParameter.cpp DistributionParameter.h
-	$(CC) -c DistributionParameter.cpp -oDistributionParameter.o $(CFLAGS)
+DistributionParameter.o: src/PharmML/DistributionParameter.cpp src/PharmML/DistributionParameter.h
+	$(CC) -c src/PharmML/DistributionParameter.cpp -oDistributionParameter.o $(CFLAGS)
 
-Distribution.o: Distribution.cpp Distribution.h
-	$(CC) -c Distribution.cpp -oDistribution.o $(CFLAGS)
+Distribution.o: src/PharmML/Distribution.cpp src/PharmML/Distribution.h
+	$(CC) -c src/PharmML/Distribution.cpp -oDistribution.o $(CFLAGS)
 
-RandomVariable.o: RandomVariable.cpp RandomVariable.h
-	$(CC) -c RandomVariable.cpp -oRandomVariable.o $(CFLAGS)
+RandomVariable.o: src/symbols/RandomVariable.cpp src/symbols/RandomVariable.h
+	$(CC) -c src/symbols/RandomVariable.cpp -oRandomVariable.o $(CFLAGS)
 
-IndependentVariable.o: IndependentVariable.cpp IndependentVariable.h
-	$(CC) -c IndependentVariable.cpp -oIndependentVariable.o $(CFLAGS)
+IndependentVariable.o: src/symbols/IndependentVariable.cpp src/symbols/IndependentVariable.h
+	$(CC) -c src/symbols/IndependentVariable.cpp -oIndependentVariable.o $(CFLAGS)
 
-FunctionCall.o: FunctionCall.cpp FunctionCall.h
-	$(CC) -c FunctionCall.cpp -oFunctionCall.o $(CFLAGS)
+FunctionCall.o: src/AST/FunctionCall.cpp src/AST/FunctionCall.h
+	$(CC) -c src/AST/FunctionCall.cpp -oFunctionCall.o $(CFLAGS)
 
-ObservationModel.o: ObservationModel.cpp ObservationModel.h
-	$(CC) -c ObservationModel.cpp -oObservationModel.o $(CFLAGS)
+ObservationModel.o: src/PharmML/ObservationModel.cpp src/PharmML/ObservationModel.h
+	$(CC) -c src/PharmML/ObservationModel.cpp -oObservationModel.o $(CFLAGS)
 
-PopulationParameter.o: PopulationParameter.cpp PopulationParameter.h
-	$(CC) -c PopulationParameter.cpp -oPopulationParameter.o $(CFLAGS)
+PopulationParameter.o: src/symbols/PopulationParameter.cpp src/symbols/PopulationParameter.h
+	$(CC) -c src/symbols/PopulationParameter.cpp -oPopulationParameter.o $(CFLAGS)
 
-IndividualParameter.o: IndividualParameter.cpp IndividualParameter.h
-	$(CC) -c IndividualParameter.cpp -oIndividualParameter.o $(CFLAGS)
+IndividualParameter.o: src/symbols/IndividualParameter.cpp src/symbols/IndividualParameter.h
+	$(CC) -c src/symbols/IndividualParameter.cpp -oIndividualParameter.o $(CFLAGS)
 
-ParameterModel.o: ParameterModel.cpp ParameterModel.h
-	$(CC) -c ParameterModel.cpp -oParameterModel.o $(CFLAGS)
+ParameterModel.o: src/PharmML/ParameterModel.cpp src/PharmML/ParameterModel.h
+	$(CC) -c src/PharmML/ParameterModel.cpp -oParameterModel.o $(CFLAGS)
 
-Interventions.o: Interventions.cpp Interventions.h
-	$(CC) -c Interventions.cpp -oInterventions.o $(CFLAGS)
+Interventions.o: src/PharmML/Interventions.cpp src/PharmML/Interventions.h
+	$(CC) -c src/PharmML/Interventions.cpp -oInterventions.o $(CFLAGS)
 
-Observations.o: Observations.cpp Observations.h
-	$(CC) -c Observations.cpp -oObservations.o $(CFLAGS)
+Observations.o: src/PharmML/Observations.cpp src/PharmML/Observations.h
+	$(CC) -c src/PharmML/Observations.cpp -oObservations.o $(CFLAGS)
 
-Arms.o: Arms.cpp Arms.h
-	$(CC) -c Arms.cpp -oArms.o $(CFLAGS)
+Arms.o: src/PharmML/Arms.cpp src/PharmML/Arms.h
+	$(CC) -c src/PharmML/Arms.cpp -oArms.o $(CFLAGS)
 
-DesignSpaces.o: DesignSpaces.cpp DesignSpaces.h
-	$(CC) -c DesignSpaces.cpp -oDesignSpaces.o $(CFLAGS)
+DesignSpaces.o: src/PharmML/DesignSpaces.cpp src/PharmML/DesignSpaces.h
+	$(CC) -c src/PharmML/DesignSpaces.cpp -oDesignSpaces.o $(CFLAGS)
 
-TrialDesign.o: TrialDesign.cpp TrialDesign.h
-	$(CC) -c TrialDesign.cpp -oTrialDesign.o $(CFLAGS)
+TrialDesign.o: src/PharmML/TrialDesign.cpp src/PharmML/TrialDesign.h
+	$(CC) -c src/PharmML/TrialDesign.cpp -oTrialDesign.o $(CFLAGS)
 
-FunctionDefinition.o: FunctionDefinition.cpp FunctionDefinition.h
-	$(CC) -c FunctionDefinition.cpp -oFunctionDefinition.o $(CFLAGS)
+FunctionDefinition.o: src/PharmML/FunctionDefinition.cpp src/PharmML/FunctionDefinition.h
+	$(CC) -c src/PharmML/FunctionDefinition.cpp -oFunctionDefinition.o $(CFLAGS)
 
-Vector.o: Vector.cpp Vector.h
-	$(CC) -c Vector.cpp -oVector.o $(CFLAGS)
+Vector.o: src/AST/Vector.cpp src/AST/Vector.h
+	$(CC) -c src/AST/Vector.cpp -oVector.o $(CFLAGS)
 
-Piecewise.o: Piecewise.cpp Piecewise.h
-	$(CC) -c Piecewise.cpp -oPiecewise.o $(CFLAGS)
+Piecewise.o: src/AST/Piecewise.cpp src/AST/Piecewise.h
+	$(CC) -c src/AST/Piecewise.cpp -oPiecewise.o $(CFLAGS)
 
-StructuralModel.o: StructuralModel.cpp StructuralModel.h
-	$(CC) -c StructuralModel.cpp -oStructuralModel.o $(CFLAGS)
+StructuralModel.o: src/PharmML/StructuralModel.cpp src/PharmML/StructuralModel.h
+	$(CC) -c src/PharmML/StructuralModel.cpp -oStructuralModel.o $(CFLAGS)
 
-Variable.o: Variable.cpp Variable.h
-	$(CC) -c Variable.cpp -oVariable.o $(CFLAGS)
+Variable.o: src/symbols/Variable.cpp src/symbols/Variable.h
+	$(CC) -c src/symbols/Variable.cpp -oVariable.o $(CFLAGS)
 
-RPharmMLGenerator.o: RPharmMLGenerator.cpp RPharmMLGenerator.h
-	$(CC) -c RPharmMLGenerator.cpp -oRPharmMLGenerator.o $(CFLAGS)
+RPharmMLGenerator.o: src/generators/R/RPharmMLGenerator.cpp src/generators/R/RPharmMLGenerator.h
+	$(CC) -c src/generators/R/RPharmMLGenerator.cpp -oRPharmMLGenerator.o $(CFLAGS)
 
-RPharmMLConsolidator.o: RPharmMLConsolidator.cpp RPharmMLConsolidator.h
-	$(CC) -c RPharmMLConsolidator.cpp -oRPharmMLConsolidator.o $(CFLAGS)
+RPharmMLConsolidator.o: src/generators/R/RPharmMLConsolidator.cpp src/generators/R/RPharmMLConsolidator.h
+	$(CC) -c src/generators/R/RPharmMLConsolidator.cpp -oRPharmMLConsolidator.o $(CFLAGS)
 
-RAstGenerator.o: RAstGenerator.cpp RAstGenerator.h
-	$(CC) -c RAstGenerator.cpp -oRAstGenerator.o $(CFLAGS)
+RAstGenerator.o: src/generators/R/RAstGenerator.cpp src/generators/R/RAstGenerator.h
+	$(CC) -c src/generators/R/RAstGenerator.cpp -oRAstGenerator.o $(CFLAGS)
 
-symbols.o: symbols.cpp symbols.h
-	$(CC) -c symbols.cpp -osymbols.o $(CFLAGS)
+symbols.o: src/AST/symbols.cpp src/AST/symbols.h
+	$(CC) -c src/AST/symbols.cpp -osymbols.o $(CFLAGS)
 
-Scalar.o: Scalar.cpp Scalar.h
-	$(CC) -c Scalar.cpp -oScalar.o $(CFLAGS)
+Scalar.o: src/AST/Scalar.cpp src/AST/Scalar.h
+	$(CC) -c src/AST/Scalar.cpp -oScalar.o $(CFLAGS)
 
-Binop.o: Binop.cpp Binop.h
-	$(CC) -c Binop.cpp -oBinop.o $(CFLAGS)
+Binop.o: src/AST/Binop.cpp src/AST/Binop.h
+	$(CC) -c src/AST/Binop.cpp -oBinop.o $(CFLAGS)
 
-Uniop.o: Uniop.cpp Uniop.h
-	$(CC) -c Uniop.cpp -oUniop.o $(CFLAGS)
+Uniop.o: src/AST/Uniop.cpp src/AST/Uniop.h
+	$(CC) -c src/AST/Uniop.cpp -oUniop.o $(CFLAGS)
 
-Constant.o: Constant.cpp Constant.h
-	$(CC) -c Constant.cpp -oConstant.o $(CFLAGS)
+Constant.o: src/AST/Constant.cpp src/AST/Constant.h
+	$(CC) -c src/AST/Constant.cpp -oConstant.o $(CFLAGS)
 
-AstNodeFactory.o: AstNodeFactory.cpp AstNodeFactory.h
-	$(CC) -c AstNodeFactory.cpp -oAstNodeFactory.o $(CFLAGS)
+AstNodeFactory.o: src/AST/AstNodeFactory.cpp src/AST/AstNodeFactory.h
+	$(CC) -c src/AST/AstNodeFactory.cpp -oAstNodeFactory.o $(CFLAGS)
 
-Covariate.o: Covariate.cpp Covariate.h
-	$(CC) -c Covariate.cpp -oCovariate.o $(CFLAGS)
+Covariate.o: src/PharmML/Covariate.cpp src/PharmML/Covariate.h
+	$(CC) -c src/PharmML/Covariate.cpp -oCovariate.o $(CFLAGS)
 
-CovariateModel.o: CovariateModel.cpp CovariateModel.h
-	$(CC) -c CovariateModel.cpp -oCovariateModel.o $(CFLAGS)
+CovariateModel.o: src/PharmML/CovariateModel.cpp src/PharmML/CovariateModel.h
+	$(CC) -c src/PharmML/CovariateModel.cpp -oCovariateModel.o $(CFLAGS)
 
-ModelDefinition.o: ModelDefinition.cpp ModelDefinition.h
-	$(CC) -c ModelDefinition.cpp -oModelDefinition.o $(CFLAGS)
+ModelDefinition.o: src/PharmML/ModelDefinition.cpp src/PharmML/ModelDefinition.h
+	$(CC) -c src/PharmML/ModelDefinition.cpp -oModelDefinition.o $(CFLAGS)
 
-ModellingSteps.o: ModellingSteps.cpp ModellingSteps.h
-	$(CC) -c ModellingSteps.cpp -oModellingSteps.o $(CFLAGS)
+ModellingSteps.o: src/PharmML/ModellingSteps.cpp src/PharmML/ModellingSteps.h
+	$(CC) -c src/PharmML/ModellingSteps.cpp -oModellingSteps.o $(CFLAGS)
 
-PharmMLContext.o: PharmMLContext.cpp PharmMLContext.h
-	$(CC) -c PharmMLContext.cpp -oPharmMLContext.o $(CFLAGS)
+PharmMLContext.o: src/PharmML/PharmMLContext.cpp src/PharmML/PharmMLContext.h
+	$(CC) -c src/PharmML/PharmMLContext.cpp -oPharmMLContext.o $(CFLAGS)
 
-Model.o: Model.cpp Model.h
-	$(CC) -c Model.cpp -oModel.o $(CFLAGS)
+Model.o: src/PharmML/Model.cpp src/PharmML/Model.h
+	$(CC) -c src/PharmML/Model.cpp -oModel.o $(CFLAGS)
 
-xml.o: xml.cpp xml.h
-	$(CC) -c xml.cpp -oxml.o $(CFLAGS)
+xml.o: src/xml/xml.cpp src/xml/xml.h
+	$(CC) -c src/xml/xml.cpp -oxml.o $(CFLAGS)
 
 .PHONY: clean
 

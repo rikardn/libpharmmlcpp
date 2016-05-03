@@ -15,39 +15,29 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <exception>
-#include <PharmML/Model.h>
-#include <AST/Scalar.h>
-#include <symbols/Variable.h>
-#include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDGenerator.h>
+#ifndef PHARMML_DISTRIBUTIONPARAMETER_H_
+#define PHARMML_DISTRIBUTIONPARAMETER_H_
 
-using namespace PharmML;
+#include "PharmMLContext.h"
+#include <AST/AstNode.h>
 
-int main(int argc, char **argv)
+namespace PharmML
 {
-    const char *filename;
-    if (argc < 2) {
-        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
-    } else {
-        filename = argv[1];
-    }
+    class DistributionParameter
+    {
+        PharmMLContext *context;
+        std::string name;
+        AstNode *assignment;
 
-    Model *model;
-    try {
-        model = new Model(filename);
-    } 
-    catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-        return 5;
-    }
-
-
-    PopEDGenerator pgen; 
-
-    std::cout << pgen.generateModel(model) << std::endl;
-
-    return 0;
+        public:
+        DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
+        DistributionParameter(PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        std::string getName();
+        void setName(std::string name);
+        AstNode *getAssignment();
+        void setAssignment(AstNode *assignment);
+    };
 }
+
+#endif

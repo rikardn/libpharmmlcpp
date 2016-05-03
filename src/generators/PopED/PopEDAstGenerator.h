@@ -15,39 +15,33 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <exception>
-#include <PharmML/Model.h>
+#ifndef PHARMML_POPEDASTGENERATOR_H_
+#define PHARMML_POPEDASTGENERATOR_H_
+
+#include <string>
+#include <visitors/AstNodeVisitor.h>
+#include <AST/symbols.h>
+#include <AST/Uniop.h>
+#include <AST/Binop.h>
 #include <AST/Scalar.h>
-#include <symbols/Variable.h>
-#include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDGenerator.h>
+#include <AST/Constant.h>
+#include <AST/Vector.h>
+#include <AST/Piecewise.h>
+#include <symbols/DerivativeVariable.h>
+#include <AST/FunctionCall.h>
+#include <AST/Interval.h>
+#include <PharmML/Distribution.h>
+#include <PharmML/ColumnMapping.h>
+#include <PharmML/Interventions.h>
+#include <generators/R/RAstGenerator.h>
 
-using namespace PharmML;
-
-int main(int argc, char **argv)
+namespace PharmML
 {
-    const char *filename;
-    if (argc < 2) {
-        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
-    } else {
-        filename = argv[1];
-    }
-
-    Model *model;
-    try {
-        model = new Model(filename);
-    } 
-    catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-        return 5;
-    }
-
-
-    PopEDGenerator pgen; 
-
-    std::cout << pgen.generateModel(model) << std::endl;
-
-    return 0;
+    class PopEDAstGenerator : public RAstGenerator
+    {
+        public:
+            void visit(SymbRef *node);
+    };
 }
+
+#endif

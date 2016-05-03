@@ -16,38 +16,13 @@
  */
 
 #include <iostream>
-#include <exception>
-#include <PharmML/Model.h>
-#include <AST/Scalar.h>
-#include <symbols/Variable.h>
+#include <generators/PopED/PopEDAstGenerator.h>
 #include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDGenerator.h>
 
-using namespace PharmML;
 
-int main(int argc, char **argv)
+namespace PharmML
 {
-    const char *filename;
-    if (argc < 2) {
-        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
-    } else {
-        filename = argv[1];
+    void PopEDAstGenerator::visit(SymbRef *node) {
+        this->setValue(node->toString());
     }
-
-    Model *model;
-    try {
-        model = new Model(filename);
-    } 
-    catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-        return 5;
-    }
-
-
-    PopEDGenerator pgen; 
-
-    std::cout << pgen.generateModel(model) << std::endl;
-
-    return 0;
 }

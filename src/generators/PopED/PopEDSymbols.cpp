@@ -27,7 +27,10 @@
 namespace PharmML
 {
     void PopEDSymbols::visit(PopulationParameter *node) {
-        this->setValue("popParm");
+        if (this->symbol_numbermap.count(node) == 0) {
+            this->symbol_numbermap[node] = next_popparm++;
+        }
+        this->setValue(std::to_string(this->symbol_numbermap[node]));
     }
 
     void PopEDSymbols::visit(IndividualParameter *node) {
@@ -35,7 +38,10 @@ namespace PharmML
     }
 
     void PopEDSymbols::visit(RandomVariable *node) {
-        this->setValue("randVar");
+        if (this->symbol_numbermap.count(node) == 0) {
+            this->symbol_numbermap[node] = next_randvar++;
+        }
+        this->setValue(std::to_string(this->symbol_numbermap[node]));
     }
 
     void PopEDSymbols::visit(IndependentVariable *node) {

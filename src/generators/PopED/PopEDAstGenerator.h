@@ -34,11 +34,16 @@
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
 #include <generators/R/RAstGenerator.h>
+#include <generators/PopED/PopEDSymbols.h>
+
 
 namespace PharmML
 {
     class PopEDAstGenerator : public RAstGenerator
     {
+        private:
+            PopEDSymbols symbgen;
+
         public:
             void visit(SymbRef *node);
     };

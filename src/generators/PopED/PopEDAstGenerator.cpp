@@ -24,8 +24,7 @@ namespace PharmML
 {
     void PopEDAstGenerator::visit(SymbRef *node) {
         Symbol *symbol = node->getSymbol();
-        PopEDSymbols popsymb;
-        symbol->accept(&popsymb);
-        this->setValue(popsymb.getValue());
+        symbol->accept(&this->symbgen);
+        this->setValue(this->symbgen.getValue());
     }
 }

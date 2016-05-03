@@ -18,8 +18,10 @@
 #ifndef PHARMML_POPEDSYMBOLS_H_
 #define PHARMML_POPEDSYMBOLS_H_
 
+#include <unordered_map>
 #include <visitors/StringVisitor.h>
 #include <visitors/SymbolVisitor.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -32,6 +34,11 @@ namespace PharmML
 
     class PopEDSymbols : public SymbolVisitor, public StringVisitor
     {
+        private:
+            int next_popparm = 1;
+            int next_randvar = 1;
+            std::unordered_map<Symbol *, int> symbol_numbermap;
+
         public:
             void visit(PopulationParameter *node);
             void visit(IndividualParameter *node);

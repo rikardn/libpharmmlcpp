@@ -60,15 +60,20 @@ namespace PharmML
     }
 
     std::string PopEDGenerator::genParameterModel() {
-        std::string s = "sfg <- function(x, a, bpop, b, bocc) {\n";
-        std::vector<std::string> list;
+        Text::Indenter ind;
+        ind.setCSVformat(true);
+        ind.addRowIndent("sfg <- function(x, a, bpop, b, bocc) {");
+        ind.addRowIndent("parameters = c(");
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
             // FIXME: Don't need accept here as we already know the type. Could as well put code here?
             parameter->accept(this);
-            list.push_back(this->getValue());
+            ind.addCSV(this->getValue());
         }
-        s += Text::formatVector(list, "    parameters=c", "", 1);
-        return(s + "\n    return(parameters)\n}");
+        ind.closeCSVlist();
+        ind.addRowOutdent(")");
+        ind.addRow("return(parameters)");
+        ind.addRowOutdent("}");
+        return ind.createString();
     }
     
     std::string PopEDGenerator::genODEFunc() {
@@ -177,7 +182,24 @@ namespace PharmML
         ind.addCSV("ff_file = 'ff'");
         ind.addCSV("fg_file = 'sfg'");
         ind.addCSV("fError_file_file = 'feps'");
-        ind.addCSV("bpop = NULL");
+        
+        std::vector<IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        Text::Indenter bpop;
+        bpop.addRow("c(");
+        for (IndividualParameter *ip : ips) {
+            if (!ip->isStructured()) {
+                /* Only half the story: Now the assignment needs to be matched to the corresponding PopulationParameter and
+                 * that PopulationParameter looked up for initial estimate in ModellingSteps section... */
+                // TODO: The above
+                std::string s = ip->getSymbId() + "=" + this->accept(ip->getAssignment());
+                bpop.addCSV(s);
+            }
+            
+        }
+        bpop.closeCSVlist();
+        bpop.appendRow(")");
+        ind.addCSV("bpop = " + bpop.createString(false));
+        
         ind.addCSV("notfixed_bpop = NULL");
         ind.addCSV("d = NULL");
         ind.addCSV("sigma = NULL");

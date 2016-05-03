@@ -136,11 +136,15 @@ namespace Text
     }
     
     // Call to produce final multilined result
-    std::string Indenter::createString() {
+    std::string Indenter::createString(bool final_newline) {
         // Create a single multi-line string from all rows
         std::string result;
-        for (std::string s : this->rows) {
-            result += s + "\n";
+        for (auto &row : this->rows) {
+            if (!final_newline && &row == &this->rows.back()) {
+                result += row;
+            } else {
+                result += row + "\n";
+            }
         }
         return result;
     }

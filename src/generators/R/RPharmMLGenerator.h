@@ -72,7 +72,7 @@ namespace Text
             void setCSVformat(bool multiline, char separator = ',');
             void setIndent(int size, char symbol = ' ');
             
-            std::string createString();
+            std::string createString(bool final_newline = true);
     };
 
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);

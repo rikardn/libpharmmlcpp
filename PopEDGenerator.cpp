@@ -198,11 +198,17 @@ namespace PharmML
     // Visitors
     void PopEDGenerator::visit(FunctionDefinition *node) {}
     void PopEDGenerator::visit(PopulationParameter *node) {}
+
     void PopEDGenerator::visit(IndividualParameter *node) {
-        std::string result = node->getSymbId() + "=bpop[" + std::to_string(this->parameter_count) + "]";
-        this->parameter_count++;
+        std::string result;
+        if (!node->isStructured()) {
+            node->getAssignment()->accept(&this->poped_astgen);
+            std::string assign = this->poped_astgen.getValue();
+            result = node->getSymbId() + "=bpop[" + assign + "]";
+        }
         this->setValue(result);
     }
+
     void PopEDGenerator::visit(RandomVariable *node) {}
     void PopEDGenerator::visit(Covariate *node) {}
     void PopEDGenerator::visit(IndependentVariable *node) {}

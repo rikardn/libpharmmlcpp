@@ -15,8 +15,8 @@ endif
 main: main.cpp libpharmmlc.a
 	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-pharmml2poped: pharmml2poped.cpp PopEDGenerator.cpp PopEDGenerator.h libpharmmlc.a
-	$(CC) pharmml2poped.cpp PopEDGenerator.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
+pharmml2poped: pharmml2poped.cpp PopEDAstGenerator.cpp PopEDAstGenerator.h PopEDGenerator.cpp PopEDGenerator.h libpharmmlc.a
+	$(CC) pharmml2poped.cpp PopEDAstGenerator.cpp PopEDGenerator.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)

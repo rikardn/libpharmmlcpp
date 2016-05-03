@@ -38,7 +38,7 @@ namespace PharmML
 {
     class RAstGenerator : public AstNodeVisitor
     {
-        private:
+        protected:
             std::string value;
             void setValue(std::string str);
             std::string acceptLeft(Binop *binop);

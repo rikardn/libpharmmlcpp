@@ -28,6 +28,7 @@
 #include "PharmMLVisitor.h"
 #include "ObservationModel.h"
 #include "Model.h"
+#include "PopEDAstGenerator.h"
 
 namespace PharmML
 {
@@ -35,6 +36,7 @@ namespace PharmML
     {
         private:
             RAstGenerator ast_gen;
+            PopEDAstGenerator poped_astgen;
             RPharmMLGenerator r_gen;
             Model *model;
             std::string value;
@@ -42,7 +44,6 @@ namespace PharmML
             // Helper function to reduce redundant code
             std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
             std::string accept(AstNode *);
-            int parameter_count = 1;
             std::string genParameterModel();
             std::string genODEFunc();
             std::string genStructuralModel();

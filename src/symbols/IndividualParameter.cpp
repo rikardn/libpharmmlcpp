@@ -97,4 +97,8 @@ namespace PharmML
     void IndividualParameter::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+
+    void IndividualParameter::accept(SymbolVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

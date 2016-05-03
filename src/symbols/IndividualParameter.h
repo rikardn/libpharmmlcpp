@@ -48,6 +48,7 @@ namespace PharmML
         AstNode *getAssignment();
         bool isStructured();
         void accept(PharmMLVisitor *visitor);
+        void accept(SymbolVisitor *visitor);
     };
 }
 

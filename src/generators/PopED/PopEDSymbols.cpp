@@ -15,17 +15,38 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <generators/PopED/PopEDAstGenerator.h>
-#include <symbols/PopulationParameter.h>
 #include <generators/PopED/PopEDSymbols.h>
+#include <symbols/PopulationParameter.h>
+#include <symbols/IndividualParameter.h>
+#include <symbols/RandomVariable.h>
+#include <symbols/IndependentVariable.h>
+#include <symbols/Variable.h>
+#include <symbols/DerivativeVariable.h>
+
 
 namespace PharmML
 {
-    void PopEDAstGenerator::visit(SymbRef *node) {
-        Symbol *symbol = node->getSymbol();
-        PopEDSymbols popsymb;
-        symbol->accept(&popsymb);
-        this->setValue(popsymb.getValue());
+    void PopEDSymbols::visit(PopulationParameter *node) {
+        this->setValue("popParm");
+    }
+
+    void PopEDSymbols::visit(IndividualParameter *node) {
+        this->setValue(node->getSymbId());
+    }
+
+    void PopEDSymbols::visit(RandomVariable *node) {
+        this->setValue("randVar");
+    }
+
+    void PopEDSymbols::visit(IndependentVariable *node) {
+        this->setValue(node->getSymbId());
+    }
+
+    void PopEDSymbols::visit(Variable *node) {
+        this->setValue(node->getSymbId());
+    }
+
+    void PopEDSymbols::visit(DerivativeVariable *node) {
+        this->setValue(node->getSymbId());
     }
 }

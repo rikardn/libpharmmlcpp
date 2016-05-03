@@ -49,4 +49,8 @@ namespace PharmML
     void RandomVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+
+    void RandomVariable::accept(SymbolVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

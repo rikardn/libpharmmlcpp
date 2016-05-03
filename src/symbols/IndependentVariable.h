@@ -31,6 +31,7 @@ namespace PharmML
         IndependentVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         void accept(PharmMLVisitor *visitor);
+        void accept(SymbolVisitor *visitor);
     };
 }
 

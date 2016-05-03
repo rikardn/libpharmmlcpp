@@ -36,6 +36,7 @@ namespace PharmML
         AstNode *getVariabilityReference();
         PharmML::Distribution *getDistribution();
         void accept(PharmMLVisitor *visitor);
+        void accept(SymbolVisitor *visitor);
     };
 }
 

@@ -32,4 +32,8 @@ namespace PharmML
     void PopulationParameter::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+
+    void PopulationParameter::accept(SymbolVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

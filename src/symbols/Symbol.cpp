@@ -15,26 +15,16 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPULATIONPARAMETER_H_
-#define PHARMML_POPULATIONPARAMETER_H_
-
-#include <AST/symbols.h>
-#include <PharmML/PharmMLContext.h>
-#include <xml/xml.h>
-#include <visitors/PharmMLVisitor.h>
+#include "Symbol.h"
+#include <iostream>
 
 namespace PharmML
 {
-    class PopulationParameter : public Symbol
-    {
-        PharmMLContext *context;
+    std::string Symbol::getSymbId() {
+        return this->symbId;
+    }
 
-        public:
-        PopulationParameter(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
-    };
+    void Symbol::parse(xml::Node node) {
+        this->symbId = node.getAttribute("symbId").getValue();
+    }
 }
-
-#endif

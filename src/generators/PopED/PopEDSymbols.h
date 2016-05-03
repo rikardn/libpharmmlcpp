@@ -15,25 +15,30 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPULATIONPARAMETER_H_
-#define PHARMML_POPULATIONPARAMETER_H_
+#ifndef PHARMML_POPEDSYMBOLS_H_
+#define PHARMML_POPEDSYMBOLS_H_
 
-#include <AST/symbols.h>
-#include <PharmML/PharmMLContext.h>
-#include <xml/xml.h>
-#include <visitors/PharmMLVisitor.h>
+#include <visitors/StringVisitor.h>
+#include <visitors/SymbolVisitor.h>
 
 namespace PharmML
 {
-    class PopulationParameter : public Symbol
-    {
-        PharmMLContext *context;
+    class PopulationParameter;
+    class IndividualParameter;
+    class RandomVariable;
+    class Variable;
+    class DerivativeVariable;
+    class IndependentVariable;
 
+    class PopEDSymbols : public SymbolVisitor, public StringVisitor
+    {
         public:
-        PopulationParameter(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            void visit(PopulationParameter *node);
+            void visit(IndividualParameter *node);
+            void visit(RandomVariable *node);
+            void visit(IndependentVariable *node);
+            void visit(Variable *node);
+            void visit(DerivativeVariable *node);
     };
 }
 

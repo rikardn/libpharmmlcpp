@@ -21,18 +21,10 @@
 #include <string>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
-    class Symbol {
-        public:
-            std::string getSymbId();
-
-        protected:
-            std::string symbId;
-            void parse(xml::Node node);
-    };
-
     class SymbRef : public AstNode
     {
         std::string blkIdRef;
@@ -60,6 +52,5 @@ namespace PharmML
         std::string toString();
     };
 }
-
 
 #endif

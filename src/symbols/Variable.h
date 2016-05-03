@@ -37,6 +37,7 @@ namespace PharmML
         AstNode *getAssignment();
         Dependencies& getDependencies();
         virtual void accept(PharmMLVisitor *visitor) = 0;
+        virtual void accept(SymbolVisitor *visitor) = 0;
     };
 
     class Variable : public CommonVariable
@@ -44,6 +45,7 @@ namespace PharmML
         public:
         Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) {};
         void accept(PharmMLVisitor *visitor);
+        void accept(SymbolVisitor *visitor);
     };
 }
 

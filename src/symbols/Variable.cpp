@@ -46,4 +46,8 @@ namespace PharmML
     void Variable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+
+    void Variable::accept(SymbolVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

@@ -50,4 +50,8 @@ namespace PharmML
     void DerivativeVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+    
+    void DerivativeVariable::accept(SymbolVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

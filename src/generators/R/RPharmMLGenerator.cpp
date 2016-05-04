@@ -234,13 +234,15 @@ namespace PharmML
 
     void RPharmMLGenerator::visit(Variable *node) {
         // Consolidate for more powerful output
-        this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment())); 
-        
-        // General (non-mandatory) output
         if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
-        } else {
-            this->setValue(std::string());
+            this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment())); 
+
+            // General (non-mandatory) output
+            if (node->getAssignment()) {
+                this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
+            } else {
+                this->setValue(std::string());
+            }
         }
     }
     

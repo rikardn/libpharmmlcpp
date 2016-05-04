@@ -19,8 +19,8 @@
 
 namespace PharmML
 {
-    // Helper function to reduce redundant code
-    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
+    // [[deprecated("Replaced by RFormatter::createVector")]]
+    // Pretend you're a C++14 compiler and parse above line in your mind
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
         std::string s = prefix + "(";
         std::string sep = ", ";

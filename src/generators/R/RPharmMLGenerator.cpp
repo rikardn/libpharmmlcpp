@@ -17,139 +17,6 @@
 
 #include "RPharmMLGenerator.h"
 
-namespace Text
-{
-    // Helper function to reduce redundant code
-    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
-        std::string s = prefix + "(";
-        std::string sep = ", ";
-        if (pre_indent > 0) {
-            sep = ",\n" + std::string(pre_indent + s.size(), ' ');
-        }
-        
-        bool first = true;
-        for (std::string element : vector) {
-            if (first) {
-                first = false;
-            } else {
-                s += sep;
-            }
-            s += quote + element + quote;
-        }
-        return(s + ")");
-    }
-    
-    // Indented code generator helper class
-    std::string Indenter::genIndentation() {
-        return std::string(this->indentLevel * this->indentSize, this->indentSymbol);
-    }
-    
-    // Methods to add units (csv, rows, appends, blocks)
-    void Indenter::addCSV(std::string str) {
-        str = str + ",";
-        if (this->multilineCSV) {
-            // Multiple lines; add row (with indent)
-            this->addRow(str);
-        } else {
-            // Single line; push back on last row (without indent)
-            if (this->firstCSV == false) {
-                str = " " + str;
-            }
-            this->appendRow(str);
-        }
-        if (this->firstCSV) {
-            this->firstCSV = false;
-        }
-    }
-
-    void Indenter::addRow(std::string str) {
-        // Add a single row (at current indentation level)
-        this->rows.push_back(this->genIndentation() + str);
-    }
-    
-    void Indenter::appendRow(std::string str) {
-        // Append last row added
-        std::string &last_row = this->rows.back();
-        last_row.append(str);
-    }
-
-    void Indenter::addRowIndent(std::string str) {
-        // Add row and THEN increase indent
-        this->addRow(str);
-        this->openIndent();
-    }
-
-    void Indenter::addRowOutdent(std::string str) {
-        // Decrease indent and THEN add row
-        this->closeIndent();
-        this->addRow(str);
-    }
-    
-    void Indenter::addBlock(std::string str) {
-        // Split multi-line string into rows and then add them
-        std::stringstream ss(str);
-        std::string row;
-        std::vector<std::string> rows;
-        
-        while(std::getline(ss,row,'\n')){
-            rows.push_back(row);
-        }
-
-        this->addBlock(rows);
-    }
-
-    void Indenter::addBlock(std::vector<std::string> strs) {
-        // Add each row
-        for (std::string row : strs) {
-            this->addRow(row);
-        }
-    }
-    
-    // Methods to open and close (indent, csv)
-    void Indenter::openIndent() {
-        this->indentLevel++;
-    }
-
-    void Indenter::closeIndent() {
-        this->indentLevel--;
-    }
-    
-    void Indenter::closeCSVlist() {
-        // Pop last applied separator and reset flag to close the list
-        if (this->firstCSV == false) {
-            std::string &last_row = this->rows.back();
-            last_row.pop_back();
-            this->firstCSV = true;
-        }
-    }
-    
-    // Methods to setup indenter
-    void Indenter::setCSVformat(bool multiline, char separator) {
-        this->multilineCSV = multiline;
-        this->separator = separator;
-    }
-    
-    void Indenter::setIndent(int size, char symbol) {
-        this->indentSize = size;
-        this->indentSymbol = symbol;
-    }
-    
-    // Call to produce final multilined result
-    std::string Indenter::createString(bool final_newline) {
-        // Create a single multi-line string from all rows
-        std::string result;
-        for (auto &row : this->rows) {
-            if (!final_newline && &row == &this->rows.back()) {
-                result += row;
-            } else {
-                result += row + "\n";
-            }
-        }
-        return result;
-    }
-}
-
 namespace PharmML
 {
     // private
@@ -180,16 +47,16 @@ namespace PharmML
     
     // General R visitors
     void RPharmMLGenerator::visit(FunctionDefinition *node) {
-        Text::Indenter ind;
+        RFormatter form;
         
         std::string head = node->getSymbId() + " <- ";
         std::vector<std::string> args = node->getArguments();
-        ind.addRowIndent(head + Text::formatVector(args, "function", "") + " {");
+        form.indentAdd(head + PharmML::formatVector(args, "function", "") + " {");
         
-        ind.addRow("return " + this->accept(node->getAssignment()));
-        ind.addRowOutdent("}");
+        form.add("return " + this->accept(node->getAssignment()));
+        form.outdentAdd("}");
         
-        this->setValue(ind.createString());
+        this->setValue(form.createString());
     }
 
     void RPharmMLGenerator::visit(Covariate *node) {
@@ -308,7 +175,7 @@ namespace PharmML
         for (AstNode *element: data) {
             list.push_back(this->accept(element));
         }
-        s += Text::formatVector(list, "c", "");
+        s += PharmML::formatVector(list, "c", "");
         setValue(s);
     }
     
@@ -324,7 +191,7 @@ namespace PharmML
                 list.push_back(this->getValue());
             }
             s += name + " = ";
-            s += Text::formatVector(list, "data.frame", "", s.size());
+            s += PharmML::formatVector(list, "data.frame", "", s.size());
         } else {
             // TODO: Improve support for external resource
             // First, output reading function
@@ -405,7 +272,7 @@ namespace PharmML
             map->accept(this);
             list.push_back(this->getValue());
         }
-        s += Text::formatVector(list, "c") + ", ";
+        s += PharmML::formatVector(list, "c") + ", ";
         
         s += "dataset = " + node->getDataset()->getName();
         
@@ -425,7 +292,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 adm_oids.push_back(adm->getOid());
             }
-            s += "administration_oids <- " + Text::formatVector(adm_oids, "c") + "\n";
+            s += "administration_oids <- " + PharmML::formatVector(adm_oids, "c") + "\n";
         }
         
         // <IndividualAdministration>'s
@@ -504,7 +371,7 @@ namespace PharmML
             map->accept(this);
             list.push_back(this->getValue());
         }
-        s += Text::formatVector(list, "c") + ", ";
+        s += PharmML::formatVector(list, "c") + ", ";
         
         s += "dataset = " + node->getDataset()->getName();
         
@@ -514,7 +381,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " <- list(";
         
-        s += "refs = " + Text::formatVector(node->getOidRefs(), "c");
+        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
         if (node->getRelative()) {
             s += ", relative = " + this->accept(node->getRelative());
         }
@@ -543,7 +410,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 obs_oids.push_back(observation->getOid());
             }
-            s += "simulation_obs_oids = " + Text::formatVector(obs_oids, "c") + "\n";
+            s += "simulation_obs_oids = " + PharmML::formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<IndividualObservations *> ind_observations = node->getIndividualObservations();
@@ -561,7 +428,7 @@ namespace PharmML
                 ind_observation->accept(this);
                 s += this->getValue() + "\n";
             }
-            s += "dataset_obs_oids = " + Text::formatVector(obs_oids, "c") + "\n";
+            s += "dataset_obs_oids = " + PharmML::formatVector(obs_oids, "c") + "\n";
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
@@ -573,7 +440,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 comb_oids.push_back(comb->getOid());
             }
-            s += "combination_oids <- " + Text::formatVector(comb_oids, "c") + "\n";
+            s += "combination_oids <- " + PharmML::formatVector(comb_oids, "c") + "\n";
         }
         
         this->setValue(s);
@@ -583,7 +450,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(InterventionSequence *node) {
         std::string s = "list(";
         
-        s += "refs = " + Text::formatVector(node->getOidRefs(), "c");
+        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
@@ -594,7 +461,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(ObservationSequence *node) {
         std::string s = "list(";
         
-        s += "refs = " + Text::formatVector(node->getOidRefs(), "c");
+        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
@@ -655,7 +522,7 @@ namespace PharmML
         }
         // TODO: Implement output of node->getOccasionSequences
         
-        s += Text::formatVector(list, "list", "");
+        s += PharmML::formatVector(list, "list", "");
         this->setValue(s + ")");
     }
     
@@ -697,7 +564,7 @@ namespace PharmML
             top.push_back("total_size = " + this->accept(node->getTotalSize()));
         }
         if (!top.empty()) {
-            s += "arms = " + Text::formatVector(top, "list") + "\n";
+            s += "arms = " + PharmML::formatVector(top, "list") + "\n";
         }
         
         // <DesignParameter>'s
@@ -740,15 +607,15 @@ namespace PharmML
         std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
         
-        list.push_back("intervention_refs = " + Text::formatVector(node->getInterventionRefs(), "c"));
-        list.push_back("observation_refs = " + Text::formatVector(node->getObservationRefs(), "c"));
-        list.push_back("arm_refs = " + Text::formatVector(node->getArmRefs(), "c"));
+        list.push_back("intervention_refs = " + PharmML::formatVector(node->getInterventionRefs(), "c"));
+        list.push_back("observation_refs = " + PharmML::formatVector(node->getObservationRefs(), "c"));
+        list.push_back("arm_refs = " + PharmML::formatVector(node->getArmRefs(), "c"));
         AstNode *dosing_times = node->getDosingTimes();
         if (dosing_times) {
             list.push_back("dosing_times=" + this->accept(dosing_times));
         }
         
-        s += Text::formatVector(list, "list", "");
+        s += PharmML::formatVector(list, "list", "");
         this->setValue(s);
     }
     

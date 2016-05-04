@@ -43,7 +43,7 @@ namespace PharmML
             pairs.push_back(pair);
         }
         // TODO: Figure out place for helpers
-        return Text::formatVector(pairs, "c", "");
+        return PharmML::formatVector(pairs, "c", "");
     }
 
     // Variables consolidator (visits to Variable builds)
@@ -54,12 +54,12 @@ namespace PharmML
 
     std::string VariablesConsolidator::genStatements() {
         // Generate standard R assigns of all symbols and expressions
-        Text::Indenter ind;
+        RFormatter form;
 
         for (int i = 0; i < symbols.size(); i++) {
-            ind.addRow(this->symbols[i] + " <- " + this->assigns[i]);
+            form.add(this->symbols[i] + " <- " + this->assigns[i]);
         }
 
-        return ind.createString(); 
+        return form.createString(); 
     }
 }

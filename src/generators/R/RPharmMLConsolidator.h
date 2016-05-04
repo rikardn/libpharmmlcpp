@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <generators/R/RTextFormatter.h>
 
 namespace PharmML
 {

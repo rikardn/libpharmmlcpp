@@ -39,64 +39,62 @@ namespace PharmML
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
-        Text::Indenter ind;
+        RFormatter form(2, ' ');
         
         // Output function definitions (e.g. MDL proportionalError function)
         for (std::string function_def : this->r_gen.genFunctionDefinitions(model)) {
-            ind.addBlock(function_def);
+            form.addMany(function_def);
         }
-        ind.addRow("");
+        form.add("");
         
         // Generate the three PopED functions
-        ind.addBlock(this->genParameterModel());
-        ind.addBlock(this->genStructuralModel());
-        ind.addBlock(this->genErrorFunction());
-        ind.addRow("");
+        form.addMany(this->genParameterModel());
+        form.addMany(this->genStructuralModel());
+        form.addMany(this->genErrorFunction());
+        form.add("");
         
         // Generate PopED database call (initial design and space)
-        ind.addBlock(this->genDatabaseCall());
+        form.addMany(this->genDatabaseCall());
         
-        return ind.createString();
+        return form.createString();
     }
 
     std::string PopEDGenerator::genParameterModel() {
-        Text::Indenter ind;
-        ind.setCSVformat(true);
-        ind.addRowIndent("sfg <- function(x, a, bpop, b, bocc) {");
-        ind.addRowIndent("parameters = c(");
+        RFormatter form;
+        form.indentAdd("sfg <- function(x, a, bpop, b, bocc) {");
+        form.openVector("parameters = c()", 1, ", ");
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
             // FIXME: Don't need accept here as we already know the type. Could as well put code here?
             parameter->accept(this);
-            ind.addCSV(this->getValue());
+            form.add(this->getValue());
         }
-        ind.closeCSVlist();
-        ind.addRowOutdent(")");
-        ind.addRow("return(parameters)");
-        ind.addRowOutdent("}");
-        return ind.createString();
+        form.closeVector();
+        form.add("return(parameters)");
+        form.outdentAdd("}");
+        return form.createString();
     }
     
     std::string PopEDGenerator::genODEFunc() {
-        Text::Indenter ind;
+        RFormatter form;
         // Function header
-        ind.addRowIndent("ode_func <- function(Time, Stat, Pars) {");
-        ind.addRowIndent("with(as.list(c(State, Pars)), {");
+        form.indentAdd("ode_func <- function(Time, Stat, Pars) {");
+        form.indentAdd("with(as.list(c(State, Pars)), {");
         
         // Derivative definitions
         std::vector<std::string> name_list;
         std::vector<std::string> symbols = this->r_gen.consol.derivs.getSymbols();
         std::vector<std::string> assigns = this->r_gen.consol.derivs.getAssigns();
         for (int i = 0; i < symbols.size(); i++) {
-            ind.addRow("d" + symbols[i] + " <- " + assigns[i]);
+            form.add("d" + symbols[i] + " <- " + assigns[i]);
             name_list.push_back("d" + symbols[i]);
         }
         
         // Return list
-        ind.addRow("return(list(" + Text::formatVector(name_list, "c", "") + "))");
-        ind.addRowOutdent("})");
-        ind.addRowOutdent("}");
+        form.add("return(list(" + PharmML::formatVector(name_list, "c", "") + "))");
+        form.outdentAdd("})");
+        form.outdentAdd("}");
 
-        return ind.createString(); 
+        return form.createString(); 
     }
 
     std::string PopEDGenerator::genStructuralModel() {
@@ -105,116 +103,111 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
         
-        Text::Indenter ind;
+        RFormatter form;
         
         // Function header
-        ind.addRowIndent("ff <- function(model_switch, xt, parameters, poped.db) {");
-        ind.addRowIndent("with(as.list(parameters), {");
+        form.indentAdd("ff <- function(model_switch, xt, parameters, poped.db) {");
+        form.indentAdd("with(as.list(parameters), {");
         
         // Init values
-        ind.addRow("d_ini <- " + this->r_gen.consol.derivs.genInitVector());
+        form.add("d_ini <- " + this->r_gen.consol.derivs.genInitVector());
         
         // Dose times
-        ind.addRow("times_xt <- drop(xt)");
+        form.add("times_xt <- drop(xt)");
         // TODO: Consolidate dosing times (from TrialDesign) and use actual information (not a sequence!)
-        ind.addRow("dose_times = seq(from=0,to=max(times_xt),by=TAU)");
+        form.add("dose_times = seq(from=0,to=max(times_xt),by=TAU)");
         
         // Event data
         // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-        ind.addRowIndent("eventdat <- data.frame(var = c('A1'),");
-        ind.addRow("time = dose_times,");
-        ind.addRow("value = c(DOSE), method = c('add'))");
-        ind.closeIndent();
+        form.indentAdd("eventdat <- data.frame(var = c('A1'),");
+        form.add("time = dose_times,");
+        form.add("value = c(DOSE), method = c('add'))");
+        form.closeIndent();
         
         // ODE call
-        ind.addRow("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+        form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
         
         // Y definition
-        ind.addBlock(this->r_gen.consol.vars.genStatements());
+        form.addMany(this->r_gen.consol.vars.genStatements());
         // TODO: Get structural part (only?) of observation model and resolv derivative symbol references to this form
-        ind.addRow("y = out[, 'A2']/(V/Favail)");
-        ind.addRow("y=y[match(times_xt,out[,'time'])]");
-        ind.addRow("y=cbind(y)");
+        form.add("y = out[, 'A2']/(V/Favail)");
+        form.add("y=y[match(times_xt,out[,'time'])]");
+        form.add("y=cbind(y)");
         // Just set the output part of the obs model for now (seems to be how PopED does it)
         // TODO: Develop complete structural Y resolve
         std::string out = this->accept(model->getModelDefinition()->getObservationModel()->getOutput());
-        ind.addRow("y = " + out);
+        form.add("y = " + out);
         
         // Return list
-        ind.addRow("return(list(y=y,poped.db=poped.db))");
-        ind.addRowOutdent("})");
-        ind.addRowOutdent("}");
+        form.add("return(list(y=y,poped.db=poped.db))");
+        form.outdentAdd("})");
+        form.outdentAdd("}");
 
         // Generate separate ODE function
-        ind.addBlock(this->genODEFunc());
+        form.addMany(this->genODEFunc());
 
-        return ind.createString();
+        return form.createString();
     }
     
     std::string PopEDGenerator::genErrorFunction() {
-        Text::Indenter ind;
+        RFormatter form;
         
-        ind.addRowIndent("feps <- function(model_switch,xt,parameters,epsi,poped.db) {");
-        ind.addRow("y <- ff(model_switch,xt,parameters,poped.db)[[1]]");
+        form.indentAdd("feps <- function(model_switch,xt,parameters,epsi,poped.db) {");
+        form.add("y <- ff(model_switch,xt,parameters,poped.db)[[1]]");
         
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
         ObservationModel *node = model->getModelDefinition()->getObservationModel();
-        ind.addRow("w <- " + this->accept(node->getErrorModel()));
+        form.add("w <- " + this->accept(node->getErrorModel()));
         
         // Increase y by error fraction (weight * epsilon)
         // TODO: Figure out how to resolve this with multiple EPS
-        ind.addRow("y = y + w*epsi[,1]");
+        form.add("y = y + w*epsi[,1]");
         
         // Return list
-        ind.addRow("return(list(y=y,poped.db=poped.db))");
-        ind.addRowOutdent("}");
+        form.add("return(list(y=y,poped.db=poped.db))");
+        form.outdentAdd("}");
         
-        return ind.createString();
+        return form.createString();
     }
     
     std::string PopEDGenerator::genDatabaseCall() {
-        Text::Indenter ind;
+        RFormatter form;
         
-        ind.addRowIndent("poped.db <- create.poped.database(");
-        
-        ind.setCSVformat(true);
-        ind.addCSV("ff_file = 'ff'");
-        ind.addCSV("fg_file = 'sfg'");
-        ind.addCSV("fError_file_file = 'feps'");
+        form.openVector("poped.db <- create.poped.database()", 1, ", ");
+        form.add("ff_file = 'ff'");
+        form.add("fg_file = 'sfg'");
+        form.add("fError_file_file = 'feps'");
         
         std::vector<IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        Text::Indenter bpop;
-        bpop.addRow("c(");
+        RFormatter bpop;
+        bpop.openVector("c()", 0, ", ");
         for (IndividualParameter *ip : ips) {
             if (!ip->isStructured()) {
                 /* Only half the story: Now the assignment needs to be matched to the corresponding PopulationParameter and
                  * that PopulationParameter looked up for initial estimate in ModellingSteps section... */
                 // TODO: The above
                 std::string s = ip->getSymbId() + "=" + this->accept(ip->getAssignment());
-                bpop.addCSV(s);
+                bpop.add(s);
             }
             
         }
-        bpop.closeCSVlist();
-        bpop.appendRow(")");
-        ind.addCSV("bpop = " + bpop.createString(false));
+        bpop.closeVector();
+        form.add("bpop = " + bpop.createString(false));
         
-        ind.addCSV("notfixed_bpop = NULL");
-        ind.addCSV("d = NULL");
-        ind.addCSV("sigma = NULL");
-        ind.addCSV("groupsize = NULL");
-        ind.addCSV("xt = NULL");
-        ind.addCSV("minxt = NULL");
-        ind.addCSV("maxxt = NULL");
-        ind.addCSV("a = NULL");
-        ind.addCSV("mina = NULL");
-        ind.addCSV("maxa = NULL");
-        ind.closeCSVlist();
+        form.add("notfixed_bpop = NULL");
+        form.add("d = NULL");
+        form.add("sigma = NULL");
+        form.add("groupsize = NULL");
+        form.add("xt = NULL");
+        form.add("minxt = NULL");
+        form.add("maxxt = NULL");
+        form.add("a = NULL");
+        form.add("mina = NULL");
+        form.add("maxa = NULL");
+        form.closeVector();
         
-        ind.addRowOutdent(")");
-        
-        return ind.createString();
+        return form.createString();
     }
     
     // Visitors

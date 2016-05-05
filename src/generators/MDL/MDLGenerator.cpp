@@ -53,12 +53,10 @@ namespace PharmML
     // Generators
     std::string MDLGenerator::generateModel(Model *model) {
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
-        // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
-        this->model = model;
         RFormatter form;
         
-        // Generate the MDL data object
-        std::vector<ExternalDataset *> ext_dss = this->model->getTrialDesign()->getExternalDatasets();
+        // Generate the MDL data object(s)
+        std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
         for (ExternalDataset *ext_ds : ext_dss) {
             std::string name = ext_ds->getOid();
             form.addMany(name + " = " + this->genDataObj(ext_ds));

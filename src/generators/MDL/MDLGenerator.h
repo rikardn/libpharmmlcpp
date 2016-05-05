@@ -50,7 +50,6 @@ namespace PharmML
     {
         private:
             MDLAstGenerator ast_gen;
-            Model *model;
             std::string value;
             std::pair<std::string, std::string> hvalue;
             std::unordered_map<std::string, std::string> hvalues;

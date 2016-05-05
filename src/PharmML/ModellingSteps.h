@@ -79,13 +79,37 @@ namespace PharmML
         std::vector<PharmML::VariableAssignment *> getVariableAssignments();
     };
     
+    class ParameterEstimation
+    {
+        PharmML::PharmMLContext *context;
+        SymbRef *symbRef;
+        bool fixed = false;
+        AstNode *init = nullptr;
+        AstNode *loBound = nullptr;
+        AstNode *hiBound = nullptr;
+        
+        public:
+        ParameterEstimation(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        SymbRef *getSymbRef();
+        bool isFixed();
+        bool hasInitValue();
+        bool hasLoBound();
+        bool hasHiBound();
+        AstNode *getInitValue();
+        AstNode *getLoBound();
+        AstNode *getHiBound();
+    };
+    
     class EstimationStep : CommonStepType
     {
         PharmML::PharmMLContext *context;
+        std::vector<ParameterEstimation *> parameterEstimations;
         
         public:
         EstimationStep(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        std::vector<ParameterEstimation *> getParameters();
     };
     
     class SimulationStep : CommonStepType

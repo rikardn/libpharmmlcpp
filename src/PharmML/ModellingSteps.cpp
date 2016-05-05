@@ -168,6 +168,70 @@ namespace PharmML
         return this->varAssignments;
     }
     
+    ParameterEstimation::ParameterEstimation(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void ParameterEstimation::parse(xml::Node node) {
+        // Get SymbRef (parameter to estimate)
+        xml::Node ref_node = this->context->getSingleElement(node, "./ct:SymbRef");
+        this->symbRef = new SymbRef(ref_node);
+        
+        // Get initial estimate
+        xml::Node init_node = this->context->getSingleElement(node, "./msteps:InitialEstimate");
+        if (init_node.exists()) {
+            this->fixed = (init_node.getAttribute("fixed").getValue() == "true") ? true : false;
+            xml::Node tree = init_node.getChild();
+            this->init = this->context->factory.create(tree);
+        }
+        
+        // Get lower bound
+        xml::Node lbnd_node = this->context->getSingleElement(node, "./ct:LowerBound");
+        if (lbnd_node.exists()) {
+            xml::Node tree = lbnd_node.getChild();
+            this->loBound = this->context->factory.create(tree);
+        }
+        
+        // Get upper bound
+        xml::Node ubnd_node = this->context->getSingleElement(node, "./ct:UpperBound");
+        if (ubnd_node.exists()) {
+            xml::Node tree = ubnd_node.getChild();
+            this->hiBound = this->context->factory.create(tree);
+        }
+    }
+    
+    SymbRef *ParameterEstimation::getSymbRef() {
+        return this->symbRef;
+    }
+    
+    bool ParameterEstimation::isFixed() {
+        return this->fixed;
+    }
+    
+    bool ParameterEstimation::hasInitValue() {
+        return (this->init != nullptr);
+    }
+    
+    bool ParameterEstimation::hasLoBound() {
+        return (this->loBound != nullptr);
+    }
+    
+    bool ParameterEstimation::hasHiBound() {
+        return (this->hiBound != nullptr);
+    }
+    
+    AstNode *ParameterEstimation::getInitValue() {
+        return this->init;
+    }
+    
+    AstNode *ParameterEstimation::getLoBound() {
+        return this->loBound;
+    }
+    
+    AstNode *ParameterEstimation::getHiBound() {
+        return this->hiBound;
+    }
     
     EstimationStep::EstimationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;
@@ -175,7 +239,12 @@ namespace PharmML
     }
 
     void EstimationStep::parse(xml::Node node) {
-        
+        // Get parameter estimation settings
+        std::vector<xml::Node> param_nodes = this->context->getElements(node, "./msteps:ParametersToEstimate/msteps:ParameterEstimation");
+        for (xml::Node param_node : param_nodes) {
+            ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
+            this->parameterEstimations.push_back(param);
+        }
     } 
     
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {

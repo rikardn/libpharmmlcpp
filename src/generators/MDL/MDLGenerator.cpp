@@ -66,9 +66,12 @@ namespace PharmML
         // Generate the MDL parameter object(s)
         // TODO: Implement support for multiple parameter models as per schema
         //~ std::vector<ParameterModel *> par_models = model->getModelDefinition()->getParameterModels();
+        //~ for (par_model : par_models) {
         ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
-        //~ std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
-        //~ std::vector<std::string> par_objs = this->genParObjs(par_model, estim_steps);
+        std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
+        form.addMany("model_par = " + this->genParObj(par_model, estim_steps));
+        form.add("");
+        //~ }
         
         
         // Generate the three other MDL objects

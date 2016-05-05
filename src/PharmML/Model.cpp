@@ -42,6 +42,11 @@ namespace PharmML
         if (design_node.exists()) {
             this->TrialDesign = new PharmML::TrialDesign(this->context, design_node);
         }
+        
+        xml::Node msteps_node = this->context->getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
+        if (msteps_node.exists()) {
+            this->ModellingSteps = new PharmML::ModellingSteps(this->context, msteps_node);
+        }
     }
 
     Model::Model(const char *filename) {
@@ -72,5 +77,9 @@ namespace PharmML
     
     PharmML::TrialDesign *Model::getTrialDesign() {
         return this->TrialDesign;
+    }
+    
+    PharmML::ModellingSteps *Model::getModellingSteps() {
+        return this->ModellingSteps;
     }
 }

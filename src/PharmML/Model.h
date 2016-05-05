@@ -37,6 +37,7 @@ namespace PharmML
         std::vector<PharmML::FunctionDefinition *> FunctionDefinitions; 
         PharmML::ModelDefinition *ModelDefinition;
         PharmML::TrialDesign *TrialDesign;
+        PharmML::ModellingSteps *ModellingSteps = nullptr;
         
         private:
         void parse(xml::Node node);
@@ -49,6 +50,7 @@ namespace PharmML
         std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
         PharmML::ModelDefinition *getModelDefinition();
         PharmML::TrialDesign *getTrialDesign();
+        PharmML::ModellingSteps *getModellingSteps();
     };
 }
 

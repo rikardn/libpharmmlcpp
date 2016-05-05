@@ -51,7 +51,7 @@ namespace PharmML
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST buildNamespace("CommonTypes", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST buildNamespace("Dataset", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST buildNamespace("ModelDefinition", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mstep", BAD_CAST buildNamespace("ModellingSteps", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST buildNamespace("ModellingSteps", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST buildNamespace("TrialDesign", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }

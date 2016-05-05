@@ -25,6 +25,7 @@
 #include <PharmML/ParameterModel.h>
 #include <PharmML/StructuralModel.h>
 #include <PharmML/ObservationModel.h>
+#include <PharmML/ModellingSteps.h>
 
 namespace PharmML
 {

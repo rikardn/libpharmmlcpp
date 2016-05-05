@@ -56,4 +56,8 @@ namespace PharmML
     std::vector<RandomVariable *> ParameterModel::getRandomVariables() {
         return this->RandomVariables;
     }
+    
+    std::string ParameterModel::getBlkId() {
+        return this->blkId;
+    }
 }

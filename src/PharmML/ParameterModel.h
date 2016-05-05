@@ -39,6 +39,7 @@ namespace PharmML
         std::vector<RandomVariable *> getRandomVariables();
         ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        std::string getBlkId();
     };
 }
 

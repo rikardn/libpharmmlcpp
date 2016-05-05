@@ -70,7 +70,7 @@ namespace PharmML
             std::string genParObj(ParameterModel * par_model, std::vector<EstimationStep *> estim_steps);
             std::string genMdlObj();
             std::string genTaskObj();
-            std::string genMogObj();
+            std::string genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj);
             
             virtual void visit(FunctionDefinition *node);
             virtual void visit(PopulationParameter *node);

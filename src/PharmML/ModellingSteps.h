@@ -105,6 +105,7 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::vector<ParameterEstimation *> parameterEstimations;
+        // TODO: Add Operation support! SAEM etc. Forgot that one.
         
         public:
         EstimationStep(PharmML::PharmMLContext *context, xml::Node node);

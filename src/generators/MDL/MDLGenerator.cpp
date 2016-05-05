@@ -57,8 +57,10 @@ namespace PharmML
         
         // Generate the MDL data object(s)
         std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
+        std::vector<std::string> dataObjNames;
         for (ExternalDataset *ext_ds : ext_dss) {
             std::string name = ext_ds->getOid();
+            dataObjNames.push_back(name);
             form.addMany(name + " = " + this->genDataObj(ext_ds));
             form.add("");
         }
@@ -68,18 +70,29 @@ namespace PharmML
         //~ std::vector<ParameterModel *> par_models = model->getModelDefinition()->getParameterModels();
         //~ for (par_model : par_models) {
         ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
+        std::vector<std::string> parObjNames;
+        std::string name = par_model->getBlkId();
+        parObjNames.push_back(name);
         std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
-        form.addMany("model_par = " + this->genParObj(par_model, estim_steps));
+        form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
         form.add("");
         //~ }
         
         
-        // Generate the three other MDL objects
-        form.addMany("model_mdl = " + this->genMdlObj());
+        // Generate the MDL model object(s)
+        std::vector<std::string> mdlObjNames;
+        mdlObjNames.push_back("mdl_object");
+        form.addMany(mdlObjNames[0] + " = " + this->genMdlObj());
         form.add("");
-        form.addMany("model_task = " + this->genTaskObj());
+        
+        // Generate the MDL task object(s)
+        std::vector<std::string> taskObjNames;
+        taskObjNames.push_back("task_object");
+        form.addMany(taskObjNames[0] + " = " + this->genTaskObj());
         form.add("");
-        form.addMany("model_mog = " + this->genMogObj());
+        
+        // Generate the MDL mog object(s)
+        form.addMany("mog_object = " + this->genMogObj(dataObjNames[0], parObjNames[0], mdlObjNames[0], taskObjNames[0]));
         
         return form.createString();
     }
@@ -124,10 +137,16 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genMogObj() {
+    std::string MDLGenerator::genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj) {
         RFormatter form;
         
         form.indentAdd("mogObj {");
+        form.openVector("OBJECTS {}", 1, "");
+        form.add(dataObj + " : { type is dataObj }");
+        form.add(parObj + " : { type is parObj }");
+        form.add(mdlObj + " : { type is mdlObj }");
+        form.add(taskObj + " : { type is taskObj }");
+        form.closeVector();
         form.outdentAdd("} # end mog object");
         
         return form.createString();

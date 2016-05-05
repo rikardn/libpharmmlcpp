@@ -245,6 +245,8 @@ namespace PharmML
             ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
             this->parameterEstimations.push_back(param);
         }
+        
+        // TODO: Add Operation support! SAEM etc. Forgot that one.
     } 
     
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {

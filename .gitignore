@@ -3,6 +3,7 @@
 main
 main.exe
 pharmml2poped
+mdl
 libpharmmlc.a
 test/test
 

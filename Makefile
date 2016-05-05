@@ -18,6 +18,9 @@ main: main.cpp libpharmmlc.a
 pharmml2poped: pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDSymbols.h src/generators/R/RTextFormatter.cpp src/generators/R/RTextFormatter.h libpharmmlc.a
 	$(CC) pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
+mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/R/RTextFormatter.cpp src/generators/R/RTextFormatter.h libpharmmlc.a
+	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
+
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
@@ -118,6 +121,12 @@ RPharmMLConsolidator.o: src/generators/R/RPharmMLConsolidator.cpp src/generators
 RAstGenerator.o: src/generators/R/RAstGenerator.cpp src/generators/R/RAstGenerator.h
 	$(CC) -c src/generators/R/RAstGenerator.cpp -oRAstGenerator.o $(CFLAGS)
 
+MDLGenerator.o: src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h
+	$(CC) -c src/generators/MDL/MDLGenerator.cpp -oMDLGenerator.o $(CFLAGS)
+
+MDLAstGenerator.o: src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h
+	$(CC) -c src/generators/MDL/MDLAstGenerator.cpp -oMDLAstGenerator.o $(CFLAGS)
+
 symbols.o: src/AST/symbols.cpp src/AST/symbols.h
 	$(CC) -c src/AST/symbols.cpp -osymbols.o $(CFLAGS)
 
@@ -165,6 +174,7 @@ RTextFormatter.o: src/generators/R/RTextFormatter.cpp src/generators/R/RTextForm
 clean:
 	rm -f *.o
 	rm -f pharmml2poped
+	rm -f mdl
 	rm -f libpharmmlc.a
 	rm -f main
 	rm -f output

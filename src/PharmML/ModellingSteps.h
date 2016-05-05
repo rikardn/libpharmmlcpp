@@ -23,6 +23,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/ColumnMapping.h>
 #include <AST/symbols.h>
+#include <PharmML/Dataset.h>
 
 namespace PharmML
 {
@@ -35,6 +36,64 @@ namespace PharmML
         
         public:
         TargetTool(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+    };
+    
+    class VariableAssignment
+    {
+        PharmML::PharmMLContext *context;
+        SymbRef *symbRef;
+        AstNode *assignment;
+        
+        public:
+        VariableAssignment(PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        SymbRef *getSymbRef();
+        AstNode *getAssignment();
+    };
+    
+    class CommonStepType
+    {
+        PharmML::PharmMLContext *context;
+        
+        protected:
+        std::string oid;
+        std::vector<PharmML::ExternalFile *> softwareSettings;
+        std::vector<PharmML::ExternalFile *> outputFiles;
+        std::string targetToolRef;
+        std::string extDatasetRef;
+        std::vector<std::string> interventionsRefs;
+        std::vector<std::string> observationsRefs;
+        std::vector<PharmML::VariableAssignment *> varAssignments;
+        
+        public:
+        CommonStepType(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        std::string getOid();
+        std::vector<PharmML::ExternalFile *> getSoftwareSettingsFiles();
+        std::vector<PharmML::ExternalFile *> getOutputFiles();
+        std::string getTargetToolRef();
+        std::string getExternalDatasetRef();
+        std::vector<std::string> getInterventionsRefs();
+        std::vector<std::string> getObservationsRefs();
+        std::vector<PharmML::VariableAssignment *> getVariableAssignments();
+    };
+    
+    class EstimationStep : CommonStepType
+    {
+        PharmML::PharmMLContext *context;
+        
+        public:
+        EstimationStep(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+    };
+    
+    class SimulationStep : CommonStepType
+    {
+        PharmML::PharmMLContext *context;
+        
+        public:
+        SimulationStep(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
     };
     
@@ -72,10 +131,14 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         xml::Node xml_node;
         std::vector<TargetTool *> tools;
+        std::vector<EstimationStep *> estSteps;
+        std::vector<SimulationStep *> simSteps;
         
         public:
         ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        std::vector<EstimationStep *> getEstimationSteps();
+        std::vector<SimulationStep *> getSimulationSteps();
         void update();
     };
 }

@@ -63,9 +63,15 @@ namespace PharmML
             form.add("");
         }
         
+        // Generate the MDL parameter object(s)
+        // TODO: Implement support for multiple parameter models as per schema
+        //~ std::vector<ParameterModel *> par_models = model->getModelDefinition()->getParameterModels();
+        ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
+        //~ std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
+        //~ std::vector<std::string> par_objs = this->genParObjs(par_model, estim_steps);
+        
+        
         // Generate the three other MDL objects
-        form.addMany("model_par = " + this->genParObj());
-        form.add("");
         form.addMany("model_mdl = " + this->genMdlObj());
         form.add("");
         form.addMany("model_task = " + this->genTaskObj());
@@ -88,7 +94,7 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genParObj() {
+    std::string MDLGenerator::genParObj(ParameterModel *par_model, std::vector<EstimationStep *> estim_steps) {
         RFormatter form;
         
         form.indentAdd("parObj {");

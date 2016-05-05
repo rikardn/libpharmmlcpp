@@ -37,10 +37,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
-#include <PharmML/Interventions.h>
-#include <PharmML/Observations.h>
-#include <PharmML/Arms.h>
-#include <PharmML/DesignSpaces.h>
+#include <PharmML/ModellingSteps.h>
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy). Also reason if MDLSymbols.h has a place (as PopEDSymbols.h has in PopEDAstGenerator).
 #include <PharmML/Model.h>
 #include <generators/R/RTextFormatter.h> // TODO: If useful for MDL: Please remove the R designation. Thank you!
@@ -70,7 +67,7 @@ namespace PharmML
             std::string generateModel(Model *model);
             
             std::string genDataObj(ExternalDataset *ext_ds);
-            std::string genParObj();
+            std::string genParObj(ParameterModel * par_model, std::vector<EstimationStep *> estim_steps);
             std::string genMdlObj();
             std::string genTaskObj();
             std::string genMogObj();

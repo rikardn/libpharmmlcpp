@@ -135,9 +135,9 @@ int main(int argc, char **argv)
         std::cout << "# [TRIAL DESIGN]" << std::endl;
         
         // External datasets
-        ExternalDataset *ext_ds = td->getExternalDataset();
-        if (ext_ds) {
-            std::cout << "## External datasets" << std::endl;
+        std::vector<ExternalDataset *> ext_dss = td->getExternalDatasets();
+        for (ExternalDataset *ext_ds : ext_dss) {
+            std::cout << "## External dataset" << std::endl;
             ext_ds->accept(&gen);
             std::cout << gen.getValue() << std::endl;
         }

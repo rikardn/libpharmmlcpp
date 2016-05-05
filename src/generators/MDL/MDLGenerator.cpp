@@ -57,9 +57,15 @@ namespace PharmML
         this->model = model;
         RFormatter form;
         
-        // Generate the four MDL objects
-        form.addMany("model_dat = " + this->genDataObj());
-        form.add("");
+        // Generate the MDL data object
+        std::vector<ExternalDataset *> ext_dss = this->model->getTrialDesign()->getExternalDatasets();
+        for (ExternalDataset *ext_ds : ext_dss) {
+            std::string name = ext_ds->getOid();
+            form.addMany(name + " = " + this->genDataObj(ext_ds));
+            form.add("");
+        }
+        
+        // Generate the three other MDL objects
         form.addMany("model_par = " + this->genParObj());
         form.add("");
         form.addMany("model_mdl = " + this->genMdlObj());
@@ -71,12 +77,12 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genDataObj() {
+    std::string MDLGenerator::genDataObj(ExternalDataset* ext_ds) {
         RFormatter form;
         
         form.indentAdd("dataObj {");
         
-        model->getTrialDesign()->getExternalDataset()->accept(this);
+        ext_ds->accept(this);
         form.addMany(this->getValue());
         
         form.outdentAdd("} # end data object");
@@ -218,8 +224,8 @@ namespace PharmML
         form.closeVector();
         form.add("");
         
-        // Get first dataset and generate DATA_INPUT_VARIABLES
-        Dataset *dataset = node->getDatasets()[0];
+        // Get dataset and generate DATA_INPUT_VARIABLES
+        Dataset *dataset = node->getDataset();
         form.addMany(this->genDATA_INPUT_VARIABLES(dataset, mappings));
         
         this->setValue(form.createString());

@@ -220,17 +220,12 @@ namespace PharmML
             }
         }
         
-        std::vector<Dataset *> datasets = node->getDatasets();
-        if (!datasets.empty()) {
-            s += "# Datasets\n";
-            s += "datasets <- vector(mode=\"list\", length=" + std::to_string(datasets.size()) + ")\n";
-            int i = 1;
-            for (Dataset *ds : datasets) {
-                ds->setName("datasets[[" + std::to_string(i) + "]]");
-                ds->accept(this);
-                s += this->getValue() + "\n";
-                i++;
-            }
+        Dataset *ds = node->getDataset();
+        if (ds) {
+            s += "# Dataset\n";
+            ds->setName(node->getOid());
+            ds->accept(this);
+            s += this->getValue() + "\n";
         }
         
         this->setValue(s + "\n");

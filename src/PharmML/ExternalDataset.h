@@ -32,7 +32,7 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string oid;
         std::vector<PharmML::ColumnMapping *> ColumnMappings;
-        std::vector<Dataset *> datasets;
+        Dataset *dataset;
         // Why don't we even have an accept for this?
         std::string toolName;
 
@@ -40,7 +40,7 @@ namespace PharmML
         ExternalDataset(PharmML::PharmMLContext *context, xml::Node node);
         std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
-        std::vector<Dataset *> getDatasets();
+        Dataset *getDataset();
         void parse(xml::Node node);
         void accept(PharmMLVisitor *visitor);
     };

@@ -18,6 +18,7 @@
 #ifndef PHARMML_TRIALDESIGN_H_
 #define PHARMML_TRIALDESIGN_H_
 
+#include <vector>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <PharmML/PharmMLContext.h>
@@ -34,7 +35,7 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         xml::Node xml_node;
         PharmML::Interventions *Interventions = nullptr;
-        PharmML::ExternalDataset *ExternalDataset = nullptr;
+        std::vector<PharmML::ExternalDataset *> ExternalDatasets;
         PharmML::Observations *Observations = nullptr;
         PharmML::Arms *Arms = nullptr;
         PharmML::DesignSpaces *DesignSpaces = nullptr;
@@ -43,7 +44,7 @@ namespace PharmML
         TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         void update();
-        PharmML::ExternalDataset *getExternalDataset();
+        std::vector<PharmML::ExternalDataset *> getExternalDatasets();
         PharmML::Interventions *getInterventions();
         PharmML::Observations *getObservations();
         PharmML::Arms *getArms();

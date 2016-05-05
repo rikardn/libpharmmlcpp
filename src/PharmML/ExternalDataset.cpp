@@ -33,12 +33,9 @@ namespace PharmML
         }
         // TODO: Support ColumnTransformation
         // TODO: Support MultipleDVMapping
-        std::vector<xml::Node> ds_nodes = this->context->getElements(node, "./ds:DataSet");
-        if (!ds_nodes.empty()) {
-            for (xml::Node ds_node : ds_nodes) {
-                PharmML::Dataset *dataset = new PharmML::Dataset(this->context, ds_node);
-                datasets.push_back(dataset);
-            }
+        xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
+        if (ds_node.exists()) {
+            this->dataset = new PharmML::Dataset(this->context, ds_node);
         } else {
             // TODO: Support CodeInjection
         }
@@ -53,8 +50,8 @@ namespace PharmML
         return this->ColumnMappings;
     }
     
-    std::vector<Dataset *> ExternalDataset::getDatasets() {
-        return this->datasets;
+    Dataset *ExternalDataset::getDataset() {
+        return this->dataset;
     }
     
     void ExternalDataset::accept(PharmMLVisitor *visitor) {

@@ -68,7 +68,7 @@ namespace PharmML
             
             std::string generateModel(Model *model);
             
-            std::string genDataObj();
+            std::string genDataObj(ExternalDataset *ext_ds);
             std::string genParObj();
             std::string genMdlObj();
             std::string genTaskObj();

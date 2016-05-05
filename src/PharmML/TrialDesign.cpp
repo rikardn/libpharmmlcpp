@@ -30,26 +30,27 @@ namespace PharmML
     }
 
     void TrialDesign::parse(xml::Node node) {
-        xml::Node external_dataset_node = this->context->getSingleElement(node, ".//design:ExternalDataSet");
-        if (external_dataset_node.exists()) {
-            this->ExternalDataset = new PharmML::ExternalDataset(this->context, external_dataset_node);
+        std::vector<xml::Node> ext_dataset_nodes = this->context->getElements(node, "./design:ExternalDataSet");
+        for (xml::Node ext_dataset_node : ext_dataset_nodes) {
+            ExternalDataset* ds = new PharmML::ExternalDataset(this->context, ext_dataset_node);
+            this->ExternalDatasets.push_back(ds);
         }
-        xml::Node interventions_node = this->context->getSingleElement(node, ".//design:Interventions");
+        xml::Node interventions_node = this->context->getSingleElement(node, "./design:Interventions");
         if (interventions_node.exists()) {
             this->Interventions = new PharmML::Interventions(this->context, interventions_node);
         }
         
-        xml::Node observations_node = this->context->getSingleElement(node, ".//design:Observations");
+        xml::Node observations_node = this->context->getSingleElement(node, "./design:Observations");
         if (observations_node.exists()) {
             this->Observations = new PharmML::Observations(this->context, observations_node);
         }
         
-        xml::Node arms_node = this->context->getSingleElement(node, ".//design:Arms");
+        xml::Node arms_node = this->context->getSingleElement(node, "./design:Arms");
         if (arms_node.exists()) {
             this->Arms = new PharmML::Arms(this->context, arms_node);
         }
         
-        xml::Node ds_node = this->context->getSingleElement(node, ".//design:DesignSpaces");
+        xml::Node ds_node = this->context->getSingleElement(node, "./design:DesignSpaces");
         if (ds_node.exists()) {
             this->DesignSpaces = new PharmML::DesignSpaces(this->context, ds_node);
         }
@@ -70,8 +71,8 @@ namespace PharmML
         this->xml_node.replaceNode(td);
     }
 
-    PharmML::ExternalDataset *TrialDesign::getExternalDataset() {
-        return this->ExternalDataset;
+    std::vector<PharmML::ExternalDataset *> TrialDesign::getExternalDatasets() {
+        return this->ExternalDatasets;
     }
 
     PharmML::Interventions *TrialDesign::getInterventions() {

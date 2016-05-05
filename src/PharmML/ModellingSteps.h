@@ -157,12 +157,14 @@ namespace PharmML
         std::vector<TargetTool *> tools;
         std::vector<EstimationStep *> estSteps;
         std::vector<SimulationStep *> simSteps;
+        std::vector<OptimalDesignStep *> optSteps;
         
         public:
         ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<EstimationStep *> getEstimationSteps();
         std::vector<SimulationStep *> getSimulationSteps();
+        std::vector<OptimalDesignStep *> getOptimalDesignSteps();
         void update();
     };
 }

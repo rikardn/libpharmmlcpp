@@ -342,7 +342,8 @@ namespace PharmML
         // Get optimal design steps
         std::vector<xml::Node> ostep_nodes = this->context->getElements(node, "./msteps:OptimalDesignStep");
         for (xml::Node ostep_node : ostep_nodes) {
-            // TODO: Support this
+            OptimalDesignStep *ostep = new OptimalDesignStep(this->context, ostep_node);
+            this->optSteps.push_back(ostep);
         }
         
         // Get step dependencies
@@ -358,6 +359,10 @@ namespace PharmML
     
     std::vector<SimulationStep *> ModellingSteps::getSimulationSteps() {
         return this->simSteps;
+    }
+    
+    std::vector<OptimalDesignStep *> ModellingSteps::getOptimalDesignSteps() {
+        return this->optSteps;
     }
 
     void ModellingSteps::update() {

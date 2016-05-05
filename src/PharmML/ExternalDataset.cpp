@@ -54,6 +54,10 @@ namespace PharmML
         return this->dataset;
     }
     
+    std::string ExternalDataset::getToolName() {
+        return this->toolName;
+    }
+    
     void ExternalDataset::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

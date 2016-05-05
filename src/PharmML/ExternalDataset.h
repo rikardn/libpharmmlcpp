@@ -41,6 +41,7 @@ namespace PharmML
         std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
+        std::string getToolName();
         void parse(xml::Node node);
         void accept(PharmMLVisitor *visitor);
     };

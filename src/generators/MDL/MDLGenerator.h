@@ -21,6 +21,8 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+typedef std::pair<std::string, std::string> stringpair;
+typedef std::unordered_map<std::string, std::string> stringmap;
 
 #include <visitors/AstNodeVisitor.h>
 #include <PharmML/FunctionDefinition.h>
@@ -51,19 +53,19 @@ namespace PharmML
         private:
             MDLAstGenerator ast_gen;
             std::string value;
-            std::pair<std::string, std::string> hvalue;
-            std::unordered_map<std::string, std::string> hvalues;
+            stringpair hvalue;
+            stringmap hvalues;
             void setValue(std::string str);
-            void setValue(std::pair<std::string, std::string> pair);
-            void setValue(std::unordered_map<std::string, std::string> hash);
+            void setValue(stringpair pair);
+            void setValue(stringmap hash);
             std::string accept(AstNode *);
 
         public:
             //~ Consolidator consol;
 
             std::string getValue();
-            std::pair<std::string, std::string> getPairValue();
-            std::unordered_map<std::string, std::string> getHashValue();
+            stringpair getPairValue();
+            stringmap getHashValue();
             
             std::string generateModel(Model *model);
             
@@ -88,7 +90,7 @@ namespace PharmML
             virtual void visit(ExternalFile *node);
             virtual void visit(DataColumn *node);
             virtual void visit(Dataset *node);
-            std::string genDATA_INPUT_VARIABLES(Dataset *node, std::unordered_map<std::string, std::string> column_mappings);
+            std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
             
             virtual void visit(ExternalDataset *node);
             

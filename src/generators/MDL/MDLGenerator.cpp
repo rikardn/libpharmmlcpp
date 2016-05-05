@@ -24,11 +24,11 @@ namespace PharmML
         this->value = str;
     }
     
-    void MDLGenerator::setValue(std::pair<std::string, std::string> pair) {
+    void MDLGenerator::setValue(stringpair pair) {
         this->hvalue = pair;
     }
     
-    void MDLGenerator::setValue(std::unordered_map<std::string, std::string> hash) {
+    void MDLGenerator::setValue(stringmap hash) {
         this->hvalues = hash;
     }
 
@@ -42,11 +42,11 @@ namespace PharmML
         return this->value;
     }
     
-    std::pair<std::string, std::string> MDLGenerator::getPairValue() {
+    stringpair MDLGenerator::getPairValue() {
         return this->hvalue;
     }
     
-    std::unordered_map<std::string, std::string> MDLGenerator::getHashValue() {
+    stringmap MDLGenerator::getHashValue() {
         return this->hvalues;
     }
     
@@ -146,17 +146,14 @@ namespace PharmML
     void MDLGenerator::visit(Distribution *node) { }
 
     void MDLGenerator::visit(ColumnMapping *node) {
-       std::pair<std::string, std::string> pair = {
+        stringpair pair = {
             node->getColumnIdRef(), this->accept(node->getFirstSymbol())
         };
         this->setValue(pair);
     }
     
-    // Class ExternalFile
-    void MDLGenerator::visit(ExternalFile *node) {
-        std::string s = "'" + node->getPath() + "'";
-        setValue(s);
-    }
+    // Class ExternalFile (this class might be superfluous)
+    void MDLGenerator::visit(ExternalFile *node) { }
     
     // Class DataColumn
     void MDLGenerator::visit(DataColumn *node) { }
@@ -164,12 +161,12 @@ namespace PharmML
     // Class Dataset
     void MDLGenerator::visit(Dataset *node) { }
     
-    std::string MDLGenerator::genDATA_INPUT_VARIABLES(Dataset *node, std::unordered_map<std::string, std::string> column_mappings) {
+    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
+        stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
         if (node->isExternal()) {
             RFormatter form;
-            form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
             
-            // Loop through each column definition
+            // Output one row for each column definition
             int num_cols = node->getDefinition()->getNumColumns();
             for (int num = 1; num <= num_cols; ++num) {
                 // Get column id
@@ -178,27 +175,28 @@ namespace PharmML
                 
                 // Open vector with column id as header
                 form.openVector(id + " : {}", 0, ", ");
-                form.add("use is " + col_def->getType());
+                std::string type = col_def->getType();
+                form.add("use is " + type);
                 
-                // Find match in column mappings and add it (if found)
-                auto got = column_mappings.find(id);
-                if (got != column_mappings.end()) {
-                    form.add("variable = " + column_mappings[id]);
+                if (type == "covariate" && id == column_mappings[id]) {
+                    // Trim column_mappings to not contain implicit (same-name) covariate mappings
+                    column_mappings.erase(id);
+                } else {
+                    // Find match in column mappings and add it (if found and not implicit)
+                    auto got_map = column_mappings.find(id);
+                    if (got_map != column_mappings.end()) {
+                        if (column_mappings[id] != implicit_mappings[type]) {
+                            form.add("variable = " + column_mappings[id]);
+                        } else {
+                            // Trim column_mappings to only contain maps required by MDL
+                            column_mappings.erase(id);
+                        }
+                    }
                 }
                 
                 form.closeVector();
             }
-            form.closeVector();
             
-            form.indentAdd("SOURCE {");
-            form.openVector("srcfile : {}", 0, ", ");
-            
-            ExternalFile *extFile = node->getExternal();
-            extFile->accept(this);
-            form.add(this->getValue());
-            
-            form.closeVector();
-            form.outdentAdd("}");
             return form.createString();
         } else {
             // Yes, what else?
@@ -208,23 +206,54 @@ namespace PharmML
     // Class ExternalDataset
     void MDLGenerator::visit(ExternalDataset *node) {
         RFormatter form;
+        std::string tool = node->getToolName();
         
-        // Produce associative array of column mappings
-        form.openVector("DECLARED_VARIABLES{}", 0, " ");
-        std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
-        std::unordered_map<std::string, std::string> mappings;
-        for (ColumnMapping *col_map : col_maps) {
-            col_map->accept(this);
-            std::pair<std::string, std::string> pair = this->getPairValue();
-            form.add(pair.first);
-            mappings.insert(pair);
+        if (tool == "NONMEM") {
+            // Generate associative array of mapping targets (to be trimmed before output)
+            stringmap mappings;
+            std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
+            for (ColumnMapping *col_map : col_maps) {
+                col_map->accept(this);
+                stringpair pair = this->getPairValue();
+                mappings.insert(pair);
+            }
+            
+            Dataset *dataset = node->getDataset();
+            if (dataset->isExternal()) {
+                // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
+                std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
+                form.openVector("DECLARED_VARIABLES{}", 0, " ");
+                for (stringpair pair : mappings) {
+                    form.add(pair.second);
+                }
+                form.closeVector();
+                form.add("");
+                
+                // Output DATA_INPUT_VARIABLES
+                form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
+                form.addMany(data_input_vars);
+                form.closeVector();
+                form.append(" # end DATA_INPUT_VARIABLES");
+                form.add("");
+                
+                // Generate SOURCE
+                form.indentAdd("SOURCE {");
+                ExternalFile *file = dataset->getExternal();
+                form.add("# Name: " + file->getOid());
+                form.add("# Type: " + file->getFormat());
+                form.add("# Delimiter: \"" + file->getDelimiter() + "\"");
+                form.openVector("srcfile : {}", 1, ", ");
+                form.add("file = \"" + file->getPath() + "\"");
+                form.add("inputFormat = nonmemFormat");
+                form.closeVector();
+                form.outdentAdd("} # end SOURCE");
+            } else {
+                form.add("# Lack of external dataset!");
+            }
+        } else {
+            form.add("# Unknown dataset encoding tool/style: \"" + tool + "\"!");
+            form.add("# Current support is limited to NONMEM datasets");
         }
-        form.closeVector();
-        form.add("");
-        
-        // Get dataset and generate DATA_INPUT_VARIABLES
-        Dataset *dataset = node->getDataset();
-        form.addMany(this->genDATA_INPUT_VARIABLES(dataset, mappings));
         
         this->setValue(form.createString());
     }

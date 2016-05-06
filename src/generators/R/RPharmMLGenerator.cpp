@@ -87,9 +87,21 @@ namespace PharmML
         }
         this->setValue(result);
     }
+    
+    void RPharmMLGenerator::visit(VariabilityLevel *node) {
+        RFormatter form;
 
+        if (node->isReferenceLevel()) {
+            form.add("# Level: (Reference level)");
+        } else {
+            form.add("# Level: (Not reference level)");
+        }
+        
+        this->setValue(form.createString());
+    }
+    
     void RPharmMLGenerator::visit(RandomVariable *node) {
-        std::string var_ref = "variability_reference=\"" + this->accept(node->getVariabilityReference()) + "\"";
+        std::string var_ref = "variability_reference=\"" + this->accept(node->getVariabilityReference()->getLevelReference()) + "\"";
         node->getDistribution()->accept(this);
         std::string dist = this->getValue();
         this->setValue(node->getSymbId() + " <- list(" + var_ref + ", " + dist + ")");

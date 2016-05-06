@@ -29,24 +29,34 @@ namespace PharmML
     }
 
     void ModelDefinition::parse(xml::Node node) {
-        xml::Node cov_node = this->context->getSingleElement(node, ".//mdef:CovariateModel");
+        std::vector<xml::Node> var_nodes = this->context->getElements(node, "./mdef:VariabilityModel");
+        for (xml::Node var_node : var_nodes) {
+            VariabilityModel *varModel = new PharmML::VariabilityModel(this->context, var_node);
+            this->VariabilityModels.push_back(varModel);
+        }
+        // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
+        xml::Node cov_node = this->context->getSingleElement(node, "./mdef:CovariateModel");
         if (cov_node.exists()) {
             this->CovariateModel = new PharmML::CovariateModel(this->context, cov_node);
         }
-        xml::Node struct_node = this->context->getSingleElement(node, ".//mdef:StructuralModel");
+        xml::Node struct_node = this->context->getSingleElement(node, "./mdef:StructuralModel");
         if (struct_node.exists()) {
             this->StructuralModel = new PharmML::StructuralModel(this->context, struct_node);
         }
-        xml::Node param_node = this->context->getSingleElement(node, ".//mdef:ParameterModel");
+        xml::Node param_node = this->context->getSingleElement(node, "./mdef:ParameterModel");
         if (param_node.exists()) {
             this->ParameterModel = new PharmML::ParameterModel(this->context, param_node);
         }
-        xml::Node obs_node = this->context->getSingleElement(node, ".//mdef:ObservationModel");
+        xml::Node obs_node = this->context->getSingleElement(node, "./mdef:ObservationModel");
         if (obs_node.exists()) {
             this->ObservationModel = new PharmML::ObservationModel(this->context, obs_node);
         }
     }
-
+    
+    std::vector<PharmML::VariabilityModel *> ModelDefinition::getVariabilityModels() {
+        return this->VariabilityModels;
+    }
+    
     PharmML::CovariateModel *ModelDefinition::getCovariateModel() {
         return this->CovariateModel;
     }

@@ -71,6 +71,22 @@ int main(int argc, char **argv)
     }
     std::cout << std::endl;
     
+    // Variability levels output
+    std::vector<VariabilityModel *> var_mods = model->getModelDefinition()->getVariabilityModels();
+    for (auto &it : var_mods) {
+        std::cout << "# Variability model:" << std::endl;
+        if (it->onResidualError()) {
+            std::cout << "# Residual error" << std::endl;
+        } else if (it->onParameter()){
+            std::cout << "# Parameter variability" << std::endl;
+        }
+        for (VariabilityLevel *var_level : it->getVariabilityLevels()) {
+            var_level->accept(&gen);
+            std::cout << gen.getValue();
+        }
+        std::cout << std::endl;
+    }
+    
     // Function definitions output
     std::cout << "# Function definitions" << std::endl;
     std::vector<std::string> function_defs = gen.genFunctionDefinitions(model);

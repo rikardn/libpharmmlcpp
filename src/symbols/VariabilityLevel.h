@@ -15,29 +15,43 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RANDOMVARIABLE_H_
-#define PHARMML_RANDOMVARIABLE_H_
+#ifndef PHARMML_VARIABILITYLEVEL_H_
+#define PHARMML_VARIABILITYLEVEL_H_
 
 #include <PharmML/PharmMLContext.h>
-#include <PharmML/Distribution.h>
 #include <visitors/PharmMLVisitor.h>
-#include "VariabilityLevel.h"
 
 namespace PharmML
 {
-    class RandomVariable : public Symbol
+    class VariabilityLevel : public Symbol
     {
-        PharmMLContext *context;
-        VariabilityReference *variabilityReference;
-        PharmML::Distribution *Distribution;
+        PharmML::PharmMLContext *context;
+        std::string name;
+        bool referenceLevel;
+        AstNode *parentLevelRef = nullptr;
 
         public:
-        RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
+        VariabilityLevel(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        VariabilityReference *getVariabilityReference();
-        PharmML::Distribution *getDistribution();
+        std::string getName();
+        bool isReferenceLevel();
+        AstNode *getParentReference();
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
+    };
+    
+    class VariabilityReference
+    {
+        PharmML::PharmMLContext *context;
+        AstNode *variabilityLevelReference;
+        AstNode *randomEffectsMapping = nullptr;
+        
+        public:
+        VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
+        void parse(xml::Node node);
+        AstNode *getLevelReference();
+        AstNode *getRandomEffectsMapping();
+        //~ void accept(AstNodeVisitor *visitor);
     };
 }
 

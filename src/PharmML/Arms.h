@@ -21,23 +21,10 @@
 #include <symbols/Variable.h>
 #include <AST/symbols.h>
 #include <xml/xml.h>
+#include <symbols/VariabilityLevel.h>
 
 namespace PharmML
 {
-    class VariabilityReference
-    {
-        PharmML::PharmMLContext *context;
-        SymbRef *symbRef = nullptr;
-        SymbRef *mappedSymbRef = nullptr;
-        
-        public:
-        VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        SymbRef *getSymbRef();
-        SymbRef *getMappedSymbRef();
-        //~ void accept(AstNodeVisitor *visitor);
-    };
-    
     class OccasionType
     {
         PharmML::PharmMLContext *context;

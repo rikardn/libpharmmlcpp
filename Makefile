@@ -18,8 +18,8 @@ main: main.cpp libpharmmlc.a
 pharmml2poped: pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDSymbols.h src/generators/R/RTextFormatter.cpp src/generators/R/RTextFormatter.h libpharmmlc.a
 	$(CC) pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/R/RTextFormatter.cpp src/generators/R/RTextFormatter.h libpharmmlc.a
-	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
+mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/R/RTextFormatter.cpp src/generators/R/RTextFormatter.h libpharmmlc.a
+	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)

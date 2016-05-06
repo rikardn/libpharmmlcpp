@@ -34,10 +34,15 @@
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
 
+#include <generators/MDL/MDLSymbols.h> // Include for now
+
 namespace PharmML
 {
     class MDLAstGenerator : public AstNodeVisitor
     {
+        private:
+            MDLSymbols symbgen;
+            
         protected:
             std::string value;
             void setValue(std::string str);

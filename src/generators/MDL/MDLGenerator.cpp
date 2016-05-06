@@ -114,6 +114,19 @@ namespace PharmML
         RFormatter form;
         
         form.indentAdd("parObj {");
+        
+        std::vector<IndividualParameter *> ind_params = par_model->getIndividualParameters();
+        for (IndividualParameter *ind_param : ind_params) {
+            ind_param->accept(this);
+            form.add(this->getValue());
+        }
+        
+        std::vector<PopulationParameter *> pop_params = par_model->getPopulationParameters();
+        for (PopulationParameter *pop_param : pop_params) {
+            pop_param->accept(this);
+            form.add(this->getValue());
+        }
+        
         form.outdentAdd("} # end parameter object");
         
         return form.createString();
@@ -157,9 +170,19 @@ namespace PharmML
 
     void MDLGenerator::visit(Covariate *node) { }
 
-    void MDLGenerator::visit(PopulationParameter *node) { }
+    void MDLGenerator::visit(PopulationParameter *node) {
+        setValue(node->getSymbId());
+    }
 
-    void MDLGenerator::visit(IndividualParameter *node) { }
+    void MDLGenerator::visit(IndividualParameter *node) {
+        std::string result;
+        if (!node->isStructured()) {
+            node->getAssignment()->accept(&this->ast_gen);
+            std::string assign = this->ast_gen.getValue();
+            result = node->getSymbId() + " = " + assign;
+        }
+        this->setValue(result);
+    }
 
     void MDLGenerator::visit(RandomVariable *node) { }
 

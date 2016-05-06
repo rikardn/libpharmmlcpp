@@ -84,7 +84,13 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(SymbRef *node) {
-        this->setValue(node->toString());
+        Symbol *symbol = node->getSymbol();
+        if (symbol != nullptr) {
+            symbol->accept(&this->symbgen);
+            this->setValue(this->symbgen.getValue());
+        } else {
+            this->setValue("UNDEF_REF");
+        }
     }
     
     void MDLAstGenerator::visit(SteadyStateParameter *node) {

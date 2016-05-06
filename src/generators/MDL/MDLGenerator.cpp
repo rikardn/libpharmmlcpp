@@ -185,6 +185,8 @@ namespace PharmML
     }
 
     void MDLGenerator::visit(RandomVariable *node) { }
+    
+    void MDLGenerator::visit(VariabilityLevel *node) { }
 
     void MDLGenerator::visit(IndependentVariable *node) { }
 

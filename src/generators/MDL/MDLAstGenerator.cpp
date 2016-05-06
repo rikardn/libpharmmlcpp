@@ -89,7 +89,7 @@ namespace PharmML
             symbol->accept(&this->symbgen);
             this->setValue(this->symbgen.getValue());
         } else {
-            this->setValue("UNDEF_REF");
+            this->setValue("UNDEF");
         }
     }
     

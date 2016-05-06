@@ -28,6 +28,7 @@ namespace PharmML
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
+    class VariabilityLevel;
     class Variable;
     class DerivativeVariable;
     class IndependentVariable;
@@ -43,6 +44,7 @@ namespace PharmML
             void visit(PopulationParameter *node);
             void visit(IndividualParameter *node);
             void visit(RandomVariable *node);
+            void visit(VariabilityLevel *node);
             void visit(IndependentVariable *node);
             void visit(Variable *node);
             void visit(DerivativeVariable *node);

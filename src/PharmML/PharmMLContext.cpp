@@ -133,9 +133,7 @@ leave:
     void PharmMLContext::fillSymbRefs() {
         for (SymbRef *symbref : this->symbRefs) {
             std::string symbId = symbref->toString();
-            std::cout << "symbId = " + symbId << std::endl;
             if (this->symbols.count(symbId) != 0) {
-                std::cout << "symbols[symbId].getSymbId() = " + (this->symbols[symbId]->getSymbId()) << std::endl;
                 symbref->setSymbol(this->symbols[symbId]);
             } else {
                 std::cout << "WARN: context->symbols[" + symbId + "] is undefined; Symbol hasn't reported in so a SymbRef is left dangling!" << std::endl; // DEBUG_OUTPUT

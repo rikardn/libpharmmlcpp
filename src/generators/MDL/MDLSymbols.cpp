@@ -19,6 +19,7 @@
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
+#include <symbols/VariabilityLevel.h>
 #include <symbols/IndependentVariable.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
@@ -42,6 +43,10 @@ namespace PharmML
             this->symbol_numbermap[node] = next_randvar++;
         }
         this->setValue(std::to_string(this->symbol_numbermap[node]));
+    }
+    
+    void MDLSymbols::visit(VariabilityLevel *node) {
+        this->setValue(node->getSymbId());
     }
 
     void MDLSymbols::visit(IndependentVariable *node) {

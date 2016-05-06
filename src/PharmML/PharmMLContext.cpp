@@ -15,7 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+#include <iostream> // DEBUG_OUTPUT
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/Model.h>
 
@@ -137,6 +137,8 @@ leave:
             if (this->symbols.count(symbId) != 0) {
                 std::cout << "symbols[symbId].getSymbId() = " + (this->symbols[symbId]->getSymbId()) << std::endl;
                 symbref->setSymbol(this->symbols[symbId]);
+            } else {
+                std::cout << "WARN: context->symbols[" + symbId + "] is undefined (SymbRef now dangling)!" << std::endl; // DEBUG_OUTPUT
             }
         }
     }

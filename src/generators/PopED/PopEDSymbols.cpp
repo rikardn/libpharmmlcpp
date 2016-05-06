@@ -43,6 +43,10 @@ namespace PharmML
         }
         this->setValue(std::to_string(this->symbol_numbermap[node]));
     }
+    
+    void PopEDSymbols::visit(VariabilityLevel *node) {
+        this->setValue("I'm a VariabilityLevel object!");
+    }
 
     void PopEDSymbols::visit(IndependentVariable *node) {
         this->setValue(node->getSymbId());

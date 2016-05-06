@@ -19,37 +19,7 @@
 
 namespace PharmML
 {
-    // VariabilityReference and OccasionType class (for OccasionSequence class)
-    // TODO: VariabilityReference is also read in class RandomVariable. Use this 'official class'?
-    VariabilityReference::VariabilityReference(PharmML::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
-    }
-    
-    void VariabilityReference::parse(xml::Node node) {
-        // Get SymbRef
-        xml::Node symbRef = this->context->getSingleElement(node, "./ct:SymbRef");
-        this->symbRef = new SymbRef(symbRef);
-        
-        // Get random effect mapping (also a symbref)
-        xml::Node mappedSymbRef = this->context->getSingleElement(node, "./ct:RandomEffectMapping/ct:SymbRef");
-        if (mappedSymbRef.exists()) {
-            this->mappedSymbRef = new SymbRef(mappedSymbRef);
-        }
-    }
-    
-    SymbRef *VariabilityReference::getSymbRef() {
-        return this->symbRef;
-    }
-    
-    SymbRef *VariabilityReference::getMappedSymbRef() {
-        return this->mappedSymbRef;
-    }
-    
-    //~ void VariabilityReference::accept(AstNodeVisitor *visitor) {
-        //~ visitor->visit(this);
-    //~ }
-    
+    // OccasionType class (for OccasionSequence class)
     // TODO: Occasion is also used on top-level of TrialDesign
     OccasionType::OccasionType(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;

@@ -24,8 +24,8 @@ mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGen
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o xml.o RTextFormatter.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o xml.o RTextFormatter.o
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o xml.o RTextFormatter.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o xml.o RTextFormatter.o
 
 
 Symbol.o: src/symbols/Symbol.cpp src/symbols/Symbol.h
@@ -66,6 +66,9 @@ RandomVariable.o: src/symbols/RandomVariable.cpp src/symbols/RandomVariable.h
 
 IndependentVariable.o: src/symbols/IndependentVariable.cpp src/symbols/IndependentVariable.h
 	$(CC) -c src/symbols/IndependentVariable.cpp -oIndependentVariable.o $(CFLAGS)
+
+VariabilityLevel.o: src/symbols/VariabilityLevel.cpp src/symbols/VariabilityLevel.h
+	$(CC) -c src/symbols/VariabilityLevel.cpp -oVariabilityLevel.o $(CFLAGS)
 
 FunctionCall.o: src/AST/FunctionCall.cpp src/AST/FunctionCall.h
 	$(CC) -c src/AST/FunctionCall.cpp -oFunctionCall.o $(CFLAGS)
@@ -147,6 +150,9 @@ AstNodeFactory.o: src/AST/AstNodeFactory.cpp src/AST/AstNodeFactory.h
 
 Covariate.o: src/PharmML/Covariate.cpp src/PharmML/Covariate.h
 	$(CC) -c src/PharmML/Covariate.cpp -oCovariate.o $(CFLAGS)
+
+VariabilityModel.o: src/PharmML/VariabilityModel.cpp src/PharmML/VariabilityModel.h
+	$(CC) -c src/PharmML/VariabilityModel.cpp -oVariabilityModel.o $(CFLAGS)
 
 CovariateModel.o: src/PharmML/CovariateModel.cpp src/PharmML/CovariateModel.h
 	$(CC) -c src/PharmML/CovariateModel.cpp -oCovariateModel.o $(CFLAGS)

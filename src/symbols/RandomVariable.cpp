@@ -27,19 +27,19 @@ namespace PharmML
 
     void RandomVariable::parse(xml::Node node) {
         this->Symbol::parse(node);
-        xml::Node n = this->context->getSingleElement(node, ".//ct:VariabilityReference");
-        if (n.exists()) {
-            this->VariabilityReference = this->context->factory.create(n.getChild());
+        xml::Node ref_node = this->context->getSingleElement(node, "./ct:VariabilityReference");
+        if (ref_node.exists()) {
+            this->variabilityReference = new VariabilityReference(this->context, ref_node);
         }
-        xml::Node dist_node = this->context->getSingleElement(node, ".//mdef:Distribution");
+        xml::Node dist_node = this->context->getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
             this->Distribution = new PharmML::Distribution(context, dist_node.getChild());
         }
 
     }
 
-    AstNode *RandomVariable::getVariabilityReference() {
-        return this->VariabilityReference;
+    VariabilityReference *RandomVariable::getVariabilityReference() {
+        return this->variabilityReference;
     }
 
     PharmML::Distribution *RandomVariable::getDistribution() {

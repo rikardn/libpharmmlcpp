@@ -239,4 +239,8 @@ namespace PharmML
         }
         return result;
     }
+
+    void RFormatter::emptyLine() {
+        this->rows.push_back("");
+    }
 }

@@ -19,8 +19,13 @@
 
 namespace CPharmML
 {
-    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter, std::vector<PharmML::RandomVariable *> randomVariables) {
-        this->param = param;
+    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter,
+            std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables,
+            std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters)
+    {
+        // Store the source objects
+        this->populationParameter = populationParameter;
+        this->linkingRandomVariables = linkingRandomVariables;
+        this->linkingIndividualParameters = linkingIndividualParameters;
     }
-
 }

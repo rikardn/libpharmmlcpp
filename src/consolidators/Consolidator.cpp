@@ -26,32 +26,40 @@ namespace CPharmML
         for (PharmML::PopulationParameter *populationParameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
             // Find RandomVariable's employing this PopulationParameter
             std::vector<PharmML::RandomVariable *> randomVariables = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-            
-            // Find IndividualParameter's employing this PopulationParameter
-            std::vector<PharmML::IndividualParameter *> individualParameters = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-            std::vector<PharmML::IndividualParameter *> linkingIndividualParameters;
-            for (PharmML::IndividualParameter *param : individualParameters) {
-                PharmML::AstNode *node;
-                if (param->isStructured()) {
-                    node = param->getPopulationValue();
-                } else {
-                    node = param->getAssignment();
-                }
+            std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables;
+            for (PharmML::RandomVariable *param : randomVariables) {
                 bool links = false;
                 std::unordered_set<PharmML::SymbRef *> references = param->getDependencies().getSymbRefs();
                 for (PharmML::SymbRef *symbRef : references) {
                     PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
-                    if (param == resolvedSymbol) {
+                    if (populationParameter == resolvedSymbol) {
                         links = true;
                     }
                 }
                 if (links) {
-                    linkingIndividualParameters.push_back(param);
+                    linkingRandomVariables.insert(param);
+                }
+            }
+            
+            // Find IndividualParameter's employing this PopulationParameter
+            std::vector<PharmML::IndividualParameter *> individualParameters = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+            std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters;
+            for (PharmML::IndividualParameter *param : individualParameters) {
+                bool links = false;
+                std::unordered_set<PharmML::SymbRef *> references = param->getDependencies().getSymbRefs();
+                for (PharmML::SymbRef *symbRef : references) {
+                    PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
+                    if (populationParameter == resolvedSymbol) {
+                        links = true;
+                    }
+                }
+                if (links) {
+                    linkingIndividualParameters.insert(param);
                 }
             }
             
             // Create the consolidated PopulationParameter object and add it to consolidator
-            PopulationParameter *cPopulationParameter = new PopulationParameter(populationParameter, randomVariables);
+            PopulationParameter *cPopulationParameter = new PopulationParameter(populationParameter, linkingRandomVariables, linkingIndividualParameters);
             this->populationParameters.push_back(cPopulationParameter);
         }
     }

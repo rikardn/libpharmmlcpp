@@ -18,16 +18,21 @@
 #ifndef CPHARMML_POPULATIONPARAMETER_H_
 #define CPHARMML_POPULATIONPARAMETER_H_
 
+#include <unordered_set>
 #include <symbols/PopulationParameter.h>
 
 namespace CPharmML
 {
     class PopulationParameter
     {
-        PharmML::PopulationParameter *param;
+        PharmML::PopulationParameter *populationParameter;
+        std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables;
+        std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters;
         
         public:
-        PopulationParameter(PharmML::PopulationParameter *populationParameter, std::vector<PharmML::RandomVariable *> randomVariables);
+        PopulationParameter(PharmML::PopulationParameter *populationParameter,
+            std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables,
+            std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters);
     };
 }
 

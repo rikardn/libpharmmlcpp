@@ -47,6 +47,9 @@ namespace PharmML
         if (msteps_node.exists()) {
             this->ModellingSteps = new PharmML::ModellingSteps(this->context, msteps_node);
         }
+        
+        // Build consolidator object
+        this->consolidator = new CPharmML::Consolidator(this->context, this);
     }
 
     Model::Model(const char *filename) {

@@ -15,14 +15,19 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPULATIONPARAMETER_H_
-#define PHARMML_POPULATIONPARAMETER_H_
+#ifndef CPHARMML_POPULATIONPARAMETER_H_
+#define CPHARMML_POPULATIONPARAMETER_H_
+
+#include <symbols/PopulationParameter.h>
 
 namespace CPharmML
 {
     class PopulationParameter
     {
-
+        PharmML::PopulationParameter *param;
+        
+        public:
+        PopulationParameter(PharmML::PopulationParameter *populationParameter, std::vector<PharmML::RandomVariable *> randomVariables);
     };
 }
 

@@ -39,7 +39,7 @@ namespace PharmML
         PharmML::ModelDefinition *ModelDefinition;
         PharmML::TrialDesign *TrialDesign;
         PharmML::ModellingSteps *ModellingSteps = nullptr;
-        CPharmML::Consolidator consolidator;
+        CPharmML::Consolidator *consolidator;
         
         private:
         void parse(xml::Node node);

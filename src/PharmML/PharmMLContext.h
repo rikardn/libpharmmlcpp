@@ -45,6 +45,7 @@ namespace PharmML
         public:
         std::unordered_map<std::string, Symbol *> symbols;
         std::vector<SymbRef *> symbRefs;
+        Symbol *resolveSymbref(SymbRef *symbRef);
         AstNodeFactory factory;
         xmlDoc *getDocument();
         void validateDocument();

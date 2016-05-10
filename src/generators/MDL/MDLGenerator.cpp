@@ -115,17 +115,17 @@ namespace PharmML
         
         form.indentAdd("parObj {");
         
-        std::vector<IndividualParameter *> ind_params = par_model->getIndividualParameters();
-        for (IndividualParameter *ind_param : ind_params) {
-            ind_param->accept(this);
-            form.add(this->getValue());
-        }
+        //~ // Consolidate IndividualParameter, PopulationParameter and EstimationStep without output
+        //~ std::vector<PopulationParameter *> pop_params = par_model->getPopulationParameters();
+        //~ for (PopulationParameter *pop_param : pop_params) {
+            //~ this->consol.addPopulationParameter(pop_param, *this);
+        //~ }
+        //~ std::vector<IndividualParameter *> ind_params = par_model->getIndividualParameters();
+        //~ for (IndividualParameter *ind_param : ind_params) {
+            //~ ind_param->accept(this);
+        //~ }
         
-        std::vector<PopulationParameter *> pop_params = par_model->getPopulationParameters();
-        for (PopulationParameter *pop_param : pop_params) {
-            pop_param->accept(this);
-            form.add(this->getValue());
-        }
+        //~ form.addMany(this->consol.genStructuralBlock());
         
         form.outdentAdd("} # end parameter object");
         

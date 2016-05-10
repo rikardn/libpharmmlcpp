@@ -19,6 +19,8 @@
 
 namespace CPharmML
 {
-
+    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter, std::vector<PharmML::RandomVariable *> randomVariables) {
+        this->param = param;
+    }
 
 }

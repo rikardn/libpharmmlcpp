@@ -56,6 +56,13 @@ namespace PharmML
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST buildNamespace("TrialDesign", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
+    
+    // TODO: This and this->symbols/this->symbRefs would be better suited within Consolidator?
+    Symbol *PharmMLContext::resolveSymbref(SymbRef *symbRef) {
+        std::string name = symbRef->toString();
+        Symbol *symbol = this->symbols[name];
+        return symbol;
+    }
 
     xmlDoc *PharmMLContext::getDocument() {
         return this->doc;

@@ -15,25 +15,33 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CPHARMML_CONSOLIDATOR_H_
-#define CPHARMML_CONSOLIDATOR_H_
+#ifndef PHARMML_MDLPHARMMLCONSOLIDATOR_H_
+#define PHARMML_MDLPHARMMLCONSOLIDATOR_H_
 
-#include <vector>
 #include <string>
-#include <PharmML/PharmMLContext.h>
-#include <AST/AstNode.h>
-#include <AST/symbols.h>
-#include <consolidators/PopulationParameter.h>
+#include <vector>
+#include <unordered_map>
+#include <symbols/PopulationParameter.h>
+#include <symbols/IndividualParameter.h>
+#include <symbols/RandomVariable.h>
+#include <generators/R/RTextFormatter.h>
 
-namespace CPharmML
+namespace PharmML
 {
-    class Consolidator
+    class MDLGenerator;
+    
+    class MDLPharmMLConsolidator
     {
-        PharmML::PharmMLContext *context;
-        std::vector<CPharmML::PopulationParameter *> populationParameters;
-        
         public:
-        Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
+            private:
+                std::vector<std::string> populationParameters;
+
+            public:
+                void addPopulationParameter(PopulationParameter *param, MDLGenerator &gen);
+                void addIndividualParameter(IndividualParameter *param);
+                void addRandomVariable(RandomVariable *var);
+                void combine();
+                std::string genStructuralBlock();
     };
 }
 

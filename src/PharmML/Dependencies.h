@@ -29,6 +29,7 @@ namespace PharmML
         public:
         void addDependency(std::string symbol);
         bool hasDependency(std::string symbol);
+        std::unordered_set<std::string> getDependencySet();
         int numDependencies();
     };
 }

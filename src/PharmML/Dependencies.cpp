@@ -27,6 +27,10 @@ namespace PharmML
         return (this->dependencies.count(symbol) > 0);
     }
 
+    std::unordered_set<std::string> Dependencies::getDependencySet() {
+        return this->dependencies;
+    }
+
     int Dependencies::numDependencies() {
         return this->dependencies.size();
     }

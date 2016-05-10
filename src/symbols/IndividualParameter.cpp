@@ -41,26 +41,26 @@ namespace PharmML
                 pop = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:PopulationValue/ct:Assign");
             }
             if (pop.exists()) {
-                this->PopulationValue = this->context->factory.create(pop.getChild());
+                this->PopulationValue = this->context->factory.create(pop.getChild(), &deps);
             }
 
             xml::Node rand = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:RandomEffects/ct:SymbRef");
             if (rand.exists()) {
-                this->RandomEffects = this->context->factory.create(rand);
+                this->RandomEffects = this->context->factory.create(rand, &deps);
             }
 
             xml::Node fixed = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:LinearCovariate/mdef:Covariate/mdef:FixedEffect/ct:SymbRef");
             if (fixed.exists()) {
-                this->FixedEffect = this->context->factory.create(fixed);
+                this->FixedEffect = this->context->factory.create(fixed, &deps);
             }
 
             xml::Node cov = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:LinearCovariate/mdef:Covariate/ct:SymbRef");
             if (cov.exists()) {
-                this->Covariate = this->context->factory.create(cov);
+                this->Covariate = this->context->factory.create(cov, &deps);
             }
             this->is_structured = true;
         } else {
-            this->assignment = this->context->factory.create(node.getChild().getChild());
+            this->assignment = this->context->factory.create(node.getChild().getChild(), &deps);
             this->is_structured = false;
         }
     }
@@ -92,6 +92,10 @@ namespace PharmML
 
     bool IndividualParameter::isStructured() {
         return this->is_structured;
+    }
+    
+    PharmML::Dependencies &IndividualParameter::getDependencies() {
+        return this->deps;
     }
 
     void IndividualParameter::accept(PharmMLVisitor *visitor) {

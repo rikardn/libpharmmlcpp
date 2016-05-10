@@ -23,6 +23,7 @@
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/Dependencies.h>
 
 namespace PharmML
 {
@@ -36,6 +37,7 @@ namespace PharmML
         AstNode *FixedEffect = nullptr;
         AstNode *Covariate = nullptr;
         AstNode *assignment;
+        Dependencies deps;
 
         public:
         IndividualParameter(PharmMLContext *context, xml::Node node);
@@ -47,6 +49,7 @@ namespace PharmML
         AstNode *getCovariate();
         AstNode *getAssignment();
         bool isStructured();
+        Dependencies &getDependencies();
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

@@ -85,4 +85,8 @@ namespace PharmML
     PharmML::ModellingSteps *Model::getModellingSteps() {
         return this->ModellingSteps;
     }
+    
+    CPharmML::Consolidator *Model::getConsolidator() {
+        return this->consolidator;
+    }
 }

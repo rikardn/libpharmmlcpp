@@ -20,12 +20,37 @@
 namespace CPharmML
 {
     PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter,
-            std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters)
+            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
+            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters)
     {
         // Store the source objects
         this->populationParameter = populationParameter;
-        this->linkingRandomVariables = linkingRandomVariables;
-        this->linkingIndividualParameters = linkingIndividualParameters;
+        if (!dependentRandomVariables.empty()) {
+            this->type = "variability";
+            this->dependentRandomVariables = dependentRandomVariables;
+        } else {
+            this->type = "structural";
+        }
+        this->dependentIndividualParameters = dependentIndividualParameters;
+    }
+    
+    PharmML::PopulationParameter *PopulationParameter::getPopulationParameter() {
+        return this->populationParameter;
+    }
+    
+    std::unordered_set<PharmML::RandomVariable *> PopulationParameter::getDependentRandomVariables() {
+        return this->dependentRandomVariables;
+    }
+    
+    std::unordered_set<PharmML::IndividualParameter *> PopulationParameter::getDependentIndividualParameters() {
+        return this->dependentIndividualParameters;
+    }
+    
+    bool PopulationParameter::isStructuralParameter() {
+        return (this->type == "structural");
+    }
+    
+    bool PopulationParameter::isVariabilityParameter() {
+        return (this->type == "variability");
     }
 }

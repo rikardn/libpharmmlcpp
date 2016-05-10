@@ -59,8 +59,12 @@ namespace CPharmML
             }
             
             // Create the consolidated PopulationParameter object and add it to consolidator
-            PopulationParameter *cPopulationParameter = new PopulationParameter(populationParameter, linkingRandomVariables, linkingIndividualParameters);
+            CPharmML::PopulationParameter *cPopulationParameter = new PopulationParameter(populationParameter, linkingRandomVariables, linkingIndividualParameters);
             this->populationParameters.push_back(cPopulationParameter);
         }
+    }
+    
+    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
+        return this->populationParameters;
     }
 }

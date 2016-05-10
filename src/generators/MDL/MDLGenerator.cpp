@@ -74,7 +74,9 @@ namespace PharmML
         std::string name = par_model->getBlkId();
         parObjNames.push_back(name);
         std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
-        form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
+        //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
+        std::vector<CPharmML::PopulationParameter *> populationParameters = model->getConsolidator()->getPopulationParameters();
+        form.addMany(name + " = " + this->genParObj(populationParameters, estim_steps));
         form.add("");
         //~ }
         
@@ -110,26 +112,110 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genParObj(ParameterModel *par_model, std::vector<EstimationStep *> estim_steps) {
+    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
+        stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
+        if (node->isExternal()) {
+            RFormatter form;
+            
+            // Output one row for each column definition
+            int num_cols = node->getDefinition()->getNumColumns();
+            for (int num = 1; num <= num_cols; ++num) {
+                // Get column id
+                ColumnDefinition *col_def = node->getDefinition()->getColumnDefinition(num);
+                std::string id = col_def->getId();
+                
+                // Open vector with column id as header
+                form.openVector(id + " : {}", 0, ", ");
+                std::string type = col_def->getType();
+                form.add("use is " + type);
+                
+                if (type == "covariate" && id == column_mappings[id]) {
+                    // Trim column_mappings to not contain implicit (same-name) covariate mappings
+                    column_mappings.erase(id);
+                } else {
+                    // Find match in column mappings and add it (if found and not implicit)
+                    auto got_map = column_mappings.find(id);
+                    if (got_map != column_mappings.end()) {
+                        if (column_mappings[id] != implicit_mappings[type]) {
+                            form.add("variable = " + column_mappings[id]);
+                        } else {
+                            // Trim column_mappings to only contain maps required by MDL
+                            column_mappings.erase(id);
+                        }
+                    }
+                }
+                
+                form.closeVector();
+            }
+            
+            return form.createString();
+        } else {
+            // Yes, what else?
+        }
+    }
+    
+    std::string MDLGenerator::genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters, std::vector<EstimationStep *> estim_steps) {
         RFormatter form;
         
         form.indentAdd("parObj {");
         
-        //~ // Consolidate IndividualParameter, PopulationParameter and EstimationStep without output
-        //~ std::vector<PopulationParameter *> pop_params = par_model->getPopulationParameters();
-        //~ for (PopulationParameter *pop_param : pop_params) {
-            //~ this->consol.addPopulationParameter(pop_param, *this);
-        //~ }
-        //~ std::vector<IndividualParameter *> ind_params = par_model->getIndividualParameters();
-        //~ for (IndividualParameter *ind_param : ind_params) {
-            //~ ind_param->accept(this);
-        //~ }
+        // Split into structural and variability parameters
+        std::vector<CPharmML::PopulationParameter *> structuralParameters;
+        std::vector<CPharmML::PopulationParameter *> variabilityParameters;
+        for (CPharmML::PopulationParameter *populationParameter : populationParameters) {
+            if (populationParameter->isStructuralParameter()) {
+                structuralParameters.push_back(populationParameter);
+            }
+            if (populationParameter->isVariabilityParameter()) {
+                variabilityParameters.push_back(populationParameter);
+            }
+        }
         
-        //~ form.addMany(this->consol.genStructuralBlock());
-        
+        // Generate STRUCTURAL and VARIABILITY block
+        form.addMany(this->genStructuralBlock(structuralParameters));
+        form.addMany(this->genVariabilityBlock(variabilityParameters));
+                
         form.outdentAdd("} # end parameter object");
         
         return form.createString();
+    }
+    
+    std::string MDLGenerator::genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters) {
+        // Generate MDL STRUCTURAL block
+        RFormatter form;
+        
+        form.indentAdd("STRUCTURAL {");
+        
+        for (CPharmML::PopulationParameter * structuralParameter : structuralParameters) {
+            // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
+            structuralParameter->getPopulationParameter()->accept(this);
+            form.openVector(this->getValue() + " : {}", 0, ", ");
+            // TODO: Implement EstimationSteps consolidation into CPharmML::PopulationParameter
+            form.closeVector();
+        }
+        
+        form.outdentAdd("} # end STRUCTURAL");
+        
+        return form.createString(); 
+    }
+    
+    std::string MDLGenerator::genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters) {
+        // Generate MDL VARIABILITY block
+        RFormatter form;
+        
+        form.indentAdd("VARIABILITY {");
+        
+        for (CPharmML::PopulationParameter * variabilityParameter : variabilityParameters) {
+            // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
+            variabilityParameter->getPopulationParameter()->accept(this);
+            form.openVector(this->getValue() + " : {}", 0, ", ");
+            // TODO: Implement EstimationSteps consolidation into CPharmML::PopulationParameter
+            form.closeVector();
+        }
+        
+        form.outdentAdd("} # end VARIABILITY");
+        
+        return form.createString(); 
     }
     
     std::string MDLGenerator::genMdlObj() {
@@ -173,7 +259,7 @@ namespace PharmML
     void MDLGenerator::visit(PopulationParameter *node) {
         setValue(node->getSymbId());
     }
-
+    
     void MDLGenerator::visit(IndividualParameter *node) {
         std::string result;
         if (!node->isStructured()) {
@@ -213,48 +299,6 @@ namespace PharmML
     
     // Class Dataset
     void MDLGenerator::visit(Dataset *node) { }
-    
-    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
-        stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
-        if (node->isExternal()) {
-            RFormatter form;
-            
-            // Output one row for each column definition
-            int num_cols = node->getDefinition()->getNumColumns();
-            for (int num = 1; num <= num_cols; ++num) {
-                // Get column id
-                ColumnDefinition *col_def = node->getDefinition()->getColumnDefinition(num);
-                std::string id = col_def->getId();
-                
-                // Open vector with column id as header
-                form.openVector(id + " : {}", 0, ", ");
-                std::string type = col_def->getType();
-                form.add("use is " + type);
-                
-                if (type == "covariate" && id == column_mappings[id]) {
-                    // Trim column_mappings to not contain implicit (same-name) covariate mappings
-                    column_mappings.erase(id);
-                } else {
-                    // Find match in column mappings and add it (if found and not implicit)
-                    auto got_map = column_mappings.find(id);
-                    if (got_map != column_mappings.end()) {
-                        if (column_mappings[id] != implicit_mappings[type]) {
-                            form.add("variable = " + column_mappings[id]);
-                        } else {
-                            // Trim column_mappings to only contain maps required by MDL
-                            column_mappings.erase(id);
-                        }
-                    }
-                }
-                
-                form.closeVector();
-            }
-            
-            return form.createString();
-        } else {
-            // Yes, what else?
-        }
-    }
     
     // Class ExternalDataset
     void MDLGenerator::visit(ExternalDataset *node) {

@@ -53,6 +53,7 @@ namespace PharmML
         PharmML::ModelDefinition *getModelDefinition();
         PharmML::TrialDesign *getTrialDesign();
         PharmML::ModellingSteps *getModellingSteps();
+        CPharmML::Consolidator *getConsolidator();
     };
 }
 

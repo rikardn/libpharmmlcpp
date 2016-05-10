@@ -35,6 +35,7 @@ namespace CPharmML
         
         public:
         Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
+        std::vector<CPharmML::PopulationParameter *> getPopulationParameters();
     };
 }
 

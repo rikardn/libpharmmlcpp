@@ -26,13 +26,19 @@ namespace CPharmML
     class PopulationParameter
     {
         PharmML::PopulationParameter *populationParameter;
-        std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables;
-        std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters;
+        std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
+        std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
+        std::string type;
         
         public:
         PopulationParameter(PharmML::PopulationParameter *populationParameter,
-            std::unordered_set<PharmML::RandomVariable *> linkingRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> linkingIndividualParameters);
+            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
+            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters);
+        PharmML::PopulationParameter *getPopulationParameter();
+        std::unordered_set<PharmML::RandomVariable *> getDependentRandomVariables();
+        std::unordered_set<PharmML::IndividualParameter *> getDependentIndividualParameters();
+        bool isStructuralParameter();
+        bool isVariabilityParameter();
     };
 }
 

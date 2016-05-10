@@ -20,6 +20,7 @@
 
 #include <string>
 #include <sstream>
+#include <unordered_set>
 #include <unordered_map>
 typedef std::pair<std::string, std::string> stringpair;
 typedef std::unordered_map<std::string, std::string> stringmap;
@@ -42,6 +43,9 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/Model.h>
 #include <generators/R/RTextFormatter.h> // TODO: If useful for MDL: Please remove the R designation. Thank you!
 
+#include <consolidators/Consolidator.h>
+#include <consolidators/PopulationParameter.h>
+
 namespace PharmML
 {
     class MDLGenerator : public PharmMLVisitor
@@ -58,8 +62,6 @@ namespace PharmML
             std::string accept(AstNode *);
 
         public:
-            //~ Consolidator consol;
-
             std::string getValue();
             stringpair getPairValue();
             stringmap getHashValue();
@@ -67,7 +69,12 @@ namespace PharmML
             std::string generateModel(Model *model);
             
             std::string genDataObj(ExternalDataset *ext_ds);
-            std::string genParObj(ParameterModel * par_model, std::vector<EstimationStep *> estim_steps);
+            std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
+            
+            std::string genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters, std::vector<EstimationStep *> estim_steps);
+            std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
+            std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
+            
             std::string genMdlObj();
             std::string genTaskObj();
             std::string genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj);
@@ -88,7 +95,6 @@ namespace PharmML
             virtual void visit(ExternalFile *node);
             virtual void visit(DataColumn *node);
             virtual void visit(Dataset *node);
-            std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
             
             virtual void visit(ExternalDataset *node);
             

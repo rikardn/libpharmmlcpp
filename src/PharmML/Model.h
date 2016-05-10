@@ -27,6 +27,7 @@
 #include <PharmML/ModelDefinition.h>
 #include <PharmML/TrialDesign.h>
 #include <xml/xml.h>
+#include <consolidators/Consolidator.h>
 
 namespace PharmML
 {
@@ -38,6 +39,7 @@ namespace PharmML
         PharmML::ModelDefinition *ModelDefinition;
         PharmML::TrialDesign *TrialDesign;
         PharmML::ModellingSteps *ModellingSteps = nullptr;
+        CPharmML::Consolidator consolidator;
         
         private:
         void parse(xml::Node node);

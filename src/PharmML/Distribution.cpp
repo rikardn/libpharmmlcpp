@@ -30,7 +30,12 @@ namespace PharmML
             this->name = node.getAttribute("name").getValue();
             std::vector<xml::Node> params = this->context->getElements(node, ".//po:Parameter");
             for (xml::Node n : params) {
-                this->parameters.push_back(new PharmML::DistributionParameter(this->context, n));
+                DistributionParameter *dist_param = new PharmML::DistributionParameter(this->context, n);
+                for (SymbRef *symbRef : dist_param->getDependencies().getSymbRefs()) {
+                    // Propagate the dependencies up here
+                    this->deps.addDependency(symbRef);
+                }
+                this->parameters.push_back(dist_param);
             }
         } else {
             // UncertML. Support only normal distribution and make lots of assumptions and hope that UncertML will go away.
@@ -52,6 +57,10 @@ namespace PharmML
     
     std::vector<PharmML::DistributionParameter *> Distribution::getDistributionParameters() {
         return this->parameters;
+    }
+    
+    PharmML::Dependencies &Distribution::getDependencies() {
+        return this->deps;
     }
 
     void Distribution::accept(PharmMLVisitor *visitor) {

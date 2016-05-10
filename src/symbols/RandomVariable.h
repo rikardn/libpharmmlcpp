@@ -22,6 +22,7 @@
 #include <PharmML/Distribution.h>
 #include <visitors/PharmMLVisitor.h>
 #include "VariabilityLevel.h"
+#include <PharmML/Dependencies.h>
 
 namespace PharmML
 {
@@ -30,12 +31,14 @@ namespace PharmML
         PharmMLContext *context;
         VariabilityReference *variabilityReference;
         PharmML::Distribution *Distribution;
+        Dependencies deps;
 
         public:
         RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         VariabilityReference *getVariabilityReference();
         PharmML::Distribution *getDistribution();
+        Dependencies &getDependencies();
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

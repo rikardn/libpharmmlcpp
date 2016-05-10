@@ -30,12 +30,14 @@ namespace PharmML
         protected:
         PharmML::PharmMLContext *context;
         Dependencies deps;
+        bool is_derivative;
 
         public:
         CommonVariable(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         AstNode *getAssignment();
         Dependencies& getDependencies();
+        bool isDerivative();
         virtual void accept(PharmMLVisitor *visitor) = 0;
         virtual void accept(SymbolVisitor *visitor) = 0;
     };
@@ -43,7 +45,7 @@ namespace PharmML
     class Variable : public CommonVariable
     {
         public:
-        Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) {};
+        Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

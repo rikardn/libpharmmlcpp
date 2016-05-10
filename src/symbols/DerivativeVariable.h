@@ -31,7 +31,7 @@ namespace PharmML
         AstNode *initial_time;
 
         public:
-        DerivativeVariable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { this->parse(node); };
+        DerivativeVariable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = true; this->parse(node); };
         AstNode *getIndependentVariable();
         AstNode *getInitialValue();
         AstNode *getInitialTime();

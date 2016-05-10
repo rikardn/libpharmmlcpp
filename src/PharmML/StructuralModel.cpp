@@ -41,4 +41,26 @@ namespace PharmML
     std::vector<PharmML::CommonVariable *> StructuralModel::getVariables() {
         return this->variables;
     }
+
+    // Return all derivative variables
+    std::vector<PharmML::CommonVariable *> StructuralModel::getDerivatives() {
+        std::vector<PharmML::CommonVariable *> derivs;
+        for (CommonVariable *var : this->variables) {
+            if (var->isDerivative()) {
+                derivs.push_back(var);
+            }
+        }
+
+        return derivs;
+    }
+
+    // Get all needed prerequisites of a list of variables
+    std::vector<PharmML::CommonVariable *> StructuralModel::getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list) {
+        bool added = true;
+        while (added) {
+            added = false;            
+        }
+
+        return list;
+    }
 }

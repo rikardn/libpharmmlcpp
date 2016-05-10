@@ -35,6 +35,8 @@ namespace PharmML
         StructuralModel(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::vector<PharmML::CommonVariable *> getVariables();
+        std::vector<PharmML::CommonVariable *> getDerivatives();
+        std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
     };
 }
 

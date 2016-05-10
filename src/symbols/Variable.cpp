@@ -43,6 +43,11 @@ namespace PharmML
         return this->deps;
     }
 
+    bool CommonVariable::isDerivative() {
+        return this->is_derivative;
+    }
+
+
     void Variable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

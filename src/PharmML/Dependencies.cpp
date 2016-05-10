@@ -19,12 +19,25 @@
 
 namespace PharmML
 {
+    void Dependencies::addDependency(PharmML::SymbRef *symbRef) {
+        this->symbRefs.insert(symbRef);
+        this->dependencies.insert(symbRef->toString());
+    }
+    
     void Dependencies::addDependency(std::string symbol) {
         this->dependencies.insert(symbol);
     }
-
+    
+    bool Dependencies::hasDependency(PharmML::SymbRef *symbRef) {
+        return (this->dependencies.count(symbRef->toString()) > 0);
+    }
+    
     bool Dependencies::hasDependency(std::string symbol) {
         return (this->dependencies.count(symbol) > 0);
+    }
+    
+    std::unordered_set<PharmML::SymbRef *> Dependencies::getSymbRefs() {
+        return this->symbRefs;
     }
 
     int Dependencies::numDependencies() {

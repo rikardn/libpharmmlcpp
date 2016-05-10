@@ -208,8 +208,7 @@ namespace PharmML
             SymbRef *symbref = new SymbRef(node);
             PharmML::AstNodeFactory::context->symbRefs.push_back(symbref);
             if (deps) {
-                std::string symbol = node.getAttribute("symbIdRef").getValue();
-                deps->addDependency(symbol);
+                deps->addDependency(symbref);
             }
             instance = symbref;
         } else if (name == "ColumnRef") { 

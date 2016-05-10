@@ -38,9 +38,8 @@ namespace CPharmML
                     node = param->getAssignment();
                 }
                 bool links = false;
-                std::vector<PharmML::SymbRef *> symbRefs;
-                // TODO: Find a way to get hold on all PharmML::SymbRef's in the tree (dependencies maybe?)
-                for (PharmML::SymbRef *symbRef : symbRefs) {
+                std::unordered_set<PharmML::SymbRef *> references = param->getDependencies().getSymbRefs();
+                for (PharmML::SymbRef *symbRef : references) {
                     PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
                     if (param == resolvedSymbol) {
                         links = true;

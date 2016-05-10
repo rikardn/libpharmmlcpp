@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 #include <AST/symbols.h>

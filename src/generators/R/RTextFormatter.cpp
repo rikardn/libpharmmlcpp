@@ -15,6 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include "RTextFormatter.h"
 
 namespace PharmML
@@ -237,6 +238,16 @@ namespace PharmML
                 result += row + "\n";
             }
         }
+        return result;
+    }
+
+    std::string RFormatter::createCommaSeparatedList(std::vector<std::string> list) {
+        std::string result;
+        for (int i = 0; i < list.size() - 1; i++) {
+            result += list[i] + ", ";
+        }
+        result += list.back();
+
         return result;
     }
 

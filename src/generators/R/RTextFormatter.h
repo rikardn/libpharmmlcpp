@@ -62,6 +62,7 @@ namespace PharmML
             
             static std::string createVector(std::vector<std::string> strs, std::string enclosure = "c()", int indent_size = 0, std::string separator = ", ", bool final_newline = false);
             std::string createString(bool final_newline = true);
+            static std::string createCommaSeparatedList(std::vector<std::string> list);
             void emptyLine();
     };
 }

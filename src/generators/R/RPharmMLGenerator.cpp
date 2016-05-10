@@ -129,8 +129,8 @@ namespace PharmML
         // Consolidate for more powerful output
         this->consol.derivs.addDerivative(node->getSymbId(),
                 this->accept(node->getAssignment()),
-                this->accept(node->getInitialTime()),
-                this->accept(node->getInitialValue())); 
+                this->accept(node->getInitialValue()),
+                this->accept(node->getInitialTime())); 
         
         // General (non-mandatory) output
         std::string expr;

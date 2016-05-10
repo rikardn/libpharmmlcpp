@@ -50,6 +50,9 @@ namespace PharmML
             std::string genStructuralModel();
             std::string genErrorFunction();
             std::string genDatabaseCall();
+            std::vector<std::string> genDoseTimeNames();
+            std::vector<std::string> genDoseAmountNames();
+            std::string getDoseVariable();
 
         public:
             std::string getValue();

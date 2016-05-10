@@ -40,12 +40,17 @@ namespace PharmML
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
         RFormatter form(2, ' ');
-        
+       
+        // Preamble
+        form.add("library(PopED)");
+        form.add("library(deSolve)");
+        form.emptyLine();
+
         // Output function definitions (e.g. MDL proportionalError function)
         for (std::string function_def : this->r_gen.genFunctionDefinitions(model)) {
             form.addMany(function_def);
         }
-        form.add("");
+        form.emptyLine();
         
         // Generate the three PopED functions
         form.addMany(this->genParameterModel());
@@ -71,6 +76,7 @@ namespace PharmML
         form.closeVector();
         form.add("return(parameters)");
         form.outdentAdd("}");
+        form.emptyLine();
         return form.createString();
     }
     
@@ -80,6 +86,9 @@ namespace PharmML
         form.indentAdd("ode_func <- function(Time, Stat, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
         
+        form.addMany(this->r_gen.consol.vars.genStatements());
+        form.emptyLine();
+
         // Derivative definitions
         std::vector<std::string> name_list;
         std::vector<std::string> symbols = this->r_gen.consol.derivs.getSymbols();
@@ -93,8 +102,53 @@ namespace PharmML
         form.add("return(list(" + PharmML::formatVector(name_list, "c", "") + "))");
         form.outdentAdd("})");
         form.outdentAdd("}");
+        form.emptyLine();
 
         return form.createString(); 
+    }
+
+    // Generate a vector of dose time names
+    std::vector<std::string> PopEDGenerator::genDoseTimeNames() {
+        // FIXME: Must check invariant at construction time. Need TrialDesign etc for PopED to convert to something useful
+        // FIXME: Need information from Arms here. Assume a lot for now. 
+        IndividualAdministration *ia = this->model->getTrialDesign()->getInterventions()->getIndividualAdministrations()[0];
+        Dataset *ds = ia->getDataset();
+        int numrows = ds->getColumns()[0]->getNumRows();
+
+        std::vector<std::string> result;
+
+        for (int i = 1; i <= numrows; i++) {
+            result.push_back("DOSE_" + std::to_string(i) + "_TIME");
+        }
+
+        return result;
+    }
+
+    // Generate a vector of dose time amount names
+    std::vector<std::string> PopEDGenerator::genDoseAmountNames() {
+        // FIXME: Combine with genDoseTimeNames
+        // FIXME: Must check invariant at construction time. Need TrialDesign etc for PopED to convert to something useful
+        // FIXME: Need information from Arms here. Assume a lot for now. 
+        IndividualAdministration *ia = this->model->getTrialDesign()->getInterventions()->getIndividualAdministrations()[0];
+        Dataset *ds = ia->getDataset();
+        int numrows = ds->getColumns()[0]->getNumRows();
+
+        std::vector<std::string> result;
+
+        for (int i = 1; i <= numrows; i++) {
+            result.push_back("DOSE_" + std::to_string(i) + "_AMT");
+        }
+
+        return result;
+    }
+
+
+    // Get the name of the dose variable. 
+    std::string PopEDGenerator::getDoseVariable() {
+        // FIXME: Assumes a specific structure
+        Administration *adm = this->model->getTrialDesign()->getInterventions()->getAdministrations()[0];
+        adm->getTarget()->accept(&this->ast_gen);
+        return this->ast_gen.getValue();
     }
 
     std::string PopEDGenerator::genStructuralModel() {
@@ -102,32 +156,46 @@ namespace PharmML
         for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {
             var->accept(&this->r_gen);
         }
-        
+
         RFormatter form;
-        
+ 
+        // Generate separate ODE function
+        form.addMany(this->genODEFunc());
+
         // Function header
         form.indentAdd("ff <- function(model_switch, xt, parameters, poped.db) {");
         form.indentAdd("with(as.list(parameters), {");
         
         // Init values
         form.add("d_ini <- " + this->r_gen.consol.derivs.genInitVector());
-        
+
         // Dose times
         form.add("times_xt <- drop(xt)");
         // TODO: Consolidate dosing times (from TrialDesign) and use actual information (not a sequence!)
-        form.add("dose_times = seq(from=0,to=max(times_xt),by=TAU)");
-        
+        std::vector<std::string> dose_time_names = this->genDoseTimeNames();
+        form.add("dose_times <- c(" + RFormatter::createCommaSeparatedList(dose_time_names) + ")");
+        form.add("integration_start_time <- 0");
+
         // Event data
         // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-        form.indentAdd("eventdat <- data.frame(var = c('A1'),");
+        form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
         form.add("time = dose_times,");
-        form.add("value = c(DOSE), method = c('add'))");
+        std::vector<std::string> dose_amount_names = this->genDoseAmountNames();
+        form.add("value = c(" + RFormatter::createCommaSeparatedList(dose_amount_names) + "), method = c('add'))");
         form.closeIndent();
-        
+        form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
+
         // ODE call
         form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+        form.emptyLine();
         
         // Y definition
+        std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
+        std::vector<CommonVariable *> variables = this->model->getModelDefinition()->getStructuralModel()->getPrerequisiteVariables(derivatives);
+        for (CommonVariable *var : variables) {
+            form.add("YY: " + var->getSymbId());
+        } 
+
         form.addMany(this->r_gen.consol.vars.genStatements());
         // TODO: Get structural part (only?) of observation model and resolv derivative symbol references to this form
         form.add("y = out[, 'A2']/(V/Favail)");
@@ -142,9 +210,6 @@ namespace PharmML
         form.add("return(list(y=y,poped.db=poped.db))");
         form.outdentAdd("})");
         form.outdentAdd("}");
-
-        // Generate separate ODE function
-        form.addMany(this->genODEFunc());
 
         return form.createString();
     }

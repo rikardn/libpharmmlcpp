@@ -33,6 +33,7 @@ namespace PharmML
         void addDependency(std::string symbol);
         bool hasDependency(PharmML::SymbRef *symbRef);
         bool hasDependency(std::string symbol);
+        std::unordered_set<std::string> getDependencySet();
         int numDependencies();
         std::unordered_set<PharmML::SymbRef *> getSymbRefs();
     };

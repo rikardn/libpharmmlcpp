@@ -40,6 +40,10 @@ namespace PharmML
         return this->symbRefs;
     }
 
+    std::unordered_set<std::string> Dependencies::getDependencySet() {
+        return this->dependencies;
+    }
+
     int Dependencies::numDependencies() {
         return this->dependencies.size();
     }

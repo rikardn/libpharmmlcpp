@@ -15,6 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include "StructuralModel.h"
 
 namespace PharmML
@@ -56,9 +57,36 @@ namespace PharmML
 
     // Get all needed prerequisites of a list of variables
     std::vector<PharmML::CommonVariable *> StructuralModel::getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list) {
+        // Map of all variables: symbId=>CommonVariable*
+        std::unordered_map<std::string, CommonVariable *> variables_map;
+        for (CommonVariable *var : this->variables) {
+            variables_map[var->getSymbId()] = var;
+        } 
+
+        // Set of all added symbIds
+        std::unordered_set<std::string> added_symbols;
+        for (CommonVariable *var : list) {
+            added_symbols.insert(var->getSymbId());
+        }
+
+        // Loop through list and add all prerequisites
         bool added = true;
         while (added) {
-            added = false;            
+            added = false;
+            std::vector<CommonVariable *> added_vars;
+            for (CommonVariable *var : list) {
+                Dependencies& deps = var->getDependencies();
+                std::unordered_set<std::string> depset = deps.getDependencySet();
+                for (std::string symbol : depset) {
+                    // If is a variable and not previously added
+                    if (variables_map.count(symbol) == 1 && added_symbols.count(symbol) == 0) {
+                        added = true;
+                        added_symbols.insert(symbol);
+                        added_vars.push_back(variables_map[symbol]);
+                    }
+                }
+            }
+            list.insert(list.end(), added_vars.begin(), added_vars.end());
         }
 
         return list;

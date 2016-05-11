@@ -247,7 +247,11 @@ namespace PharmML
         }
         
         // TODO: Add Operation support! SAEM etc. Forgot that one.
-    } 
+    }
+    
+    std::vector<ParameterEstimation *> EstimationStep::getParameters() {
+        return this->parameterEstimations;
+    }
     
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;

@@ -28,23 +28,29 @@ namespace CPharmML
 {
     class PopulationParameter
     {
-        PharmML::PopulationParameter *populationParameter;
-        std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
-        std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
-        PharmML::ParameterEstimation *parameterEstimation = nullptr;
-        std::string type;
-        
         public:
-        PopulationParameter(PharmML::PopulationParameter *populationParameter,
-            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
-            PharmML::ParameterEstimation *parameterEstimation);
-        PharmML::PopulationParameter *getPopulationParameter();
-        std::unordered_set<PharmML::RandomVariable *> getDependentRandomVariables();
-        std::unordered_set<PharmML::IndividualParameter *> getDependentIndividualParameters();
-        PharmML::ParameterEstimation *getParameterEstimation();
-        bool isStructuralParameter();
-        bool isVariabilityParameter();
+            PopulationParameter(PharmML::PopulationParameter *populationParameter,
+                std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
+                std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
+                PharmML::ParameterEstimation *parameterEstimation);
+            
+            // Get PharmML objects used to consolidate
+            PharmML::PopulationParameter *getPopulationParameter();
+            std::unordered_set<PharmML::RandomVariable *> getDependentRandomVariables();
+            std::unordered_set<PharmML::IndividualParameter *> getDependentIndividualParameters();
+            PharmML::ParameterEstimation *getParameterEstimation();
+            
+            bool isStructuralParameter();
+            bool isVariabilityParameter();
+        
+        private:
+            // PharmML objects used to consolidate
+            PharmML::PopulationParameter *populationParameter;
+            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
+            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
+            PharmML::ParameterEstimation *parameterEstimation = nullptr;
+            
+            std::string type;
     };
 }
 

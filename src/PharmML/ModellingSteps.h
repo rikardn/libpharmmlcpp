@@ -99,6 +99,7 @@ namespace PharmML
         AstNode *getInitValue();
         AstNode *getLoBound();
         AstNode *getHiBound();
+        void accept(PharmMLVisitor *visitor);
     };
     
     class EstimationStep : CommonStepType

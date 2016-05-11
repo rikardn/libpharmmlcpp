@@ -189,9 +189,10 @@ namespace PharmML
         for (CPharmML::PopulationParameter * structuralParameter : structuralParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             structuralParameter->getPopulationParameter()->accept(this);
-            form.openVector(this->getValue() + " : {}", 0, ", ");
-            // TODO: Implement EstimationSteps consolidation into CPharmML::PopulationParameter
-            form.closeVector();
+            std::string name = this->getValue();
+            structuralParameter->getParameterEstimation()->accept(this);
+            std::string init = this->getValue();
+            form.add(name + " : " + init);
         }
         
         form.outdentAdd("} # end STRUCTURAL");
@@ -208,9 +209,10 @@ namespace PharmML
         for (CPharmML::PopulationParameter * variabilityParameter : variabilityParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             variabilityParameter->getPopulationParameter()->accept(this);
-            form.openVector(this->getValue() + " : {}", 0, ", ");
-            // TODO: Implement EstimationSteps consolidation into CPharmML::PopulationParameter
-            form.closeVector();
+            std::string name = this->getValue();
+            variabilityParameter->getParameterEstimation()->accept(this);
+            std::string init = this->getValue();
+            form.add(name + " : " + init);
         }
         
         form.outdentAdd("} # end VARIABILITY");
@@ -386,4 +388,23 @@ namespace PharmML
     void MDLGenerator::visit(DesignSpace *node) { }
     
     void MDLGenerator::visit(DesignSpaces *node) { }
+    
+    // Class ParameterEstimation
+    void MDLGenerator::visit(ParameterEstimation *node) {
+        RFormatter form;
+        form.openVector("{}", 0, ", ");
+        if (node->hasInitValue()) {
+            form.add( "value = " + this->accept(node->getInitValue()) );
+        }
+        if (node->hasLoBound()) {
+            form.add( "lo = " + this->accept(node->getLoBound()) );
+        }
+        if (node->hasHiBound()) {
+            form.add( "hi = " + this->accept(node->getHiBound()) );
+        }
+        if (node->isFixed()) {
+            form.add( "fix = true" );
+        }
+        this->setValue(form.createString(false));
+    }
 }

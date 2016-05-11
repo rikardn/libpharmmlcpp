@@ -187,14 +187,14 @@ namespace PharmML
         }
         
         // Get lower bound
-        xml::Node lbnd_node = this->context->getSingleElement(node, "./ct:LowerBound");
+        xml::Node lbnd_node = this->context->getSingleElement(node, "./msteps:LowerBound");
         if (lbnd_node.exists()) {
             xml::Node tree = lbnd_node.getChild();
             this->loBound = this->context->factory.create(tree);
         }
         
         // Get upper bound
-        xml::Node ubnd_node = this->context->getSingleElement(node, "./ct:UpperBound");
+        xml::Node ubnd_node = this->context->getSingleElement(node, "./msteps:UpperBound");
         if (ubnd_node.exists()) {
             xml::Node tree = ubnd_node.getChild();
             this->hiBound = this->context->factory.create(tree);
@@ -231,6 +231,10 @@ namespace PharmML
     
     AstNode *ParameterEstimation::getHiBound() {
         return this->hiBound;
+    }
+    
+    void ParameterEstimation::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
     }
     
     EstimationStep::EstimationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {

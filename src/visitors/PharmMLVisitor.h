@@ -56,6 +56,8 @@ namespace PharmML
     
     class DesignSpaces;
     class DesignSpace;
+    
+    class ParameterEstimation;
 
     class PharmMLVisitor
     {
@@ -96,6 +98,8 @@ namespace PharmML
             
             virtual void visit(DesignSpaces *node) = 0;
             virtual void visit(DesignSpace *node) = 0;
+            
+            virtual void visit(ParameterEstimation *node) = 0;
     };
 }
 

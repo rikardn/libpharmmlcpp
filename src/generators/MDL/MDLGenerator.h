@@ -115,6 +115,8 @@ namespace PharmML
             
             virtual void visit(DesignSpaces *node);
             virtual void visit(DesignSpace *node);
+            
+            virtual void visit(ParameterEstimation *node);
     };
 }
 

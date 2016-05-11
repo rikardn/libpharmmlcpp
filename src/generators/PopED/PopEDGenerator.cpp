@@ -191,7 +191,7 @@ namespace PharmML
         
         // Y definition
         std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
-        std::vector<CommonVariable *> variables = this->model->getModelDefinition()->getStructuralModel()->getPrerequisiteVariables(derivatives);
+        std::vector<CommonVariable *> variables = this->model->getModelDefinition()->getStructuralModel()->DependsOn(derivatives);
         for (CommonVariable *var : variables) {
             form.add("YY: " + var->getSymbId());
         } 

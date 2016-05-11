@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 #include "StructuralModel.h"
 
 namespace PharmML
@@ -90,5 +91,27 @@ namespace PharmML
         }
 
         return list;
+    }
+
+    // Get all variables that depends on at least one in variable in list and that is not in the list
+    // Also get the dependencies of these
+    // Warning! Don't use this method!
+    std::vector<PharmML::CommonVariable *> StructuralModel::DependsOn(std::vector<PharmML::CommonVariable *> list) {
+        std::vector<PharmML::CommonVariable *> found;
+
+        for (CommonVariable *listed_var : list) {
+            for (CommonVariable *var : this->variables) {
+                for (std::string symbol : var->getDependencies().getDependencySet()) {
+                    // if not in list and not already found and with the right name
+                    if (std::find(list.begin(), list.end(), var) == list.end() &&
+                            std::find(found.begin(), found.end(), var) == found.end() &&
+                            symbol == listed_var->getSymbId()) {
+                        found.push_back(var);                        
+                    }
+                }
+            }
+        }
+
+        return this->getPrerequisiteVariables(found);
     }
 }

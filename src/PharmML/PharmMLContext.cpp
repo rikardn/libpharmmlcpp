@@ -58,6 +58,7 @@ namespace PharmML
     }
     
     // TODO: This and this->symbols/this->symbRefs would be better suited within Consolidator?
+    // FIXME: Not needed as symbols already know what they are reffering to via getSymbol()
     Symbol *PharmMLContext::resolveSymbref(SymbRef *symbRef) {
         std::string name = symbRef->toString();
         Symbol *symbol = this->symbols[name];

@@ -37,6 +37,7 @@ namespace PharmML
         std::vector<PharmML::CommonVariable *> getVariables();
         std::vector<PharmML::CommonVariable *> getDerivatives();
         std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
+        std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);
     };
 }
 

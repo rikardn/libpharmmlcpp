@@ -25,17 +25,21 @@
 #include <AST/AstNode.h>
 #include <AST/symbols.h>
 #include <consolidators/PopulationParameter.h>
+#include <symbols/SymbolSet.h>
 
 namespace CPharmML
 {
     class Consolidator
     {
-        PharmML::PharmMLContext *context;
-        std::vector<CPharmML::PopulationParameter *> populationParameters;
-        
         public:
-        Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
-        std::vector<CPharmML::PopulationParameter *> getPopulationParameters();
+            Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
+            std::vector<CPharmML::PopulationParameter *> getPopulationParameters();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<CPharmML::PopulationParameter *> populationParameters;
+            PharmML::SymbolSet allSymbols;
+            void consolidateSymbols(PharmML::Model *model);
     };
 }
 

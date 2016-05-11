@@ -81,8 +81,34 @@ namespace CPharmML
                 parameterEstimation);
             this->populationParameters.push_back(cPopulationParameter);
         }
+
+        this->consolidateSymbols(model);
     }
-    
+   
+    void Consolidator::consolidateSymbols(PharmML::Model *model) {
+        std::vector<PharmML::PopulationParameter *> params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        for (PharmML::PopulationParameter *param : params) {
+            this->allSymbols.addSymbol(param);
+        }
+
+        std::vector<PharmML::IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        for (PharmML::IndividualParameter *ip : ips) {
+            this->allSymbols.addSymbol(ip);
+        }
+
+        std::vector<PharmML::RandomVariable *> random = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (PharmML::RandomVariable *rv : random) {
+            this->allSymbols.addSymbol(rv);
+        }
+
+        std::vector<PharmML::CommonVariable *> cvs = model->getModelDefinition()->getStructuralModel()->getVariables();
+        for (PharmML::CommonVariable *cv : cvs) {
+            this->allSymbols.addSymbol(cv);
+        }
+
+        this->allSymbols.addSymbol(model->getIndependentVariable());
+    }
+
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
         return this->populationParameters;
     }

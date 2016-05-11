@@ -53,7 +53,32 @@ namespace PharmML
         return dependencies; 
     }
 
-    std::vector<Symbol *> SymbolSet::getOrderedDependencies() {
+    // Order the symbols in this SymbolSet
+    std::vector<Symbol *> SymbolSet::getOrdered() {
+        std::vector<Symbol *> ordered;
+        for (Symbol *symbol : this->symbols) {
+            // add first element on top
+            if (ordered.size() == 0) {
+                ordered.push_back(symbol);
+            } else {
+                bool inserted = false;
+                for (auto j = ordered.begin(); j < ordered.end(); j++) {
+                    if (ordered[j - ordered.begin()]->referencedSymbols.hasSymbol(symbol)) {
+                        ordered.insert(j, symbol);
+                        inserted = true;
+                        break;
+                    }
+                    if (!inserted) {
+                        ordered.push_back(symbol);
+                    }
+                }
+            }
+        }
+        return ordered;
+    }
 
+    // Order the dependencies of the symbols of this SymbolSet
+    std::vector<Symbol *> SymbolSet::getOrderedDependencies() {
+        return this->getDependencies().getOrdered();
     }
 }

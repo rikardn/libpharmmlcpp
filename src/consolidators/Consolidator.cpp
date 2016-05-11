@@ -22,67 +22,69 @@ namespace CPharmML
 {
     Consolidator::Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model) {
         this->context = context;
+        
+        // Consolidate the different aspects of the model
+        this->consolidatePopulationParameters(model);
+        this->consolidateSymbols(model);
+    }
+    
+    void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
         // Consolidate PharmML PopulationParameter's (e.g. for init statement generation)
-        for (PharmML::PopulationParameter *populationParameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
-            // Find RandomVariable's employing this PopulationParameter
-            std::vector<PharmML::RandomVariable *> randomVariables = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
-            for (PharmML::RandomVariable *param : randomVariables) {
-                bool links = false;
-                std::unordered_set<PharmML::SymbRef *> references = param->getDependencies().getSymbRefs();
-                for (PharmML::SymbRef *symbRef : references) {
-                    PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
-                    if (populationParameter == resolvedSymbol) {
-                        links = true;
+        for (PharmML::PopulationParameter *pop_param : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
+            // Create new consolidated population parameter
+            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(pop_param);
+            
+            // Find RandomVariable's refering this PopulationParameter
+            std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+            for (PharmML::RandomVariable *random_var : random_vars) {
+                // Get distribution for variable
+                PharmML::Distribution *dist = random_var->getDistribution();
+                
+                // Search for reference amongst all DistributionParameter's
+                for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
+                    std::unordered_set<PharmML::SymbRef *> refs = dist_param->getDependencies().getSymbRefs();
+                    for (PharmML::SymbRef *ref : refs) {
+                        PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
+                        if (pop_param == symbol) {
+                            cpop_param->addRandomVariable(random_var);
+                            cpop_param->addDistributionName(dist->getName());
+                            cpop_param->addDistributionParameterType(dist_param->getName());
+                            // TODO: Transformation support (AstNode containing SymbRef to PopulationParameter should at least know if it's simple)
+                        }
                     }
-                }
-                if (links) {
-                    dependentRandomVariables.insert(param);
                 }
             }
             
-            // Find IndividualParameter's employing this PopulationParameter
-            std::vector<PharmML::IndividualParameter *> individualParameters = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
-            for (PharmML::IndividualParameter *param : individualParameters) {
-                bool links = false;
-                std::unordered_set<PharmML::SymbRef *> references = param->getDependencies().getSymbRefs();
-                for (PharmML::SymbRef *symbRef : references) {
-                    PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
-                    if (populationParameter == resolvedSymbol) {
-                        links = true;
+            // Find IndividualParameter's refering this PopulationParameter
+            std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+            for (PharmML::IndividualParameter *indiv_param : indiv_params) {
+                std::unordered_set<PharmML::SymbRef *> refs = indiv_param->getDependencies().getSymbRefs();
+                for (PharmML::SymbRef *ref : refs) {
+                    PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
+                    if (pop_param == symbol) {
+                        // Add the individual parameter found
+                        cpop_param->addIndividualParameter(indiv_param);
                     }
-                }
-                if (links) {
-                    dependentIndividualParameters.insert(param);
                 }
             }
             
             // Find ParameterEstimation for this PopulationParameter
             // TODO: Figure out how to deal with multiple EstimationStep's
-            PharmML::EstimationStep *firstEstimationStep = model->getModellingSteps()->getEstimationSteps()[0];
-            std::vector<PharmML::ParameterEstimation *> estParameters = firstEstimationStep->getParameters();
-            PharmML::ParameterEstimation *parameterEstimation;
-            for (PharmML::ParameterEstimation *estParam : estParameters) {
-                bool links = false;
-                PharmML::SymbRef *symbRef = estParam->getSymbRef();
-                PharmML::Symbol *resolvedSymbol = this->context->resolveSymbref(symbRef);
-                if (populationParameter == resolvedSymbol) {
-                    parameterEstimation = estParam;
+            PharmML::EstimationStep *est_step1 = model->getModellingSteps()->getEstimationSteps()[0];
+            std::vector<PharmML::ParameterEstimation *> est_params = est_step1->getParameters();
+            for (PharmML::ParameterEstimation *est_param : est_params) {
+                PharmML::SymbRef *ref = est_param->getSymbRef();
+                PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
+                if (pop_param == symbol) {
+                    // Add the estimation parameter found
+                    cpop_param->addParameterEstimation(est_param);
                     break;
                 }
             }
             
-            // Create the consolidated PopulationParameter object and add it to consolidator
-            CPharmML::PopulationParameter *cPopulationParameter = new PopulationParameter(
-                populationParameter,
-                dependentRandomVariables,
-                dependentIndividualParameters,
-                parameterEstimation);
-            this->populationParameters.push_back(cPopulationParameter);
+            // Add the finished consolidated PopulationParameter object
+            this->populationParameters.push_back(cpop_param);
         }
-
-        this->consolidateSymbols(model);
     }
    
     void Consolidator::consolidateSymbols(PharmML::Model *model) {

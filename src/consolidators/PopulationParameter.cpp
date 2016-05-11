@@ -19,44 +19,80 @@
 
 namespace CPharmML
 {
-    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter,
-            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
-            PharmML::ParameterEstimation *parameterEstimation)
-    {
-        // Store the source objects
+    // Construct with PopulationParameter as base
+    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter) {
+        // Store the base object
         this->populationParameter = populationParameter;
-        if (!dependentRandomVariables.empty()) {
-            this->type = "variability";
-            this->dependentRandomVariables = dependentRandomVariables;
-        } else {
-            this->type = "structural";
-        }
-        this->dependentIndividualParameters = dependentIndividualParameters;
+    }
+    
+    // Add PharmML objects for consolidation with PopulationParameter
+    void PopulationParameter::addRandomVariable(PharmML::RandomVariable *randomVariable) {
+        this->randomVariables.push_back(randomVariable);
+        this->variabilityParameter = true; // Are we sure? What if used as 'mean' in 'Normal1' for example?
+    }
+    
+    void PopulationParameter::addIndividualParameter(PharmML::IndividualParameter *individualParameter) {
+        this->individualParameters.push_back(individualParameter);
+    }
+    
+    void PopulationParameter::addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation) {
         this->parameterEstimation = parameterEstimation;
     }
     
+    // Get PharmML objects used to consolidate
     PharmML::PopulationParameter *PopulationParameter::getPopulationParameter() {
         return this->populationParameter;
     }
     
-    std::unordered_set<PharmML::RandomVariable *> PopulationParameter::getDependentRandomVariables() {
-        return this->dependentRandomVariables;
+    std::vector<PharmML::RandomVariable *> PopulationParameter::getRandomVariables() {
+        return this->randomVariables;
     }
     
-    std::unordered_set<PharmML::IndividualParameter *> PopulationParameter::getDependentIndividualParameters() {
-        return this->dependentIndividualParameters;
+    std::vector<PharmML::IndividualParameter *> PopulationParameter::getIndividualParameters() {
+        return this->individualParameters;
     }
     
+    // Set attributes
+    void PopulationParameter::addDistributionName(std::string name) {
+        this->distNames.insert(name);
+    }
+    
+    void PopulationParameter::addDistributionParameterType(std::string name) {
+        this->distParTypes.insert(name);
+    }
+    
+    // Get attributes
     PharmML::ParameterEstimation *PopulationParameter::getParameterEstimation() {
         return this->parameterEstimation;
     }
     
-    bool PopulationParameter::isStructuralParameter() {
-        return (this->type == "structural");
+    bool PopulationParameter::isVariabilityParameter() {
+        return (this->variabilityParameter);
     }
     
-    bool PopulationParameter::isVariabilityParameter() {
-        return (this->type == "variability");
+    std::string PopulationParameter::getDistributionName() {
+        std::vector<std::string> vector(this->distNames.begin(), this->distNames.end());
+        if (vector.size() == 1) {
+            return vector[0];
+        } else {
+            return std::string("");
+        }
+    }
+    
+    std::string PopulationParameter::getDistributionParameterType() {
+        std::vector<std::string> vector(this->distParTypes.begin(), this->distParTypes.end());
+        if (vector.size() == 1) {
+            return vector[0];
+        } else {
+            return std::string("");
+        }
+    }
+    
+    bool PopulationParameter::inDifferentParameterizations() {
+        if (this->distNames.size() > 1 || this->distParTypes.size() > 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -24,6 +24,10 @@ namespace PharmML
         this->value = str;
     }
     
+    void MDLGenerator::setValue(std::vector<std::string> strs) {
+        this->values = strs;
+    }
+    
     void MDLGenerator::setValue(stringpair pair) {
         this->hvalue = pair;
     }
@@ -40,6 +44,10 @@ namespace PharmML
     // public
     std::string MDLGenerator::getValue() {
         return this->value;
+    }
+    
+    std::vector<std::string> MDLGenerator::getValues() {
+        return this->values;
     }
     
     stringpair MDLGenerator::getPairValue() {
@@ -163,11 +171,10 @@ namespace PharmML
         std::vector<CPharmML::PopulationParameter *> structuralParameters;
         std::vector<CPharmML::PopulationParameter *> variabilityParameters;
         for (CPharmML::PopulationParameter *populationParameter : populationParameters) {
-            if (populationParameter->isStructuralParameter()) {
-                structuralParameters.push_back(populationParameter);
-            }
             if (populationParameter->isVariabilityParameter()) {
                 variabilityParameters.push_back(populationParameter);
+            } else {
+                structuralParameters.push_back(populationParameter);
             }
         }
         
@@ -186,13 +193,17 @@ namespace PharmML
         
         form.indentAdd("STRUCTURAL {");
         
-        for (CPharmML::PopulationParameter * structuralParameter : structuralParameters) {
+        for (CPharmML::PopulationParameter *structuralParameter : structuralParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             structuralParameter->getPopulationParameter()->accept(this);
             std::string name = this->getValue();
+            
             structuralParameter->getParameterEstimation()->accept(this);
-            std::string init = this->getValue();
-            form.add(name + " : " + init);
+            std::vector<std::string> init_attr = this->getValues();
+            
+            form.openVector(name + " : {}", 0, ", ");
+            form.addMany(init_attr);
+            form.closeVector();
         }
         
         form.outdentAdd("} # end STRUCTURAL");
@@ -206,13 +217,38 @@ namespace PharmML
         
         form.indentAdd("VARIABILITY {");
         
-        for (CPharmML::PopulationParameter * variabilityParameter : variabilityParameters) {
+        for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             variabilityParameter->getPopulationParameter()->accept(this);
             std::string name = this->getValue();
+            
             variabilityParameter->getParameterEstimation()->accept(this);
-            std::string init = this->getValue();
-            form.add(name + " : " + init);
+            std::vector<std::string> init_attr = this->getValues();
+            
+            form.openVector(name + " : {}", 0, ", ");
+            form.addMany(init_attr);
+            
+            // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
+            std::string dist_name = variabilityParameter->getDistributionName();
+            std::string dist_param = variabilityParameter->getDistributionParameterType();
+            std::string comment;
+            if (variabilityParameter->inDifferentParameterizations()) {
+                comment = " # Parameter in different distributions/parameterizations!";
+            } else {
+                if (dist_name == "Normal1") {
+                    if (dist_param == "stdev") {
+                        form.add("type is sd");
+                    } else if (dist_param == "var") {
+                        form.add("type is var");
+                    } else {
+                        comment = " # Unknown ProbOnto Normal1 parameter type (" + dist_param + ")!";
+                    }
+                } else {
+                    comment = " # Unknown ProbOnto distribution (" + dist_name + ") and parameter type (" + dist_param + ")!";
+                }
+            }
+            form.closeVector();
+            form.append(comment);
         }
         
         form.outdentAdd("} # end VARIABILITY");
@@ -391,20 +427,19 @@ namespace PharmML
     
     // Class ParameterEstimation
     void MDLGenerator::visit(ParameterEstimation *node) {
-        RFormatter form;
-        form.openVector("{}", 0, ", ");
+        std::vector<std::string> attr;
         if (node->hasInitValue()) {
-            form.add( "value = " + this->accept(node->getInitValue()) );
+            attr.push_back("value = " + this->accept(node->getInitValue()));
         }
         if (node->hasLoBound()) {
-            form.add( "lo = " + this->accept(node->getLoBound()) );
+            attr.push_back("lo = " + this->accept(node->getLoBound()));
         }
         if (node->hasHiBound()) {
-            form.add( "hi = " + this->accept(node->getHiBound()) );
+            attr.push_back("hi = " + this->accept(node->getHiBound()));
         }
         if (node->isFixed()) {
-            form.add( "fix = true" );
+            attr.push_back("fix = true");
         }
-        this->setValue(form.createString(false));
+        this->setValue(attr);
     }
 }

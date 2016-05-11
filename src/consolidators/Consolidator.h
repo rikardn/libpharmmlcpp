@@ -37,8 +37,11 @@ namespace CPharmML
 
         private:
             PharmML::PharmMLContext *context;
+            
             std::vector<CPharmML::PopulationParameter *> populationParameters;
             PharmML::SymbolSet allSymbols;
+            
+            void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateSymbols(PharmML::Model *model);
     };
 }

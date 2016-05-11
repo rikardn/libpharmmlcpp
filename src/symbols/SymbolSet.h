@@ -15,27 +15,26 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBOL_H_
-#define PHARMML_SYMBOL_H_
+#ifndef PHARMML_SYMBOLSET_H_
+#define PHARMML_SYMBOLSET_H_
 
+#include <unordered_set>
+#include <vector>
 #include <string>
-#include <xml/xml.h>
-#include <AST/AstNode.h>
-
-#include <visitors/SymbolVisitor.h>
-#include <symbols/SymbolSet.h>
 
 namespace PharmML
 {
-    class Symbol {
+    class Symbol;
+    class SymbolSet {
         public:
-            SymbolSet referencedSymbols;
-            std::string getSymbId();
-            virtual void accept(SymbolVisitor *visitor) = 0;
+            void addSymbol(Symbol *symbol);
+            bool hasSymbol(Symbol *symbol);
+            void merge(SymbolSet& set);
+            SymbolSet getDependencies();
+            std::vector<Symbol *> getOrderedDependencies();
 
-        protected:
-            std::string symbId;
-            void parse(xml::Node node);
+        private:
+            std::unordered_set<Symbol *> symbols;
     };
 }
 

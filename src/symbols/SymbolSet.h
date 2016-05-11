@@ -33,7 +33,9 @@ namespace PharmML
             SymbolSet getDependencies();
             std::vector<Symbol *> getOrdered();
             std::vector<Symbol *> getOrderedDependencies();
-
+            std::unordered_set<Symbol *>::iterator begin();
+            std::unordered_set<Symbol *>::iterator end();
+ 
         private:
             std::unordered_set<Symbol *> symbols;
     };

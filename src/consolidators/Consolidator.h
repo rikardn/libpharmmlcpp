@@ -26,6 +26,7 @@
 #include <AST/symbols.h>
 #include <consolidators/PopulationParameter.h>
 #include <symbols/SymbolSet.h>
+#include <symbols/Symbol.h>
 
 namespace CPharmML
 {

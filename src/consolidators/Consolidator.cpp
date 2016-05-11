@@ -107,6 +107,12 @@ namespace CPharmML
         }
 
         this->allSymbols.addSymbol(model->getIndependentVariable());
+
+        // Obtain a map from all symbIds to Symbols. Will be used to populate SymbRefs
+        std::unordered_map<std::string, PharmML::Symbol *> symbIdMap;
+        for (PharmML::Symbol *symbol : this->allSymbols) {
+            symbIdMap[symbol->getSymbId()] = symbol;
+        }
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

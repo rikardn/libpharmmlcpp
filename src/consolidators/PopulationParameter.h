@@ -20,6 +20,9 @@
 
 #include <unordered_set>
 #include <symbols/PopulationParameter.h>
+#include <symbols/RandomVariable.h>
+#include <symbols/IndividualParameter.h>
+#include <PharmML/ModellingSteps.h>
 
 namespace CPharmML
 {
@@ -28,15 +31,18 @@ namespace CPharmML
         PharmML::PopulationParameter *populationParameter;
         std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
         std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
+        PharmML::ParameterEstimation *parameterEstimation = nullptr;
         std::string type;
         
         public:
         PopulationParameter(PharmML::PopulationParameter *populationParameter,
             std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters);
+            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
+            PharmML::ParameterEstimation *parameterEstimation);
         PharmML::PopulationParameter *getPopulationParameter();
         std::unordered_set<PharmML::RandomVariable *> getDependentRandomVariables();
         std::unordered_set<PharmML::IndividualParameter *> getDependentIndividualParameters();
+        PharmML::ParameterEstimation *getParameterEstimation();
         bool isStructuralParameter();
         bool isVariabilityParameter();
     };

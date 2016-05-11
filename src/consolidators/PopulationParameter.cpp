@@ -21,7 +21,8 @@ namespace CPharmML
 {
     PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter,
             std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters)
+            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
+            PharmML::ParameterEstimation *parameterEstimation)
     {
         // Store the source objects
         this->populationParameter = populationParameter;
@@ -32,6 +33,7 @@ namespace CPharmML
             this->type = "structural";
         }
         this->dependentIndividualParameters = dependentIndividualParameters;
+        this->parameterEstimation = parameterEstimation;
     }
     
     PharmML::PopulationParameter *PopulationParameter::getPopulationParameter() {
@@ -44,6 +46,10 @@ namespace CPharmML
     
     std::unordered_set<PharmML::IndividualParameter *> PopulationParameter::getDependentIndividualParameters() {
         return this->dependentIndividualParameters;
+    }
+    
+    PharmML::ParameterEstimation *PopulationParameter::getParameterEstimation() {
+        return this->parameterEstimation;
     }
     
     bool PopulationParameter::isStructuralParameter() {

@@ -26,35 +26,45 @@ namespace PharmML
 
     void ParameterModel::parse(xml::Node node) {
         this->blkId = node.getAttribute("blkId").getValue();
-        std::vector<xml::Node> pop_nodes = this->context->getElements(node, ".//mdef:PopulationParameter");
+        std::vector<xml::Node> pop_nodes = this->context->getElements(node, "./mdef:PopulationParameter");
         for (xml::Node n : pop_nodes) {
             PharmML::PopulationParameter *pop = new PharmML::PopulationParameter(this->context, n);
-            this->PopulationParameters.push_back(pop);
+            this->populationParameters.push_back(pop);
         }
 
-        std::vector<xml::Node> ind_nodes = this->context->getElements(node, ".//mdef:IndividualParameter");
+        std::vector<xml::Node> ind_nodes = this->context->getElements(node, "./mdef:IndividualParameter");
         for (xml::Node n : ind_nodes) {
             PharmML::IndividualParameter *ind = new PharmML::IndividualParameter(this->context, n);
-            this->IndividualParameters.push_back(ind);
+            this->individualParameters.push_back(ind);
         }
 
-        std::vector<xml::Node> rand_nodes = this->context->getElements(node, ".//mdef:RandomVariable");
+        std::vector<xml::Node> rand_nodes = this->context->getElements(node, "./mdef:RandomVariable");
         for (xml::Node n : rand_nodes) {
             PharmML::RandomVariable *ind = new PharmML::RandomVariable(this->context, n);
-            this->RandomVariables.push_back(ind);
+            this->randomVariables.push_back(ind);
+        }
+        
+        std::vector<xml::Node> corr_nodes = this->context->getElements(node, "./mdef:Correlation");
+        for (xml::Node n : corr_nodes) {
+            PharmML::Correlation *ind = new PharmML::Correlation(this->context, n);
+            this->correlations.push_back(ind);
         }
     }
 
     std::vector<PopulationParameter *> ParameterModel::getPopulationParameters() {
-        return this->PopulationParameters;
+        return this->populationParameters;
     }
 
     std::vector<IndividualParameter *> ParameterModel::getIndividualParameters() {
-        return this->IndividualParameters;
+        return this->individualParameters;
     }
         
     std::vector<RandomVariable *> ParameterModel::getRandomVariables() {
-        return this->RandomVariables;
+        return this->randomVariables;
+    }
+    
+    std::vector<Correlation *> ParameterModel::getCorrelations() {
+        return this->correlations;
     }
     
     std::string ParameterModel::getBlkId() {

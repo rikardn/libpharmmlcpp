@@ -21,6 +21,7 @@
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
+#include <PharmML/Correlation.h>
 #include <xml/xml.h>
 
 namespace PharmML
@@ -29,14 +30,16 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::string blkId;
-        std::vector<PopulationParameter *> PopulationParameters;
-        std::vector<IndividualParameter *> IndividualParameters;
-        std::vector<RandomVariable *> RandomVariables;
+        std::vector<PopulationParameter *> populationParameters;
+        std::vector<IndividualParameter *> individualParameters;
+        std::vector<RandomVariable *> randomVariables;
+        std::vector<Correlation *> correlations;
         
         public:
         std::vector<PopulationParameter *> getPopulationParameters();
         std::vector<IndividualParameter *> getIndividualParameters();
         std::vector<RandomVariable *> getRandomVariables();
+        std::vector<Correlation *> getCorrelations();
         ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getBlkId();

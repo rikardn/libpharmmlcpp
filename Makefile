@@ -24,8 +24,8 @@ mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGen
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o xml.o RTextFormatter.o Consolidator.o CPopulationParameter.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o xml.o RTextFormatter.o Consolidator.o CPopulationParameter.o
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o xml.o RTextFormatter.o Consolidator.o CPopulationParameter.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o xml.o RTextFormatter.o Consolidator.o CPopulationParameter.o
 
 CPopulationParameter.o: src/consolidators/PopulationParameter.cpp src/consolidators/PopulationParameter.h
 	$(CC) -c src/consolidators/PopulationParameter.cpp -oCPopulationParameter.o $(CFLAGS)
@@ -74,6 +74,9 @@ RandomVariable.o: src/symbols/RandomVariable.cpp src/symbols/RandomVariable.h
 
 IndependentVariable.o: src/symbols/IndependentVariable.cpp src/symbols/IndependentVariable.h
 	$(CC) -c src/symbols/IndependentVariable.cpp -oIndependentVariable.o $(CFLAGS)
+
+Correlation.o: src/PharmML/Correlation.cpp src/PharmML/Correlation.h
+	$(CC) -c src/PharmML/Correlation.cpp -oCorrelation.o $(CFLAGS)
 
 VariabilityLevel.o: src/symbols/VariabilityLevel.cpp src/symbols/VariabilityLevel.h
 	$(CC) -c src/symbols/VariabilityLevel.cpp -oVariabilityLevel.o $(CFLAGS)

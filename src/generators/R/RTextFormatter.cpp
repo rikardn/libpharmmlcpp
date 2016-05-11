@@ -144,7 +144,7 @@ namespace PharmML
         
         // If desired, subsequent lines adds separators (if vector open)
         for(auto it = strs.begin()+1; it != strs.end(); ++it) {
-            this->add(*it, separate);
+            this->add(*it, !separate);
         }
     }
 

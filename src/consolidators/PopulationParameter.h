@@ -18,7 +18,9 @@
 #ifndef CPHARMML_POPULATIONPARAMETER_H_
 #define CPHARMML_POPULATIONPARAMETER_H_
 
+#include <string>
 #include <unordered_set>
+#include <vector>
 #include <symbols/PopulationParameter.h>
 #include <symbols/RandomVariable.h>
 #include <symbols/IndividualParameter.h>
@@ -28,23 +30,41 @@ namespace CPharmML
 {
     class PopulationParameter
     {
-        PharmML::PopulationParameter *populationParameter;
-        std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables;
-        std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters;
-        PharmML::ParameterEstimation *parameterEstimation = nullptr;
-        std::string type;
-        
         public:
-        PopulationParameter(PharmML::PopulationParameter *populationParameter,
-            std::unordered_set<PharmML::RandomVariable *> dependentRandomVariables,
-            std::unordered_set<PharmML::IndividualParameter *> dependentIndividualParameters,
-            PharmML::ParameterEstimation *parameterEstimation);
-        PharmML::PopulationParameter *getPopulationParameter();
-        std::unordered_set<PharmML::RandomVariable *> getDependentRandomVariables();
-        std::unordered_set<PharmML::IndividualParameter *> getDependentIndividualParameters();
-        PharmML::ParameterEstimation *getParameterEstimation();
-        bool isStructuralParameter();
-        bool isVariabilityParameter();
+            // Construct with PopulationParameter as base
+            PopulationParameter(PharmML::PopulationParameter *populationParameter);
+            
+            // Add PharmML objects for consolidation with PopulationParameter
+            void addRandomVariable(PharmML::RandomVariable *randomVariable);
+            void addIndividualParameter(PharmML::IndividualParameter *individualParameter);
+            void addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation);
+            
+            // Get PharmML objects used to consolidate
+            PharmML::PopulationParameter *getPopulationParameter();
+            std::vector<PharmML::RandomVariable *> getRandomVariables();
+            std::vector<PharmML::IndividualParameter *> getIndividualParameters();
+            PharmML::ParameterEstimation *getParameterEstimation();
+            
+            // Add attributes
+            void addDistributionName(std::string name);
+            void addDistributionParameterType(std::string name);
+            
+            // Get attributes
+            bool isVariabilityParameter();
+            std::string getDistributionName();
+            std::string getDistributionParameterType();
+            bool inDifferentParameterizations();
+        
+        private:
+            // PharmML objects used to consolidate
+            PharmML::PopulationParameter *populationParameter;
+            std::vector<PharmML::RandomVariable *> randomVariables;
+            std::vector<PharmML::IndividualParameter *> individualParameters;
+            PharmML::ParameterEstimation *parameterEstimation = nullptr;
+            
+            bool variabilityParameter = false;
+            std::unordered_set<std::string> distNames;
+            std::unordered_set<std::string> distParTypes;
     };
 }
 

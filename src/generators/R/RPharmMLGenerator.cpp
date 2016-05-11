@@ -654,4 +654,6 @@ namespace PharmML
         
         this->setValue(s + "\n");
     }
+    
+    void RPharmMLGenerator::visit(ParameterEstimation *node) { }
 }

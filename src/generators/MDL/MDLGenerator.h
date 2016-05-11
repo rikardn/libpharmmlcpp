@@ -54,15 +54,22 @@ namespace PharmML
             MDLAstGenerator ast_gen;
             
             std::string value;
-            stringpair hvalue;
-            stringmap hvalues;
             void setValue(std::string str);
+            
+            std::vector<std::string> values;
+            void setValue(std::vector<std::string> str);
+            
+            stringpair hvalue;
             void setValue(stringpair pair);
+            
+            stringmap hvalues;
             void setValue(stringmap hash);
+            
             std::string accept(AstNode *);
 
         public:
             std::string getValue();
+            std::vector<std::string> getValues();
             stringpair getPairValue();
             stringmap getHashValue();
             
@@ -115,6 +122,8 @@ namespace PharmML
             
             virtual void visit(DesignSpaces *node);
             virtual void visit(DesignSpace *node);
+            
+            virtual void visit(ParameterEstimation *node);
     };
 }
 

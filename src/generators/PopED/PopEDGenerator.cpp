@@ -322,4 +322,6 @@ namespace PharmML
 
     void PopEDGenerator::visit(DesignSpaces *node) {}
     void PopEDGenerator::visit(DesignSpace *node) {}
+    
+    void PopEDGenerator::visit(ParameterEstimation *node) {}
 }

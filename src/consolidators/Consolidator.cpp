@@ -86,7 +86,8 @@ namespace CPharmML
             this->populationParameters.push_back(cpop_param);
         }
     }
-   
+  
+    // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
     void Consolidator::consolidateSymbols(PharmML::Model *model) {
         std::vector<PharmML::PopulationParameter *> params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
         for (PharmML::PopulationParameter *param : params) {
@@ -114,6 +115,11 @@ namespace CPharmML
         std::unordered_map<std::string, PharmML::Symbol *> symbIdMap;
         for (PharmML::Symbol *symbol : this->allSymbols) {
             symbIdMap[symbol->getSymbId()] = symbol;
+        }
+
+        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols
+        for (PharmML::Symbol *symbol : this->allSymbols) {
+            symbol->gatherSymbRefs(symbIdMap);
         }
     }
 

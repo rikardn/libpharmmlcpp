@@ -99,11 +99,11 @@ namespace PharmML
     }
 
 
-    void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) {
+    void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (is_structured) {
-
+            
         } else {
-
+            this->symbRefsFromAst(this->assignment, symbolMap);
         }
     }
 

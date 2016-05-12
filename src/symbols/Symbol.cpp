@@ -16,6 +16,7 @@
  */
 
 #include "Symbol.h"
+#include <visitors/SymbRefFinder.h>
 #include <iostream>
 
 namespace PharmML
@@ -24,6 +25,17 @@ namespace PharmML
         return this->symbId;
     }
 
+    // Put Symbols into SymbRefs and add Symbols to referencedSymbols from an AST
+    void Symbol::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
+        SymbRefFinder finder;
+        node->accept(&finder);
+        for (SymbRef *symbref : finder.getSymbRefs()) {
+            Symbol *symbol = symbolMap[symbref->toString()];
+            symbref->setSymbol(symbol);
+            this->referencedSymbols.addSymbol(symbol);
+        }
+    }
+    
     void Symbol::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
     }

@@ -32,11 +32,12 @@ namespace PharmML
         public:
             SymbolSet referencedSymbols;
             std::string getSymbId();
-            virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) = 0;
+            virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
             std::string symbId;
+            void symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
             void parse(xml::Node node);
     };
 }

@@ -47,7 +47,7 @@ namespace PharmML
         return this->is_derivative;
     }
 
-    void Variable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) {
+    void Variable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
 
     }
 

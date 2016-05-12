@@ -50,7 +50,7 @@ namespace PharmML
         AstNode *getAssignment();
         bool isStructured();
         Dependencies &getDependencies();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap);
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

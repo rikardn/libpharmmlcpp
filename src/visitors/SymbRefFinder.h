@@ -19,6 +19,7 @@
 #define PHARMML_SYMBREFFINDER_H_
 
 #include <string>
+#include <unordered_set>
 #include <visitors/AstNodeVisitor.h>
 #include <AST/symbols.h>
 

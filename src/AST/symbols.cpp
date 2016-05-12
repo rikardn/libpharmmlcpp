@@ -20,14 +20,6 @@
 
 namespace PharmML
 {
-    std::string Symbol::getSymbId() {
-        return this->symbId;
-    }
-
-    void Symbol::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
-    }
-
     SymbRef::SymbRef(std::string ref) {
         this->symbIdRef = ref;
     }

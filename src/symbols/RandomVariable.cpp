@@ -56,7 +56,8 @@ namespace PharmML
 
     void RandomVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (DistributionParameter *par : this->Distribution->getDistributionParameters()) {
-            this->symbRefsFromAst(par->getAssignment(), symbolMap);
+            std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(par->getAssignment(), symbolMap);
+            par->addReferences(found_symbols);
         }
     }
 

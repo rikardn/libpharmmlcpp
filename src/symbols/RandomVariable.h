@@ -18,6 +18,7 @@
 #ifndef PHARMML_RANDOMVARIABLE_H_
 #define PHARMML_RANDOMVARIABLE_H_
 
+#include <unordered_set>
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/Distribution.h>
 #include <visitors/PharmMLVisitor.h>

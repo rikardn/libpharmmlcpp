@@ -21,10 +21,11 @@
 #include "PharmMLContext.h"
 #include <AST/AstNode.h>
 #include <PharmML/Dependencies.h>
+#include <symbols/Symbol.h> // Why? Because it's a referer!
 
 namespace PharmML
 {
-    class DistributionParameter
+    class DistributionParameter : public Referer
     {
         PharmMLContext *context;
         std::string name;

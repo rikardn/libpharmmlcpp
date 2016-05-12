@@ -21,19 +21,38 @@
 
 namespace PharmML
 {
+    // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
+    void Referer::addReferences(std::unordered_set<Symbol *> symbols) {
+        for (Symbol *symbol : symbols) {
+            this->referencedSymbols.addSymbol(symbol);
+        }
+    }
+    
+    bool Referer::refersTo(Symbol *symbol) {
+        return this->referencedSymbols.dependsOn(symbol);
+    }
+    
+    bool Referer::refersIndirectlyTo(Symbol *symbol) {
+        return this->referencedSymbols.hasSymbol(symbol);
+    }
+    
     std::string Symbol::getSymbId() {
         return this->symbId;
     }
 
     // Put Symbols into SymbRefs and add Symbols to referencedSymbols from an AST
-    void Symbol::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
+    // Also return the found symbols (see Consolidator, DistributionParameter and Referer class above)
+    std::unordered_set<Symbol *> Symbol::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
+        std::unordered_set<Symbol *> found_symbols;
         SymbRefFinder finder;
         node->accept(&finder);
         for (SymbRef *symbref : finder.getSymbRefs()) {
             Symbol *symbol = symbolMap[symbref->toString()];
             symbref->setSymbol(symbol);
+            found_symbols.insert(symbol);
             this->referencedSymbols.addSymbol(symbol);
         }
+        return found_symbols;
     }
     
     void Symbol::parse(xml::Node node) {

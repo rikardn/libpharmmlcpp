@@ -24,9 +24,11 @@ namespace CPharmML
     Consolidator::Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model) {
         this->context = context;
         
+        // First, consolidate all symbols (other consolidators might require it)
+        this->consolidateSymbols(model);
+        
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
-        this->consolidateSymbols(model);
     }
     
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
@@ -35,26 +37,48 @@ namespace CPharmML
             // Create new consolidated population parameter
             CPharmML::PopulationParameter *cpop_param = new PopulationParameter(pop_param);
             
-            // Find RandomVariable's refering this PopulationParameter
+            // Find RandomVariable's referencing this PopulationParameter
             std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
             for (PharmML::RandomVariable *random_var : random_vars) {
-                // Get distribution for variable
-                PharmML::Distribution *dist = random_var->getDistribution();
-                
-                // Search for reference amongst all DistributionParameter's
-                for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
-                    std::unordered_set<PharmML::SymbRef *> refs = dist_param->getDependencies().getSymbRefs();
-                    for (PharmML::SymbRef *ref : refs) {
-                        PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
-                        if (pop_param == symbol) {
-                            cpop_param->addRandomVariable(random_var);
-                            cpop_param->addDistributionName(dist->getName());
+                bool depends_on_pop = random_var->referencedSymbols.hasSymbol(pop_param);
+                if (depends_on_pop) {
+                    cpop_param->addRandomVariable(random_var);
+                    
+                    // Get distribution for variable
+                    PharmML::Distribution *dist = random_var->getDistribution();
+                    cpop_param->addDistributionName(dist->getName());
+                    
+                    // Find DistributionParameter's referencing this PopulationParameter
+                    for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
+                        bool depends_on_pop = dist_param->refersIndirectlyTo(pop_param); // Try out the new Referer system
+                        if (depends_on_pop) {
                             cpop_param->addDistributionParameterType(dist_param->getName());
                             // TODO: Transformation support (AstNode containing SymbRef to PopulationParameter should at least know if it's simple)
                         }
                     }
                 }
             }
+            
+            //~ // Find RandomVariable's refering this PopulationParameter
+            //~ std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+            //~ for (PharmML::RandomVariable *random_var : random_vars) {
+                //~ // Get distribution for variable
+                //~ PharmML::Distribution *dist = random_var->getDistribution();
+                
+                //~ // Search for reference amongst all DistributionParameter's
+                //~ for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
+                    //~ std::unordered_set<PharmML::SymbRef *> refs = dist_param->getDependencies().getSymbRefs();
+                    //~ for (PharmML::SymbRef *ref : refs) {
+                        //~ PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
+                        //~ if (pop_param == symbol) {
+                            //~ cpop_param->addRandomVariable(random_var);
+                            //~ cpop_param->addDistributionName(dist->getName());
+                            //~ cpop_param->addDistributionParameterType(dist_param->getName());
+                            //~ // TODO: Transformation support (AstNode containing SymbRef to PopulationParameter should at least know if it's simple)
+                        //~ }
+                    //~ }
+                //~ }
+            //~ }
             
             // Find IndividualParameter's refering this PopulationParameter
             std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();

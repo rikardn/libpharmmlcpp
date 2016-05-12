@@ -27,8 +27,11 @@ namespace PharmML
     class Symbol;
     class SymbolSet {
         public:
+            SymbolSet();
+            SymbolSet(Symbol *symbol);
             void addSymbol(Symbol *symbol);
             bool hasSymbol(Symbol *symbol);
+            bool dependsOn(Symbol *symbol);
             void merge(SymbolSet& set);
             void remove(SymbolSet& set);
             SymbolSet getDependencies();

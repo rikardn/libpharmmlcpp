@@ -21,6 +21,14 @@
 
 namespace PharmML
 {
+    SymbolSet::SymbolSet() {
+        
+    }
+    
+    SymbolSet::SymbolSet(Symbol *symbol) {
+        this->addSymbol(symbol);
+    }
+    
     // Make the SymbolSet iterable
     std::unordered_set<Symbol *>::iterator SymbolSet::begin() {
         return this->symbols.begin();
@@ -36,6 +44,18 @@ namespace PharmML
 
     bool SymbolSet::hasSymbol(Symbol *symbol) {
        return (this->symbols.count(symbol) > 0); 
+    }
+    
+    // For those moments when you want to traverse, hunt and gather a dependency
+    bool SymbolSet::dependsOn(Symbol *symbol) {
+        if (this->hasSymbol(symbol)) {
+            return true;
+        }
+        SymbolSet dependencies = this->getDependencies();
+        if (dependencies.hasSymbol(symbol)) {
+            return true;
+        }
+        return false;
     }
 
     void SymbolSet::merge(SymbolSet& set) {
@@ -97,8 +117,6 @@ namespace PharmML
 
         return dependencies; 
     }
-
-
 
     // Order the symbols in this SymbolSet
     std::vector<Symbol *> SymbolSet::getOrdered() {

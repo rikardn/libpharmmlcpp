@@ -19,6 +19,7 @@
 #define PHARMML_SYMBOL_H_
 
 #include <string>
+#include <unordered_set>
 #include <unordered_map>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
@@ -28,6 +29,21 @@
 
 namespace PharmML
 {
+    // Experiment (if sucessful, maybe another file should contain it)
+    class Referer
+    {
+        public:
+            virtual void addReferences(std::unordered_set<Symbol *> symbol);
+            virtual bool refersTo(Symbol *symbol);
+            virtual bool refersIndirectlyTo(Symbol *symbol);
+
+        protected:
+            void parse(xml::Node node);
+            
+        private:
+            SymbolSet referencedSymbols; // No need to expose this considering the task of a Referer
+    };
+    
     class Symbol {
         public:
             SymbolSet referencedSymbols;
@@ -37,7 +53,7 @@ namespace PharmML
 
         protected:
             std::string symbId;
-            void symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
+            std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
             void parse(xml::Node node);
     };
 }

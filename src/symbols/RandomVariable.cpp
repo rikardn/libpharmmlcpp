@@ -55,6 +55,10 @@ namespace PharmML
         return this->deps;
     }
 
+    void RandomVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) {
+
+    }
+
     void RandomVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

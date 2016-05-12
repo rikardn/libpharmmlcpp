@@ -19,6 +19,7 @@
 #define PHARMML_SYMBOL_H_
 
 #include <string>
+#include <unordered_map>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
 
@@ -31,6 +32,7 @@ namespace PharmML
         public:
             SymbolSet referencedSymbols;
             std::string getSymbId();
+            virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) = 0;
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:

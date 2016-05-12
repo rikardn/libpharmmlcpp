@@ -38,6 +38,7 @@ namespace PharmML
         AstNode *getAssignment();
         Dependencies& getDependencies();
         bool isDerivative();
+        virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) = 0;
         virtual void accept(PharmMLVisitor *visitor) = 0;
         virtual void accept(SymbolVisitor *visitor) = 0;
     };
@@ -46,6 +47,7 @@ namespace PharmML
     {
         public:
         Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap);
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

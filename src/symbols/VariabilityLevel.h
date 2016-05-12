@@ -36,6 +36,7 @@ namespace PharmML
         std::string getName();
         bool isReferenceLevel();
         AstNode *getParentReference();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) {};
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

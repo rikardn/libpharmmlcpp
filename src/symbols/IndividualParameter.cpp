@@ -98,6 +98,15 @@ namespace PharmML
         return this->deps;
     }
 
+
+    void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> symbolMap) {
+        if (is_structured) {
+
+        } else {
+
+        }
+    }
+
     void IndividualParameter::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

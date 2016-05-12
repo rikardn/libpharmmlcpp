@@ -16,6 +16,7 @@
  */
 
 #include "PopEDGenerator.h"
+#include <iostream>
 
 namespace PharmML
 {
@@ -85,8 +86,28 @@ namespace PharmML
         // Function header
         form.indentAdd("ode_func <- function(Time, Stat, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
-        
-        form.addMany(this->r_gen.consol.vars.genStatements());
+     
+        // FIXME: Should be a method to do all this and not so ugly
+        auto derivs = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
+        SymbolSet derivs_set;
+        for (auto deriv : derivs) {
+            derivs_set.addSymbol(deriv);
+        }
+
+        // FIXME: for same reason as above
+        auto indivs = this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        SymbolSet indiv_set;
+        for (auto indiv : indivs) {
+            indiv_set.addSymbol(indiv);
+        }
+
+        auto deriv_deps = derivs_set.getOrderedDependenciesNoPass(indiv_set);
+        for (Symbol *symbol : deriv_deps) {
+            symbol->accept(&this->r_symb);
+            form.add(this->r_symb.getValue());
+        }
+
+        //form.addMany(this->r_gen.consol.vars.genStatements());
         form.emptyLine();
 
         // Derivative definitions

@@ -30,6 +30,7 @@
 #include <PharmML/Model.h>
 #include <generators/PopED/PopEDAstGenerator.h>
 #include <generators/R/RTextFormatter.h>
+#include <generators/R/RSymbols.h>
 
 namespace PharmML
 {
@@ -37,6 +38,7 @@ namespace PharmML
     {
         private:
             RAstGenerator ast_gen;
+            RSymbols r_symb;
             PopEDAstGenerator poped_astgen;
             RPharmMLGenerator r_gen;
             Model *model;

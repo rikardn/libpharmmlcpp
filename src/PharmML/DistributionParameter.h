@@ -20,7 +20,6 @@
 
 #include "PharmMLContext.h"
 #include <AST/AstNode.h>
-#include <PharmML/Dependencies.h>
 #include <symbols/Symbol.h> // Why? Because it's a referer!
 
 namespace PharmML
@@ -30,7 +29,6 @@ namespace PharmML
         PharmMLContext *context;
         std::string name;
         AstNode *assignment;
-        Dependencies deps;
 
         public:
         DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
@@ -40,7 +38,6 @@ namespace PharmML
         void setName(std::string name);
         AstNode *getAssignment();
         void setAssignment(AstNode *assignment);
-        Dependencies &getDependencies();
     };
 }
 

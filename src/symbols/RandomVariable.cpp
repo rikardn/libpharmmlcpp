@@ -34,10 +34,6 @@ namespace PharmML
         xml::Node dist_node = this->context->getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
             PharmML::Distribution *distribution = new PharmML::Distribution(context, dist_node.getChild());
-            for (SymbRef *symbRef : distribution->getDependencies().getSymbRefs()) {
-                // Propagate the dependencies up here
-                this->deps.addDependency(symbRef);
-            }
             this->Distribution = distribution;
         }
     }
@@ -48,10 +44,6 @@ namespace PharmML
 
     PharmML::Distribution *RandomVariable::getDistribution() {
         return this->Distribution;
-    }
-    
-    PharmML::Dependencies &RandomVariable::getDependencies() {
-        return this->deps;
     }
 
     void RandomVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

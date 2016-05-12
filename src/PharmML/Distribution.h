@@ -32,14 +32,12 @@ namespace PharmML
         PharmMLContext *context;
         std::string name;
         std::vector<PharmML::DistributionParameter *> parameters;
-        Dependencies deps;
 
         public:
         Distribution(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getName();
         std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-        Dependencies &getDependencies();
         void accept(PharmML::PharmMLVisitor *visitor);
     };
 }

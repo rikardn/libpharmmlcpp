@@ -31,7 +31,7 @@ namespace PharmML
 
     void DistributionParameter::parse(xml::Node node) {
         this->name = node.getAttribute("name").getValue();
-        this->assignment = context->factory.create(node.getChild().getChild(), &this->deps);
+        this->assignment = context->factory.create(node.getChild().getChild());
     }
 
     std::string DistributionParameter::getName() {
@@ -48,9 +48,5 @@ namespace PharmML
 
     void DistributionParameter::setAssignment(AstNode *assignment) {
         this->assignment = assignment;
-    }
-    
-    PharmML::Dependencies &DistributionParameter::getDependencies() {
-        return this->deps;
     }
 }

@@ -37,7 +37,6 @@ namespace PharmML
         AstNode *FixedEffect = nullptr;
         AstNode *Covariate = nullptr;
         AstNode *assignment;
-        Dependencies deps;
 
         public:
         IndividualParameter(PharmMLContext *context, xml::Node node);
@@ -49,7 +48,6 @@ namespace PharmML
         AstNode *getCovariate();
         AstNode *getAssignment();
         bool isStructured();
-        Dependencies &getDependencies();
         void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);

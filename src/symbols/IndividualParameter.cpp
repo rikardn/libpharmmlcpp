@@ -41,26 +41,26 @@ namespace PharmML
                 pop = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:PopulationValue/ct:Assign");
             }
             if (pop.exists()) {
-                this->PopulationValue = this->context->factory.create(pop.getChild(), &deps);
+                this->PopulationValue = this->context->factory.create(pop.getChild());
             }
 
             xml::Node rand = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:RandomEffects/ct:SymbRef");
             if (rand.exists()) {
-                this->RandomEffects = this->context->factory.create(rand, &deps);
+                this->RandomEffects = this->context->factory.create(rand);
             }
 
             xml::Node fixed = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:LinearCovariate/mdef:Covariate/mdef:FixedEffect/ct:SymbRef");
             if (fixed.exists()) {
-                this->FixedEffect = this->context->factory.create(fixed, &deps);
+                this->FixedEffect = this->context->factory.create(fixed);
             }
 
             xml::Node cov = this->context->getSingleElement(node, ".//mdef:StructuredModel/mdef:LinearCovariate/mdef:Covariate/ct:SymbRef");
             if (cov.exists()) {
-                this->Covariate = this->context->factory.create(cov, &deps);
+                this->Covariate = this->context->factory.create(cov);
             }
             this->is_structured = true;
         } else {
-            this->assignment = this->context->factory.create(node.getChild().getChild(), &deps);
+            this->assignment = this->context->factory.create(node.getChild().getChild());
             this->is_structured = false;
         }
     }
@@ -93,11 +93,6 @@ namespace PharmML
     bool IndividualParameter::isStructured() {
         return this->is_structured;
     }
-    
-    PharmML::Dependencies &IndividualParameter::getDependencies() {
-        return this->deps;
-    }
-
 
     void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (is_structured) {

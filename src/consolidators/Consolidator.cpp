@@ -62,7 +62,6 @@ namespace CPharmML
             // Find IndividualParameter's refering this PopulationParameter
             std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
             for (PharmML::IndividualParameter *indiv_param : indiv_params) {
-                std::unordered_set<PharmML::SymbRef *> refs = indiv_param->getDependencies().getSymbRefs();
                 bool depends_on_pop = indiv_param->referencedSymbols.hasSymbol(pop_param);
                 if (depends_on_pop) {
                     cpop_param->addIndividualParameter(indiv_param);

@@ -17,6 +17,7 @@
 
 #include <consolidators/Consolidator.h>
 #include <PharmML/Model.h>
+#include <iostream>
 
 namespace CPharmML
 {

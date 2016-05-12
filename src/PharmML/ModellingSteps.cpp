@@ -363,6 +363,22 @@ namespace PharmML
         }
     }
     
+    void ModellingSteps::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        for (PharmML::EstimationStep *est_step : this->getEstimationSteps()) {
+            std::vector<ParameterEstimation *> est_params = est_step->getParameters();
+            for (PharmML::ParameterEstimation *est_param : est_params) {
+                Symbol *found_symbol = symbolMap[est_param->getSymbRef()->toString()];
+                est_param->addReference(found_symbol);
+            }
+        }
+        for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
+            // TODO: Fill SimulationSteps
+        }
+        for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
+            // TODO: Fill OptimalDesignStep
+        }
+    }
+    
     std::vector<EstimationStep *> ModellingSteps::getEstimationSteps() {
         return this->estSteps;
     }

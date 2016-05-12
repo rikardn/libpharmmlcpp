@@ -33,7 +33,8 @@ namespace PharmML
     class Referer
     {
         public:
-            virtual void addReferences(std::unordered_set<Symbol *> symbol);
+            virtual void addReference(Symbol *symbol);
+            virtual void addReferences(std::unordered_set<Symbol *> symbols);
             virtual bool refersTo(Symbol *symbol);
             virtual bool refersIndirectlyTo(Symbol *symbol);
 

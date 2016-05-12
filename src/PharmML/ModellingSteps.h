@@ -24,6 +24,7 @@
 #include <PharmML/ColumnMapping.h>
 #include <AST/symbols.h>
 #include <PharmML/Dataset.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -79,7 +80,7 @@ namespace PharmML
         std::vector<PharmML::VariableAssignment *> getVariableAssignments();
     };
     
-    class ParameterEstimation
+    class ParameterEstimation : public Referer
     {
         PharmML::PharmMLContext *context;
         SymbRef *symbRef;
@@ -164,6 +165,7 @@ namespace PharmML
         public:
         ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         std::vector<EstimationStep *> getEstimationSteps();
         std::vector<SimulationStep *> getSimulationSteps();
         std::vector<OptimalDesignStep *> getOptimalDesignSteps();

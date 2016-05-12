@@ -22,6 +22,10 @@
 namespace PharmML
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
+    void Referer::addReference(Symbol *symbol) {
+        this->referencedSymbols.addSymbol(symbol);
+    }
+    
     void Referer::addReferences(std::unordered_set<Symbol *> symbols) {
         for (Symbol *symbol : symbols) {
             this->referencedSymbols.addSymbol(symbol);

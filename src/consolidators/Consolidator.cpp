@@ -59,37 +59,13 @@ namespace CPharmML
                 }
             }
             
-            //~ // Find RandomVariable's refering this PopulationParameter
-            //~ std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-            //~ for (PharmML::RandomVariable *random_var : random_vars) {
-                //~ // Get distribution for variable
-                //~ PharmML::Distribution *dist = random_var->getDistribution();
-                
-                //~ // Search for reference amongst all DistributionParameter's
-                //~ for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
-                    //~ std::unordered_set<PharmML::SymbRef *> refs = dist_param->getDependencies().getSymbRefs();
-                    //~ for (PharmML::SymbRef *ref : refs) {
-                        //~ PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
-                        //~ if (pop_param == symbol) {
-                            //~ cpop_param->addRandomVariable(random_var);
-                            //~ cpop_param->addDistributionName(dist->getName());
-                            //~ cpop_param->addDistributionParameterType(dist_param->getName());
-                            //~ // TODO: Transformation support (AstNode containing SymbRef to PopulationParameter should at least know if it's simple)
-                        //~ }
-                    //~ }
-                //~ }
-            //~ }
-            
             // Find IndividualParameter's refering this PopulationParameter
             std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
             for (PharmML::IndividualParameter *indiv_param : indiv_params) {
                 std::unordered_set<PharmML::SymbRef *> refs = indiv_param->getDependencies().getSymbRefs();
-                for (PharmML::SymbRef *ref : refs) {
-                    PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
-                    if (pop_param == symbol) {
-                        // Add the individual parameter found
-                        cpop_param->addIndividualParameter(indiv_param);
-                    }
+                bool depends_on_pop = indiv_param->referencedSymbols.hasSymbol(pop_param);
+                if (depends_on_pop) {
+                    cpop_param->addIndividualParameter(indiv_param);
                 }
             }
             
@@ -98,10 +74,8 @@ namespace CPharmML
             PharmML::EstimationStep *est_step1 = model->getModellingSteps()->getEstimationSteps()[0];
             std::vector<PharmML::ParameterEstimation *> est_params = est_step1->getParameters();
             for (PharmML::ParameterEstimation *est_param : est_params) {
-                PharmML::SymbRef *ref = est_param->getSymbRef();
-                PharmML::Symbol *symbol = this->context->resolveSymbref(ref);
-                if (pop_param == symbol) {
-                    // Add the estimation parameter found
+                bool depends_on_pop = est_param->refersIndirectlyTo(pop_param);
+                if (depends_on_pop) {
                     cpop_param->addParameterEstimation(est_param);
                     break;
                 }
@@ -142,10 +116,13 @@ namespace CPharmML
             symbIdMap[symbol->getSymbId()] = symbol;
         }
 
-        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols
+        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols (also in Referer children)
         for (PharmML::Symbol *symbol : this->allSymbols) {
             symbol->gatherSymbRefs(symbIdMap);
         }
+        
+        // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
+        model->getModellingSteps()->gatherSymbRefs(symbIdMap);
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

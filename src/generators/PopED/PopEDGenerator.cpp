@@ -107,18 +107,17 @@ namespace PharmML
             form.add(this->r_symb.getValue());
         }
 
-        //form.addMany(this->r_gen.consol.vars.genStatements());
         form.emptyLine();
 
         // Derivative definitions
         std::vector<std::string> name_list;
-        std::vector<std::string> symbols = this->r_gen.consol.derivs.getSymbols();
-        std::vector<std::string> assigns = this->r_gen.consol.derivs.getAssigns();
-        for (int i = 0; i < symbols.size(); i++) {
-            form.add("d" + symbols[i] + " <- " + assigns[i]);
-            name_list.push_back("d" + symbols[i]);
+
+        for (Symbol *symbol : derivs_set) {
+            symbol->accept(&this->r_symb);
+            form.add(this->r_symb.getValue());
+            name_list.push_back("d" + symbol->getSymbId());
         }
-        
+
         // Return list
         form.add("return(list(" + PharmML::formatVector(name_list, "c", "") + "))");
         form.outdentAdd("})");

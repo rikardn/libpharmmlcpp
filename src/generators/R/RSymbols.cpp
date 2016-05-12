@@ -50,5 +50,7 @@ namespace PharmML
     }
 
     void RSymbols::visit(DerivativeVariable *node) {
+        node->getAssignment()->accept(&this->r_ast);
+        this->setValue("d" + node->getSymbId() + " <- " + this->r_ast.getValue());
     }
 }

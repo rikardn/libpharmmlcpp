@@ -101,7 +101,14 @@ namespace PharmML
 
     void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (is_structured) {
-            
+            this->symbRefsFromAst(this->PopulationValue, symbolMap);
+            this->symbRefsFromAst(this->RandomEffects, symbolMap);
+            if (this->FixedEffect) {
+                this->symbRefsFromAst(this->FixedEffect, symbolMap);
+            }
+            if (this->Covariate) {
+                this->symbRefsFromAst(this->Covariate, symbolMap);
+            }
         } else {
             this->symbRefsFromAst(this->assignment, symbolMap);
         }

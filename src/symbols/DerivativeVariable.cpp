@@ -48,7 +48,15 @@ namespace PharmML
     }
 
     void DerivativeVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-
+        if (this->assignment) {
+            this->symbRefsFromAst(this->assignment, symbolMap);
+        }
+        if (this->initial_value) {
+            this->symbRefsFromAst(this->initial_value, symbolMap);
+        }
+        if (this->initial_time) {
+            this->symbRefsFromAst(this->initial_time, symbolMap);
+        }
     }
 
     void DerivativeVariable::accept(PharmMLVisitor *visitor) {

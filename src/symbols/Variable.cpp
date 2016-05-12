@@ -48,7 +48,9 @@ namespace PharmML
     }
 
     void Variable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-
+       if (this->assignment) { 
+            this->symbRefsFromAst(this->assignment, symbolMap);
+       }
     }
 
     void Variable::accept(PharmMLVisitor *visitor) {

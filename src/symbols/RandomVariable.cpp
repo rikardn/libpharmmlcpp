@@ -40,7 +40,6 @@ namespace PharmML
             }
             this->Distribution = distribution;
         }
-
     }
 
     VariabilityReference *RandomVariable::getVariabilityReference() {
@@ -56,7 +55,9 @@ namespace PharmML
     }
 
     void RandomVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-
+        for (DistributionParameter *par : this->Distribution->getDistributionParameters()) {
+            this->symbRefsFromAst(par->getAssignment(), symbolMap);
+        }
     }
 
     void RandomVariable::accept(PharmMLVisitor *visitor) {

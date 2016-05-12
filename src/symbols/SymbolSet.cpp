@@ -17,6 +17,7 @@
 
 #include "SymbolSet.h"
 #include <symbols/Symbol.h>
+#include <iostream>
 
 namespace PharmML
 {
@@ -70,6 +71,35 @@ namespace PharmML
         return dependencies; 
     }
 
+    // Get all dependencies of a set of symbols. Excluding the symbols themselves AND NOT passing through or adding the nopass set
+    SymbolSet SymbolSet::getDependenciesNoPass(SymbolSet &nopass) {
+        SymbolSet dependencies;
+
+        for (Symbol *symbol : this->symbols) {
+            SymbolSet refs = symbol->referencedSymbols;
+            refs.remove(nopass);
+            dependencies.merge(refs);
+        }
+
+        int prev_count = 0;
+        int count = dependencies.symbols.size();
+        while (count > prev_count) {
+            for (Symbol *symbol : dependencies.symbols) {
+                SymbolSet refs = symbol->referencedSymbols;
+                refs.remove(nopass);
+                dependencies.merge(refs);
+            }
+            prev_count = count;
+            count = dependencies.symbols.size();
+        }
+
+        dependencies.remove(*this);  // Remove the symbols we started with
+
+        return dependencies; 
+    }
+
+
+
     // Order the symbols in this SymbolSet
     std::vector<Symbol *> SymbolSet::getOrdered() {
         std::vector<Symbol *> ordered;
@@ -79,15 +109,15 @@ namespace PharmML
                 ordered.push_back(symbol);
             } else {
                 bool inserted = false;
-                for (auto j = ordered.begin(); j < ordered.end(); j++) {
-                    if (ordered[j - ordered.begin()]->referencedSymbols.hasSymbol(symbol)) {
-                        ordered.insert(j, symbol);
+                for (int j = 0; j < ordered.size(); j++) {
+                    if (ordered[j]->referencedSymbols.hasSymbol(symbol)) {
+                        ordered.insert(ordered.begin() + j, symbol);
                         inserted = true;
                         break;
                     }
-                    if (!inserted) {
-                        ordered.push_back(symbol);
-                    }
+                }
+                if (!inserted) {
+                    ordered.push_back(symbol);
                 }
             }
         }
@@ -97,5 +127,9 @@ namespace PharmML
     // Order the dependencies of the symbols of this SymbolSet
     std::vector<Symbol *> SymbolSet::getOrderedDependencies() {
         return this->getDependencies().getOrdered();
+    }
+
+    std::vector<Symbol *> SymbolSet::getOrderedDependenciesNoPass(SymbolSet &nopass) {
+        return this->getDependenciesNoPass(nopass).getOrdered();
     }
 }

@@ -30,6 +30,7 @@ namespace PharmML
             void addSymbol(Symbol *symbol);
             bool hasSymbol(Symbol *symbol);
             void merge(SymbolSet& set);
+            void remove(SymbolSet& set);
             SymbolSet getDependencies();
             std::vector<Symbol *> getOrdered();
             std::vector<Symbol *> getOrderedDependencies();

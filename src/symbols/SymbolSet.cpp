@@ -41,7 +41,13 @@ namespace PharmML
         this->symbols.insert(set.symbols.begin(), set.symbols.end()); 
     }
 
-    // Get all dependencies of a set of symbols
+    void SymbolSet::remove(SymbolSet& set) {
+        for (Symbol *symbol : set) {
+            this->symbols.erase(symbol);
+        }
+    }
+
+    // Get all dependencies of a set of symbols. Excluding the symbols themselves
     SymbolSet SymbolSet::getDependencies() {
         SymbolSet dependencies;
 
@@ -58,6 +64,8 @@ namespace PharmML
             prev_count = count;
             count = dependencies.symbols.size();
         }
+
+        dependencies.remove(*this);  // Remove the symbols we started with
 
         return dependencies; 
     }

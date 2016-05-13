@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include <PharmML/ColumnMapping.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -43,6 +44,7 @@ namespace PharmML
         Dataset *getDataset();
         std::string getToolName();
         void parse(xml::Node node);
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
     };
 }

@@ -24,7 +24,7 @@
 
 namespace PharmML
 {
-    class ColumnMapping
+    class ColumnMapping : public Referer
     {
         PharmML::PharmMLContext *context;
         std::string columnIdRef;

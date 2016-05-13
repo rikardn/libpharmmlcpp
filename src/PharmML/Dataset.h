@@ -75,6 +75,7 @@ namespace PharmML
         void parse(xml::Node node);
         xml::Node xml();
         ColumnDefinition *getColumnDefinition(int colNum);
+        std::vector<ColumnDefinition *> getColumnDefinitions();
         int getNumColumns();
     };
     

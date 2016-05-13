@@ -49,6 +49,7 @@ namespace PharmML
         PharmML::Observations *getObservations();
         PharmML::Arms *getArms();
         PharmML::DesignSpaces *getDesignSpaces();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
     };
 }
 

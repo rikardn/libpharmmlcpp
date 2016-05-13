@@ -84,7 +84,7 @@ namespace PharmML
         std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
         //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
         std::vector<CPharmML::PopulationParameter *> populationParameters = model->getConsolidator()->getPopulationParameters();
-        form.addMany(name + " = " + this->genParObj(populationParameters, estim_steps));
+        form.addMany(name + " = " + this->genParObj(populationParameters));
         form.add("");
         //~ }
         
@@ -92,7 +92,7 @@ namespace PharmML
         // Generate the MDL model object(s)
         std::vector<std::string> mdlObjNames;
         mdlObjNames.push_back("mdl_object");
-        form.addMany(mdlObjNames[0] + " = " + this->genMdlObj());
+        form.addMany(mdlObjNames[0] + " = " + this->genMdlObj(model));
         form.add("");
         
         // Generate the MDL task object(s)
@@ -162,7 +162,7 @@ namespace PharmML
         }
     }
     
-    std::string MDLGenerator::genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters, std::vector<EstimationStep *> estim_steps) {
+    std::string MDLGenerator::genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters) {
         RFormatter form;
         
         form.indentAdd("parObj {");
@@ -186,7 +186,7 @@ namespace PharmML
         }
         
         // Fill DECLARED_VARIABLES with correlated variable names
-        form.openVector("DECLARED_VARIABLES{}", 0, " ");
+        form.openVector("DECLARED_VARIABLES {}", 0, " ");
         for (std::string corr_name: correlatedVariables) {
             form.add(corr_name);
         }
@@ -283,10 +283,22 @@ namespace PharmML
         return form.createString(); 
     }
     
-    std::string MDLGenerator::genMdlObj() {
+    std::string MDLGenerator::genMdlObj(PharmML::Model *model) {
         RFormatter form;
         
         form.indentAdd("mdlObj {");
+        
+        model->getIndependentVariable()->accept(this);
+        form.add("IDV {" + this->getValue() + "}");
+        
+        form.openVector("COVARIATES {}", 1, ", ");
+        std::vector<PharmML::Covariate *> covariates = model->getModelDefinition()->getCovariateModel()->getCovariates();
+        for (PharmML::Covariate *covariate : covariates) {
+            std::string name = covariate->getTransformedName();
+            form.add(name + " = " + this->accept(covariate->getAssignment()));
+        }
+        form.closeVector();
+        
         form.outdentAdd("} # end model object");
         
         return form.createString();
@@ -359,7 +371,9 @@ namespace PharmML
         this->setValue(attr);
     }
 
-    void MDLGenerator::visit(IndependentVariable *node) { }
+    void MDLGenerator::visit(IndependentVariable *node) {
+        this->setValue(node->getSymbId());
+    }
 
     void MDLGenerator::visit(Variable *node) { }
     
@@ -404,7 +418,7 @@ namespace PharmML
             if (dataset->isExternal()) {
                 // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
                 std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
-                form.openVector("DECLARED_VARIABLES{}", 0, " ");
+                form.openVector("DECLARED_VARIABLES {}", 0, " ");
                 for (stringpair pair : mappings) {
                     form.add(pair.second);
                 }

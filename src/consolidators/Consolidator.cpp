@@ -29,6 +29,52 @@ namespace CPharmML
         
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
+        this->consolidateCovariates(model);
+    }
+    
+    // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
+    void Consolidator::consolidateSymbols(PharmML::Model *model) {
+        std::vector<PharmML::PopulationParameter *> params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        for (PharmML::PopulationParameter *param : params) {
+            this->allSymbols.addSymbol(param);
+        }
+
+        std::vector<PharmML::IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        for (PharmML::IndividualParameter *ip : ips) {
+            this->allSymbols.addSymbol(ip);
+        }
+
+        std::vector<PharmML::RandomVariable *> random = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (PharmML::RandomVariable *rv : random) {
+            this->allSymbols.addSymbol(rv);
+        }
+
+        std::vector<PharmML::CommonVariable *> cvs = model->getModelDefinition()->getStructuralModel()->getVariables();
+        for (PharmML::CommonVariable *cv : cvs) {
+            this->allSymbols.addSymbol(cv);
+        }
+
+        this->allSymbols.addSymbol(model->getIndependentVariable());
+
+        // Obtain a map from all symbIds to Symbols. Will be used to populate SymbRefs
+        std::unordered_map<std::string, PharmML::Symbol *> symbIdMap;
+        for (PharmML::Symbol *symbol : this->allSymbols) {
+            symbIdMap[symbol->getSymbId()] = symbol;
+        }
+
+        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols (also in Referer children)
+        for (PharmML::Symbol *symbol : this->allSymbols) {
+            symbol->gatherSymbRefs(symbIdMap);
+        }
+        
+        // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
+        model->getModellingSteps()->gatherSymbRefs(symbIdMap);
+        model->getModelDefinition()->gatherSymbRefs(symbIdMap);
+        model->getTrialDesign()->gatherSymbRefs(symbIdMap);
+    }
+
+    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
+        return this->populationParameters;
     }
     
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
@@ -93,48 +139,23 @@ namespace CPharmML
             this->populationParameters.push_back(cpop_param);
         }
     }
-  
-    // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
-    void Consolidator::consolidateSymbols(PharmML::Model *model) {
-        std::vector<PharmML::PopulationParameter *> params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
-        for (PharmML::PopulationParameter *param : params) {
-            this->allSymbols.addSymbol(param);
-        }
-
-        std::vector<PharmML::IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        for (PharmML::IndividualParameter *ip : ips) {
-            this->allSymbols.addSymbol(ip);
-        }
-
-        std::vector<PharmML::RandomVariable *> random = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-        for (PharmML::RandomVariable *rv : random) {
-            this->allSymbols.addSymbol(rv);
-        }
-
-        std::vector<PharmML::CommonVariable *> cvs = model->getModelDefinition()->getStructuralModel()->getVariables();
-        for (PharmML::CommonVariable *cv : cvs) {
-            this->allSymbols.addSymbol(cv);
-        }
-
-        this->allSymbols.addSymbol(model->getIndependentVariable());
-
-        // Obtain a map from all symbIds to Symbols. Will be used to populate SymbRefs
-        std::unordered_map<std::string, PharmML::Symbol *> symbIdMap;
-        for (PharmML::Symbol *symbol : this->allSymbols) {
-            symbIdMap[symbol->getSymbId()] = symbol;
-        }
-
-        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols (also in Referer children)
-        for (PharmML::Symbol *symbol : this->allSymbols) {
-            symbol->gatherSymbRefs(symbIdMap);
+    
+    void Consolidator::consolidateCovariates(PharmML::Model *model) {
+        std::vector<PharmML::Covariate *> covs = model->getModelDefinition()->getCovariateModel()->getCovariates();
+        for (PharmML::Covariate *cov : covs) {
+            this->covariatesCollection.addCovariate(cov);
         }
         
-        // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
-        model->getModellingSteps()->gatherSymbRefs(symbIdMap);
-        model->getModelDefinition()->gatherSymbRefs(symbIdMap);
-    }
-
-    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
-        return this->populationParameters;
+        // FIXME: getExternalDatasets(); This is a common pattern. Pluralness MUST be handled everywhere!
+        // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
+        std::vector<PharmML::ColumnDefinition *> col_defs = model->getTrialDesign()->getExternalDatasets()[0]->getDataset()->getDefinition()->getColumnDefinitions();
+        for (PharmML::ColumnDefinition *col_def : col_defs) {
+            this->covariatesCollection.addColumnDefinition(col_def);
+        }
+        
+        std::vector<PharmML::ColumnMapping *> col_maps = model->getTrialDesign()->getExternalDatasets()[0]->getColumnMappings();
+        for (PharmML::ColumnMapping *col_map : col_maps) {
+            this->covariatesCollection.addColumnMapping(col_map);
+        }
     }
 }

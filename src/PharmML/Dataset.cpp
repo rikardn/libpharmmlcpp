@@ -111,6 +111,10 @@ namespace PharmML
         return this->columns[colNum-1];
     }
     
+    std::vector<ColumnDefinition *> DatasetDefinition::getColumnDefinitions() {
+        return this->columns;
+    }
+    
     int DatasetDefinition::getNumColumns() {
         return this->columns.size();
     }

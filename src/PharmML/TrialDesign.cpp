@@ -90,4 +90,15 @@ namespace PharmML
     PharmML::DesignSpaces *TrialDesign::getDesignSpaces() {
         return this->DesignSpaces;
     }
+    
+    void TrialDesign::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        std::vector<PharmML::ExternalDataset *> ext_datasets = this->getExternalDatasets();
+        for (PharmML::ExternalDataset *ext_dataset : ext_datasets) {
+            ext_dataset->gatherSymbRefs(symbolMap);
+        }
+        //~ this->getInterventions()->gatherSymbRefs(symbolMap);
+        //~ this->getObservations()->gatherSymbRefs(symbolMap);
+        //~ this->getArms()->gatherSymbRefs(symbolMap);
+        //~ this->getDesignSpaces()->gatherSymbRefs(symbolMap);
+    }
 }

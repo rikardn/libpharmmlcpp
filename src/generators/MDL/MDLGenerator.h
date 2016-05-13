@@ -78,11 +78,11 @@ namespace PharmML
             std::string genDataObj(ExternalDataset *ext_ds);
             std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
             
-            std::string genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters, std::vector<EstimationStep *> estim_steps);
+            std::string genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters);
             std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
             std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
             
-            std::string genMdlObj();
+            std::string genMdlObj(PharmML::Model *model);
             std::string genTaskObj();
             std::string genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj);
             

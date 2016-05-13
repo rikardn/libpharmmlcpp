@@ -131,6 +131,7 @@ namespace CPharmML
         
         // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
         model->getModellingSteps()->gatherSymbRefs(symbIdMap);
+        model->getModelDefinition()->gatherSymbRefs(symbIdMap);
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

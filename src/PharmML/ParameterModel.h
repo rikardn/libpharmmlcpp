@@ -23,6 +23,7 @@
 #include <symbols/RandomVariable.h>
 #include <PharmML/Correlation.h>
 #include <xml/xml.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -42,6 +43,7 @@ namespace PharmML
         std::vector<Correlation *> getCorrelations();
         ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         std::string getBlkId();
     };
 }

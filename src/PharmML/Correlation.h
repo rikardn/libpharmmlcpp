@@ -23,18 +23,17 @@
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/VariabilityLevel.h>
-#include <PharmML/Dependencies.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
-    class Correlation
+    class Correlation : public Referer
     {
         PharmML::PharmMLContext *context;
         PharmML::VariabilityReference *variabilityReference;
         std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
         std::string pairwiseType;
         PharmML::AstNode *pairwiseAssignment = nullptr;
-        Dependencies deps;
         std::string matrixType;
 
         public:
@@ -46,7 +45,6 @@ namespace PharmML
         std::vector<PharmML::SymbRef *> getPairwiseSymbRefs();
         std::string getPairwiseType();
         PharmML::AstNode *getPairwiseAssignment();
-        Dependencies &getDependencies();
         
         void accept(PharmMLVisitor *visitor);
     };

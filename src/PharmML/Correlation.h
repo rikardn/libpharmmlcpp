@@ -48,7 +48,7 @@ namespace PharmML
         PharmML::AstNode *getPairwiseAssignment();
         Dependencies &getDependencies();
         
-        //~ void accept(PharmMLVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);
     };
 }
 

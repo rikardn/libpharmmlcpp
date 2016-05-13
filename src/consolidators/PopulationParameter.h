@@ -25,46 +25,56 @@
 #include <symbols/RandomVariable.h>
 #include <symbols/IndividualParameter.h>
 #include <PharmML/ModellingSteps.h>
+#include <PharmML/Correlation.h>
 
 namespace CPharmML
 {
     class PopulationParameter
     {
         public:
-            // Construct with PopulationParameter as base
+            // Construct with PopulationParameter/Correlation as base
             PopulationParameter(PharmML::PopulationParameter *populationParameter);
+            PopulationParameter(PharmML::Correlation *correlation);
             
             // Add PharmML objects for consolidation with PopulationParameter
             void addRandomVariable(PharmML::RandomVariable *randomVariable);
             void addIndividualParameter(PharmML::IndividualParameter *individualParameter);
             void addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation);
+            void addCorrelation(PharmML::Correlation *correlation);
             
             // Get PharmML objects used to consolidate
             PharmML::PopulationParameter *getPopulationParameter();
             std::vector<PharmML::RandomVariable *> getRandomVariables();
             std::vector<PharmML::IndividualParameter *> getIndividualParameters();
             PharmML::ParameterEstimation *getParameterEstimation();
+            PharmML::Correlation *getCorrelation();
             
             // Add attributes
             void addDistributionName(std::string name);
             void addDistributionParameterType(std::string name);
+            void setName(std::string name);
             
             // Get attributes
             bool isVariabilityParameter();
+            bool isCorrelation();
             std::string getDistributionName();
             std::string getDistributionParameterType();
             bool inDifferentParameterizations();
+            std::string getName();
         
         private:
             // PharmML objects used to consolidate
-            PharmML::PopulationParameter *populationParameter;
+            PharmML::PopulationParameter *populationParameter = nullptr;
+            PharmML::Correlation *correlation = nullptr;
             std::vector<PharmML::RandomVariable *> randomVariables;
             std::vector<PharmML::IndividualParameter *> individualParameters;
             PharmML::ParameterEstimation *parameterEstimation = nullptr;
             
             bool variabilityParameter = false;
+            bool correlationType = false;
             std::unordered_set<std::string> distNames;
             std::unordered_set<std::string> distParTypes;
+            std::string name; // For Correlations lacking PharmML naming
     };
 }
 

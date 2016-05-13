@@ -86,7 +86,7 @@ namespace PharmML
         return this->deps;
     }
     
-    //~ void Correlation::accept(PharmMLVisitor *visitor) {
-        //~ visitor->visit(this);
-    //~ }
+    void Correlation::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

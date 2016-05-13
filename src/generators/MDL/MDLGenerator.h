@@ -91,6 +91,7 @@ namespace PharmML
             virtual void visit(IndividualParameter *node);
             virtual void visit(RandomVariable *node);
             virtual void visit(VariabilityLevel *node);
+            virtual void visit(Correlation *node);
             virtual void visit(Covariate *node);
             virtual void visit(IndependentVariable *node);
             virtual void visit(Variable *node);

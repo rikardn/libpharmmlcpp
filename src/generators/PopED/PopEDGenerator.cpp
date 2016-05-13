@@ -311,6 +311,7 @@ namespace PharmML
 
     void PopEDGenerator::visit(RandomVariable *node) {}
     void PopEDGenerator::visit(VariabilityLevel *node) {}
+    void PopEDGenerator::visit(Correlation *node) {}
     void PopEDGenerator::visit(Covariate *node) {}
     void PopEDGenerator::visit(IndependentVariable *node) {}
     void PopEDGenerator::visit(Variable *node) {}

@@ -25,6 +25,7 @@ namespace PharmML
     class IndividualParameter;
     class RandomVariable;
     class VariabilityLevel;
+    class Correlation;
     class Variable;
     class DerivativeVariable;
     class IndependentVariable;
@@ -67,6 +68,7 @@ namespace PharmML
             virtual void visit(IndividualParameter *node) = 0;
             virtual void visit(RandomVariable *node) = 0;
             virtual void visit(VariabilityLevel *node) = 0;
+            virtual void visit(Correlation *node) = 0;
             virtual void visit(Covariate *node) = 0;
             virtual void visit(IndependentVariable *node) = 0;
             virtual void visit(Variable *node) = 0;

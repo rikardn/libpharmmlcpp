@@ -100,6 +100,8 @@ namespace PharmML
         this->setValue(form.createString());
     }
     
+    void RPharmMLGenerator::visit(Correlation *node) {}
+    
     void RPharmMLGenerator::visit(RandomVariable *node) {
         std::string var_ref = "variability_reference=\"" + this->accept(node->getVariabilityReference()->getLevelReference()) + "\"";
         node->getDistribution()->accept(this);

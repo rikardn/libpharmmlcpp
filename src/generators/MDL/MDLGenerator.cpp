@@ -170,16 +170,32 @@ namespace PharmML
         // Split into structural and variability parameters
         std::vector<CPharmML::PopulationParameter *> structuralParameters;
         std::vector<CPharmML::PopulationParameter *> variabilityParameters;
+        std::vector<std::string> correlatedVariables;
         for (CPharmML::PopulationParameter *populationParameter : populationParameters) {
             if (populationParameter->isVariabilityParameter()) {
                 variabilityParameters.push_back(populationParameter);
+            } else if (populationParameter->isCorrelation()) {
+                variabilityParameters.push_back(populationParameter);
+                // Get correlated variable names
+                std::vector<SymbRef *> symbRefs = populationParameter->getCorrelation()->getPairwiseSymbRefs();
+                correlatedVariables.push_back(this->accept(symbRefs[0]));
+                correlatedVariables.push_back(this->accept(symbRefs[1]));
             } else {
                 structuralParameters.push_back(populationParameter);
             }
         }
         
+        // Fill DECLARED_VARIABLES with correlated variable names
+        form.openVector("DECLARED_VARIABLES{}", 0, ", ");
+        for (std::string corr_name: correlatedVariables) {
+            form.add(corr_name);
+        }
+        form.closeVector();
+        form.emptyLine();
+        
         // Generate STRUCTURAL and VARIABILITY block
         form.addMany(this->genStructuralBlock(structuralParameters));
+        form.emptyLine();
         form.addMany(this->genVariabilityBlock(variabilityParameters));
                 
         form.outdentAdd("} # end parameter object");
@@ -219,38 +235,49 @@ namespace PharmML
         
         for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
-            variabilityParameter->getPopulationParameter()->accept(this);
-            std::string name = this->getValue();
-            
-            variabilityParameter->getParameterEstimation()->accept(this);
-            std::vector<std::string> init_attr = this->getValues();
-            
-            form.openVector(name + " : {}", 0, ", ");
-            form.addMany(init_attr);
-            
-            // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
-            std::string dist_name = variabilityParameter->getDistributionName();
-            std::string dist_param = variabilityParameter->getDistributionParameterType();
-            std::string comment;
-            if (variabilityParameter->inDifferentParameterizations()) {
-                comment = " # Parameter in different distributions/parameterizations!";
+            if (variabilityParameter->isCorrelation()) {
+                // Correlations
+                variabilityParameter->getCorrelation()->accept(this);
+                std::vector<std::string> init_attr = this->getValues();
+                std::string name = variabilityParameter->getName();
+                form.openVector(name + " : {}", 0, ", ");
+                form.addMany(init_attr);
+                form.closeVector();
             } else {
-                if (dist_name == "Normal1") {
-                    if (dist_param == "stdev") {
-                        form.add("type is sd");
-                    } else if (dist_param == "var") {
-                        form.add("type is var");
-                    } else {
-                        comment = " # Unknown ProbOnto Normal1 parameter type (" + dist_param + ")!";
-                    }
+                // Ordinary variability parameters
+                variabilityParameter->getPopulationParameter()->accept(this);
+                std::string name = this->getValue();
+                
+                variabilityParameter->getParameterEstimation()->accept(this);
+                std::vector<std::string> init_attr = this->getValues();
+                
+                form.openVector(name + " : {}", 0, ", ");
+                form.addMany(init_attr);
+                
+                // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
+                std::string dist_name = variabilityParameter->getDistributionName();
+                std::string dist_param = variabilityParameter->getDistributionParameterType();
+                std::string comment;
+                if (variabilityParameter->inDifferentParameterizations()) {
+                    comment = " # Parameter in different distributions/parameterizations!";
                 } else {
-                    comment = " # Unknown ProbOnto distribution (" + dist_name + ") and parameter type (" + dist_param + ")!";
+                    if (dist_name == "Normal1") {
+                        if (dist_param == "stdev") {
+                            form.add("type is sd");
+                        } else if (dist_param == "var") {
+                            form.add("type is var");
+                        } else {
+                            comment = " # Unknown ProbOnto Normal1 parameter type (" + dist_param + ")!";
+                        }
+                    } else {
+                        comment = " # Unknown ProbOnto distribution (" + dist_name + ") and parameter type (" + dist_param + ")!";
+                    }
                 }
+                form.closeVector();
+                form.append(comment);
             }
-            form.closeVector();
-            form.append(comment);
         }
-        
+
         form.outdentAdd("} # end VARIABILITY");
         
         return form.createString(); 
@@ -311,6 +338,26 @@ namespace PharmML
     void MDLGenerator::visit(RandomVariable *node) { }
     
     void MDLGenerator::visit(VariabilityLevel *node) { }
+    
+    void MDLGenerator::visit(Correlation *node) {
+        std::vector<std::string> attr;
+        if (node->isPairwise()) {
+            std::vector<SymbRef *> symbRefs = node->getPairwiseSymbRefs();
+            attr.push_back("parameter = [" + this->accept(symbRefs[0]) + ", " + this->accept(symbRefs[1]) + "]");
+            
+            attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
+            
+            std::string type = node->getPairwiseType();
+            if (type == "CorrelationCoefficient") {
+                attr.push_back("type is corr");
+            } else if (type == "Covariance") {
+                attr.push_back("type is cov");
+            }
+        } else {
+            // TODO: Matrix support
+        }
+        this->setValue(attr);
+    }
 
     void MDLGenerator::visit(IndependentVariable *node) { }
 

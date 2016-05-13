@@ -83,6 +83,15 @@ namespace CPharmML
             // Add the finished consolidated PopulationParameter object
             this->populationParameters.push_back(cpop_param);
         }
+        
+        // Find Correlation (no associated PopulationParameter however)
+        std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
+        for(auto it = corrs.begin(); it != corrs.end(); ++it) {
+            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(*it);
+            std::string name = "OMEGA_" + std::to_string(it - corrs.begin() + 1);
+            cpop_param->setName(name);
+            this->populationParameters.push_back(cpop_param);
+        }
     }
   
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 

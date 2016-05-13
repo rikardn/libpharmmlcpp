@@ -19,10 +19,14 @@
 
 namespace CPharmML
 {
-    // Construct with PopulationParameter as base
+    // Construct with PopulationParameter/Correlation as base
     PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter) {
-        // Store the base object
         this->populationParameter = populationParameter;
+    }
+    
+    PopulationParameter::PopulationParameter(PharmML::Correlation *correlation) {
+        this->correlation = correlation;
+        this->correlationType = true;
     }
     
     // Add PharmML objects for consolidation with PopulationParameter
@@ -52,6 +56,14 @@ namespace CPharmML
         return this->individualParameters;
     }
     
+    PharmML::Correlation *PopulationParameter::getCorrelation() {
+        return this->correlation;
+    }
+    
+    std::string PopulationParameter::getName() {
+        return this->name;
+    }
+    
     // Set attributes
     void PopulationParameter::addDistributionName(std::string name) {
         this->distNames.insert(name);
@@ -61,6 +73,10 @@ namespace CPharmML
         this->distParTypes.insert(name);
     }
     
+    void PopulationParameter::setName(std::string name) {
+        this->name = name;
+    }
+    
     // Get attributes
     PharmML::ParameterEstimation *PopulationParameter::getParameterEstimation() {
         return this->parameterEstimation;
@@ -68,6 +84,10 @@ namespace CPharmML
     
     bool PopulationParameter::isVariabilityParameter() {
         return (this->variabilityParameter);
+    }
+    
+    bool PopulationParameter::isCorrelation() {
+        return (this->correlationType);
     }
     
     std::string PopulationParameter::getDistributionName() {

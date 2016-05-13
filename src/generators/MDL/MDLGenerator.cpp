@@ -186,7 +186,7 @@ namespace PharmML
         }
         
         // Fill DECLARED_VARIABLES with correlated variable names
-        form.openVector("DECLARED_VARIABLES{}", 0, ", ");
+        form.openVector("DECLARED_VARIABLES{}", 0, " ");
         for (std::string corr_name: correlatedVariables) {
             form.add(corr_name);
         }

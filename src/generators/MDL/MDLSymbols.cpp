@@ -39,10 +39,7 @@ namespace PharmML
     }
 
     void MDLSymbols::visit(RandomVariable *node) {
-        if (this->symbol_numbermap.count(node) == 0) {
-            this->symbol_numbermap[node] = next_randvar++;
-        }
-        this->setValue(std::to_string(this->symbol_numbermap[node]));
+        this->setValue(node->getSymbId());
     }
     
     void MDLSymbols::visit(VariabilityLevel *node) {

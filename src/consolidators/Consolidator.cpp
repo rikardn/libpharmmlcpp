@@ -131,10 +131,12 @@ namespace CPharmML
         
         // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
         model->getModellingSteps()->gatherSymbRefs(symbIdMap);
+        model->getModelDefinition()->gatherSymbRefs(symbIdMap);
 
         // FIXME: Hackish, Observation should probably be a Symbol. The PharmML structure is a bit entagled need more time to think about this...
         PharmML::SymbRef *observation = model->getModelDefinition()->getObservationModel()->getOutput();
         observation->setSymbol(symbIdMap[observation->toString()]);
+
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

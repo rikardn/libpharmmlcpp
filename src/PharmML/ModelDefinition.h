@@ -27,6 +27,7 @@
 #include <PharmML/StructuralModel.h>
 #include <PharmML/ObservationModel.h>
 #include <PharmML/ModellingSteps.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -48,6 +49,7 @@ namespace PharmML
         PharmML::ObservationModel *getObservationModel();
         ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
     };
 }
 

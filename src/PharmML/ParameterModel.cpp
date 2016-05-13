@@ -50,6 +50,27 @@ namespace PharmML
             this->correlations.push_back(ind);
         }
     }
+    
+    void ParameterModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        // Only Correlation in ParameterModel are Referer's (and not Symbol's)
+        for (PharmML::Correlation *corr : this->getCorrelations()) {
+            if (corr->isPairwise()) {
+                for (PharmML::SymbRef *symbRef : corr->getPairwiseSymbRefs()) {
+                    Symbol *found_symbol = symbolMap[symbRef->toString()];
+                    corr->addReference(found_symbol);
+                    // We don't get this for free without symbRefsFromAst():
+                    symbRef->setSymbol(found_symbol);
+                    /* Oops! There's also an Assign tree which may or may not contain SymbRefs!
+                     * symbRefsFromAst() is a function of Symbol only (see usage in RandomVariable).
+                     * Likely this function should be Referer class level and Symbol class should
+                     * inherit from Referer (as suggested by Rikard earlier) */
+                    // FIXME: Figure it out
+                }
+            } else {
+                // TODO: Matrix support
+            }
+        }
+    }
 
     std::vector<PopulationParameter *> ParameterModel::getPopulationParameters() {
         return this->populationParameters;

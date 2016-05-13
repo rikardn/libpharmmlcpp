@@ -38,9 +38,9 @@ namespace PharmML
         xml::Node matrix_node = this->context->getSingleElement(node, "./ct:Matrix");
         if (pairwise_node.exists()) {
             // Get the two correlated random variables
-            xml::Node var1_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable1");
+            xml::Node var1_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable1/ct:SymbRef");
             this->pairwiseSymbRefs.push_back(new PharmML::SymbRef(var1_node));
-            xml::Node var2_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable2");
+            xml::Node var2_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable2/ct:SymbRef");
             this->pairwiseSymbRefs.push_back(new PharmML::SymbRef(var2_node));
             
             // Get correlation type
@@ -55,7 +55,7 @@ namespace PharmML
             // Get the assignment (coefficient/covariance) itself
             xml::Node assign = this->context->getSingleElement(pairwise_node, ".//ct:Assign");
             xml::Node tree = assign.getChild();
-            this->pairwiseAssignment = this->context->factory.create(tree, &deps);
+            this->pairwiseAssignment = this->context->factory.create(tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
             this->matrixType = node.getAttribute("deviationMatrixType").getValue();
@@ -80,10 +80,6 @@ namespace PharmML
     
     PharmML::AstNode *Correlation::getPairwiseAssignment() {
         return this->pairwiseAssignment;
-    }
-    
-    Dependencies &Correlation::getDependencies() {
-        return this->deps;
     }
     
     void Correlation::accept(PharmMLVisitor *visitor) {

@@ -141,21 +141,32 @@ namespace CPharmML
     }
     
     void Consolidator::consolidateCovariates(PharmML::Model *model) {
-        std::vector<PharmML::Covariate *> covs = model->getModelDefinition()->getCovariateModel()->getCovariates();
-        for (PharmML::Covariate *cov : covs) {
-            this->covariatesCollection.addCovariate(cov);
+        PharmML::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
+        if (cov_model) {
+            std::vector<PharmML::Covariate *> covs = cov_model->getCovariates();
+            for (PharmML::Covariate *cov : covs) {
+                this->covariatesCollection.addCovariate(cov);
+            }
         }
         
         // FIXME: getExternalDatasets(); This is a common pattern. Pluralness MUST be handled everywhere!
         // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
-        std::vector<PharmML::ColumnDefinition *> col_defs = model->getTrialDesign()->getExternalDatasets()[0]->getDataset()->getDefinition()->getColumnDefinitions();
-        for (PharmML::ColumnDefinition *col_def : col_defs) {
-            this->covariatesCollection.addColumnDefinition(col_def);
+        std::vector<PharmML::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
+        if (!ext_datasets.empty()) {
+            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
+            std::vector<PharmML::ColumnDefinition *> col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
+            for (PharmML::ColumnDefinition *col_def : col_defs) {
+                this->covariatesCollection.addColumnDefinition(col_def);
+            }
         }
         
-        std::vector<PharmML::ColumnMapping *> col_maps = model->getTrialDesign()->getExternalDatasets()[0]->getColumnMappings();
-        for (PharmML::ColumnMapping *col_map : col_maps) {
-            this->covariatesCollection.addColumnMapping(col_map);
+        // FIXME: Same as above (what if several ExternalDataset's?)
+        if (!ext_datasets.empty()) {
+            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
+            std::vector<PharmML::ColumnMapping *> col_maps = first_ext_dataset->getColumnMappings();
+            for (PharmML::ColumnMapping *col_map : col_maps) {
+                this->covariatesCollection.addColumnMapping(col_map);
+            }
         }
     }
 }

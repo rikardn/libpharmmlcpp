@@ -285,11 +285,15 @@ namespace PharmML
     }
 
     void MDLAstGenerator::visit(ScalarInt *node) {
-        this->setValue("(" + node->toString() + ")");
+        //~ this->setValue("(" + node->toString() + ")");
+        this->setValue(node->toString());
     }
 
     void MDLAstGenerator::visit(ScalarReal *node) {
-        this->setValue("(" + node->toString() + ")");
+        //~ this->setValue("(" + node->toString() + ")");
+        std::string s = node->toString();
+        s.erase (s.find_last_not_of('0') + 1, std::string::npos);
+        this->setValue(s);
     }
 
     void MDLAstGenerator::visit(BinopPlus *node) {

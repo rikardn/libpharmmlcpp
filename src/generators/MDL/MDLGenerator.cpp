@@ -345,7 +345,7 @@ namespace PharmML
             std::vector<SymbRef *> symbRefs = node->getPairwiseSymbRefs();
             attr.push_back("parameter = [" + this->accept(symbRefs[0]) + ", " + this->accept(symbRefs[1]) + "]");
             
-            attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
+            attr.push_back("value = [" + this->accept(node->getPairwiseAssignment()) + "]");
             
             std::string type = node->getPairwiseType();
             if (type == "CorrelationCoefficient") {

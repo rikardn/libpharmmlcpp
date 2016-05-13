@@ -30,14 +30,14 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string blkId;
         std::string symbId;
-        AstNode *Output;
+        SymbRef *Output;
         AstNode *ErrorModel;
         AstNode *ResidualError;
 
         public:
         ObservationModel(PharmMLContext *context, xml::Node node);
         std::string getSymbId();
-        AstNode *getOutput();
+        SymbRef *getOutput();
         AstNode *getErrorModel();
         AstNode *getResidualError();
         void parse(xml::Node node);

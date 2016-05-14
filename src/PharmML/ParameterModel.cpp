@@ -55,16 +55,12 @@ namespace PharmML
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
         for (PharmML::Correlation *corr : this->getCorrelations()) {
             if (corr->isPairwise()) {
+                // Now since Referer is base class to Symbol and has symbRefsFromAst, this is possible
+                corr->symbRefsFromAst(corr->getPairwiseAssignment(), symbolMap);
                 for (PharmML::SymbRef *symbRef : corr->getPairwiseSymbRefs()) {
-                    Symbol *found_symbol = symbolMap[symbRef->toString()];
-                    corr->addReference(found_symbol);
-                    // We don't get this for free without symbRefsFromAst():
-                    symbRef->setSymbol(found_symbol);
-                    /* Oops! There's also an Assign tree which may or may not contain SymbRefs!
-                     * symbRefsFromAst() is a function of Symbol only (see usage in RandomVariable).
-                     * Likely this function should be Referer class level and Symbol class should
-                     * inherit from Referer (as suggested by Rikard earlier) */
-                    // FIXME: Figure it out
+                    // Furthermore, a convenience method in Referer's makes symbRef gathering a breeze
+                    // (separation of correlated random variables also seem like a good idea)
+                    corr->correlatedSymbols.addSymbol( corr->addSymbRef(symbRef, symbolMap) );
                 }
             } else {
                 // TODO: Matrix support

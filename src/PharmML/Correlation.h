@@ -23,30 +23,36 @@
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/VariabilityLevel.h>
+#include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 
 namespace PharmML
 {
     class Correlation : public Referer
     {
-        PharmML::PharmMLContext *context;
-        PharmML::VariabilityReference *variabilityReference;
-        std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
-        std::string pairwiseType;
-        PharmML::AstNode *pairwiseAssignment = nullptr;
-        std::string matrixType;
+        private:
+            PharmML::PharmMLContext *context;
+            PharmML::VariabilityReference *variabilityReference;
+            std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
+            std::string pairwiseType;
+            PharmML::AstNode *pairwiseAssignment = nullptr;
+            std::string matrixType;
 
         public:
-        Correlation(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        
-        PharmML::VariabilityReference *getVariabilityReference();
-        bool isPairwise();
-        std::vector<PharmML::SymbRef *> getPairwiseSymbRefs();
-        std::string getPairwiseType();
-        PharmML::AstNode *getPairwiseAssignment();
-        
-        void accept(PharmMLVisitor *visitor);
+            Correlation(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            
+            PharmML::VariabilityReference *getVariabilityReference();
+            bool isPairwise();
+            std::vector<PharmML::SymbRef *> getPairwiseSymbRefs();
+            std::string getPairwiseType();
+            PharmML::AstNode *getPairwiseAssignment();
+            
+            /* Referer base class (referencedSymbols) contains all symbols while correlatedSymbols
+             * below only those that refer to the correlated random variables (to not mix them up): */
+            PharmML::SymbolSet correlatedSymbols;
+            
+            void accept(PharmMLVisitor *visitor);
     };
 }
 

@@ -26,14 +26,16 @@
 
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
+#include <AST/symbols.h>
 
 namespace PharmML
 {
-    // Experiment (if sucessful, maybe another file should contain it)
+    // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
     class Referer
     {
         public:
-            SymbolSet referencedSymbols;
+            PharmML::SymbolSet referencedSymbols;
+            PharmML::Symbol *addSymbRef(SymbRef *symbRef, std::unordered_map<std::string, Symbol *> &symbolMap);
             void addReference(Symbol *symbol);
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);

@@ -154,23 +154,22 @@ namespace CPharmML
         std::vector<PharmML::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
         if (!ext_datasets.empty()) {
             PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
-            std::vector<PharmML::ColumnDefinition *> col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
-            for (PharmML::ColumnDefinition *col_def : col_defs) {
-                this->covariatesCollection.addColumnDefinition(col_def);
-            }
-        }
-        
-        // FIXME: Same as above (what if several ExternalDataset's?)
-        if (!ext_datasets.empty()) {
-            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
             std::vector<PharmML::ColumnMapping *> col_maps = first_ext_dataset->getColumnMappings();
             for (PharmML::ColumnMapping *col_map : col_maps) {
                 this->covariatesCollection.addColumnMapping(col_map);
             }
         }
         
-        
-
+        // FIXME: Same as above (what if several ExternalDataset's?)
+        if (!ext_datasets.empty()) {
+            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
+            std::vector<PharmML::ColumnDefinition *> col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
+            for (PharmML::ColumnDefinition *col_def : col_defs) {
+                if (col_def->getType() == "covariate") {
+                    this->covariatesCollection.addColumnDefinition(col_def);
+                }
+            }
+        }
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

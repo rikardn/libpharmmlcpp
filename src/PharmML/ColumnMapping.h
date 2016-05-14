@@ -21,6 +21,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -29,6 +30,9 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string columnIdRef;
         AstNode *assignment = nullptr;
+        SymbRef *symbRef = nullptr;
+        
+        // FIXME: Depreceated members; not a good solution to Piecewise inconsistence! Fix ASAP.
         AstNode *assignedSymbol = nullptr;
         AstNode *findSymbRef(xml::Node node);
 
@@ -39,8 +43,10 @@ namespace PharmML
         AstNode *getAssignment();
         std::string getColumnIdRef();
         
+        // FIXME: Depreceated method; not a good solution to Piecewise inconsistence! Fix ASAP.
         AstNode *getFirstSymbol();
         
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
     };
 }

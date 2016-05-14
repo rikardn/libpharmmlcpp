@@ -42,7 +42,7 @@ namespace PharmML
             std::unordered_set<Symbol *>::iterator begin();
             std::unordered_set<Symbol *>::iterator end();
  
-        private:
+        protected:
             std::unordered_set<Symbol *> symbols;
     };
 }

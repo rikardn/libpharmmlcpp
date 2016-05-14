@@ -20,27 +20,38 @@
 namespace CPharmML
 {
     // INDIVIDUAL COVARIATES
-    // Construct with nothing as base
-    Covariate::Covariate() {
+    // Construct with PharmML::Covariate as base
+    Covariate::Covariate(PharmML::Covariate *covariate) {
+        this->covariate = covariate;
         
+        //~ this->name = covariate->getSymbId(); // For some reason, PharmML::Covariate isn't a Symbol yet
+        this->name = "";
+        this->transformedName = covariate->getTransformedName();
+        this->definition = covariate->getAssignment();
     }
     
-    // Add PharmML objects for consolidation
-    void Covariate::addCovariate(PharmML::Covariate *covariate) {
-        this->covariate = covariate;
-        this->name = covariate->getTransformedName();
-        this->definition = covariate->getAssignment();
+    // Add PharmML objects for consolidation (in this order)
+    void Covariate::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
+        this->columnMapping = columnMapping;
+        
+        this->columnName = columnMapping->getColumnIdRef();
     }
     
     void Covariate::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
         this->columnDef = covariateColumnDef;
-        this->derived = true;
-        this->name = covariateColumnDef->getId();
     }
     
     // Get attributes
+    PharmML::Covariate *Covariate::getCovariate() {
+        return this->covariate;
+    }
+    
     std::string Covariate::getName() {
         return this->name;
+    }
+    
+    std::string Covariate::getColumnName() {
+        return this->columnName;
     }
     
     PharmML::AstNode *Covariate::getDefinition() {
@@ -52,47 +63,28 @@ namespace CPharmML
     }
     
     // COVARIATE CONSOLIDATOR
-    // Construct with nothing as base
-    Covariates::Covariates() {
-        
+    // Add PharmML objects for consolidation (in this order)
+    void Covariates::addCovariate(PharmML::Covariate *covariate) {
+        Covariate *newCov = new Covariate(covariate);
+        this->covariates.insert(newCov);
     }
     
-    // Add PharmML objects for consolidation
-    void Covariates::addCovariate(PharmML::Covariate *covariate) {
-        std::string name = covariate->getTransformedName();
-        Covariate *foundCov = this->getCovariateByName(name);
-        if (foundCov) {
-            foundCov->addCovariate(covariate);
-        } else {
-            Covariate *newCov = new Covariate();
-            newCov->addCovariate(covariate);
-            this->covariates.insert(newCov);
+    void Covariates::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
+        for (Covariate *cov : this->covariates) {
+            //~ PharmML::Symbol *cov_symbol = cov->getCovariate(); // For some reason, PharmML::Covariate isn't a symbol yet
+            PharmML::Symbol *cov_symbol = nullptr;
+            if (columnMapping->referencedSymbols.hasSymbol(cov_symbol)) {
+                cov->addColumnMapping(columnMapping);
+            }
         }
     }
     
     void Covariates::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
-        std::string name = covariateColumnDef->getId();
-        Covariate *foundCov = this->getCovariateByName(name);
-        if (foundCov) {
-            foundCov->addColumnDefinition(covariateColumnDef);
-        } else {
-            Covariate *newCov = new Covariate();
-            newCov->addColumnDefinition(covariateColumnDef);
-            this->covariates.insert(newCov);
-        }
-    }
-    
-    void Covariates::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
-        
-    }
-    
-    // Match an already added covariate by name
-    Covariate *Covariates::getCovariateByName(std::string name) {
         for (Covariate *cov : this->covariates) {
-            if (cov->getName() == name) {
-                return cov;
+            std::string name = cov->getColumnName();
+            if (covariateColumnDef->getId() == name) {
+                cov->addColumnDefinition(covariateColumnDef);
             }
         }
-        return nullptr;
     }
 }

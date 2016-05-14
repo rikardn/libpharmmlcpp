@@ -35,6 +35,7 @@ namespace PharmML
         if (symbref_node.exists()) {
             this->assignment = this->context->factory.create(symbref_node);
             this->assignedSymbol = this->context->factory.create(symbref_node);
+            this->symbRef = new SymbRef(symbref_node);
         } else if (assign_node.exists()) {
             this->assignment = this->context->factory.create(assign_node);
             assignedSymbol = findSymbRef(assign_node);
@@ -85,6 +86,14 @@ namespace PharmML
     // TEST:
     AstNode *ColumnMapping::getFirstSymbol() {
         return this->assignedSymbol;
+    }
+    
+    void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        if (this->symbRef) {
+            this->addSymbRef(this->symbRef, symbolMap);
+        } else {
+            this->symbRefsFromAst(this->assignment, symbolMap);
+        }
     }
     
     void ColumnMapping::accept(PharmMLVisitor *visitor) {

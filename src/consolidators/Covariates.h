@@ -21,6 +21,7 @@
 #include <string>
 #include <unordered_set>
 #include <AST/AstNode.h>
+#include <symbols/Symbol.h>
 #include <PharmML/Covariate.h>
 #include <PharmML/Dataset.h>
 
@@ -29,43 +30,44 @@ namespace CPharmML
     class Covariate
     {
         public:
-            // Construct with nothing as base
-            Covariate();
+            // Construct with PharmML::Covariate as base
+            Covariate(PharmML::Covariate *covariate);
             
-            // Add PharmML objects for consolidation
-            void addCovariate(PharmML::Covariate *covariate);
+            // Add PharmML objects for consolidation (in this order)
+            void addColumnMapping(PharmML::ColumnMapping *columnMapping);
             void addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef);
             
             // Get attributes
+            PharmML::Covariate *getCovariate();
             std::string getName();
+            std::string getColumnName();
             PharmML::AstNode *getDefinition();
             bool isDerived();
         
         private:
             // PharmML objects used to consolidate
-            PharmML::Covariate *covariate = nullptr;
+            PharmML::Covariate *covariate;
+            PharmML::ColumnMapping *columnMapping = nullptr;
             PharmML::ColumnDefinition *columnDef = nullptr;
             
-            bool derived = false;
             std::string name;
+            std::string transformedName;
+            std::string columnName;
             PharmML::AstNode *definition = nullptr;
+            bool derived = false;
     };
     
     // Separate class to consolidate column definitions, covariate model, etc.
     class Covariates
     {
         public:
-            // Construct with nothing as base
-            Covariates();
-            
-            // Add PharmML objects for consolidation
+            // Add PharmML objects for consolidation (in this order)
             void addCovariate(PharmML::Covariate *covariate);
-            void addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef);
             void addColumnMapping(PharmML::ColumnMapping *columnMapping);
+            void addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef);
         
         private:
             std::unordered_set<Covariate *> covariates;
-            Covariate *getCovariateByName(std::string name);
     };
 }
 

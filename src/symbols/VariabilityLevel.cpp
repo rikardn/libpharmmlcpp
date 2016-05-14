@@ -39,7 +39,7 @@ namespace PharmML
         // Get parent reference
         xml::Node parent_ref_node = this->context->getSingleElement(node, "./mdef:ParentLevel");
         if (parent_ref_node.exists()) {
-            this->parentLevelRef = this->context->factory.create(parent_ref_node.getChild());
+            this->parentLevelRef = new SymbRef(parent_ref_node.getChild());
         }
     }
 
@@ -51,8 +51,15 @@ namespace PharmML
         return this->referenceLevel;
     }
     
-    AstNode *VariabilityLevel::getParentReference() {
+    SymbRef *VariabilityLevel::getParentReference() {
         return this->parentLevelRef;
+    }
+    
+    void VariabilityLevel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        if (this->parentLevelRef) {
+            PharmML::Symbol *found_symbol = this->addSymbRef(this->parentLevelRef, symbolMap);
+            this->addReference(found_symbol);
+        }
     }
 
     void VariabilityLevel::accept(PharmMLVisitor *visitor) {

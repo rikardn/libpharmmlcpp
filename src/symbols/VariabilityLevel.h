@@ -20,6 +20,8 @@
 
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
+#include <symbols/Symbol.h>
+#include <AST/symbols.h>
 
 namespace PharmML
 {
@@ -28,15 +30,15 @@ namespace PharmML
         PharmML::PharmMLContext *context;
         std::string name;
         bool referenceLevel;
-        AstNode *parentLevelRef = nullptr;
+        SymbRef *parentLevelRef = nullptr;
 
         public:
         VariabilityLevel(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         std::string getName();
         bool isReferenceLevel();
-        AstNode *getParentReference();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+        SymbRef *getParentReference();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };

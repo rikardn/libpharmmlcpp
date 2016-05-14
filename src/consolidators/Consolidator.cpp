@@ -30,6 +30,7 @@ namespace CPharmML
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
         this->consolidateCovariates(model);
+        this->consolidateVariabilityModels(model);
     }
     
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
@@ -52,6 +53,14 @@ namespace CPharmML
         std::vector<PharmML::CommonVariable *> cvs = model->getModelDefinition()->getStructuralModel()->getVariables();
         for (PharmML::CommonVariable *cv : cvs) {
             this->allSymbols.addSymbol(cv);
+        }
+        
+        std::vector<PharmML::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();
+        for (PharmML::VariabilityModel *vmod : vmods) {
+            std::vector<PharmML::VariabilityLevel *> vlevels = vmod->getVariabilityLevels();
+            for (PharmML::VariabilityLevel *vlevel : vlevels) {
+                this->allSymbols.addSymbol(vlevel);
+            }
         }
         
         PharmML::CovariateModel *cm = model->getModelDefinition()->getCovariateModel();
@@ -198,6 +207,15 @@ namespace CPharmML
             }
         }
     }
+    
+    void Consolidator::consolidateVariabilityModels(PharmML::Model *model) {
+        this->variabilityModels = new VariabilityModels();
+        // VariabilityModels assumes a maximum of one model of each type (parameter/residual error)
+        std::vector<PharmML::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();
+        for (PharmML::VariabilityModel *vmod : vmods) {
+            this->variabilityModels->addVariabilityModel(vmod);
+        }
+    }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
         return this->populationParameters;
@@ -205,5 +223,9 @@ namespace CPharmML
     
     std::vector<CPharmML::Covariate *> Consolidator::getCovariates() {
         return this->covariates;
+    }
+    
+    CPharmML::VariabilityModels *Consolidator::getVariabilityModels() {
+        return this->variabilityModels;
     }
 }

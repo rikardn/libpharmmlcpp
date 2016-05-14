@@ -26,6 +26,7 @@
 #include <AST/symbols.h>
 #include <consolidators/PopulationParameter.h>
 #include <consolidators/Covariates.h>
+#include <consolidators/VariabilityModels.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 
@@ -37,6 +38,7 @@ namespace CPharmML
             Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
             std::vector<CPharmML::PopulationParameter *> getPopulationParameters();
             std::vector<CPharmML::Covariate *> getCovariates();
+            CPharmML::VariabilityModels *getVariabilityModels();
 
         private:
             PharmML::PharmMLContext *context;
@@ -45,11 +47,13 @@ namespace CPharmML
             
             std::vector<CPharmML::PopulationParameter *> populationParameters;
             std::vector<CPharmML::Covariate *> covariates;
+            CPharmML::VariabilityModels *variabilityModels;
             
             void consolidateSymbols(PharmML::Model *model);
             
             void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateCovariates(PharmML::Model *model);
+            void consolidateVariabilityModels(PharmML::Model *model);
     };
 }
 

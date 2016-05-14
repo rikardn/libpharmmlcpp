@@ -299,6 +299,7 @@ namespace PharmML
         
         model->getIndependentVariable()->accept(this);
         form.add("IDV {" + this->getValue() + "}");
+        form.emptyLine();
         
         form.openVector("COVARIATES {}", 1, "");
         std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
@@ -311,6 +312,28 @@ namespace PharmML
             }
         }
         form.closeVector();
+        form.emptyLine();
+        
+        form.openVector("VARIABILITY_LEVELS {}", 1, "");
+        std::vector<PharmML::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
+        std::vector<PharmML::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
+        std::vector<int>::size_type level = par_levels.size() + err_levels.size();
+        for (level; level - err_levels.size() > 0; level--) {
+            std::string name = par_levels[level - err_levels.size() - 1]->getSymbId();
+            form.openVector(name + " : {}", 0, ", ");
+            form.add("level = " + std::to_string(level));
+            form.add("type is parameter");
+            form.closeVector();
+        }
+        for (level; level > 0; level--) {
+            std::string name = err_levels[level - 1]->getSymbId();
+            form.openVector(name + " : {}", 0, ", ");
+            form.add("level = " + std::to_string(level));
+            form.add("type is observation");
+            form.closeVector();
+        }
+        form.closeVector();
+        form.emptyLine();
         
         form.outdentAdd("} # end model object");
         

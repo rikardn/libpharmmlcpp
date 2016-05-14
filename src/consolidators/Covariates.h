@@ -56,19 +56,6 @@ namespace CPharmML
             PharmML::AstNode *definition = nullptr;
             bool derived = false;
     };
-    
-    // Separate class to consolidate column definitions, covariate model, etc.
-    class Covariates
-    {
-        public:
-            // Add PharmML objects for consolidation (in this order)
-            void addCovariate(PharmML::Covariate *covariate);
-            void addColumnMapping(PharmML::ColumnMapping *columnMapping);
-            void addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef);
-        
-        private:
-            std::unordered_set<Covariate *> covariates;
-    };
 }
 
 #endif

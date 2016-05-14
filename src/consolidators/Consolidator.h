@@ -44,7 +44,7 @@ namespace CPharmML
             PharmML::SymbolSet allSymbols;
             
             std::vector<CPharmML::PopulationParameter *> populationParameters;
-            CPharmML::Covariates covariatesCollection;
+            std::vector<CPharmML::Covariate *> covariates;
             
             void consolidateSymbols(PharmML::Model *model);
             

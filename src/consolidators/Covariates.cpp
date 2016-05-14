@@ -19,7 +19,6 @@
 
 namespace CPharmML
 {
-    // INDIVIDUAL COVARIATES
     // Construct with PharmML::Covariate as base
     Covariate::Covariate(PharmML::Covariate *covariate) {
         this->covariate = covariate;
@@ -59,30 +58,5 @@ namespace CPharmML
     
     bool Covariate::isDerived() {
         return this->derived;
-    }
-    
-    // COVARIATE CONSOLIDATOR
-    // Add PharmML objects for consolidation (in this order)
-    void Covariates::addCovariate(PharmML::Covariate *covariate) {
-        Covariate *newCov = new Covariate(covariate);
-        this->covariates.insert(newCov);
-    }
-    
-    void Covariates::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
-        for (Covariate *cov : this->covariates) {
-            PharmML::Symbol *cov_symbol = cov->getCovariate();
-            if (columnMapping->referencedSymbols.hasSymbol(cov_symbol)) {
-                cov->addColumnMapping(columnMapping);
-            }
-        }
-    }
-    
-    void Covariates::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
-        for (Covariate *cov : this->covariates) {
-            std::string id = cov->getColumnId();
-            if (covariateColumnDef->getId() == id) {
-                cov->addColumnDefinition(covariateColumnDef);
-            }
-        }
     }
 }

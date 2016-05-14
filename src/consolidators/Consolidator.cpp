@@ -146,38 +146,56 @@ namespace CPharmML
     }
     
     void Consolidator::consolidateCovariates(PharmML::Model *model) {
+        // Get ExternalDataset's (holding both ColumnMapping's and ColumnDefinition's)
+        std::vector<PharmML::ColumnMapping *> col_maps;
+        std::vector<PharmML::ColumnDefinition *> col_defs;
+        PharmML::ExternalDataset *first_ext_dataset;
+        std::vector<PharmML::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
+        if (!ext_datasets.empty()) {
+            // FIXME: This is a common pattern. Pluralness MUST be handled everywhere!
+            // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
+            first_ext_dataset = ext_datasets[0];
+            
+            // Get all ColumnMapping's and ColumnDefinition's (for first dataset)
+            col_maps = first_ext_dataset->getColumnMappings();
+            col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
+        }
+        
+        // Consolidate PharmML Covariate's (e.g. for collected output as in MDL)
         PharmML::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
         if (cov_model) {
             std::vector<PharmML::Covariate *> covs = cov_model->getCovariates();
             for (PharmML::Covariate *cov : covs) {
-                this->covariatesCollection.addCovariate(cov);
-            }
-        }
-        
-        // FIXME: getExternalDatasets(); This is a common pattern. Pluralness MUST be handled everywhere!
-        // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
-        std::vector<PharmML::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
-        if (!ext_datasets.empty()) {
-            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
-            std::vector<PharmML::ColumnMapping *> col_maps = first_ext_dataset->getColumnMappings();
-            for (PharmML::ColumnMapping *col_map : col_maps) {
-                this->covariatesCollection.addColumnMapping(col_map);
-            }
-        }
-        
-        // FIXME: Same as above (what if several ExternalDataset's?)
-        if (!ext_datasets.empty()) {
-            PharmML::ExternalDataset *first_ext_dataset = ext_datasets[0];
-            std::vector<PharmML::ColumnDefinition *> col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
-            for (PharmML::ColumnDefinition *col_def : col_defs) {
-                if (col_def->getType() == "covariate") {
-                    this->covariatesCollection.addColumnDefinition(col_def);
+                // Create new consolidated covariate
+                CPharmML::Covariate *ccov = new Covariate(cov);
+                
+                // Find ColumnMapping's refering this Covariate
+                for (PharmML::ColumnMapping *col_map : col_maps) {
+                    PharmML::Symbol *cov_symbol = ccov->getCovariate();
+                    if (col_map->referencedSymbols.hasSymbol(cov_symbol)) {
+                        ccov->addColumnMapping(col_map);
+                    }
                 }
+                
+                // Find ColumnDefinition's refering earlier added ColumnMapping
+                for (PharmML::ColumnDefinition *col_def : col_defs) {
+                    std::string id = ccov->getColumnId();
+                    if (col_def->getType() == "covariate" && col_def->getId() == id) {
+                        ccov->addColumnDefinition(col_def);
+                    }
+                }
+                
+                // Add the finished consolidated Covariate object
+                this->covariates.push_back(ccov);
             }
         }
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
         return this->populationParameters;
+    }
+    
+    std::vector<CPharmML::Covariate *> Consolidator::getCovariates() {
+        return this->covariates;
     }
 }

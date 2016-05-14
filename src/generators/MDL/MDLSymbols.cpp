@@ -23,6 +23,7 @@
 #include <symbols/IndependentVariable.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
+#include <symbols/Covariate.h>
 
 
 namespace PharmML
@@ -55,6 +56,10 @@ namespace PharmML
     }
 
     void MDLSymbols::visit(DerivativeVariable *node) {
+        this->setValue(node->getSymbId());
+    }
+    
+    void MDLSymbols::visit(Covariate *node) {
         this->setValue(node->getSymbId());
     }
 }

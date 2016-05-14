@@ -33,6 +33,7 @@ namespace PharmML
     class Variable;
     class DerivativeVariable;
     class IndependentVariable;
+    class Covariate;
 
     class RSymbols : public SymbolVisitor, public StringVisitor
     {
@@ -47,6 +48,7 @@ namespace PharmML
             void visit(IndependentVariable *node);
             void visit(Variable *node);
             void visit(DerivativeVariable *node);
+            void visit(Covariate *node);
     };
 }
 

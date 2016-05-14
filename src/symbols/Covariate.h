@@ -21,11 +21,12 @@
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
+#include <symbols/Symbol.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace PharmML
 {
-    class Covariate
+    class Covariate : public Symbol
     {
         PharmML::PharmMLContext *context;
         std::string transformedName;
@@ -36,7 +37,9 @@ namespace PharmML
         void parse(xml::Node node);
         std::string getTransformedName();
         AstNode *getAssignment();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
+        void accept(SymbolVisitor *visitor);
     };
 }
 

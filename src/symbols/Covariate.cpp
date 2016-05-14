@@ -16,7 +16,7 @@
  */
 
 #include <iostream>
-#include <PharmML/Covariate.h>
+#include <symbols/Covariate.h>
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
@@ -46,7 +46,16 @@ namespace PharmML
         return this->assignment;
     }
     
+    void Covariate::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(this->assignment, symbolMap);
+        this->addReferences(found_symbols);
+    }
+    
     void Covariate::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+    
+    void Covariate::accept(SymbolVisitor *visitor) {
         visitor->visit(this);
     }
 }

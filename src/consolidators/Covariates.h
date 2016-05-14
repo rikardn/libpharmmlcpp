@@ -22,7 +22,7 @@
 #include <unordered_set>
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h>
-#include <PharmML/Covariate.h>
+#include <symbols/Covariate.h>
 #include <PharmML/Dataset.h>
 
 namespace CPharmML
@@ -40,7 +40,7 @@ namespace CPharmML
             // Get attributes
             PharmML::Covariate *getCovariate();
             std::string getName();
-            std::string getColumnName();
+            std::string getColumnId();
             PharmML::AstNode *getDefinition();
             bool isDerived();
         
@@ -52,7 +52,7 @@ namespace CPharmML
             
             std::string name;
             std::string transformedName;
-            std::string columnName;
+            std::string columnId;
             PharmML::AstNode *definition = nullptr;
             bool derived = false;
     };

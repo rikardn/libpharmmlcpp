@@ -60,8 +60,7 @@ namespace PharmML
     
     void ExternalDataset::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (ColumnMapping *col_map : this->getColumnMappings()) {
-            //~ std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(col_map->getAssignment(), symbolMap);
-            //~ col_map->addReferences(found_symbols);
+            col_map->gatherSymbRefs(symbolMap);
         }
     }
     

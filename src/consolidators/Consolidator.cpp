@@ -53,6 +53,11 @@ namespace CPharmML
         for (PharmML::CommonVariable *cv : cvs) {
             this->allSymbols.addSymbol(cv);
         }
+        
+        std::vector<PharmML::Covariate *> covs = model->getModelDefinition()->getCovariateModel()->getCovariates();
+        for (PharmML::Covariate *cov : covs) {
+            this->allSymbols.addSymbol(cov);
+        }
 
         this->allSymbols.addSymbol(model->getIndependentVariable());
 

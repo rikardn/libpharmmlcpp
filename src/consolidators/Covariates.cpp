@@ -24,8 +24,7 @@ namespace CPharmML
     Covariate::Covariate(PharmML::Covariate *covariate) {
         this->covariate = covariate;
         
-        //~ this->name = covariate->getSymbId(); // For some reason, PharmML::Covariate isn't a Symbol yet
-        this->name = "";
+        this->name = covariate->getSymbId();
         this->transformedName = covariate->getTransformedName();
         this->definition = covariate->getAssignment();
     }
@@ -34,7 +33,7 @@ namespace CPharmML
     void Covariate::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
         this->columnMapping = columnMapping;
         
-        this->columnName = columnMapping->getColumnIdRef();
+        this->columnId = columnMapping->getColumnIdRef();
     }
     
     void Covariate::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
@@ -50,8 +49,8 @@ namespace CPharmML
         return this->name;
     }
     
-    std::string Covariate::getColumnName() {
-        return this->columnName;
+    std::string Covariate::getColumnId() {
+        return this->columnId;
     }
     
     PharmML::AstNode *Covariate::getDefinition() {
@@ -71,8 +70,7 @@ namespace CPharmML
     
     void Covariates::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
         for (Covariate *cov : this->covariates) {
-            //~ PharmML::Symbol *cov_symbol = cov->getCovariate(); // For some reason, PharmML::Covariate isn't a symbol yet
-            PharmML::Symbol *cov_symbol = nullptr;
+            PharmML::Symbol *cov_symbol = cov->getCovariate();
             if (columnMapping->referencedSymbols.hasSymbol(cov_symbol)) {
                 cov->addColumnMapping(columnMapping);
             }
@@ -81,8 +79,8 @@ namespace CPharmML
     
     void Covariates::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
         for (Covariate *cov : this->covariates) {
-            std::string name = cov->getColumnName();
-            if (covariateColumnDef->getId() == name) {
+            std::string id = cov->getColumnId();
+            if (covariateColumnDef->getId() == id) {
                 cov->addColumnDefinition(covariateColumnDef);
             }
         }

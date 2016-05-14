@@ -29,6 +29,7 @@ namespace PharmML
     }
 
     void Covariate::parse(xml::Node node) {
+        this->Symbol::parse(node);
         xml::Node n = this->context->getSingleElement(node, ".//mdef:TransformedCovariate");
         if (n.exists()) {
             this->transformedName = n.getAttribute("symbId").getValue();

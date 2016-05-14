@@ -168,8 +168,12 @@ namespace PharmML
     }
 
     void RPharmMLGenerator::visit(ColumnMapping *node) {
-        //~ this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getAssignment()));
-        this->setValue(node->getColumnIdRef() + " -> " + this->accept(node->getFirstSymbol()));
+        std::string id = node->getColumnIdRef();
+        std::string name = "UNDEF";
+        if (node->getMappedSymbol()) {
+            name = node->getMappedSymbol()->getSymbId();
+        }
+        this->setValue(id + " -> " + name);
     }
     
     // Class ExternalFile

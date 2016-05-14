@@ -121,6 +121,8 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
+        // TODO: Consolidator here
+        // TODO: idv only implicit if indpendent variable is T I believe
         stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
         if (node->isExternal()) {
             RFormatter form;
@@ -134,7 +136,14 @@ namespace PharmML
                 
                 // Open vector with column id as header
                 form.openVector(id + " : {}", 0, ", ");
+                
+                // Set type as MDL expects
                 std::string type = col_def->getType();
+                if(type == "undefined") {
+                    type = "ignored";
+                } else if (type == "reg") {
+                    type = "covariate";
+                }
                 form.add("use is " + type);
                 
                 if (type == "covariate" && id == column_mappings[id]) {
@@ -386,11 +395,14 @@ namespace PharmML
     void MDLGenerator::visit(ObservationModel *node) { }
 
     void MDLGenerator::visit(Distribution *node) { }
-
+    
     void MDLGenerator::visit(ColumnMapping *node) {
-        stringpair pair = {
-            node->getColumnIdRef(), this->accept(node->getFirstSymbol())
-        };
+        std::string id = node->getColumnIdRef();
+        std::string name = "UNDEF";
+        if (node->getMappedSymbol()) {
+            name = node->getMappedSymbol()->getSymbId();
+        }
+        stringpair pair = {id, name};
         this->setValue(pair);
     }
     

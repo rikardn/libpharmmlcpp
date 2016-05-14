@@ -40,13 +40,9 @@ namespace PharmML
         return this->referencedSymbols.hasSymbol(symbol);
     }
     
-    std::string Symbol::getSymbId() {
-        return this->symbId;
-    }
-
     // Put Symbols into SymbRefs and add Symbols to referencedSymbols from an AST
-    // Also return the found symbols (see Consolidator, DistributionParameter and Referer class above)
-    std::unordered_set<Symbol *> Symbol::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
+    // Also return the found symbols (see Consolidator, DistributionParameter and Referer class)
+    std::unordered_set<Symbol *> Referer::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
         std::unordered_set<Symbol *> found_symbols;
         SymbRefFinder finder;
         node->accept(&finder);
@@ -57,6 +53,10 @@ namespace PharmML
             this->referencedSymbols.addSymbol(symbol);
         }
         return found_symbols;
+    }
+    
+    std::string Symbol::getSymbId() {
+        return this->symbId;
     }
     
     void Symbol::parse(xml::Node node) {

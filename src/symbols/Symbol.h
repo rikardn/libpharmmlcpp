@@ -33,28 +33,26 @@ namespace PharmML
     class Referer
     {
         public:
-            virtual void addReference(Symbol *symbol);
-            virtual void addReferences(std::unordered_set<Symbol *> symbols);
-            virtual bool refersTo(Symbol *symbol);
-            virtual bool refersIndirectlyTo(Symbol *symbol);
+            SymbolSet referencedSymbols;
+            void addReference(Symbol *symbol);
+            void addReferences(std::unordered_set<Symbol *> symbols);
+            bool refersTo(Symbol *symbol);
+            bool refersIndirectlyTo(Symbol *symbol);
+            std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
 
         protected:
-            void parse(xml::Node node);
-            
-        private:
-            SymbolSet referencedSymbols; // No need to expose this considering the task of a Referer
+            virtual void parse(xml::Node node) = 0;
     };
     
-    class Symbol {
+    class Symbol : public Referer
+    {
         public:
-            SymbolSet referencedSymbols;
             std::string getSymbId();
             virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
             std::string symbId;
-            std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
             void parse(xml::Node node);
     };
 }

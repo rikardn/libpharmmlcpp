@@ -71,10 +71,10 @@ namespace CPharmML
         model->getModellingSteps()->gatherSymbRefs(symbIdMap);
         model->getModelDefinition()->gatherSymbRefs(symbIdMap);
         model->getTrialDesign()->gatherSymbRefs(symbIdMap);
-    }
-
-    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
-        return this->populationParameters;
+        
+        // FIXME: Hackish, Observation should probably be a Symbol. The PharmML structure is a bit entagled need more time to think about this...
+        PharmML::SymbRef *observation = model->getModelDefinition()->getObservationModel()->getOutput();
+        observation->setSymbol(symbIdMap[observation->toString()]);
     }
     
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
@@ -168,5 +168,12 @@ namespace CPharmML
                 this->covariatesCollection.addColumnMapping(col_map);
             }
         }
+        
+        
+
+    }
+
+    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
+        return this->populationParameters;
     }
 }

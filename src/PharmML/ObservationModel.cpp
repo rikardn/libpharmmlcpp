@@ -32,7 +32,7 @@ namespace PharmML
         }
         xml::Node output = this->context->getSingleElement(node, ".//mdef:ContinuousData/mdef:Standard/mdef:Output");
         if (output.exists()) {
-            this->Output = this->context->factory.create(output.getChild());
+            this->Output = new SymbRef(output.getChild());
         }
         xml::Node error_model_tree = this->context->getSingleElement(node, ".//mdef:ContinuousData/mdef:Standard/mdef:ErrorModel/ct:Assign");
         if (error_model_tree.exists()) {
@@ -48,7 +48,7 @@ namespace PharmML
         return this->symbId;
     }
 
-    AstNode *ObservationModel::getOutput() {
+    SymbRef *ObservationModel::getOutput() {
         return this->Output;
     }
 

@@ -54,9 +54,12 @@ namespace CPharmML
             this->allSymbols.addSymbol(cv);
         }
         
-        std::vector<PharmML::Covariate *> covs = model->getModelDefinition()->getCovariateModel()->getCovariates();
-        for (PharmML::Covariate *cov : covs) {
-            this->allSymbols.addSymbol(cov);
+        PharmML::CovariateModel *cm = model->getModelDefinition()->getCovariateModel();
+        if (cm) {
+            std::vector<PharmML::Covariate *> covs = cm->getCovariates();
+            for (PharmML::Covariate *cov : covs) {
+                this->allSymbols.addSymbol(cov);
+            }
         }
 
         this->allSymbols.addSymbol(model->getIndependentVariable());
@@ -164,29 +167,34 @@ namespace CPharmML
         // Consolidate PharmML Covariate's (e.g. for collected output as in MDL)
         PharmML::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
         if (cov_model) {
-            std::vector<PharmML::Covariate *> covs = cov_model->getCovariates();
-            for (PharmML::Covariate *cov : covs) {
-                // Create new consolidated covariate
-                CPharmML::Covariate *ccov = new Covariate(cov);
-                
-                // Find ColumnMapping's refering this Covariate
-                for (PharmML::ColumnMapping *col_map : col_maps) {
-                    PharmML::Symbol *cov_symbol = ccov->getCovariate();
-                    if (col_map->referencedSymbols.hasSymbol(cov_symbol)) {
-                        ccov->addColumnMapping(col_map);
+            std::vector<PharmML::Covariate *> top_covs = cov_model->getCovariates();
+            for (PharmML::Covariate *top_cov : top_covs) {
+                // Create list of this covariate and transformed covariates contained within it
+                std::vector<PharmML::Covariate *> covs = top_cov->getTransformations();
+                covs.insert(covs.begin(), top_cov);
+                for (PharmML::Covariate *cov : covs) {
+                    // Create new consolidated covariate
+                    CPharmML::Covariate *ccov = new Covariate(cov);
+                    
+                    // Find ColumnMapping's refering this Covariate
+                    for (PharmML::ColumnMapping *col_map : col_maps) {
+                        PharmML::Symbol *cov_symbol = ccov->getCovariate();
+                        if (col_map->referencedSymbols.hasSymbol(cov_symbol)) {
+                            ccov->addColumnMapping(col_map);
+                        }
                     }
-                }
-                
-                // Find ColumnDefinition's refering earlier added ColumnMapping
-                for (PharmML::ColumnDefinition *col_def : col_defs) {
-                    std::string id = ccov->getColumnId();
-                    if (col_def->getType() == "covariate" && col_def->getId() == id) {
-                        ccov->addColumnDefinition(col_def);
+                    
+                    // Find ColumnDefinition's refering earlier added ColumnMapping
+                    for (PharmML::ColumnDefinition *col_def : col_defs) {
+                        std::string id = ccov->getColumnId();
+                        if (col_def->getId() == id) {
+                            ccov->addColumnDefinition(col_def);
+                        }
                     }
+                    
+                    // Add the finished consolidated Covariate object
+                    this->covariates.push_back(ccov);
                 }
-                
-                // Add the finished consolidated Covariate object
-                this->covariates.push_back(ccov);
             }
         }
     }

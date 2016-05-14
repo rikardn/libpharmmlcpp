@@ -20,6 +20,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
+#include <PharmML/Distribution.h>
 
 namespace PharmML
 {
@@ -27,20 +28,79 @@ namespace PharmML
         this->context = context;
         this->parse(node);
     }
+    
+    // Constructor for transformed covariates
+    Covariate::Covariate(PharmMLContext *context, xml::Node name_node, xml::Node assign_node) {
+        this->context = context;
+        this->Symbol::parse(name_node);
+        xml::Node tree = assign_node.getChild();
+        this->assignment = this->context->factory.create(tree);
+        this->transformed = true;
+    }
 
     void Covariate::parse(xml::Node node) {
         this->Symbol::parse(node);
-        xml::Node n = this->context->getSingleElement(node, ".//mdef:TransformedCovariate");
-        if (n.exists()) {
-            this->transformedName = n.getAttribute("symbId").getValue();
+        
+        // Get type (timeDependent, occasionDependent or constant)
+        this->type = node.getAttribute("type").getValue();
+        
+        // Get continuous/categorical type
+        xml::Node cont_node = this->context->getSingleElement(node, "./mdef:Continuous");
+        if (cont_node.exists()) {
+            this->continuous = true;
+            
+            // Get distribution/realization
+            xml::Node dist_node = this->context->getSingleElement(cont_node, "./mdef:Distribution");
+            if (dist_node.exists()) {
+                this->distribution = new PharmML::Distribution(this->context, dist_node);
+            }
+            xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");
+            // TODO: Support realization of distribution (also, in general)
+            
+            // Get transformations
+            std::vector<xml::Node> trans_nodes = this->context->getElements(cont_node, "./mdef:Transformation");
+            for (xml::Node trans_node : trans_nodes) {
+                // Create new covariate for each transformation
+                xml::Node name_node = this->context->getSingleElement(trans_node, "./mdef:TransformedCovariate");
+                xml::Node assign_node = this->context->getSingleElement(trans_node, "./ct:Assign");
+                Covariate *new_cov = new Covariate(this->context, name_node, assign_node);
+                this->transformations.push_back(new_cov);
+            }
+            
+            // Get interpolation
+            xml::Node int_node = this->context->getSingleElement(cont_node, "./ct:Interpolation");
+            
+            // Get assign (likely for constants)
+            xml::Node assign = this->context->getSingleElement(cont_node, "./ct:Assign");
+            if (assign.exists()) {
+                xml::Node tree = assign.getChild();
+                this->assignment = this->context->factory.create(tree);
+            }
+        } else {
+            this->continuous = false;
+            
+            // TODO: Categorical covariate support
         }
-        xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
-        xml::Node tree = assign.getChild();
-        this->assignment = this->context->factory.create(tree);
-    } 
+    }
+    
+    bool Covariate::isTransformed() {
+        return this->transformed;
+    }
+    
+    bool Covariate::isContinuous() {
+        return this->continuous;
+    }
+    
+    std::string Covariate::getType() {
+        return this->type;
+    }
+    
+    PharmML::Distribution *Covariate::getDistribution() {
+        return this->distribution;
+    }
 
-    std::string Covariate::getTransformedName() {
-        return this->transformedName;
+    std::vector<Covariate *> Covariate::getTransformations() {
+        return this->transformations;
     }
 
     AstNode *Covariate::getAssignment() {
@@ -48,8 +108,14 @@ namespace PharmML
     }
     
     void Covariate::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(this->assignment, symbolMap);
-        this->addReferences(found_symbols);
+        if (this->assignment) {
+            std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(this->assignment, symbolMap);
+            this->addReferences(found_symbols);
+        }
+        for (Covariate *cov : this->transformations) {
+            std::unordered_set<Symbol *> found_symbols = cov->symbRefsFromAst(cov->assignment, symbolMap);
+            cov->addReferences(found_symbols);
+        }
     }
     
     void Covariate::accept(PharmMLVisitor *visitor) {

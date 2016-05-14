@@ -28,18 +28,30 @@ namespace PharmML
 {
     class Covariate : public Symbol
     {
-        PharmML::PharmMLContext *context;
-        std::string transformedName;
-        AstNode *assignment;
-
         public:
-        Covariate(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getTransformedName();
-        AstNode *getAssignment();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            Covariate(PharmMLContext *context, xml::Node node);
+            Covariate(PharmMLContext *context, xml::Node name_node, xml::Node assign_node);
+            void parse(xml::Node node);
+            
+            bool isTransformed();
+            bool isContinuous();
+            std::string getType();
+            PharmML::Distribution *getDistribution();
+            std::vector<Covariate *> getTransformations();
+            AstNode *getAssignment();
+            
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            bool transformed = false;
+            bool continuous;
+            std::string type;
+            PharmML::Distribution *distribution = nullptr;
+            std::vector<Covariate *> transformations;
+            AstNode *assignment = nullptr;
     };
 }
 

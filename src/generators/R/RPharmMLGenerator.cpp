@@ -60,7 +60,12 @@ namespace PharmML
     }
 
     void RPharmMLGenerator::visit(Covariate *node) {
-        this->setValue(node->getTransformedName() + " <- " + this->accept(node->getAssignment()));
+        std::string s = node->getSymbId();
+        AstNode *assign = node->getAssignment();
+        if (assign) {
+            s += " <- " + this->accept(node->getAssignment());
+        }
+        this->setValue(s);
     }
 
     void RPharmMLGenerator::visit(PopulationParameter *node) {

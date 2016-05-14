@@ -39,10 +39,16 @@ namespace CPharmML
             
             // Get attributes
             PharmML::Covariate *getCovariate();
+            PharmML::ColumnMapping *getColumnMapping();
+            PharmML::ColumnDefinition *getColumnDefinition();
+            
             std::string getName();
-            std::string getColumnId();
-            PharmML::AstNode *getDefinition();
             bool isDerived();
+            bool isContinuous();
+            std::string getType();
+            PharmML::Distribution *getDistribution();
+            PharmML::AstNode *getDefinition();
+            std::string getColumnId();
         
         private:
             // PharmML objects used to consolidate
@@ -51,10 +57,12 @@ namespace CPharmML
             PharmML::ColumnDefinition *columnDef = nullptr;
             
             std::string name;
-            std::string transformedName;
+            bool derived;
+            bool continuous;
+            std::string type;
+            PharmML::Distribution *distribution;
+            PharmML::AstNode *definition;
             std::string columnId;
-            PharmML::AstNode *definition = nullptr;
-            bool derived = false;
     };
 }
 

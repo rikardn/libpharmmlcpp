@@ -24,7 +24,10 @@ namespace CPharmML
         this->covariate = covariate;
         
         this->name = covariate->getSymbId();
-        this->transformedName = covariate->getTransformedName();
+        this->derived = covariate->isTransformed();
+        this->continuous = covariate->isContinuous();
+        this->type = covariate->getType();
+        this->distribution = covariate->getDistribution();
         this->definition = covariate->getAssignment();
     }
     
@@ -44,19 +47,39 @@ namespace CPharmML
         return this->covariate;
     }
     
+    PharmML::ColumnMapping *Covariate::getColumnMapping() {
+        return this->columnMapping;
+    }
+    
+    PharmML::ColumnDefinition *Covariate::getColumnDefinition() {
+        return this->columnDef;
+    }
+    
     std::string Covariate::getName() {
         return this->name;
     }
     
-    std::string Covariate::getColumnId() {
-        return this->columnId;
+    bool Covariate::isDerived() {
+        return this->derived;
+    }
+    
+    bool Covariate::isContinuous() {
+        return this->continuous;
+    }
+    
+    std::string Covariate::getType() {
+        return this->type;
+    }
+    
+    PharmML::Distribution *Covariate::getDistribution() {
+        return this->distribution;
     }
     
     PharmML::AstNode *Covariate::getDefinition() {
         return this->definition;
     }
     
-    bool Covariate::isDerived() {
-        return this->derived;
+    std::string Covariate::getColumnId() {
+        return this->columnId;
     }
 }

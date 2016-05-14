@@ -291,11 +291,15 @@ namespace PharmML
         model->getIndependentVariable()->accept(this);
         form.add("IDV {" + this->getValue() + "}");
         
-        form.openVector("COVARIATES {}", 1, ", ");
-        std::vector<PharmML::Covariate *> covariates = model->getModelDefinition()->getCovariateModel()->getCovariates();
-        for (PharmML::Covariate *covariate : covariates) {
-            std::string name = covariate->getTransformedName();
-            form.add(name + " = " + this->accept(covariate->getAssignment()));
+        form.openVector("COVARIATES {}", 1, "");
+        std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
+        for (CPharmML::Covariate *cov : covs) {
+            std::string name = cov->getName();
+            AstNode *assign = cov->getDefinition();
+            form.add(name);
+            if (assign) {
+                form.append(" = " + this->accept(assign));
+            }
         }
         form.closeVector();
         

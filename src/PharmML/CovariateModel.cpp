@@ -31,9 +31,9 @@ namespace PharmML
     }
 
     void CovariateModel::parse(xml::Node node) {
-        std::vector<xml::Node> array = this->context->getElements(node, ".//mdef:Covariate");
-        for (xml::Node n : array) {
-            PharmML::Covariate *cov = new PharmML::Covariate(this->context, n);
+        std::vector<xml::Node> cov_nodes = this->context->getElements(node, "./mdef:Covariate");
+        for (xml::Node cov_node : cov_nodes) {
+            PharmML::Covariate *cov = new PharmML::Covariate(this->context, cov_node);
             this->Covariates.push_back(cov);
         }
     }

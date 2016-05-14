@@ -23,7 +23,7 @@
 
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
-#include <PharmML/Covariate.h>
+#include <symbols/Covariate.h>
 
 namespace PharmML
 {

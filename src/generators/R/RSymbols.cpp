@@ -21,6 +21,7 @@
 #include <symbols/IndependentVariable.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
+#include <symbols/Covariate.h>
 #include <generators/R/RSymbols.h>
 
 namespace PharmML
@@ -52,5 +53,10 @@ namespace PharmML
     void RSymbols::visit(DerivativeVariable *node) {
         node->getAssignment()->accept(&this->r_ast);
         this->setValue("d" + node->getSymbId() + " <- " + this->r_ast.getValue());
+    }
+    
+    void RSymbols::visit(Covariate *node) {
+        node->getAssignment()->accept(&this->r_ast);
+        this->setValue(node->getSymbId() + " <- " + this->r_ast.getValue());
     }
 }

@@ -165,8 +165,8 @@ Constant.o: src/AST/Constant.cpp src/AST/Constant.h
 AstNodeFactory.o: src/AST/AstNodeFactory.cpp src/AST/AstNodeFactory.h
 	$(CC) -c src/AST/AstNodeFactory.cpp -oAstNodeFactory.o $(CFLAGS)
 
-Covariate.o: src/PharmML/Covariate.cpp src/PharmML/Covariate.h
-	$(CC) -c src/PharmML/Covariate.cpp -oCovariate.o $(CFLAGS)
+Covariate.o: src/symbols/Covariate.cpp src/symbols/Covariate.h
+	$(CC) -c src/symbols/Covariate.cpp -oCovariate.o $(CFLAGS)
 
 VariabilityModel.o: src/PharmML/VariabilityModel.cpp src/PharmML/VariabilityModel.h
 	$(CC) -c src/PharmML/VariabilityModel.cpp -oVariabilityModel.o $(CFLAGS)

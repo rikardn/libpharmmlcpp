@@ -29,7 +29,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/FunctionDefinition.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
-#include <PharmML/Covariate.h>
+#include <symbols/Covariate.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <PharmML/ObservationModel.h>

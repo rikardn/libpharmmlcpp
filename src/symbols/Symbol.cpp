@@ -21,7 +21,14 @@
 
 namespace PharmML
 {
-    // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
+    /* Convenience method for those Referer derived classes that have naked SymbRef's. Also returns
+     * Symbol so gatherer also can add them to a separate collection if deemed necessary. */
+    PharmML::Symbol *Referer::addSymbRef(SymbRef *symbRef, std::unordered_map<std::string, Symbol *> &symbolMap) {
+        Symbol *found_symbol = symbolMap[symbRef->toString()];
+        symbRef->setSymbol(found_symbol);
+        this->referencedSymbols.addSymbol(found_symbol);
+        return found_symbol;
+    }
     void Referer::addReference(Symbol *symbol) {
         this->referencedSymbols.addSymbol(symbol);
     }

@@ -119,7 +119,7 @@ namespace PharmML
         }
 
         // Return list
-        form.add("return(list(" + PharmML::formatVector(name_list, "c", "") + "))");
+        form.add("return(list(" + TextFormatter::createInlineVector(name_list, "c()", ", ") + "))");
         form.outdentAdd("})");
         form.outdentAdd("}");
         form.emptyLine();

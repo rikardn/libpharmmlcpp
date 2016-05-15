@@ -229,6 +229,7 @@ namespace PharmML
         return vector.createString(false);
     }
     
+    // Instance-agnostic multi-row creation of a vector (formatVector replacement)
     std::string TextFormatter::createIndentedVector(std::vector<std::string> strs, std::string enclosure, std::string separator) {
         TextFormatter vector(1, ' ');
         vector.openVector(enclosure, 1, separator);
@@ -259,7 +260,8 @@ namespace PharmML
         }
         return result;
     }
-
+    
+    // Instance-agnostic createInlineVector wrapper for bare CSV lists
     std::string TextFormatter::createCommaSeparatedList(std::vector<std::string> list) {
         return createInlineVector(list, "", ", ");
     }

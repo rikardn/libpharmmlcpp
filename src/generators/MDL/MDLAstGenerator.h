@@ -51,8 +51,6 @@ namespace PharmML
             std::string infix(Binop *binop, std::string op); 
             std::string acceptChild(Uniop *uniop);
             std::string accept(AstNode *node);
-            // Helper function to reduce redundant code
-            std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'");
             std::string getLogicLiteral(bool value);
 
         public:

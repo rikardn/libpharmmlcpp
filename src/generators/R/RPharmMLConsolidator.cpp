@@ -43,7 +43,7 @@ namespace PharmML
             pairs.push_back(pair);
         }
         // TODO: Figure out place for helpers
-        return PharmML::formatVector(pairs, "c", "");
+        return TextFormatter::createInlineVector(pairs, "c()", ", ");
     }
 
     // Variables consolidator (visits to Variable builds)

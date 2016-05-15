@@ -53,23 +53,6 @@ namespace PharmML
         return this->getValue();
     }
 
-    // Helper function to reduce redundant code
-    // TODO: Overload with similar function accepting vector of nodes and performing element->accept(this) instead (how?)
-    std::string RAstGenerator::formatVector(std::vector<std::string> vector, std::string prefix, std::string quote) {
-        std::string s = prefix + "(";
-        
-        bool first = true;
-        for (std::string element : vector) {
-            if (first) {
-                first = false;
-            } else {
-                s += ", ";
-            }
-            s += quote + element + quote;
-        }
-        return(s + ")");
-    }
-
     std::string RAstGenerator::getLogicLiteral(bool value) {
         if (value) {
             return "TRUE";

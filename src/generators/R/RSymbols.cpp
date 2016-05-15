@@ -69,7 +69,7 @@ namespace PharmML
     }
     
     void RSymbols::visit(Covariate *node) {
-        node->getAssignment()->accept(&this->r_ast);
-        this->setValue(node->getSymbId() + " <- " + this->r_ast.getValue());
+        node->getAssignment()->accept(this->astgen);
+        this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
     }
 }

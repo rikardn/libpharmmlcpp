@@ -51,7 +51,7 @@ namespace PharmML
         
         std::string head = node->getSymbId() + " <- ";
         std::vector<std::string> args = node->getArguments();
-        form.indentAdd(head + PharmML::formatVector(args, "function", "") + " {");
+        form.indentAdd(head + TextFormatter::createInlineVector(args, "function()", ", ") + " {");
         
         form.add("return " + this->accept(node->getAssignment()));
         form.outdentAdd("}");
@@ -211,7 +211,7 @@ namespace PharmML
         for (AstNode *element: data) {
             list.push_back(this->accept(element));
         }
-        s += PharmML::formatVector(list, "c", "");
+        s += TextFormatter::createInlineVector(list, "c()", ", ");
         setValue(s);
     }
     
@@ -227,7 +227,7 @@ namespace PharmML
                 list.push_back(this->getValue());
             }
             s += name + " = ";
-            s += PharmML::formatVector(list, "data.frame", "", s.size());
+            s += TextFormatter::createIndentedVector(list, "data.frame()", ", ");
         } else {
             // TODO: Improve support for external resource
             // First, output reading function
@@ -301,9 +301,9 @@ namespace PharmML
         std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
         for (ColumnMapping *map : column_mappings) {
             map->accept(this);
-            list.push_back(this->getValue());
+            list.push_back("'" + this->getValue() + "'");
         }
-        s += PharmML::formatVector(list, "c") + ", ";
+        s += TextFormatter::createInlineVector(list, "c()", ", ") + ", ";
         
         s += "dataset = " + node->getDataset()->getName();
         
@@ -321,9 +321,9 @@ namespace PharmML
             for (Administration *adm : adms) {
                 adm->accept(this);
                 s += this->getValue() + "\n";
-                adm_oids.push_back(adm->getOid());
+                adm_oids.push_back("'" + adm->getOid() + "'");
             }
-            s += "administration_oids <- " + PharmML::formatVector(adm_oids, "c") + "\n";
+            s += "administration_oids <- " + TextFormatter::createInlineVector(adm_oids, "c()", ", ") + "\n";
         }
         
         // <IndividualAdministration>'s
@@ -400,9 +400,9 @@ namespace PharmML
         s += "mappings = ";
         for (ColumnMapping *map : column_mappings) {
             map->accept(this);
-            list.push_back(this->getValue());
+            list.push_back("'" + this->getValue() + "'");
         }
-        s += PharmML::formatVector(list, "c") + ", ";
+        s += TextFormatter::createInlineVector(list, "c()", ", ") + ", ";
         
         s += "dataset = " + node->getDataset()->getName();
         
@@ -412,7 +412,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " <- list(";
         
-        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
+        s += "refs = " + TextFormatter::createInlineVector(node->getOidRefs(), "c()", ", ");
         if (node->getRelative()) {
             s += ", relative = " + this->accept(node->getRelative());
         }
@@ -441,7 +441,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 obs_oids.push_back(observation->getOid());
             }
-            s += "simulation_obs_oids = " + PharmML::formatVector(obs_oids, "c") + "\n";
+            s += "simulation_obs_oids = " + TextFormatter::createInlineVector(obs_oids, "c()", ", ") + "\n";
         }
         
         std::vector<IndividualObservations *> ind_observations = node->getIndividualObservations();
@@ -450,7 +450,7 @@ namespace PharmML
             std::vector<std::string> obs_oids;
             for (IndividualObservations *ind_observation : ind_observations) {
                 std::string oid = ind_observation->getOid();
-                obs_oids.push_back(oid);
+                obs_oids.push_back("'" + oid + "'");
                 // PharmML dataset has no oid so we generate a name here and accept the dataset separately
                 ind_observation->getDataset()->setName("dataset_obs_" + oid + "_ds");
                 ind_observation->getDataset()->accept(this);
@@ -459,7 +459,7 @@ namespace PharmML
                 ind_observation->accept(this);
                 s += this->getValue() + "\n";
             }
-            s += "dataset_obs_oids = " + PharmML::formatVector(obs_oids, "c") + "\n";
+            s += "dataset_obs_oids = " + TextFormatter::createInlineVector(obs_oids, "c()", ", ") + "\n";
         }
         
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
@@ -471,7 +471,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
                 comb_oids.push_back(comb->getOid());
             }
-            s += "combination_oids <- " + PharmML::formatVector(comb_oids, "c") + "\n";
+            s += "combination_oids <- " + TextFormatter::createInlineVector(comb_oids, "c()", ", ") + "\n";
         }
         
         this->setValue(s);
@@ -481,7 +481,11 @@ namespace PharmML
     void RPharmMLGenerator::visit(InterventionSequence *node) {
         std::string s = "list(";
         
-        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
+        std::vector<std::string> refs;
+        for (std::string ref : node->getOidRefs()) {
+            refs.push_back("'" + ref + "'");
+        }
+        s += "refs = " + TextFormatter::createInlineVector(refs, "c()", ", ");
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
@@ -492,7 +496,11 @@ namespace PharmML
     void RPharmMLGenerator::visit(ObservationSequence *node) {
         std::string s = "list(";
         
-        s += "refs = " + PharmML::formatVector(node->getOidRefs(), "c");
+        std::vector<std::string> refs;
+        for (std::string ref : node->getOidRefs()) {
+            refs.push_back("'" + ref + "'");
+        }
+        s += "refs = " + TextFormatter::createInlineVector(refs, "c()", ", ");
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
@@ -553,7 +561,7 @@ namespace PharmML
         }
         // TODO: Implement output of node->getOccasionSequences
         
-        s += PharmML::formatVector(list, "list", "");
+        s += TextFormatter::createInlineVector(list, "list()", ", ");
         this->setValue(s + ")");
     }
     
@@ -595,7 +603,7 @@ namespace PharmML
             top.push_back("total_size = " + this->accept(node->getTotalSize()));
         }
         if (!top.empty()) {
-            s += "arms = " + PharmML::formatVector(top, "list") + "\n";
+            s += "arms = " + TextFormatter::createInlineVector(top, "list()", ", ") + "\n";
         }
         
         // <DesignParameter>'s
@@ -638,15 +646,30 @@ namespace PharmML
         std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
         
-        list.push_back("intervention_refs = " + PharmML::formatVector(node->getInterventionRefs(), "c"));
-        list.push_back("observation_refs = " + PharmML::formatVector(node->getObservationRefs(), "c"));
-        list.push_back("arm_refs = " + PharmML::formatVector(node->getArmRefs(), "c"));
+        std::vector<std::string> int_refs;
+        for (std::string ref : node->getInterventionRefs()) {
+            int_refs.push_back("'" + ref + "'");
+        }
+        list.push_back("intervention_refs = " + TextFormatter::createInlineVector(int_refs, "c()", ", "));
+        
+        std::vector<std::string> obs_refs;
+        for (std::string ref : node->getObservationRefs()) {
+            obs_refs.push_back("'" + ref + "'");
+        }
+        list.push_back("observation_refs = " + TextFormatter::createInlineVector(obs_refs, "c()", ", "));
+        
+        std::vector<std::string> arm_refs;
+        for (std::string ref : node->getArmRefs()) {
+            arm_refs.push_back("'" + ref + "'");
+        }
+        list.push_back("arm_refs = " + TextFormatter::createInlineVector(arm_refs, "c()", ", "));
+        
         AstNode *dosing_times = node->getDosingTimes();
         if (dosing_times) {
             list.push_back("dosing_times=" + this->accept(dosing_times));
         }
         
-        s += PharmML::formatVector(list, "list", "");
+        s += TextFormatter::createInlineVector(list, "list()", ", ");
         this->setValue(s);
     }
     

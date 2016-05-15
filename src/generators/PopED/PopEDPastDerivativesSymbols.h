@@ -15,40 +15,34 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPEDASTGENERATOR_H_
-#define PHARMML_POPEDASTGENERATOR_H_
+#ifndef PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
+#define PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
 
-#include <string>
-#include <visitors/AstNodeVisitor.h>
-#include <AST/symbols.h>
-#include <AST/Uniop.h>
-#include <AST/Binop.h>
-#include <AST/Scalar.h>
-#include <AST/Constant.h>
-#include <AST/Vector.h>
-#include <AST/Piecewise.h>
-#include <symbols/DerivativeVariable.h>
-#include <AST/FunctionCall.h>
-#include <AST/Interval.h>
-#include <PharmML/Distribution.h>
-#include <PharmML/ColumnMapping.h>
-#include <PharmML/Interventions.h>
-#include <generators/R/RAstGenerator.h>
+#include <visitors/StringVisitor.h>
+#include <visitors/SymbolVisitor.h>
+#include <symbols/Symbol.h>
 #include <generators/PopED/PopEDSymbols.h>
-
 
 namespace PharmML
 {
-    class PopEDAstGenerator : public RAstGenerator
-    {
-        private:
-            PopEDSymbols *symbgen;      // FIXME: This is so C++98. Should use unique_ptr<>
+    class PopulationParameter;
+    class IndividualParameter;
+    class RandomVariable;
+    class VariabilityLevel;
+    class Variable;
+    class DerivativeVariable;
+    class IndependentVariable;
 
+    class PopEDPastDerivativesSymbols : public PopEDSymbols
+    {
         public:
-            PopEDAstGenerator();
-            PopEDAstGenerator(PopEDSymbols *symbgen);
-            ~PopEDAstGenerator();
-            void visit(SymbRef *node);
+            virtual void visit(PopulationParameter *node);
+            virtual void visit(IndividualParameter *node);
+            virtual void visit(VariabilityLevel *node);
+            virtual void visit(IndependentVariable *node);
+            virtual void visit(Variable *node);
+            virtual void visit(DerivativeVariable *node);
+            virtual void visit(RandomVariable *node);
     };
 }
 

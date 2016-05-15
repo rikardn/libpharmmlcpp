@@ -42,14 +42,14 @@ namespace PharmML
             std::unordered_map<Symbol *, int> symbol_numbermap;
 
         public:
-            void visit(PopulationParameter *node);
-            void visit(IndividualParameter *node);
-            void visit(RandomVariable *node);
-            void visit(VariabilityLevel *node);
-            void visit(IndependentVariable *node);
-            void visit(Variable *node);
-            void visit(DerivativeVariable *node);
-            void visit(Covariate *node);
+            virtual void visit(PopulationParameter *node);
+            virtual void visit(IndividualParameter *node);
+            virtual void visit(VariabilityLevel *node);
+            virtual void visit(IndependentVariable *node);
+            virtual void visit(Variable *node);
+            virtual void visit(DerivativeVariable *node);
+            virtual void visit(RandomVariable *node);
+            virtual void visit(Covariate *node);
     };
 }
 

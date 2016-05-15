@@ -38,9 +38,12 @@ namespace PharmML
     class RSymbols : public SymbolVisitor, public StringVisitor
     {
         private:
-            RAstGenerator r_ast;
+            RAstGenerator *astgen;
 
         public:
+            RSymbols();
+            RSymbols(RAstGenerator *astgen);
+            ~RSymbols();
             void visit(PopulationParameter *node);
             void visit(IndividualParameter *node);
             void visit(RandomVariable *node);

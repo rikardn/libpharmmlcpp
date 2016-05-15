@@ -22,9 +22,21 @@
 
 namespace PharmML
 {
+    PopEDAstGenerator::PopEDAstGenerator() {
+        this->symbgen = new PopEDSymbols();
+    }
+
+    PopEDAstGenerator::PopEDAstGenerator(PopEDSymbols *symbgen) {
+        this->symbgen = symbgen;
+    }
+
+    PopEDAstGenerator::~PopEDAstGenerator() {
+        delete this->symbgen;
+    }
+
     void PopEDAstGenerator::visit(SymbRef *node) {
         Symbol *symbol = node->getSymbol();
-        symbol->accept(&this->symbgen);
-        this->setValue(this->symbgen.getValue());
+        symbol->accept(this->symbgen);
+        this->setValue(this->symbgen->getValue());
     }
 }

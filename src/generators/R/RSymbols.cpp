@@ -26,6 +26,19 @@
 
 namespace PharmML
 {
+    RSymbols::RSymbols() {
+        // Create a default R AST generator
+        this->astgen = new RAstGenerator();
+    }
+
+    RSymbols::RSymbols(RAstGenerator *astgen) {
+        this->astgen = astgen;
+    }
+
+    RSymbols::~RSymbols() {
+        delete this->astgen;
+    }
+
     void RSymbols::visit(PopulationParameter *node) {
     }
 
@@ -43,20 +56,20 @@ namespace PharmML
 
     void RSymbols::visit(Variable *node) {
         if (node->getAssignment()) {
-            node->getAssignment()->accept(&this->r_ast);
-            this->setValue(node->getSymbId() + " <- " + this->r_ast.getValue());
+            node->getAssignment()->accept(this->astgen);
+            this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
         } else {
             this->setValue(std::string());
         }
     }
 
     void RSymbols::visit(DerivativeVariable *node) {
-        node->getAssignment()->accept(&this->r_ast);
-        this->setValue("d" + node->getSymbId() + " <- " + this->r_ast.getValue());
+        node->getAssignment()->accept(this->astgen);
+        this->setValue("d" + node->getSymbId() + " <- " + this->astgen->getValue());
     }
     
     void RSymbols::visit(Covariate *node) {
-        node->getAssignment()->accept(&this->r_ast);
-        this->setValue(node->getSymbId() + " <- " + this->r_ast.getValue());
+        node->getAssignment()->accept(this->astgen);
+        this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
     }
 }

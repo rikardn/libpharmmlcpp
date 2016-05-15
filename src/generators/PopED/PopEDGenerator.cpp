@@ -40,7 +40,7 @@ namespace PharmML
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
-        RFormatter form(2, ' ');
+        TextFormatter form(2, ' ');
        
         // Preamble
         form.add("library(PopED)");
@@ -66,7 +66,7 @@ namespace PharmML
     }
 
     std::string PopEDGenerator::genParameterModel() {
-        RFormatter form;
+        TextFormatter form;
         form.indentAdd("sfg <- function(x, a, bpop, b, bocc) {");
         form.openVector("parameters = c()", 1, ", ");
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
@@ -82,7 +82,7 @@ namespace PharmML
     }
     
     std::string PopEDGenerator::genODEFunc() {
-        RFormatter form;
+        TextFormatter form;
         // Function header
         form.indentAdd("ode_func <- function(Time, Stat, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
@@ -177,7 +177,7 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
 
-        RFormatter form;
+        TextFormatter form;
  
         // Generate separate ODE function
         form.addMany(this->genODEFunc());
@@ -193,7 +193,7 @@ namespace PharmML
         form.add("times_xt <- drop(xt)");
         // TODO: Consolidate dosing times (from TrialDesign) and use actual information (not a sequence!)
         std::vector<std::string> dose_time_names = this->genDoseTimeNames();
-        form.add("dose_times <- c(" + RFormatter::createCommaSeparatedList(dose_time_names) + ")");
+        form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(dose_time_names) + ")");
         form.add("integration_start_time <- 0");
 
         // Event data
@@ -201,7 +201,7 @@ namespace PharmML
         form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
         form.add("time = dose_times,");
         std::vector<std::string> dose_amount_names = this->genDoseAmountNames();
-        form.add("value = c(" + RFormatter::createCommaSeparatedList(dose_amount_names) + "), method = c('add'))");
+        form.add("value = c(" + TextFormatter::createCommaSeparatedList(dose_amount_names) + "), method = c('add'))");
         form.closeIndent();
         form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
@@ -235,7 +235,7 @@ namespace PharmML
     }
     
     std::string PopEDGenerator::genErrorFunction() {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("feps <- function(model_switch,xt,parameters,epsi,poped.db) {");
         form.add("y <- ff(model_switch,xt,parameters,poped.db)[[1]]");
@@ -257,7 +257,7 @@ namespace PharmML
     }
     
     std::string PopEDGenerator::genDatabaseCall() {
-        RFormatter form;
+        TextFormatter form;
         
         form.openVector("poped.db <- create.poped.database()", 1, ", ");
         form.add("ff_file = 'ff'");
@@ -265,7 +265,7 @@ namespace PharmML
         form.add("fError_file_file = 'feps'");
         
         std::vector<IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        RFormatter bpop;
+        TextFormatter bpop;
         bpop.openVector("c()", 0, ", ");
         for (IndividualParameter *ip : ips) {
             if (!ip->isStructured()) {

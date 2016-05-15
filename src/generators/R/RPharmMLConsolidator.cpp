@@ -54,7 +54,7 @@ namespace PharmML
 
     std::string VariablesConsolidator::genStatements() {
         // Generate standard R assigns of all symbols and expressions
-        RFormatter form;
+        TextFormatter form;
 
         for (int i = 0; i < symbols.size(); i++) {
             form.add(this->symbols[i] + " <- " + this->assigns[i]);

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RTEXTFORMATTER_H_
-#define PHARMML_RTEXTFORMATTER_H_
+#ifndef PHARMML_TEXTFORMATTER_H_
+#define PHARMML_TEXTFORMATTER_H_
 
 #include <string>
 #include <sstream>
@@ -26,7 +26,7 @@ namespace PharmML
 {
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
     
-    class RFormatter
+    class TextFormatter
     {
         private:
             int indentLevel = 0;
@@ -47,7 +47,7 @@ namespace PharmML
             void addCSV(std::string str);
         
         public:
-            RFormatter(int size = 4, char symbol = ' ');
+            TextFormatter(int size = 4, char symbol = ' ');
             void add(std::string str, bool ignore_separator = false);
             void append(std::string str);
             void indentAdd(std::string str);
@@ -57,7 +57,7 @@ namespace PharmML
             
             void openIndent();
             void closeIndent();
-            void openVector(std::string enclosure = "c()", int add_indent = 0, std::string separator = ", ");
+            void openVector(std::string enclosure = "()", int add_indent = 0, std::string separator = ", ");
             void closeVector();
             
             static std::string createVector(std::vector<std::string> strs, std::string enclosure = "c()", int indent_size = 0, std::string separator = ", ", bool final_newline = false);

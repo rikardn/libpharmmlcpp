@@ -29,7 +29,7 @@
 #include <PharmML/ObservationModel.h>
 #include <PharmML/Model.h>
 #include <generators/PopED/PopEDAstGenerator.h>
-#include <generators/R/RTextFormatter.h>
+#include <generators/TextFormatter.h>
 #include <generators/R/RSymbols.h>
 
 namespace PharmML

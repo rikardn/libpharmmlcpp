@@ -47,7 +47,7 @@ namespace PharmML
     
     // General R visitors
     void RPharmMLGenerator::visit(FunctionDefinition *node) {
-        RFormatter form;
+        TextFormatter form;
         
         std::string head = node->getSymbId() + " <- ";
         std::vector<std::string> args = node->getArguments();
@@ -94,7 +94,7 @@ namespace PharmML
     }
     
     void RPharmMLGenerator::visit(VariabilityLevel *node) {
-        RFormatter form;
+        TextFormatter form;
 
         if (node->isReferenceLevel()) {
             form.add("# Level: (Reference level)");
@@ -108,7 +108,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(Correlation *node) {}
     
     void RPharmMLGenerator::visit(RandomVariable *node) {
-        RFormatter form;
+        TextFormatter form;
         form.openVector(node->getSymbId() + " <- list()", 0, ", ");
         
         std::vector<PharmML::VariabilityReference *> var_refs = node->getVariabilityReferences();

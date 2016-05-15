@@ -39,7 +39,7 @@
 #include <PharmML/DesignSpaces.h>
 #include "RAstGenerator.h"
 #include <PharmML/Model.h>
-#include <generators/R/RTextFormatter.h>
+#include <generators/TextFormatter.h>
 #include "RPharmMLConsolidator.h"
 
 namespace PharmML

@@ -61,7 +61,7 @@ namespace PharmML
     // Generators
     std::string MDLGenerator::generateModel(Model *model) {
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
-        RFormatter form;
+        TextFormatter form;
         
         // Generate the MDL data object(s)
         std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
@@ -108,7 +108,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genDataObj(ExternalDataset* ext_ds) {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("dataObj {");
         
@@ -125,7 +125,7 @@ namespace PharmML
         // TODO: idv only implicit if indpendent variable is T I believe
         stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
         if (node->isExternal()) {
-            RFormatter form;
+            TextFormatter form;
             
             // Output one row for each column definition
             int num_cols = node->getDefinition()->getNumColumns();
@@ -172,7 +172,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters) {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("parObj {");
         
@@ -214,7 +214,7 @@ namespace PharmML
     
     std::string MDLGenerator::genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters) {
         // Generate MDL STRUCTURAL block
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("STRUCTURAL {");
         
@@ -238,7 +238,7 @@ namespace PharmML
     
     std::string MDLGenerator::genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters) {
         // Generate MDL VARIABILITY block
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("VARIABILITY {");
         
@@ -293,7 +293,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genMdlObj(PharmML::Model *model) {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("mdlObj {");
         
@@ -380,7 +380,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genRandomVariableDefinitionBlock(std::vector<PharmML::RandomVariable *> random_vars, PharmML::VariabilityLevel *level) {
-        RFormatter form;
+        TextFormatter form;
         this->visit(level);
         std::string name = getValue();
         form.openVector("RANDOM_VARIABLE_DEFINITION(level=" + name + ") {}", 1, "");
@@ -395,7 +395,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genTaskObj() {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("taskObj {");
         form.outdentAdd("} # end task object");
@@ -404,7 +404,7 @@ namespace PharmML
     }
     
     std::string MDLGenerator::genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj) {
-        RFormatter form;
+        TextFormatter form;
         
         form.indentAdd("mogObj {");
         form.openVector("OBJECTS {}", 1, "");
@@ -438,7 +438,7 @@ namespace PharmML
     }
 
     void MDLGenerator::visit(RandomVariable *node) {
-        RFormatter form;
+        TextFormatter form;
         
         // Get name of random variable and associated distribution
         std::string name = node->getSymbId();
@@ -531,7 +531,7 @@ namespace PharmML
     
     // Class ExternalDataset
     void MDLGenerator::visit(ExternalDataset *node) {
-        RFormatter form;
+        TextFormatter form;
         std::string tool = node->getToolName();
         
         if (tool == "NONMEM") {

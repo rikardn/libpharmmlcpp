@@ -41,7 +41,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ModellingSteps.h>
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy). Also reason if MDLSymbols.h has a place (as PopEDSymbols.h has in PopEDAstGenerator).
 #include <PharmML/Model.h>
-#include <generators/R/RTextFormatter.h> // TODO: If useful for MDL: Please remove the R designation. Thank you!
+#include <generators/TextFormatter.h> // TODO: If useful for MDL: Please remove the R designation. Thank you!
 
 #include <consolidators/Consolidator.h>
 #include <consolidators/PopulationParameter.h>

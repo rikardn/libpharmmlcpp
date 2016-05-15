@@ -16,11 +16,11 @@
  */
 
 #include <iostream>
-#include "RTextFormatter.h"
+#include "TextFormatter.h"
 
 namespace PharmML
 {
-    // [[deprecated("Replaced by RFormatter::createVector")]]
+    // [[deprecated("Replaced by TextFormatter::createVector")]]
     // Pretend you're a C++14 compiler and parse above line in your mind
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
         std::string s = prefix + "(";
@@ -42,13 +42,13 @@ namespace PharmML
     }
 
     // Construct via setting prefered indent size and symbol
-    RFormatter::RFormatter(int size, char symbol) {
+    TextFormatter::TextFormatter(int size, char symbol) {
         this->indentSize = size;
         this->indentSymbol = symbol;
     }
     
     // Private: Generate indentation string
-    std::string RFormatter::genIndentation() {
+    std::string TextFormatter::genIndentation() {
         int amount = this->indentLevel * this->indentSize;
         // Add up all open vectors
         for (struct VectorLevel vl: this->vectorLevels) {
@@ -63,7 +63,7 @@ namespace PharmML
     }
     
     // Private: Add CSV-style value and separate it if necessary
-    void RFormatter::addCSV(std::string str) {
+    void TextFormatter::addCSV(std::string str) {
         struct VectorLevel &vl = this->vectorLevels.back();
         
         // Append separator on last row if not first object
@@ -85,7 +85,7 @@ namespace PharmML
     }
 
     // Add a single unit (a row or CSV-style element if open vector)
-    void RFormatter::add(std::string str, bool ignore_separator) {
+    void TextFormatter::add(std::string str, bool ignore_separator) {
         // Add as CSV only if separator isn't to be ignored
         if (this->vectorLevels.empty() || ignore_separator) {
             this->rows.push_back(this->genIndentation() + str);
@@ -95,7 +95,7 @@ namespace PharmML
     }
     
     // Append last row added
-    void RFormatter::append(std::string str) {
+    void TextFormatter::append(std::string str) {
         // If first row, create empty row
         if (this->rows.empty()) {
             this->rows.push_back("");
@@ -105,7 +105,7 @@ namespace PharmML
     }
     
     // Convenience method: Add and THEN increase indent
-    void RFormatter::indentAdd(std::string str) {
+    void TextFormatter::indentAdd(std::string str) {
         if (this->vectorLevels.empty()) {
             this->add(str);
         } else {
@@ -115,7 +115,7 @@ namespace PharmML
     }
     
     // Convenience method: Reduce indent and THEN add
-    void RFormatter::outdentAdd(std::string str) {
+    void TextFormatter::outdentAdd(std::string str) {
         this->closeIndent();
         if (this->vectorLevels.empty()) {
             this->add(str);
@@ -125,7 +125,7 @@ namespace PharmML
     }
     
     // Split and add lines of multiline string individually
-    void RFormatter::addMany(std::string str) {
+    void TextFormatter::addMany(std::string str) {
         // Split multi-line string into rows
         std::stringstream ss(str);
         std::string row;
@@ -138,7 +138,7 @@ namespace PharmML
     }
     
     // Add vector (plural of add()) as individual units
-    void RFormatter::addMany(std::vector<std::string> strs, bool separate) {
+    void TextFormatter::addMany(std::vector<std::string> strs, bool separate) {
         // First row adds a separator (if vector open)
         this->add(strs.front(), false);
         
@@ -149,7 +149,7 @@ namespace PharmML
     }
 
     // Increase indent one level
-    void RFormatter::openIndent() {
+    void TextFormatter::openIndent() {
         if (this->vectorLevels.empty()) {
             this->indentLevel++;
         } else {
@@ -158,7 +158,7 @@ namespace PharmML
     }
     
     // Decrease indent one level
-    void RFormatter::closeIndent() {
+    void TextFormatter::closeIndent() {
         if (this->vectorLevels.empty()) {
             this->indentLevel--;
         } else {
@@ -167,7 +167,7 @@ namespace PharmML
     }
     
     // Open a vector with supplied enclosure (e.g. "c()"), extra indent and CSV separator
-    void RFormatter::openVector(std::string enclosure, int add_indent, std::string separator) {
+    void TextFormatter::openVector(std::string enclosure, int add_indent, std::string separator) {
         // Split enclosure into prefix, left/right parenthesis
         char right = enclosure.back();
         enclosure.pop_back();
@@ -187,7 +187,7 @@ namespace PharmML
     }
     
     // Close a vector opened earlier
-    void RFormatter::closeVector() {
+    void TextFormatter::closeVector() {
         if (!this->vectorLevels.empty()) {
             // Get ending symbol (right parenthesis)
             struct VectorLevel &vl = this->vectorLevels.back();
@@ -207,8 +207,8 @@ namespace PharmML
     }
 
     // Instance-agnostic inline creation of a vector (formatVector replacement)
-    std::string RFormatter::createVector(std::vector<std::string> strs, std::string enclosure, int indent_size, std::string separator, bool final_newline) {
-        RFormatter vector(indent_size, ' ');
+    std::string TextFormatter::createVector(std::vector<std::string> strs, std::string enclosure, int indent_size, std::string separator, bool final_newline) {
+        TextFormatter vector(indent_size, ' ');
         if (indent_size == 0) {
             vector.openVector(enclosure, 0, separator);
         } else {
@@ -223,7 +223,7 @@ namespace PharmML
     }
     
     // Create a multirow string from this object
-    std::string RFormatter::createString(bool final_newline) {
+    std::string TextFormatter::createString(bool final_newline) {
         // Close vectors if still on stack (optional elision!)
         while (!vectorLevels.empty()) {
             this->closeVector();
@@ -241,7 +241,7 @@ namespace PharmML
         return result;
     }
 
-    std::string RFormatter::createCommaSeparatedList(std::vector<std::string> list) {
+    std::string TextFormatter::createCommaSeparatedList(std::vector<std::string> list) {
         std::string result;
         for (int i = 0; i < list.size() - 1; i++) {
             result += list[i] + ", ";
@@ -251,7 +251,7 @@ namespace PharmML
         return result;
     }
 
-    void RFormatter::emptyLine() {
+    void TextFormatter::emptyLine() {
         this->rows.push_back("");
     }
 }

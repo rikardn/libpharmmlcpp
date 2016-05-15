@@ -474,7 +474,11 @@ namespace PharmML
             form.openVector(name + " : {}", 0, ", ");
             
             // Get type
-            form.add("type is linear");
+            if (node->isLinear()) {
+                form.add("type is linear");
+            } else if (node->isGeneral()) {
+                form.add("type is general");
+            }
             
             // Get transformation (both sides)
             std::string trans = node->getTransformation();
@@ -484,20 +488,46 @@ namespace PharmML
             } else {
                 form.add("trans is " + trans);
             }
-            
-            // Get population value
-            std::string pop = this->accept(node->getPopulationValue());
-            form.add("pop = " + pop);
-            
-            // Get fixed effects
-            if (node->getFixedEffect()) {
-                std::string fe = this->accept(node->getFixedEffect());
-                std::string cov = this->accept(node->getCovariate());
-                form.add("fixEff = {coeff=" + fe + ", cov=" + cov + "}");
+           
+            if (node->isLinear()) {
+                 // Get population value (how is 'grp' with 'general' in MDL translated to PharmML?)
+                std::string pop = this->accept(node->getPopulationValue());
+                form.add("pop = " + pop);
+                
+                // Get covariates and fixed effects
+                std::vector<std::string> fix_effs;
+                for (SymbRef *covariate : node->getCovariates()) {
+                    std::vector<std::string> coeffs;
+                    for (FixedEffect *fix_eff : node->getFixedEffects(covariate)) {
+                        std::string coeff;
+                        if (fix_eff->getReference()) {
+                            coeff = this->accept(fix_eff->getReference());
+                        } else {
+                            coeff = this->accept(fix_eff->getScalar());
+                        }
+                        coeffs.push_back(coeff);
+                    }
+                    if (coeffs.size() == 1) {
+                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "", ",") + ",cov=" + this->accept(covariate) + "}"); 
+                    } else if (coeffs.size() > 1) {
+                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",") + ",cov=" + this->accept(covariate) + "}"); 
+                    }
+                }
+                if (fix_effs.size() == 1) {
+                    form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "", ", "));
+                } else if (fix_effs.size() > 1) {
+                    form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "[]", ", "));
+                }
             }
             
             // Get random effects
-            std::string rand = this->accept(node->getRandomEffects());
+            std::string rand;
+            std::vector<SymbRef *> all_rand = node->getRandomEffects();
+            SymbRef *first_rand; // TODO: Support multiple random effects
+            if (!all_rand.empty()) {
+                first_rand = all_rand[0];
+                rand = this->accept(first_rand);
+            }
             form.add("ranEff = " + rand);
         } else {
             node->getAssignment()->accept(&this->ast_gen);

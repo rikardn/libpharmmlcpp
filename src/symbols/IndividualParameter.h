@@ -24,30 +24,74 @@
 #include <visitors/PharmMLVisitor.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Dependencies.h>
+#include <symbols/Symbol.h>
+#include <AST/Scalar.h>
 
 namespace PharmML
 {
+    class FixedEffect : Referer
+    {
+        public:
+            FixedEffect(PharmMLContext *context, xml::Node node);
+            
+            SymbRef *getReference();
+            PharmML::AstNode *getScalar();
+            std::string getCategory();
+            
+            Symbol *gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+        
+        private:
+            PharmMLContext *context;
+            SymbRef *symbRef = nullptr;
+            PharmML::AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
+            std::string catId;
+            
+            void parse(xml::Node node);
+    };
+    
     class IndividualParameter : public PharmMLSection, public Symbol
     {
         PharmMLContext *context;
-        std::string transformation;
+        
         bool is_structured;
-        AstNode *PopulationValue;
-        AstNode *RandomEffects;
-        AstNode *FixedEffect = nullptr;
-        AstNode *Covariate = nullptr;
-        AstNode *assignment;
+        bool is_linear_cov = false;
+        bool is_general_cov = false;
+        bool is_explicit_cov = false;
+        bool is_generic_cov = false;
+        
+        std::string transformation;
+        std::vector<PharmML::AstNode *> transformationParameters;
+        PharmML::AstNode *populationValue = nullptr;
+        
+        std::vector<SymbRef *> covariates;
+        std::unordered_map<SymbRef *, std::vector<FixedEffect *>> fixedEffects;
+        
+        std::vector<SymbRef *> randomEffects;
+        
+        PharmML::AstNode *generalAssignment = nullptr;
+        PharmML::AstNode *explicitAssignment = nullptr;
 
         public:
         IndividualParameter(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        
+        bool isStructured(); // Type 2/3 (linear/generic)
+        bool isLinear(); // Type 2
+        bool isGeneral(); // Type 3
+        bool isExplicit(); // Type 1 (fully explicit
+        bool isGeneric(); // Type 4 (distributional)
+        
         std::string getTransformation();
-        AstNode *getPopulationValue();
-        AstNode *getRandomEffects();
-        AstNode *getFixedEffect();
-        AstNode *getCovariate();
-        AstNode *getAssignment();
-        bool isStructured();
+        PharmML::AstNode *getPopulationValue();
+        
+        std::vector<SymbRef *> getCovariates();
+        std::vector<FixedEffect *> getFixedEffects(SymbRef *covariate);
+        std::vector<FixedEffect *> getFixedEffects(Symbol *covariate);
+        
+        std::vector<SymbRef *> getRandomEffects();
+        
+        PharmML::AstNode *getAssignment();
+        
         void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);

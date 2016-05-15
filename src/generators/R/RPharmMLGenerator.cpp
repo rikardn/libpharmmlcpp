@@ -75,21 +75,36 @@ namespace PharmML
     void RPharmMLGenerator::visit(IndividualParameter *node) {
         std::string result;
 
-        if (node->isStructured()) {
+        if (node->isLinear()) {
             std::string pop = this->accept(node->getPopulationValue());
             if (node->getTransformation() != "") {
                 pop = node->getTransformation() + "(" + pop + ")";
             }
             std::string cov;
-            if (node->getFixedEffect()) {
-                std::string fe = this->accept(node->getFixedEffect());
-                std::string cov = this->accept(node->getCovariate());
-                cov = " + " + fe + " * " + cov;
+            std::vector<SymbRef *> all_covs = node->getCovariates();
+            SymbRef *first_cov;
+            if (!all_covs.empty()) {
+                first_cov = all_covs[0]; // TODO: Multiple covariate support
+                std::string cov = this->accept(first_cov);
+                std::vector<FixedEffect *> all_effects = node->getFixedEffects(first_cov);
+                if (!all_effects.empty()) {
+                    FixedEffect *first_effect = all_effects[0]; // TODO: Multiple fixed effect/covariate support
+                    std::string fe = this->accept(first_effect->getReference());
+                    cov = " + " + fe + " * " + cov;
+                }
             }
-            result = node->getTransformation() + node->getSymbId() + " <- " + pop + cov + " + " + this->accept(node->getRandomEffects());
-        } else {
+            std::string rand;
+            std::vector<SymbRef *> all_rand = node->getRandomEffects();
+            SymbRef *first_rand; // TODO: Support multiple random effects
+            if (!all_rand.empty()) {
+                first_rand = all_rand[0];
+                rand = this->accept(first_rand);
+            }
+            result = node->getTransformation() + node->getSymbId() + " <- " + pop + cov + " + " + rand;
+        } else if (node->isExplicit()) {
             result = node->getSymbId() + " <- " + this->accept(node->getAssignment());
         }
+        
         this->setValue(result);
     }
     

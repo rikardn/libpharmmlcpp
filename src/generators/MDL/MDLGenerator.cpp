@@ -215,31 +215,30 @@ namespace PharmML
     std::string MDLGenerator::genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters) {
         // Generate MDL STRUCTURAL block
         TextFormatter form;
-        
         form.indentAdd("STRUCTURAL {");
         
         for (CPharmML::PopulationParameter *structuralParameter : structuralParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             structuralParameter->getPopulationParameter()->accept(this);
             std::string name = this->getValue();
+            this->structuralParameterNames.push_back(name);
             
+            // Add the init attributes
             structuralParameter->getParameterEstimation()->accept(this);
             std::vector<std::string> init_attr = this->getValues();
-            
             form.openVector(name + " : {}", 0, ", ");
             form.addMany(init_attr);
+            
             form.closeVector();
         }
         
         form.outdentAdd("} # end STRUCTURAL");
-        
         return form.createString(); 
     }
     
     std::string MDLGenerator::genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters) {
         // Generate MDL VARIABILITY block
         TextFormatter form;
-        
         form.indentAdd("VARIABILITY {");
         
         for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
@@ -256,10 +255,11 @@ namespace PharmML
                 // Ordinary variability parameters
                 variabilityParameter->getPopulationParameter()->accept(this);
                 std::string name = this->getValue();
+                this->variabilityParameterNames.push_back(name);
                 
+                // Add the init attributes
                 variabilityParameter->getParameterEstimation()->accept(this);
                 std::vector<std::string> init_attr = this->getValues();
-                
                 form.openVector(name + " : {}", 0, ", ");
                 form.addMany(init_attr);
                 
@@ -288,7 +288,6 @@ namespace PharmML
         }
 
         form.outdentAdd("} # end VARIABILITY");
-        
         return form.createString(); 
     }
     
@@ -338,37 +337,22 @@ namespace PharmML
         form.closeVector();
         form.emptyLine();
         
-        // Generate STRUCTURAL_PARAMETERS and VARIABILITY_PARAMETERS block
-        std::vector<PharmML::PopulationParameter *> struct_params;
-        std::vector<PharmML::PopulationParameter *> var_params;
-        std::vector<CPharmML::PopulationParameter *> cpop_params = model->getConsolidator()->getPopulationParameters();
-        for (CPharmML::PopulationParameter *cpop_param : cpop_params) {
-            PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
-            if (cpop_param->isVariabilityParameter()) {
-                var_params.push_back(pop_param);
-            } else if (!cpop_param->isCorrelation()) {
-                struct_params.push_back(pop_param);
-            }
-        }
+        // Generate STRUCTURAL_PARAMETERS block
         form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");
-        for (PharmML::PopulationParameter *pop_param : struct_params) {
-            pop_param->accept(this);
-            form.add(this->getValue());
-        }
-        form.closeVector();
-        form.emptyLine();
-        form.openVector("VARIABILITY_PARAMETERS {}", 1, "");
-        for (PharmML::PopulationParameter *pop_param : var_params) {
-            pop_param->accept(this);
-            form.add(this->getValue());
-        }
+        form.addMany(this->structuralParameterNames);
         form.closeVector();
         form.emptyLine();
         
-        // Generate RANDOM_VARIABLE_DEFINITION block
-        for (PharmML::VariabilityLevel *level : par_levels) {
-            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(level);
-            std::string block = this->genRandomVariableDefinitionBlock(random_vars, level);
+        // Generate VARIABILITY_PARAMETERS block
+        form.openVector("VARIABILITY_PARAMETERS {}", 1, "");
+        form.addMany(this->variabilityParameterNames);
+        form.closeVector();
+        form.emptyLine();
+        
+        // Generate RANDOM_VARIABLE_DEFINITION blocks (for parameter variability)
+        for (auto it = par_levels.rbegin(); it != par_levels.rend(); ++it) {
+            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
+            std::string block = this->genRandomVariableDefinitionBlock(random_vars, *it);
             form.addMany(block);
             form.emptyLine();
         }

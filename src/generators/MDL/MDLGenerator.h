@@ -39,12 +39,12 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
 #include <PharmML/ModellingSteps.h>
-#include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy). Also reason if MDLSymbols.h has a place (as PopEDSymbols.h has in PopEDAstGenerator).
+#include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy)
 #include <PharmML/Model.h>
-#include <generators/TextFormatter.h> // TODO: If useful for MDL: Please remove the R designation. Thank you!
+#include <generators/TextFormatter.h>
 
 #include <consolidators/Consolidator.h>
-#include <consolidators/PopulationParameter.h>
+#include <consolidators/PopulationParameters.h>
 
 namespace PharmML
 {
@@ -52,6 +52,8 @@ namespace PharmML
     {
         private:
             MDLAstGenerator ast_gen;
+            std::vector<std::string> structuralParameterNames;
+            std::vector<std::string> variabilityParameterNames;
             
             std::string value;
             void setValue(std::string str);

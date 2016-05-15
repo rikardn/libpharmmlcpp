@@ -24,7 +24,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 #include <AST/symbols.h>
-#include <consolidators/PopulationParameter.h>
+#include <consolidators/PopulationParameters.h>
 #include <consolidators/Covariates.h>
 #include <consolidators/VariabilityModels.h>
 #include <symbols/SymbolSet.h>

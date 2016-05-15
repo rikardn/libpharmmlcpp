@@ -15,7 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <consolidators/PopulationParameter.h>
+#include <consolidators/PopulationParameters.h>
 
 namespace CPharmML
 {

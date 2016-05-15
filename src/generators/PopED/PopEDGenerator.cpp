@@ -224,11 +224,13 @@ namespace PharmML
         std::vector<Symbol *> post_ode_symbols = output_set.getOrderedDependenciesNoPass(derivs_set);
         post_ode_symbols.push_back(output->getSymbol());
 
-        // Need R symbol generator with non-default AST generator 
-        // RSymbols symbgen(new PopED
+        // Need R symbol generator with non-default AST generator that use non-default symbol generator 
+        PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();
+        PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);
+        RSymbols rsymb_past(astgen);
         for (Symbol *symbol : post_ode_symbols) {
-            symbol->accept(&this->r_symb);
-            form.add(this->r_symb.getValue());
+            symbol->accept(&rsymb_past);
+            form.add(rsymb_past.getValue());
         }
 
         form.add("y <- " + output->toString());

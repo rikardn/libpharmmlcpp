@@ -21,6 +21,7 @@
 #include <visitors/StringVisitor.h>
 #include <visitors/SymbolVisitor.h>
 #include <symbols/Symbol.h>
+#include <generators/PopED/PopEDSymbols.h>
 
 namespace PharmML
 {
@@ -32,7 +33,7 @@ namespace PharmML
     class DerivativeVariable;
     class IndependentVariable;
 
-    class PopEDPostDerivativeSymbols : public PopEDSymbols
+    class PopEDPastDerivativesSymbols : public PopEDSymbols
     {
         public:
             virtual void visit(PopulationParameter *node);
@@ -41,6 +42,7 @@ namespace PharmML
             virtual void visit(IndependentVariable *node);
             virtual void visit(Variable *node);
             virtual void visit(DerivativeVariable *node);
+            virtual void visit(RandomVariable *node);
     };
 }
 

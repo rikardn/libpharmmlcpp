@@ -20,7 +20,7 @@
 
 namespace PharmML
 {
-    // [[deprecated("Replaced by TextFormatter::createVector")]]
+    // [[deprecated("Replaced by TextFormatter::createInlineVector/createIndentedVector")]]
     // Pretend you're a C++14 compiler and parse above line in your mind
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote, int pre_indent) {
         std::string s = prefix + "(";
@@ -169,10 +169,13 @@ namespace PharmML
     // Open a vector with supplied enclosure (e.g. "c()"), extra indent and CSV separator
     void TextFormatter::openVector(std::string enclosure, int add_indent, std::string separator) {
         // Split enclosure into prefix, left/right parenthesis
-        char right = enclosure.back();
-        enclosure.pop_back();
-        char left = enclosure.back();
-        enclosure.pop_back();
+        char right = 0, left = 0;
+        if (enclosure.length() >= 2) {
+            right = enclosure.back();
+            enclosure.pop_back();
+            left = enclosure.back();
+            enclosure.pop_back();
+        }
         
         // Create new vector level (nested structure allowed)
         struct VectorLevel vl;
@@ -182,7 +185,9 @@ namespace PharmML
         vl.multiline = (add_indent != 0); // No offset indent == single line
         
         // Add the vector header and vector level to stacks
-        this->add(enclosure + left, false);
+        if (right && left) {
+            this->add(enclosure + left, false);
+        }
         this->vectorLevels.push_back(vl);
     }
     
@@ -191,7 +196,12 @@ namespace PharmML
         if (!this->vectorLevels.empty()) {
             // Get ending symbol (right parenthesis)
             struct VectorLevel &vl = this->vectorLevels.back();
-            std::string end = std::string(1, vl.endSymbol);
+            std::string end;
+            if (vl.endSymbol) {
+                end = std::string(1, vl.endSymbol);
+            } else {
+                end = "";
+            }
             
             // Restore indent level (offset => 0) and push symbol
             vl.indentLevel = 0;
@@ -207,19 +217,28 @@ namespace PharmML
     }
 
     // Instance-agnostic inline creation of a vector (formatVector replacement)
-    std::string TextFormatter::createVector(std::vector<std::string> strs, std::string enclosure, int indent_size, std::string separator, bool final_newline) {
-        TextFormatter vector(indent_size, ' ');
-        if (indent_size == 0) {
-            vector.openVector(enclosure, 0, separator);
-        } else {
-            vector.openVector(enclosure, 1, separator);
-        }
+    std::string TextFormatter::createInlineVector(std::vector<std::string> strs, std::string enclosure, std::string separator) {
+        TextFormatter vector(0, ' ');
+        vector.openVector(enclosure, 0, separator);
         
         for (std::string str : strs) {
             vector.add(str, false);
         }
         
-        return vector.createString(final_newline);
+        // Do not include final newline for inline vector
+        return vector.createString(false);
+    }
+    
+    std::string TextFormatter::createIndentedVector(std::vector<std::string> strs, std::string enclosure, std::string separator) {
+        TextFormatter vector(1, ' ');
+        vector.openVector(enclosure, 1, separator);
+        
+        for (std::string str : strs) {
+            vector.add(str, false);
+        }
+        
+        // Inlude final newline for multi-line vector
+        return vector.createString(true);
     }
     
     // Create a multirow string from this object
@@ -242,13 +261,7 @@ namespace PharmML
     }
 
     std::string TextFormatter::createCommaSeparatedList(std::vector<std::string> list) {
-        std::string result;
-        for (int i = 0; i < list.size() - 1; i++) {
-            result += list[i] + ", ";
-        }
-        result += list.back();
-
-        return result;
+        return createInlineVector(list, "", ", ");
     }
 
     void TextFormatter::emptyLine() {

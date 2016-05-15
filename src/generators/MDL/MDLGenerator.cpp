@@ -263,20 +263,20 @@ namespace PharmML
                 form.openVector(name + " : {}", 0, ", ");
                 form.addMany(init_attr);
                 
-                // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
+                // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
                 std::string dist_name = variabilityParameter->getDistributionName();
                 std::string dist_param = variabilityParameter->getDistributionParameterType();
                 std::string comment;
                 if (variabilityParameter->inDifferentParameterizations()) {
                     comment = " # Parameter in different distributions/parameterizations!";
                 } else {
-                    if (dist_name == "Normal1") {
+                    if (dist_name == "Normal1" || dist_name == "Normal2") {
                         if (dist_param == "stdev") {
                             form.add("type is sd");
                         } else if (dist_param == "var") {
                             form.add("type is var");
                         } else {
-                            comment = " # Unknown ProbOnto Normal1 parameter type (" + dist_param + ")!";
+                            comment = " # Unknown ProbOnto " + dist_name + " parameter type (" + dist_param + ")!";
                         }
                     } else {
                         comment = " # Unknown ProbOnto distribution (" + dist_name + ") and parameter type (" + dist_param + ")!";
@@ -545,10 +545,10 @@ namespace PharmML
         std::string name = node->getSymbId();
         PharmML::Distribution *dist = node->getDistribution();
         
-        // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
+        // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
         std::string dist_name = dist->getName();
         std::vector<PharmML::DistributionParameter *> dist_params = dist->getDistributionParameters();
-        if (dist_name == "Normal1") {
+        if (dist_name == "Normal1" || dist_name == "Normal2") {
             form.openVector(name + " ~ Normal()", 0, ", ");
             std::vector<std::string> unknown_param_types;
             for (PharmML::DistributionParameter *dist_param : dist_params) {
@@ -566,7 +566,7 @@ namespace PharmML
             }
             form.closeVector();
             if (!unknown_param_types.empty()) {
-                form.append(" # Unknown ProbOnto Normal1 parameter type (" + form.createInlineVector(unknown_param_types, "", ", ") + ")!");
+                form.append(" # Unknown ProbOnto " + dist_name + " parameter type (" + form.createInlineVector(unknown_param_types, "", ", ") + ")!");
             }
         } else {
             form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");

@@ -78,7 +78,7 @@ namespace PharmML
     void VariabilityReference::parse(xml::Node node) {
         // Get the variability level reference
         xml::Node ref_node = this->context->getSingleElement(node, "./ct:SymbRef");
-        this->variabilityLevelReference = this->context->factory.create(ref_node);
+        this->levelReference = new SymbRef(ref_node);
         
         // Get random effect mapping (what does it mean?)
         // "Type defining the stdev or variance to be referenced in the VariabilityReference element"
@@ -88,12 +88,17 @@ namespace PharmML
         }
     }
     
-    AstNode *VariabilityReference::getLevelReference() {
-        return this->variabilityLevelReference;
+    SymbRef *VariabilityReference::getLevelReference() {
+        return this->levelReference;
     }
     
     AstNode *VariabilityReference::getRandomEffectsMapping() {
         return this->randomEffectsMapping;
+    }
+    
+    void VariabilityReference::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        PharmML::Symbol *found_symbol = this->addSymbRef(this->levelReference, symbolMap);
+        this->addReference(found_symbol);
     }
     
     //~ void VariabilityReference::accept(AstNodeVisitor *visitor) {

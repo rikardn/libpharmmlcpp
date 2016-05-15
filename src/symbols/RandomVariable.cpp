@@ -27,9 +27,10 @@ namespace PharmML
 
     void RandomVariable::parse(xml::Node node) {
         this->Symbol::parse(node);
-        xml::Node ref_node = this->context->getSingleElement(node, "./ct:VariabilityReference");
-        if (ref_node.exists()) {
-            this->variabilityReference = new VariabilityReference(this->context, ref_node);
+        std::vector<xml::Node> ref_nodes = this->context->getElements(node, "./ct:VariabilityReference");
+        for (xml::Node ref_node : ref_nodes) {
+            PharmML::VariabilityReference *var_ref = new VariabilityReference(this->context, ref_node);
+            this->variabilityReferences.push_back(var_ref);
         }
         xml::Node dist_node = this->context->getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
@@ -38,8 +39,8 @@ namespace PharmML
         }
     }
 
-    VariabilityReference *RandomVariable::getVariabilityReference() {
-        return this->variabilityReference;
+    std::vector<VariabilityReference *> RandomVariable::getVariabilityReferences() {
+        return this->variabilityReferences;
     }
 
     PharmML::Distribution *RandomVariable::getDistribution() {
@@ -50,6 +51,9 @@ namespace PharmML
         for (DistributionParameter *par : this->Distribution->getDistributionParameters()) {
             std::unordered_set<Symbol *> found_symbols = this->symbRefsFromAst(par->getAssignment(), symbolMap);
             par->addReferences(found_symbols);
+        }
+        for (PharmML::VariabilityReference *var_ref : this->getVariabilityReferences()) {
+            var_ref->gatherSymbRefs(symbolMap);
         }
     }
 

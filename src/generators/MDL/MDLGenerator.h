@@ -81,6 +81,7 @@ namespace PharmML
             std::string genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters);
             std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
             std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
+            std::string genRandomVariableDefinitionBlock(std::vector<PharmML::RandomVariable *> random_vars, PharmML::VariabilityLevel *level);
             
             std::string genMdlObj(PharmML::Model *model);
             std::string genTaskObj();

@@ -29,10 +29,7 @@
 namespace PharmML
 {
     void MDLSymbols::visit(PopulationParameter *node) {
-        if (this->symbol_numbermap.count(node) == 0) {
-            this->symbol_numbermap[node] = next_popparm++;
-        }
-        this->setValue(std::to_string(this->symbol_numbermap[node]));
+        this->setValue(node->getSymbId());
     }
 
     void MDLSymbols::visit(IndividualParameter *node) {

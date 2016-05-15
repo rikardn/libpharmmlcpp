@@ -108,10 +108,21 @@ namespace PharmML
     void RPharmMLGenerator::visit(Correlation *node) {}
     
     void RPharmMLGenerator::visit(RandomVariable *node) {
-        std::string var_ref = "variability_reference=\"" + this->accept(node->getVariabilityReference()->getLevelReference()) + "\"";
+        RFormatter form;
+        form.openVector(node->getSymbId() + " <- list()", 0, ", ");
+        
+        std::vector<PharmML::VariabilityReference *> var_refs = node->getVariabilityReferences();
+        form.openVector("variability_references=c()", 0, ", ");
+        for (PharmML::VariabilityReference *var_ref : var_refs) {
+            form.add("'" + this->accept(var_ref->getLevelReference()) + "'");
+        }
+        form.closeVector();
+        
         node->getDistribution()->accept(this);
-        std::string dist = this->getValue();
-        this->setValue(node->getSymbId() + " <- list(" + var_ref + ", " + dist + ")");
+        form.add(this->getValue());
+        
+        form.closeVector();
+        this->setValue(form.createString());
     }
 
     void RPharmMLGenerator::visit(IndependentVariable *node) {

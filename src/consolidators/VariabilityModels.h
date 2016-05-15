@@ -25,6 +25,7 @@
 #include <symbols/Symbol.h>
 #include <PharmML/VariabilityModel.h>
 #include <symbols/VariabilityLevel.h>
+#include <symbols/RandomVariable.h>
 
 namespace CPharmML
 {
@@ -34,18 +35,24 @@ namespace CPharmML
             // Add a VariabilityModel (only one of each type)
             void addVariabilityModel(PharmML::VariabilityModel *variabilityModel);
             
+            // Add a RandomVariable
+            void addRandomVariable(PharmML::RandomVariable *randomVariable);
+            
             std::vector<PharmML::VariabilityLevel *> getParameterLevelChain();
             std::vector<PharmML::VariabilityLevel *> getResidualErrorLevelChain();
-        
+            std::vector<PharmML::RandomVariable *> getRandomVariablesOnLevel(PharmML::Symbol *level);
         private:
             // PharmML objects used to consolidate
             std::vector<PharmML::VariabilityModel *> variabilityModels;
+            std::vector<PharmML::RandomVariable *> randomVariables;
             
             std::unordered_set<PharmML::VariabilityLevel *> parameterLevels;
             std::unordered_set<PharmML::VariabilityLevel *> residualErrorLevels;
             std::unordered_set<PharmML::VariabilityLevel *> referenceLevels;
             std::unordered_set<PharmML::VariabilityLevel *> orphans;
             std::unordered_map<PharmML::VariabilityLevel *, PharmML::Symbol *> parent;
+            
+            std::unordered_map<PharmML::Symbol *, std::vector<PharmML::RandomVariable *>> randomVariablesOnLevel;
             
             std::vector<PharmML::VariabilityLevel *> buildDependencyChain(std::unordered_set<PharmML::VariabilityLevel *> levelSet);
     };

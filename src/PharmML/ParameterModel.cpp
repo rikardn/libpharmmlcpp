@@ -54,6 +54,7 @@ namespace PharmML
     void ParameterModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
         for (PharmML::Correlation *corr : this->getCorrelations()) {
+            corr->getVariabilityReference()->gatherSymbRefs(symbolMap);
             if (corr->isPairwise()) {
                 // Now since Referer is base class to Symbol and has symbRefsFromAst, this is possible
                 corr->symbRefsFromAst(corr->getPairwiseAssignment(), symbolMap);

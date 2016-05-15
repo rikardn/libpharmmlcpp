@@ -297,10 +297,12 @@ namespace PharmML
         
         form.indentAdd("mdlObj {");
         
+        // Generate IDV block
         model->getIndependentVariable()->accept(this);
         form.add("IDV {" + this->getValue() + "}");
         form.emptyLine();
         
+        // Generate COVARIATES block
         form.openVector("COVARIATES {}", 1, "");
         std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
         for (CPharmML::Covariate *cov : covs) {
@@ -314,6 +316,7 @@ namespace PharmML
         form.closeVector();
         form.emptyLine();
         
+        // Generate VARIABILITY_LEVELS block
         form.openVector("VARIABILITY_LEVELS {}", 1, "");
         std::vector<PharmML::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
         std::vector<PharmML::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
@@ -335,8 +338,59 @@ namespace PharmML
         form.closeVector();
         form.emptyLine();
         
+        // Generate STRUCTURAL_PARAMETERS and VARIABILITY_PARAMETERS block
+        std::vector<PharmML::PopulationParameter *> struct_params;
+        std::vector<PharmML::PopulationParameter *> var_params;
+        std::vector<CPharmML::PopulationParameter *> cpop_params = model->getConsolidator()->getPopulationParameters();
+        for (CPharmML::PopulationParameter *cpop_param : cpop_params) {
+            PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+            if (cpop_param->isVariabilityParameter()) {
+                var_params.push_back(pop_param);
+            } else if (!cpop_param->isCorrelation()) {
+                struct_params.push_back(pop_param);
+            }
+        }
+        form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");
+        for (PharmML::PopulationParameter *pop_param : struct_params) {
+            pop_param->accept(this);
+            form.add(this->getValue());
+        }
+        form.closeVector();
+        form.emptyLine();
+        form.openVector("VARIABILITY_PARAMETERS {}", 1, "");
+        for (PharmML::PopulationParameter *pop_param : var_params) {
+            pop_param->accept(this);
+            form.add(this->getValue());
+        }
+        form.closeVector();
+        form.emptyLine();
+        
+        // Generate RANDOM_VARIABLE_DEFINITION block
+        for (PharmML::VariabilityLevel *level : par_levels) {
+            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(level);
+            std::string block = this->genRandomVariableDefinitionBlock(random_vars, level);
+            form.addMany(block);
+            form.emptyLine();
+        }
+        
+        form.closeVector();
         form.outdentAdd("} # end model object");
         
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genRandomVariableDefinitionBlock(std::vector<PharmML::RandomVariable *> random_vars, PharmML::VariabilityLevel *level) {
+        RFormatter form;
+        this->visit(level);
+        std::string name = getValue();
+        form.openVector("RANDOM_VARIABLE_DEFINITION(level=" + name + ") {}", 1, "");
+        
+        for (PharmML::RandomVariable *random_var : random_vars) {
+            this->visit(random_var);
+            form.add(this->getValue());
+        }
+        
+        form.closeVector();
         return form.createString();
     }
     
@@ -383,9 +437,46 @@ namespace PharmML
         this->setValue(result);
     }
 
-    void MDLGenerator::visit(RandomVariable *node) { }
+    void MDLGenerator::visit(RandomVariable *node) {
+        RFormatter form;
+        
+        // Get name of random variable and associated distribution
+        std::string name = node->getSymbId();
+        PharmML::Distribution *dist = node->getDistribution();
+        
+        // Try to handle Normal1 and stdev/var of ProbOnto and warn if model steps outside
+        std::string dist_name = dist->getName();
+        std::vector<PharmML::DistributionParameter *> dist_params = dist->getDistributionParameters();
+        if (dist_name == "Normal1") {
+            form.openVector(name + " ~ Normal()", 0, ", ");
+            std::vector<std::string> unknown_param_types;
+            for (PharmML::DistributionParameter *dist_param : dist_params) {
+                std::string name = dist_param->getName();
+                std::string assign = this->accept(dist_param->getAssignment());
+                if (name == "mean") {
+                    form.add("mean = " + assign);
+                } else if (name == "stdev") {
+                    form.add("sd = " + assign);
+                } else if (name == "var") {
+                    form.add("var = " + assign);
+                } else {
+                    unknown_param_types.push_back(name);
+                }
+            }
+            form.closeVector();
+            if (!unknown_param_types.empty()) {
+                form.append(" # Unknown ProbOnto Normal1 parameter type (" + form.createVector(unknown_param_types, "", 0, ", ") + ")!");
+            }
+        } else {
+            form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");
+        }
+        
+        this->setValue(form.createString(false));
+    }
     
-    void MDLGenerator::visit(VariabilityLevel *node) { }
+    void MDLGenerator::visit(VariabilityLevel *node) {
+        this->setValue(node->getSymbId());
+    }
     
     void MDLGenerator::visit(Correlation *node) {
         std::vector<std::string> attr;

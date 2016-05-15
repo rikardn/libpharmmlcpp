@@ -48,12 +48,29 @@ namespace CPharmML
         }
     }
     
+    // Add a RandomVariable
+    void VariabilityModels::addRandomVariable(PharmML::RandomVariable *randomVariable) {
+        std::vector<PharmML::VariabilityReference *> var_refs = randomVariable->getVariabilityReferences();
+        for (PharmML::VariabilityReference *var_ref : var_refs) {
+            PharmML::Symbol *level = var_ref->getLevelReference()->getSymbol();
+            if (!this->randomVariablesOnLevel.count(level)) {
+                // Need to initialize vector first (insert and std::make_pair if not C++11)
+                this->randomVariablesOnLevel.emplace(level, std::vector<PharmML::RandomVariable *>());
+            }
+            this->randomVariablesOnLevel[level].push_back(randomVariable);
+        }
+    }
+    
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::getParameterLevelChain() {
         return this->buildDependencyChain(this->parameterLevels);
     }
     
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::getResidualErrorLevelChain() {
         return this->buildDependencyChain(this->residualErrorLevels);
+    }
+    
+    std::vector<PharmML::RandomVariable *> VariabilityModels::getRandomVariablesOnLevel(PharmML::Symbol *level) {
+        return this->randomVariablesOnLevel[level];
     }
     
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::buildDependencyChain(std::unordered_set<PharmML::VariabilityLevel *> levelSet) {

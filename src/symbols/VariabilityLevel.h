@@ -43,16 +43,17 @@ namespace PharmML
         void accept(SymbolVisitor *visitor);
     };
     
-    class VariabilityReference
+    class VariabilityReference : public Referer
     {
         PharmML::PharmMLContext *context;
-        AstNode *variabilityLevelReference;
+        SymbRef *levelReference;
         AstNode *randomEffectsMapping = nullptr;
         
         public:
         VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        AstNode *getLevelReference();
+        SymbRef *getLevelReference();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         AstNode *getRandomEffectsMapping();
         //~ void accept(AstNodeVisitor *visitor);
     };

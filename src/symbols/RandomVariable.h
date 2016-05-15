@@ -30,13 +30,13 @@ namespace PharmML
     class RandomVariable : public Symbol
     {
         PharmMLContext *context;
-        VariabilityReference *variabilityReference;
+        std::vector<VariabilityReference *> variabilityReferences;
         PharmML::Distribution *Distribution;
 
         public:
         RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        VariabilityReference *getVariabilityReference();
+        std::vector<VariabilityReference *> getVariabilityReferences();
         PharmML::Distribution *getDistribution();
         void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         void accept(PharmMLVisitor *visitor);

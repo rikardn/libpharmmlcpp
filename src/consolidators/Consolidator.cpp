@@ -215,6 +215,11 @@ namespace CPharmML
         for (PharmML::VariabilityModel *vmod : vmods) {
             this->variabilityModels->addVariabilityModel(vmod);
         }
+        // Add RandomVariable's
+        std::vector<PharmML::RandomVariable *> rvars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (PharmML::RandomVariable *rvar : rvars) {
+            this->variabilityModels->addRandomVariable(rvar);
+        }
     }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {

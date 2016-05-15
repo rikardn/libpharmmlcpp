@@ -357,6 +357,22 @@ namespace PharmML
             form.emptyLine();
         }
         
+        // Generate INDIVIDUAL_VARIABLES block
+        form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
+        for (PharmML::IndividualParameter *ind_par : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
+            this->visit(ind_par);
+            form.add(this->getValue());
+        }
+        form.closeVector();
+        
+        // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
+        for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
+            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
+            std::string block = this->genRandomVariableDefinitionBlock(random_vars, *it);
+            form.addMany(block);
+            form.emptyLine();
+        }
+        
         form.closeVector();
         form.outdentAdd("} # end model object");
         
@@ -412,13 +428,47 @@ namespace PharmML
     }
     
     void MDLGenerator::visit(IndividualParameter *node) {
-        std::string result;
-        if (!node->isStructured()) {
+        TextFormatter form;
+        
+        // Get name
+        std::string name = node->getSymbId();
+            
+        if (node->isStructured()) {
+            form.openVector(name + " : {}", 0, ", ");
+            
+            // Get type
+            form.add("type is linear");
+            
+            // Get transformation (both sides)
+            std::string trans = node->getTransformation();
+            if (trans == "") {
+            } else if (trans == "log") {
+                form.add("trans is ln");
+            } else {
+                form.add("trans is " + trans);
+            }
+            
+            // Get population value
+            std::string pop = this->accept(node->getPopulationValue());
+            form.add("pop = " + pop);
+            
+            // Get fixed effects
+            if (node->getFixedEffect()) {
+                std::string fe = this->accept(node->getFixedEffect());
+                std::string cov = this->accept(node->getCovariate());
+                form.add("fixEff = {coeff=" + fe + ", cov=" + cov + "}");
+            }
+            
+            // Get random effects
+            std::string rand = this->accept(node->getRandomEffects());
+            form.add("ranEff = " + rand);
+        } else {
             node->getAssignment()->accept(&this->ast_gen);
             std::string assign = this->ast_gen.getValue();
-            result = node->getSymbId() + " = " + assign;
+            form.add(name + " = " + assign);
         }
-        this->setValue(result);
+        
+        this->setValue(form.createString(false));
     }
 
     void MDLGenerator::visit(RandomVariable *node) {

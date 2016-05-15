@@ -30,7 +30,7 @@ namespace PharmML
     class CovariateModel
     {
         PharmML::PharmMLContext *context;
-        std::vector<PharmML::Covariate *> Covariates;
+        std::vector<PharmML::Covariate *> covariates;
 
         public:
         CovariateModel(PharmMLContext *context, xml::Node node);

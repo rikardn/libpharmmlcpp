@@ -364,6 +364,12 @@ namespace PharmML
             form.add(this->getValue());
         }
         form.closeVector();
+        form.emptyLine();
+        
+        // Generate MODEL_PREDICTION
+        std::string model_pred = this->genModelPredictionBlock(model->getModelDefinition()->getStructuralModel());
+        form.addMany(model_pred);
+        form.emptyLine();
         
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
         for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
@@ -388,6 +394,37 @@ namespace PharmML
         for (PharmML::RandomVariable *random_var : random_vars) {
             this->visit(random_var);
             form.add(this->getValue());
+        }
+        
+        form.closeVector();
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genModelPredictionBlock(PharmML::StructuralModel *structuralModel) {
+        // TODO: Consolidator for CommonVariable (Variable and DerivativeVariable)!
+        TextFormatter form;
+        form.openVector("MODEL_PREDICTION {}", 1, "");
+        
+        std::vector<CommonVariable *> vars = structuralModel->getVariables();
+        std::vector<CommonVariable *> ordered;
+        ordered.push_back(vars[0]);
+        bool inserted;
+        for (int i = 1; i < vars.size(); i++) {
+            inserted = false;
+            for (auto j = ordered.begin(); j < ordered.end(); j++) {
+                if (ordered[j - ordered.begin()]->getDependencies().hasDependency(vars[i]->getSymbId())) {
+                    ordered.insert(j, vars[i]);
+                    inserted = true;
+                    break;
+                }
+            } 
+            if (!inserted) {
+                ordered.push_back(vars[i]);
+            }
+        }
+        for (CommonVariable *v : ordered) {
+            v->accept(this);
+            form.addMany(this->getValue());
         }
         
         form.closeVector();
@@ -536,7 +573,13 @@ namespace PharmML
         this->setValue(node->getSymbId());
     }
 
-    void MDLGenerator::visit(Variable *node) { }
+    void MDLGenerator::visit(Variable *node) {
+        if (node->getAssignment()) {
+            this->setValue(node->getSymbId() + " = " + this->accept(node->getAssignment()));
+        } else {
+            this->setValue(node->getSymbId());
+        }
+    }
     
     void MDLGenerator::visit(DerivativeVariable *node) { }
 

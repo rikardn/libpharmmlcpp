@@ -33,7 +33,7 @@
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
-
+#include <generators/TextFormatter.h>
 #include <generators/MDL/MDLSymbols.h> // Include for now
 
 namespace PharmML

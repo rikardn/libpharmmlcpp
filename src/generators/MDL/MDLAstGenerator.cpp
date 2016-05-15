@@ -385,27 +385,31 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(Piecewise *node) {
+        TextFormatter form;
+        
         std::vector<Piece *> pieces = node->getPieces();
         Piece *otherwise = nullptr;
-        std::string s = "ifelse(";
+        form.add("if ");
         for (Piece *p : pieces) {
             if (!p->isOtherwise()) {
                 p->accept(this);
-                s += this->getValue() + ", (";
+                form.append(this->getValue());
             } else {
                 otherwise = p; // Only one otherwise per Piece
             }
         }
+        form.openIndent();
         if (otherwise == nullptr) {
             // And the missing otherwise said, Let it be 'NULL'. And all was good.
             NullValue *null = new NullValue();
             null->accept(this);
-            s += this->getValue() + ")";
+            form.add("else " + this->getValue());
         } else {
             otherwise->getExpression()->accept(this);
-            s += this->getValue();
+            form.add("else " + this->getValue());
         }
-        this->setValue(s + std::string(pieces.size(), ')'));
+        
+        this->setValue(form.createString());
     }
 
     void MDLAstGenerator::visit(Piece *node) {
@@ -413,7 +417,7 @@ namespace PharmML
         std::string cond = this->getValue();
         node->getExpression()->accept(this);
         std::string expr = this->getValue();
-        this->setValue(cond + ", " + expr);
+        this->setValue(cond + " then " + expr);
     }
     
     void MDLAstGenerator::visit(LogicFalse *node) {

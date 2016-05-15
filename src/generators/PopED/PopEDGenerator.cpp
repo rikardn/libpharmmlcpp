@@ -210,22 +210,31 @@ namespace PharmML
         form.emptyLine();
         
         // Y definition
-        std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
-        std::vector<CommonVariable *> variables = this->model->getModelDefinition()->getStructuralModel()->DependsOn(derivatives);
-        for (CommonVariable *var : variables) {
-            form.add("YY: " + var->getSymbId());
-        } 
 
-        form.addMany(this->r_gen.consol.vars.genStatements());
-        // TODO: Get structural part (only?) of observation model and resolv derivative symbol references to this form
-        form.add("y = out[, 'A2']/(V/Favail)");
-        form.add("y=y[match(times_xt,out[,'time'])]");
+        // FIXME: This code again!
+        std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
+        SymbolSet derivs_set;
+        for (auto deriv : derivatives) {
+            derivs_set.addSymbol(deriv);
+        }
+
+        SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
+        SymbolSet output_set;
+        output_set.addSymbol(output->getSymbol());
+        std::vector<Symbol *> post_ode_symbols = output_set.getOrderedDependenciesNoPass(derivs_set);
+        post_ode_symbols.push_back(output->getSymbol());
+
+        // Need R symbol generator with non-default AST generator 
+        // RSymbols symbgen(new PopED
+        for (Symbol *symbol : post_ode_symbols) {
+            symbol->accept(&this->r_symb);
+            form.add(this->r_symb.getValue());
+        }
+
+        form.add("y <- " + output->toString());
+        form.add("y=y[match(times_xt, out[,'time'])]");
         form.add("y=cbind(y)");
-        // Just set the output part of the obs model for now (seems to be how PopED does it)
-        // TODO: Develop complete structural Y resolve
-        std::string out = this->accept(model->getModelDefinition()->getObservationModel()->getOutput());
-        form.add("y = " + out);
-        
+                
         // Return list
         form.add("return(list(y=y,poped.db=poped.db))");
         form.outdentAdd("})");

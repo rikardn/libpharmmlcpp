@@ -42,9 +42,12 @@ namespace PharmML
     class PopEDAstGenerator : public RAstGenerator
     {
         private:
-            PopEDSymbols symbgen;
+            PopEDSymbols *symbgen;      // FIXME: This is so C++98. Should use unique_ptr<>
 
         public:
+            PopEDAstGenerator();
+            PopEDAstGenerator(PopEDSymbols *symbgen);
+            ~PopEDAstGenerator();
             void visit(SymbRef *node);
     };
 }

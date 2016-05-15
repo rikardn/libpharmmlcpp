@@ -15,10 +15,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPEDSYMBOLS_H_
-#define PHARMML_POPEDSYMBOLS_H_
+#ifndef PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
+#define PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
 
-#include <unordered_map>
 #include <visitors/StringVisitor.h>
 #include <visitors/SymbolVisitor.h>
 #include <symbols/Symbol.h>
@@ -32,15 +31,9 @@ namespace PharmML
     class Variable;
     class DerivativeVariable;
     class IndependentVariable;
-    class Covariate;
 
-    class PopEDSymbols : public SymbolVisitor, public StringVisitor
+    class PopEDPostDerivativeSymbols : public PopEDSymbols
     {
-        private:
-            int next_popparm = 1;
-            int next_randvar = 1;
-            std::unordered_map<Symbol *, int> symbol_numbermap;
-
         public:
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);
@@ -48,8 +41,6 @@ namespace PharmML
             virtual void visit(IndependentVariable *node);
             virtual void visit(Variable *node);
             virtual void visit(DerivativeVariable *node);
-            virtual void visit(RandomVariable *node);
-            virtual void visit(Covariate *node);
     };
 }
 

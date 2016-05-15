@@ -465,7 +465,7 @@ namespace PharmML
             }
             form.closeVector();
             if (!unknown_param_types.empty()) {
-                form.append(" # Unknown ProbOnto Normal1 parameter type (" + form.createVector(unknown_param_types, "", 0, ", ") + ")!");
+                form.append(" # Unknown ProbOnto Normal1 parameter type (" + form.createInlineVector(unknown_param_types, "", ", ") + ")!");
             }
         } else {
             form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");

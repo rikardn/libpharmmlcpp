@@ -297,8 +297,6 @@ namespace PharmML
         form.add("fError_fun = 'feps'");
 
 /*     
-    bpop = c(LAMBDA0=0.298, LAMBDA1=0.774, K1=0.786, K2=0.714, W0=0.0422),
-    d = c(),
     sigma = c(0.01), # variance units
     groupsize = 1,
     m = 2,
@@ -308,32 +306,20 @@ namespace PharmML
              c(DOSE_1_AMT=30,DOSE_1_TIME=8,DOSE_2_AMT=30,DOSE_2_TIME=12,DOSE_3_AMT=30,DOSE_3_TIME=16))
 */
 
-
-        std::vector<IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         TextFormatter bpop;
         bpop.openVector("c()", 0, ", ");
-        for (IndividualParameter *ip : ips) {
-            if (!ip->isStructured()) {
-                /* Only half the story: Now the assignment needs to be matched to the corresponding PopulationParameter and
-                 * that PopulationParameter looked up for initial estimate in ModellingSteps section... */
-                // TODO: The above
-                std::string s = ip->getSymbId() + "=" + this->accept(ip->getAssignment());
-                bpop.add(s);
+        auto pop_params = this->model->getConsolidator()->getPopulationParameters();
+        for (auto pop_param : pop_params) {
+            if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
+                std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?
+                bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
             }
         }
         bpop.closeVector();
         form.add("bpop = " + bpop.createString(false));
-        
-        form.add("notfixed_bpop = NULL");
-        form.add("d = NULL");
-        form.add("sigma = NULL");
-        form.add("groupsize = NULL");
-        form.add("xt = NULL");
-        form.add("minxt = NULL");
-        form.add("maxxt = NULL");
-        form.add("a = NULL");
-        form.add("mina = NULL");
-        form.add("maxa = NULL");
+    
+        form.add("d = c()");
+        form.add("groupsize = 1");
         form.closeVector();
         
         return form.createString();

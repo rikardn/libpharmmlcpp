@@ -74,13 +74,23 @@ namespace PharmML
             parameter->accept(this);
             form.add(this->getValue());
         }
+
+
+        std::vector<std::string> time_names = genDoseTimeNames();
+        std::vector<std::string> amount_names = genDoseAmountNames();
+
+        for (int i = 0; i < time_names.size(); i++) {
+            form.add(amount_names[i] + " = a[" + std::to_string(2*i + 1) + "]");
+            form.add(time_names[i] + " = a[" + std::to_string(2*i + 2) + "]");
+        }
+
         form.closeVector();
         form.add("return(parameters)");
         form.outdentAdd("}");
         form.emptyLine();
         return form.createString();
     }
-    
+
     std::string PopEDGenerator::genODEFunc() {
         TextFormatter form;
         // Function header
@@ -241,15 +251,20 @@ namespace PharmML
         form.add("return(list(y=y,poped.db=poped.db))");
         form.outdentAdd("})");
         form.outdentAdd("}");
+        form.emptyLine();
 
         return form.createString();
     }
     
     std::string PopEDGenerator::genErrorFunction() {
         TextFormatter form;
-        
-        form.indentAdd("feps <- function(model_switch,xt,parameters,epsi,poped.db) {");
-        form.add("y <- ff(model_switch,xt,parameters,poped.db)[[1]]");
+      
+
+        form.indentAdd("feps <- function(model_switch, xt, parameters, epsi, poped.db) {");
+        form.add("returnArgs <- do.call(poped.db$model$ff_pointer,list(model_switch,xt,parameters,poped.db))");
+        form.add("y <- returnArgs[[1]]");
+        form.add("poped.db <- returnArgs[[2]]");
+        form.emptyLine();
         
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
@@ -261,6 +276,7 @@ namespace PharmML
         form.add("y = y + w*epsi[,1]");
         
         // Return list
+        form.emptyLine();
         form.add("return(list(y=y,poped.db=poped.db))");
         form.outdentAdd("}");
         

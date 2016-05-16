@@ -113,8 +113,7 @@ namespace PharmML
             this->addReferences(found_symbols);
         }
         for (Covariate *cov : this->transformations) {
-            std::unordered_set<Symbol *> found_symbols = cov->symbRefsFromAst(cov->assignment, symbolMap);
-            cov->addReferences(found_symbols);
+            cov->gatherSymbRefs(symbolMap);
         }
     }
     

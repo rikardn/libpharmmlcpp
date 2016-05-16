@@ -68,6 +68,10 @@ namespace CPharmML
             std::vector<PharmML::Covariate *> covs = cm->getCovariates();
             for (PharmML::Covariate *cov : covs) {
                 this->allSymbols.addSymbol(cov);
+                // Remember to add the transformations (e.g. logtWT in UC2)
+                for (PharmML::Covariate *transformation : cov->getTransformations()) {
+                    this->allSymbols.addSymbol(transformation);
+                }
             }
         }
 

@@ -508,27 +508,28 @@ namespace PharmML
                         coeffs.push_back(coeff);
                     }
                     if (coeffs.size() == 1) {
-                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "", ",") + ",cov=" + this->accept(covariate) + "}"); 
+                        fix_effs.push_back("{coeff=" + coeffs[0] + ",cov=" + this->accept(covariate) + "}"); 
                     } else if (coeffs.size() > 1) {
                         fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",") + ",cov=" + this->accept(covariate) + "}"); 
                     }
                 }
                 if (fix_effs.size() == 1) {
-                    form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "", ", "));
+                    form.add("fixEff = " + fix_effs[0]);
                 } else if (fix_effs.size() > 1) {
                     form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "[]", ", "));
                 }
             }
             
             // Get random effects
-            std::string rand;
-            std::vector<SymbRef *> all_rand = node->getRandomEffects();
-            SymbRef *first_rand; // TODO: Support multiple random effects
-            if (!all_rand.empty()) {
-                first_rand = all_rand[0];
-                rand = this->accept(first_rand);
+            std::vector<std::string> rands;
+            for (SymbRef * rand : node->getRandomEffects()) {
+                rands.push_back(this->accept(rand));
             }
-            form.add("ranEff = " + rand);
+            if (rands.size() == 1) {
+                form.add("ranEff = " + rands[0]);
+            } else if (rands.size() > 1) {
+                form.add("ranEff = " + TextFormatter::createInlineVector(rands, "[]", ", "));
+            }
         } else {
             node->getAssignment()->accept(&this->ast_gen);
             std::string assign = this->ast_gen.getValue();

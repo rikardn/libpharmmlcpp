@@ -21,7 +21,7 @@
 #include <string>
 #include <sstream>
 #include <visitors/AstNodeVisitor.h>
-#include <PharmML/FunctionDefinition.h>
+#include <symbols/FunctionDefinition.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/Covariate.h>

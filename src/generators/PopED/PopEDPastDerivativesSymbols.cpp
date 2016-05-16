@@ -23,7 +23,7 @@
 #include <symbols/IndependentVariable.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
-
+#include <symbols/FunctionDefinition.h>
 
 namespace PharmML
 {
@@ -55,5 +55,9 @@ namespace PharmML
 
     void PopEDPastDerivativesSymbols::visit(DerivativeVariable *node) {
         this->setValue("out[,'" + node->getSymbId() + "']");
+    }
+    
+    void PopEDPastDerivativesSymbols::visit(FunctionDefinition *node) {
+        this->setValue(node->getSymbId());
     }
 }

@@ -24,7 +24,7 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <symbols/Covariate.h>
-
+#include <symbols/FunctionDefinition.h>
 
 namespace PharmML
 {
@@ -67,6 +67,10 @@ namespace PharmML
     }
     
     void PopEDSymbols::visit(Covariate *node) {
+        this->setValue(node->getSymbId());
+    }
+    
+    void PopEDSymbols::visit(FunctionDefinition *node) {
         this->setValue(node->getSymbId());
     }
 }

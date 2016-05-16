@@ -43,7 +43,8 @@ namespace PharmML
             std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
 
         protected:
-            virtual void parse(xml::Node node) = 0;
+            // FIXME: Why haven't FunctionCall got parse(..) like normal nice classes?
+            //~ virtual void parse(xml::Node node) = 0;
     };
     
     class Symbol : public Referer

@@ -89,4 +89,13 @@ namespace PharmML
     CPharmML::Consolidator *Model::getConsolidator() {
         return this->consolidator;
     }
+    
+    void Model::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        this->ModellingSteps->gatherSymbRefs(symbolMap);
+        this->ModelDefinition->gatherSymbRefs(symbolMap);
+        this->TrialDesign->gatherSymbRefs(symbolMap);
+        for (PharmML::FunctionDefinition *fun : this->FunctionDefinitions) {
+            fun->gatherSymbRefs(symbolMap);
+        }
+    }
 }

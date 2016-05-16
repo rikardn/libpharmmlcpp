@@ -29,6 +29,7 @@ namespace PharmML
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
+    class FunctionDefinition;
 
     class SymbolVisitor
     {
@@ -42,6 +43,7 @@ namespace PharmML
             virtual void visit(Variable *node) = 0;
             virtual void visit(DerivativeVariable *node) = 0;
             virtual void visit(Covariate *node) = 0;
+            virtual void visit(FunctionDefinition *node) = 0;
     };
 }
 

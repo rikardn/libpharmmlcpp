@@ -26,7 +26,7 @@ typedef std::pair<std::string, std::string> stringpair;
 typedef std::unordered_map<std::string, std::string> stringmap;
 
 #include <visitors/AstNodeVisitor.h>
-#include <PharmML/FunctionDefinition.h>
+#include <symbols/FunctionDefinition.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/Covariate.h>

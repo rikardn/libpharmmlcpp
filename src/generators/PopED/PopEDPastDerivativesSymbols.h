@@ -33,6 +33,7 @@ namespace PharmML
     class Variable;
     class DerivativeVariable;
     class IndependentVariable;
+    class FunctionDefinition;
 
     class PopEDPastDerivativesSymbols : public PopEDSymbols
     {
@@ -45,6 +46,7 @@ namespace PharmML
             virtual void visit(Variable *node);
             virtual void visit(DerivativeVariable *node);
             virtual void visit(RandomVariable *node);
+            virtual void visit(FunctionDefinition *node);
     };
 }
 

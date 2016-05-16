@@ -34,6 +34,7 @@ namespace PharmML
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
+    class FunctionDefinition;
 
     class PopEDSymbols : public SymbolVisitor, public StringVisitor
     {
@@ -52,6 +53,7 @@ namespace PharmML
             virtual void visit(DerivativeVariable *node);
             virtual void visit(RandomVariable *node);
             virtual void visit(Covariate *node);
+            virtual void visit(FunctionDefinition *node);
     };
 }
 

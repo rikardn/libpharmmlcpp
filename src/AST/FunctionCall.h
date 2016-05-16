@@ -19,11 +19,13 @@
 #define PHARMML_FUNCTIONCALL_H_
 
 #include <vector>
+#include <unordered_set>
 #include "AstNode.h"
+#include "symbols/Symbol.h"
 
 namespace PharmML
 {
-    class FunctionCall : public AstNode
+    class FunctionCall : public AstNode, public Referer
     {
         AstNode *FunctionName;
         std::vector<FunctionArgument *> FunctionArguments;
@@ -33,6 +35,7 @@ namespace PharmML
             AstNode *getFunctionName();
             void addFunctionArgument(FunctionArgument *farg);
             std::vector<FunctionArgument *> getFunctionArguments();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             virtual void accept(AstNodeVisitor *visitor);
     };
     

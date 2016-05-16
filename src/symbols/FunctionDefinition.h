@@ -21,23 +21,26 @@
 #include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
+#include <visitors/SymbolVisitor.h>
 
 namespace PharmML
 {
-    class FunctionDefinition
+    class FunctionDefinition : public Symbol
     {
-        PharmMLContext *context;
-        std::string symbId;
-        AstNode *assignment;
-        std::vector<std::string> arguments;
-        void parse(xml::Node node);
-
         public:
-        FunctionDefinition(PharmMLContext *context, xml::Node node);
-        std::string getSymbId();
-        std::vector<std::string> getArguments();
-        AstNode *getAssignment();
-        void accept(PharmMLVisitor *visitor);
+            FunctionDefinition(PharmMLContext *context, xml::Node node);
+            std::string getSymbId();
+            std::vector<std::string> getArguments();
+            AstNode *getAssignment();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+
+        private:
+            PharmMLContext *context;
+            AstNode *assignment;
+            std::vector<std::string> arguments;
+            void parse(xml::Node node);
     };
 }
 

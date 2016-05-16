@@ -453,6 +453,7 @@ namespace PharmML
         if (observationModel->hasStandardErrorModel()) {
             form.openVector(name + " : {}", 0, ", ");
             form.add("prediction = " + this->accept(observationModel->getOutput()));
+            this->accept(observationModel->getErrorModel());
             form.closeVector();
         }
         
@@ -485,7 +486,9 @@ namespace PharmML
     }
     
     // MDL visitors
-    void MDLGenerator::visit(FunctionDefinition *node) { }
+    void MDLGenerator::visit(FunctionDefinition *node) {
+        TextFormatter form;
+    }
 
     void MDLGenerator::visit(Covariate *node) { }
 

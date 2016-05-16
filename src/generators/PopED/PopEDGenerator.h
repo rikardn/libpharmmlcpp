@@ -26,7 +26,7 @@
 #include <generators/R/RAstGenerator.h>
 #include <generators/R/RPharmMLGenerator.h>
 #include <visitors/PharmMLVisitor.h>
-#include <PharmML/ObservationModel.h>
+#include <symbols/ObservationModel.h>
 #include <PharmML/Model.h>
 #include <generators/PopED/PopEDAstGenerator.h>
 #include <generators/TextFormatter.h>

@@ -27,7 +27,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
-#include <PharmML/ObservationModel.h>
+#include <symbols/ObservationModel.h>
 #include <symbols/IndependentVariable.h>
 #include <symbols/RandomVariable.h>
 #include <PharmML/Distribution.h>

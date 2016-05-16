@@ -38,7 +38,10 @@ namespace PharmML
     RSymbols::~RSymbols() {
         delete this->astgen;
     }
-
+    
+    void RSymbols::visit(ObservationModel *node) {
+    }
+    
     void RSymbols::visit(PopulationParameter *node) {
     }
 

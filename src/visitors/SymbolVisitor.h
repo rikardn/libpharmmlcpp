@@ -20,6 +20,7 @@
 
 namespace PharmML
 {
+    class ObservationModel;
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
@@ -32,6 +33,7 @@ namespace PharmML
     class SymbolVisitor
     {
         public:
+            virtual void visit(ObservationModel *node) = 0;
             virtual void visit(PopulationParameter *node) = 0;
             virtual void visit(IndividualParameter *node) = 0;
             virtual void visit(RandomVariable *node) = 0;

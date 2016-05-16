@@ -74,6 +74,11 @@ namespace CPharmML
                 }
             }
         }
+        
+        PharmML::ObservationModel *om = model->getModelDefinition()->getObservationModel();
+        if (om) {
+            this->allSymbols.addSymbol(om);
+        }
 
         this->allSymbols.addSymbol(model->getIndependentVariable());
 
@@ -94,8 +99,9 @@ namespace CPharmML
         model->getTrialDesign()->gatherSymbRefs(symbIdMap);
         
         // FIXME: Hackish, Observation should probably be a Symbol. The PharmML structure is a bit entagled need more time to think about this...
-        PharmML::SymbRef *observation = model->getModelDefinition()->getObservationModel()->getOutput();
-        observation->setSymbol(symbIdMap[observation->toString()]);
+        //~ PharmML::SymbRef *observation = model->getModelDefinition()->getObservationModel()->getOutput();
+        //~ observation->setSymbol(symbIdMap[observation->toString()]);
+        // Now it's a Symbol as it should have been from the start!
     }
     
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {

@@ -450,14 +450,11 @@ namespace PharmML
         form.openVector("OBSERVATION {}", 1, "");
         
         std::string name = observationModel->getSymbId();
-        form.openVector(name + " : {}", 0, ", ");
-        form.add("prediction = " + this->accept(observationModel->getOutput()));
-        form.closeVector();
-        
-        //~ std::string getSymbId();
-        //~ SymbRef *getOutput();
-        //~ AstNode *getErrorModel();
-        //~ AstNode *getResidualError();
+        if (observationModel->hasStandardErrorModel()) {
+            form.openVector(name + " : {}", 0, ", ");
+            form.add("prediction = " + this->accept(observationModel->getOutput()));
+            form.closeVector();
+        }
         
         form.closeVector();
         return form.createString();

@@ -16,6 +16,7 @@
  */
 
 #include <generators/PopED/PopEDPastDerivativesSymbols.h>
+#include <symbols/ObservationModel.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
@@ -26,6 +27,10 @@
 
 namespace PharmML
 {
+    void PopEDPastDerivativesSymbols::visit(ObservationModel *node) {
+        this->setValue(node->getSymbId());
+    }
+    
     void PopEDPastDerivativesSymbols::visit(PopulationParameter *node) {
         this->setValue(node->getSymbId());
     }

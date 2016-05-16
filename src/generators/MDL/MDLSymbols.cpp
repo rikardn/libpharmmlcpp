@@ -16,6 +16,7 @@
  */
 
 #include <generators/MDL/MDLSymbols.h>
+#include <symbols/ObservationModel.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
@@ -28,6 +29,10 @@
 
 namespace PharmML
 {
+    void MDLSymbols::visit(ObservationModel *node) {
+        this->setValue(node->getSymbId());
+    }
+    
     void MDLSymbols::visit(PopulationParameter *node) {
         this->setValue(node->getSymbId());
     }

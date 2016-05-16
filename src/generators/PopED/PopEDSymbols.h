@@ -25,6 +25,7 @@
 
 namespace PharmML
 {
+    class ObservationModel;
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
@@ -42,6 +43,7 @@ namespace PharmML
             std::unordered_map<Symbol *, int> symbol_numbermap;
 
         public:
+            virtual void visit(ObservationModel *node);
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);
             virtual void visit(VariabilityLevel *node);

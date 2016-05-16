@@ -358,12 +358,8 @@ namespace PharmML
         }
         
         // Generate INDIVIDUAL_VARIABLES block
-        form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
-        for (PharmML::IndividualParameter *ind_par : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
-            this->visit(ind_par);
-            form.add(this->getValue());
-        }
-        form.closeVector();
+        std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        form.addMany(this->genIndividualVariablesBlock(indiv_params));
         form.emptyLine();
         
         // Generate MODEL_PREDICTION
@@ -378,6 +374,11 @@ namespace PharmML
             form.addMany(block);
             form.emptyLine();
         }
+        
+        // Generate OBSERVATION block
+        std::string obs_block = this->genObservationBlock(model->getModelDefinition()->getObservationModel());
+        form.addMany(obs_block);
+        form.emptyLine();
         
         form.closeVector();
         form.outdentAdd("}");
@@ -397,6 +398,19 @@ namespace PharmML
         }
         
         form.closeVector();
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters) {
+        TextFormatter form;
+        
+        form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
+        for (PharmML::IndividualParameter *ind_par : individualParameters) {
+            this->visit(ind_par);
+            form.add(this->getValue());
+        }
+        form.closeVector();
+        
         return form.createString();
     }
     
@@ -426,6 +440,24 @@ namespace PharmML
             v->accept(this);
             form.addMany(this->getValue());
         }
+        
+        form.closeVector();
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genObservationBlock(PharmML::ObservationModel *observationModel) {
+        TextFormatter form;
+        form.openVector("OBSERVATION {}", 1, "");
+        
+        std::string name = observationModel->getSymbId();
+        form.openVector(name + " : {}", 0, ", ");
+        form.add("prediction = " + this->accept(observationModel->getOutput()));
+        form.closeVector();
+        
+        //~ std::string getSymbId();
+        //~ SymbRef *getOutput();
+        //~ AstNode *getErrorModel();
+        //~ AstNode *getResidualError();
         
         form.closeVector();
         return form.createString();

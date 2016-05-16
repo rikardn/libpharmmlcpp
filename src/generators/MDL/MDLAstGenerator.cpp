@@ -398,15 +398,12 @@ namespace PharmML
                 otherwise = p; // Only one otherwise per Piece
             }
         }
-        form.openIndent();
-        if (otherwise == nullptr) {
-            // And the missing otherwise said, Let it be 'NULL'. And all was good.
-            NullValue *null = new NullValue();
-            null->accept(this);
-            form.add("else " + this->getValue());
-        } else {
+        if (otherwise) {
+            form.openIndent();
             otherwise->getExpression()->accept(this);
-            form.add("else " + this->getValue());
+            form.addMany("else " + this->getValue());
+        } else {
+            form.append(" # Otherwise piece missing!");
         }
         
         this->setValue(form.createString());

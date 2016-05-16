@@ -115,7 +115,7 @@ namespace PharmML
         ext_ds->accept(this);
         form.addMany(this->getValue());
         
-        form.outdentAdd("} # end data object");
+        form.outdentAdd("}");
         
         return form.createString();
     }
@@ -207,7 +207,7 @@ namespace PharmML
         form.emptyLine();
         form.addMany(this->genVariabilityBlock(variabilityParameters));
                 
-        form.outdentAdd("} # end parameter object");
+        form.outdentAdd("}");
         
         return form.createString();
     }
@@ -232,7 +232,7 @@ namespace PharmML
             form.closeVector();
         }
         
-        form.outdentAdd("} # end STRUCTURAL");
+        form.outdentAdd("}");
         return form.createString(); 
     }
     
@@ -287,7 +287,7 @@ namespace PharmML
             }
         }
 
-        form.outdentAdd("} # end VARIABILITY");
+        form.outdentAdd("}");
         return form.createString(); 
     }
     
@@ -380,7 +380,7 @@ namespace PharmML
         }
         
         form.closeVector();
-        form.outdentAdd("} # end model object");
+        form.outdentAdd("}");
         
         return form.createString();
     }
@@ -435,7 +435,7 @@ namespace PharmML
         TextFormatter form;
         
         form.indentAdd("taskObj {");
-        form.outdentAdd("} # end task object");
+        form.outdentAdd("}");
         
         return form.createString();
     }
@@ -450,7 +450,7 @@ namespace PharmML
         form.add(mdlObj + " : { type is mdlObj }");
         form.add(taskObj + " : { type is taskObj }");
         form.closeVector();
-        form.outdentAdd("} # end mog object");
+        form.outdentAdd("}");
         
         return form.createString();
     }
@@ -667,7 +667,6 @@ namespace PharmML
                 form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
                 form.addMany(data_input_vars);
                 form.closeVector();
-                form.append(" # end DATA_INPUT_VARIABLES");
                 form.add("");
                 
                 // Generate SOURCE
@@ -680,7 +679,6 @@ namespace PharmML
                 form.add("file = \"" + file->getPath() + "\"");
                 form.add("inputFormat = nonmemFormat");
                 form.closeVector();
-                form.outdentAdd("} # end SOURCE");
             } else {
                 form.add("# Lack of external dataset!");
             }

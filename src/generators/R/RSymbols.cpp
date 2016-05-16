@@ -15,6 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <symbols/ObservationModel.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
@@ -22,6 +23,7 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <symbols/Covariate.h>
+#include <symbols/FunctionDefinition.h>
 #include <generators/R/RSymbols.h>
 
 namespace PharmML
@@ -74,5 +76,8 @@ namespace PharmML
     void RSymbols::visit(Covariate *node) {
         node->getAssignment()->accept(this->astgen);
         this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
+    }
+    
+    void RSymbols::visit(FunctionDefinition *node) {
     }
 }

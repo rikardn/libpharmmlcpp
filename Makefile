@@ -123,8 +123,8 @@ DesignSpaces.o: src/PharmML/DesignSpaces.cpp src/PharmML/DesignSpaces.h
 TrialDesign.o: src/PharmML/TrialDesign.cpp src/PharmML/TrialDesign.h
 	$(CC) -c src/PharmML/TrialDesign.cpp -oTrialDesign.o $(CFLAGS)
 
-FunctionDefinition.o: src/PharmML/FunctionDefinition.cpp src/PharmML/FunctionDefinition.h
-	$(CC) -c src/PharmML/FunctionDefinition.cpp -oFunctionDefinition.o $(CFLAGS)
+FunctionDefinition.o: src/symbols/FunctionDefinition.cpp src/symbols/FunctionDefinition.h
+	$(CC) -c src/symbols/FunctionDefinition.cpp -oFunctionDefinition.o $(CFLAGS)
 
 Vector.o: src/AST/Vector.cpp src/AST/Vector.h
 	$(CC) -c src/AST/Vector.cpp -oVector.o $(CFLAGS)

@@ -23,7 +23,7 @@
 #endif
 
 #include <symbols/IndependentVariable.h>
-#include <PharmML/FunctionDefinition.h>
+#include <symbols/FunctionDefinition.h>
 #include <PharmML/ModelDefinition.h>
 #include <PharmML/TrialDesign.h>
 #include <xml/xml.h>
@@ -54,6 +54,7 @@ namespace PharmML
         PharmML::TrialDesign *getTrialDesign();
         PharmML::ModellingSteps *getModellingSteps();
         CPharmML::Consolidator *getConsolidator();
+        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
     };
 }
 

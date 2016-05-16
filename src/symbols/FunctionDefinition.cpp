@@ -21,11 +21,11 @@ namespace PharmML
 {
     FunctionDefinition::FunctionDefinition(PharmMLContext *context, xml::Node node) {
         this->context = context;
-        this->parse(node);
+        this->FunctionDefinition::parse(node);
     }
 
     void FunctionDefinition::parse(xml::Node node) {
-        this->symbId = node.getAttribute("symbId").getValue();
+        this->Symbol::parse(node);
 
         xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
         xml::Node tree = assign.getChild();
@@ -48,8 +48,16 @@ namespace PharmML
     AstNode *FunctionDefinition::getAssignment() {
         return this->assignment;
     }
+    
+    void FunctionDefinition::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        // FIXME: Fill up!
+    }
 
     void FunctionDefinition::accept(PharmMLVisitor *visitor) {
+        visitor->visit(this);
+    }
+    
+    void FunctionDefinition::accept(SymbolVisitor *visitor) {
         visitor->visit(this);
     }
 }

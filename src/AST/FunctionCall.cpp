@@ -34,6 +34,13 @@ namespace PharmML
     void FunctionCall::addFunctionArgument(FunctionArgument *farg) {
         this->FunctionArguments.push_back(farg);
     }
+    
+    void FunctionCall::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->FunctionName, symbolMap);
+        for (PharmML::Symbol *found_symbol : found_symbols) {
+            this->addReference(found_symbol);
+        }
+    }
 
     std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
         return this->FunctionArguments;

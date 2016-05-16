@@ -292,10 +292,23 @@ namespace PharmML
         TextFormatter form;
         
         form.openVector("poped.db <- create.poped.database()", 1, ", ");
-        form.add("ff_file = 'ff'");
-        form.add("fg_file = 'sfg'");
-        form.add("fError_file_file = 'feps'");
-        
+        form.add("ff_fun = 'ff'");
+        form.add("fg_fun = 'sfg'");
+        form.add("fError_fun = 'feps'");
+
+/*     
+    bpop = c(LAMBDA0=0.298, LAMBDA1=0.774, K1=0.786, K2=0.714, W0=0.0422),
+    d = c(),
+    sigma = c(0.01), # variance units
+    groupsize = 1,
+    m = 2,
+    xt = list(c(8,10,13,15,18,22,26),
+              c(8,10,13,15,18,22,26,30,35,40)),
+    a = list(c(DOSE_1_AMT=0,DOSE_1_TIME=0,DOSE_2_AMT=0,DOSE_2_TIME=0,DOSE_3_AMT=0,DOSE_3_TIME=0),
+             c(DOSE_1_AMT=30,DOSE_1_TIME=8,DOSE_2_AMT=30,DOSE_2_TIME=12,DOSE_3_AMT=30,DOSE_3_TIME=16))
+*/
+
+
         std::vector<IndividualParameter *> ips = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         TextFormatter bpop;
         bpop.openVector("c()", 0, ", ");
@@ -307,7 +320,6 @@ namespace PharmML
                 std::string s = ip->getSymbId() + "=" + this->accept(ip->getAssignment());
                 bpop.add(s);
             }
-            
         }
         bpop.closeVector();
         form.add("bpop = " + bpop.createString(false));

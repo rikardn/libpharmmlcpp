@@ -32,6 +32,7 @@
 #include <generators/TextFormatter.h>
 #include <generators/R/RSymbols.h>
 #include <generators/PopED/PopEDPastDerivativesSymbols.h>
+#include <generators/PopED/PopEDErrorAstGenerator.h>
 
 namespace PharmML
 {

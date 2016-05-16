@@ -75,7 +75,6 @@ namespace PharmML
             form.add(this->getValue());
         }
 
-
         std::vector<std::string> time_names = genDoseTimeNames();
         std::vector<std::string> amount_names = genDoseAmountNames();
 
@@ -235,9 +234,9 @@ namespace PharmML
         post_ode_symbols.push_back(output->getSymbol());
 
         // Need R symbol generator with non-default AST generator that use non-default symbol generator 
-        PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();
-        PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);
-        RSymbols rsymb_past(astgen);
+        PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();   // Symbol name generator
+        PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);     // Ast generator taking the symbol name generator as argument
+        RSymbols rsymb_past(astgen);                                    // Symbol expression generator with ast generator as argument
         for (Symbol *symbol : post_ode_symbols) {
             symbol->accept(&rsymb_past);
             form.add(rsymb_past.getValue());
@@ -258,26 +257,32 @@ namespace PharmML
     
     std::string PopEDGenerator::genErrorFunction() {
         TextFormatter form;
-      
+     
+        ObservationModel *om = this->model->getModelDefinition()->getObservationModel();
+        std::string result_name = om->getSymbId();
+        std::string output_name = om->getOutput()->toString();
 
         form.indentAdd("feps <- function(model_switch, xt, parameters, epsi, poped.db) {");
         form.add("returnArgs <- do.call(poped.db$model$ff_pointer,list(model_switch,xt,parameters,poped.db))");
-        form.add("y <- returnArgs[[1]]");
+        form.add(result_name +" <- returnArgs[[1]]");
         form.add("poped.db <- returnArgs[[2]]");
         form.emptyLine();
-        
+
+        form.add(output_name + " <- " + result_name);
+
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
-        ObservationModel *node = model->getModelDefinition()->getObservationModel();
-        form.add("w <- " + this->accept(node->getErrorModel()));
-        
+        PopEDErrorAstGenerator error_ast_gen;
+        om->getErrorModel()->accept(&error_ast_gen);
+        form.add("w <- " + error_ast_gen.getValue());
+
         // Increase y by error fraction (weight * epsilon)
         // TODO: Figure out how to resolve this with multiple EPS
-        form.add("y = y + w*epsi[,1]");
+        form.add(result_name + " = " + result_name + " + w*epsi[,1]");
         
         // Return list
         form.emptyLine();
-        form.add("return(list(y=y,poped.db=poped.db))");
+        form.add("return(list(y=" + result_name + ",poped.db=poped.db))");
         form.outdentAdd("}");
         
         return form.createString();

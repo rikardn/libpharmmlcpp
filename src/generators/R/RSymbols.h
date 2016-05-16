@@ -26,6 +26,7 @@
 
 namespace PharmML
 {
+    class ObservationModel;
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
@@ -44,6 +45,7 @@ namespace PharmML
             RSymbols();
             RSymbols(RAstGenerator *astgen);
             ~RSymbols();
+            void visit(ObservationModel *node);
             void visit(PopulationParameter *node);
             void visit(IndividualParameter *node);
             void visit(RandomVariable *node);

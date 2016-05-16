@@ -25,7 +25,7 @@
 #include <PharmML/CovariateModel.h>
 #include <PharmML/ParameterModel.h>
 #include <PharmML/StructuralModel.h>
-#include <PharmML/ObservationModel.h>
+#include <symbols/ObservationModel.h>
 #include <PharmML/ModellingSteps.h>
 #include <symbols/Symbol.h>
 

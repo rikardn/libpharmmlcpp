@@ -96,8 +96,8 @@ VariabilityLevel.o: src/symbols/VariabilityLevel.cpp src/symbols/VariabilityLeve
 FunctionCall.o: src/AST/FunctionCall.cpp src/AST/FunctionCall.h
 	$(CC) -c src/AST/FunctionCall.cpp -oFunctionCall.o $(CFLAGS)
 
-ObservationModel.o: src/PharmML/ObservationModel.cpp src/PharmML/ObservationModel.h
-	$(CC) -c src/PharmML/ObservationModel.cpp -oObservationModel.o $(CFLAGS)
+ObservationModel.o: src/symbols/ObservationModel.cpp src/symbols/ObservationModel.h
+	$(CC) -c src/symbols/ObservationModel.cpp -oObservationModel.o $(CFLAGS)
 
 PopulationParameter.o: src/symbols/PopulationParameter.cpp src/symbols/PopulationParameter.h
 	$(CC) -c src/symbols/PopulationParameter.cpp -oPopulationParameter.o $(CFLAGS)

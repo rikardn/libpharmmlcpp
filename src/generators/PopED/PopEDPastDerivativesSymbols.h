@@ -25,6 +25,7 @@
 
 namespace PharmML
 {
+    class ObservationModel;
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
@@ -36,6 +37,7 @@ namespace PharmML
     class PopEDPastDerivativesSymbols : public PopEDSymbols
     {
         public:
+            virtual void visit(ObservationModel *node);
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);
             virtual void visit(VariabilityLevel *node);

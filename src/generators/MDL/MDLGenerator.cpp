@@ -612,7 +612,18 @@ namespace PharmML
         }
     }
     
-    void MDLGenerator::visit(DerivativeVariable *node) { }
+    void MDLGenerator::visit(DerivativeVariable *node) {
+        TextFormatter form;
+        
+        std::string name = node->getSymbId();
+        form.openVector(name + " : {}", 0, ", ");
+        form.add("deriv = " + this->accept(node->getAssignment()));
+        form.add("init = " + this->accept(node->getInitialValue()));
+        form.add("x0 = " + this->accept(node->getInitialTime()));
+        form.closeVector();
+        
+        this->setValue(form.createString());
+    }
 
     void MDLGenerator::visit(ObservationModel *node) { }
 

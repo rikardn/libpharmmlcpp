@@ -32,6 +32,7 @@ namespace PharmML
             int indentLevel = 0;
             int indentSize;
             char indentSymbol;
+            bool final_newline = true;
             std::vector<std::string> rows;
             
             struct VectorLevel {
@@ -62,7 +63,8 @@ namespace PharmML
             
             static std::string createInlineVector(std::vector<std::string> strs, std::string enclosure = "()", std::string separator = ", ");
             static std::string createIndentedVector(std::vector<std::string> strs, std::string enclosure = "()", std::string separator = ", ");
-            std::string createString(bool final_newline = true);
+            std::string createString();
+            void noFinalNewline();
             static std::string createCommaSeparatedList(std::vector<std::string> list);
             void emptyLine();
     };

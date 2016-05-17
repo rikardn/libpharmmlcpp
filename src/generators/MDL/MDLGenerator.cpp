@@ -567,8 +567,9 @@ namespace PharmML
             std::string assign = this->ast_gen.getValue();
             form.add(name + " = " + assign);
         }
-        
-        this->setValue(form.createString(false));
+       
+        form.noFinalNewline(); 
+        this->setValue(form.createString());
     }
 
     void MDLGenerator::visit(RandomVariable *node) {
@@ -604,8 +605,9 @@ namespace PharmML
         } else {
             form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");
         }
-        
-        this->setValue(form.createString(false));
+       
+        form.noFinalNewline(); 
+        this->setValue(form.createString());
     }
     
     void MDLGenerator::visit(VariabilityLevel *node) {

@@ -33,12 +33,14 @@
 #include <generators/R/RSymbols.h>
 #include <generators/PopED/PopEDPastDerivativesSymbols.h>
 #include <generators/PopED/PopEDErrorAstGenerator.h>
+#include <helpers/Logger.h>
 
 namespace PharmML
 {
     class PopEDGenerator : public PharmMLVisitor
     {
         private:
+            Logger logger;
             RAstGenerator ast_gen;
             RSymbols r_symb;
             PopEDAstGenerator poped_astgen;

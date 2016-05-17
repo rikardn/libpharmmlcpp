@@ -203,8 +203,11 @@ namespace xml
         xmlAddChild(this->node, child.node);
     }
 
-
     void Node::setContent(std::string content) {
         xmlNodeSetContent(this->node, BAD_CAST content.c_str());
+    }
+
+    long Node::getLineNo() {
+        return xmlGetLineNo(this->node);
     }
 }

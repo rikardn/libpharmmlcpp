@@ -168,6 +168,7 @@ namespace PharmML
             return form.createString();
         } else {
             // Yes, what else?
+            return "";
         }
     }
     
@@ -320,14 +321,14 @@ namespace PharmML
         std::vector<PharmML::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
         std::vector<PharmML::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
         std::vector<int>::size_type level = par_levels.size() + err_levels.size();
-        for (level; level - err_levels.size() > 0; level--) {
+        for (; level - err_levels.size() > 0; level--) {
             std::string name = par_levels[level - err_levels.size() - 1]->getSymbId();
             form.openVector(name + " : {}", 0, ", ");
             form.add("level = " + std::to_string(level));
             form.add("type is parameter");
             form.closeVector();
         }
-        for (level; level > 0; level--) {
+        for (; level > 0; level--) {
             std::string name = err_levels[level - 1]->getSymbId();
             form.openVector(name + " : {}", 0, ", ");
             form.add("level = " + std::to_string(level));
@@ -423,7 +424,7 @@ namespace PharmML
         std::vector<CommonVariable *> ordered;
         ordered.push_back(vars[0]);
         bool inserted;
-        for (int i = 1; i < vars.size(); i++) {
+        for (std::vector<CommonVariable>::size_type i = 1; i < vars.size(); i++) {
             inserted = false;
             for (auto j = ordered.begin(); j < ordered.end(); j++) {
                 if (ordered[j - ordered.begin()]->getDependencies().hasDependency(vars[i]->getSymbId())) {

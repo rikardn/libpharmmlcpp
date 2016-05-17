@@ -20,6 +20,7 @@
 
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <visitors/AstNodeVisitor.h>
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
@@ -34,6 +35,7 @@
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
@@ -41,8 +43,12 @@ namespace PharmML
     {
         private:
             std::unordered_set<SymbRef *> symbRefs;
+            std::unordered_map<std::string, Symbol *> *symbolMap = nullptr;
 
         public:
+            SymbRefFinder();
+            SymbRefFinder(std::unordered_map<std::string, Symbol *> *symbolMap);
+            
             std::unordered_set<SymbRef *> getSymbRefs();
 
             virtual void visit(SymbRef *node);

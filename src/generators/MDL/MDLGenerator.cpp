@@ -469,7 +469,7 @@ namespace PharmML
                     form.add("type is " + functions->getStandardFunctionName(function_def));
                     std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> arg_map = functions->getStandardArgumentMap(function_def);
                     for (auto arg : arg_map) {
-                        form.add(arg.first + " = UNDEF");
+                        form.add(arg.first + " = I_SLEEP");
                     }
                 }
             }

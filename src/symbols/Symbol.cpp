@@ -51,7 +51,8 @@ namespace PharmML
     // Also return the found symbols (see Consolidator, DistributionParameter and Referer class)
     std::unordered_set<Symbol *> Referer::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
         std::unordered_set<Symbol *> found_symbols;
-        SymbRefFinder finder;
+        //~ SymbRefFinder finder; // See comment in SymbRefFinder.cpp
+        SymbRefFinder finder(&symbolMap);
         node->accept(&finder);
         for (SymbRef *symbref : finder.getSymbRefs()) {
             Symbol *symbol = symbolMap[symbref->toString()];

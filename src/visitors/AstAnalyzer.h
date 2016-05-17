@@ -41,16 +41,11 @@ namespace PharmML
     class AstAnalyzer : public AstNodeVisitor, public StringVisitor
     {
         private:
-            bool pure_symbref;
-            bool pure_scalar;
-            bool pure_functioncall;
+            bool first_node;
             
             SymbRef *symbref;
             Scalar *scalar;
             FunctionCall *functioncall;
-            
-            void setPureState();
-            void clearPureState();
             
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);

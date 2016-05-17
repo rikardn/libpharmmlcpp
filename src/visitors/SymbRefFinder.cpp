@@ -20,6 +20,19 @@
 namespace PharmML
 {
     // public
+    SymbRefFinder::SymbRefFinder() {
+        
+    }
+    
+    /* Hackish solution. The problem is FunctionCall. It's within an AST tree and finder works just
+     * fine with recognizing the ref to the FunctionDefinition (and setting it?). However,
+     * this SymbRefFinder (or other thingy) *needs* to be able to also call gatherSymbRefs(..)
+     * of the FunctionCall-node itself. Otherwise that node (being a Referer) will be kept dangling
+     * even though the SymbRef itself is not (and it's not accessible manually to set since it's an AST node). */
+    SymbRefFinder::SymbRefFinder(std::unordered_map<std::string, Symbol *> *symbolMap) {
+       this->symbolMap = symbolMap; 
+    }
+    
     std::unordered_set<SymbRef *> SymbRefFinder::getSymbRefs() {
         return this->symbRefs;
     }
@@ -358,6 +371,10 @@ namespace PharmML
 
     void SymbRefFinder::visit(FunctionCall *node) {
         this->symbRefs.insert(node->getFunction());
+        // See comment at constructor of why stuff below is here
+        if (this->symbolMap) {
+            node->gatherSymbRefs(*(this->symbolMap));
+        }
     }
 
     void SymbRefFinder::visit(FunctionArgument *node) {

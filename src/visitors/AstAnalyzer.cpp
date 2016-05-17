@@ -20,18 +20,6 @@
 namespace PharmML
 {
     // private
-    void AstAnalyzer::setPureState() {
-        this->pure_symbref = true;
-        this->pure_scalar = true;
-        this->pure_functioncall = true;
-    }
-    
-    void AstAnalyzer::clearPureState() {
-        this->pure_symbref = false;
-        this->pure_scalar = false;
-        this->pure_functioncall = false;
-    }
-
     std::string AstAnalyzer::infix(Binop *binop, std::string op) {
         std::string result;
         binop->getLeft()->accept(this);
@@ -58,508 +46,432 @@ namespace PharmML
     
     // Resets the internal state to that after construction
     void AstAnalyzer::reset() {
-        this->setPureState();
+        this->first_node = true;
+        this->symbref = nullptr;
+        this->scalar = nullptr;
+        this->functioncall = nullptr;
     }
     
     // Methods to get a single object (if complex, return a nullptr)
     SymbRef *AstAnalyzer::getPureSymbRef() {
-        if (pure_symbref) {
-            return this->symbref;
-        } else {
-            return nullptr;
-        }
+        return this->symbref;
     }
     
     Scalar *AstAnalyzer::getPureScalar() {
-        if (pure_scalar) {
-            return this->scalar;
-        } else {
-            return nullptr;
-        }
+        return this->scalar;
     }
     
     FunctionCall *AstAnalyzer::getPureFunctionCall() {
-        if (pure_functioncall) {
-            return this->functioncall;
-        } else {
-            return nullptr;
-        }
+        return this->functioncall;
     }
     
     // visitor methods
     void AstAnalyzer::visit(SymbRef *node) {
-        this->pure_scalar = false;
-        this->pure_functioncall = false;
-        this->symbref = node;
-        
+        if (first_node) {
+            this->symbref = node;
+            this->first_node = false;
+        }
         Symbol *symbol = node->getSymbol();
         this->setValue(":" + symbol->getSymbId() + ":");
     }
 
     void AstAnalyzer::visit(SteadyStateParameter *node) {
-        this->clearPureState();
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(ColumnRef *node) {
-        this->clearPureState();
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(TargetMapping *node) {
-        this->clearPureState();
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(UniopLog *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("log(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopLog2 *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("log2(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopLog10 *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("log10(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(UniopExp *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("exp(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(UniopMinus *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("-(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(UniopAbs *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("abs(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSqrt *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sqrt(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopLogistic *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("logistic(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopLogit *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("logit(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopProbit *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("probit(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopNormcdf *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("normcdf(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopFactorial *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("factorial(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopFactln *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("factln(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopGamma *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("gamma(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopGammaln *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("gammaln(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSin *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sin(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSinh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sinh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCos *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("cos(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(UniopCosh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("cosh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopTan *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("tan(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopTanh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("tanh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCot *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("cot(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCoth *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("coth(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSec *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sec(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSech *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sech(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCsc *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("csc(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCsch *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("csch(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArcsin *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arcsin(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArcsinh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arcsinh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccos *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccos(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccosh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccosh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArctan *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arctan(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArctanh *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arctanh(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccot *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccot(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccoth *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccoth(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArcsec *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arcsec(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArcsech *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arcsech(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccsc *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccsc(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopArccsch *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("arccsch(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopHeaviside *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("heaviside(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopSign *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("sign(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopFloor *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("floor(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(UniopCeiling *node) {
-        this->clearPureState();
         node->getChild()->accept(this);
-        
         this->setValue("ceiling(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(ScalarInt *node) {
-        this->pure_symbref = false;
-        this->pure_functioncall = false;
-        this->scalar = node;
-        
+        if (this->first_node) {
+            this->scalar = node;
+            this->first_node = false;
+        }
         this->setValue("int[" + node->toString() + "}");
     }
 
     void AstAnalyzer::visit(ScalarReal *node) {
-        this->pure_symbref = false;
-        this->pure_functioncall = false;
-        this->scalar = node;
-        
+        if (this->first_node) {
+            this->scalar = node;
+            this->first_node = false;
+        }
         this->setValue("real[" + node->toString() + "]");
     }
 
     void AstAnalyzer::visit(BinopPlus *node) {
-        this->clearPureState();
-        
         this->setValue("plus(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(BinopMinus *node) {
-        this->clearPureState();
-        
         this->setValue("minus(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(BinopDivide *node) {
-        this->clearPureState();
-        
         this->setValue("divide(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(BinopTimes *node) {
-        this->clearPureState();
-        
         this->setValue("times(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopPower *node) {
-        this->clearPureState();
-        
         this->setValue("power(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopLogx *node) {
-        this->clearPureState();
-        
         this->setValue("logx(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopRoot *node) {
-        this->clearPureState();
-        
         this->setValue("root(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopMin *node) {
-        this->clearPureState();
-        
         this->setValue("min(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopMax *node) {
-        this->clearPureState();
-        
         this->setValue("max(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopRem *node) {
-        this->clearPureState();
-        
         this->setValue("rem(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(BinopAtan2 *node) {
-        this->clearPureState();
-        
         this->setValue("atan2(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicUniopIsdefined *node) {
-        this->clearPureState();
-        
         this->setValue("isDefined(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicUniopNot *node) {
-        this->clearPureState();
-        
         this->setValue("not(" + this->acceptChild(node) + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(LogicBinopLt *node) {
-        this->clearPureState();
-        
         this->setValue("lt(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(LogicBinopLeq *node) {
-        this->clearPureState();
-        
         this->setValue("leq(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopGt *node) {
-        this->clearPureState();
-        
         this->setValue("gt(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopGeq *node) {
-        this->clearPureState();
-        
         this->setValue("geq(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopEq *node) {
-        this->clearPureState();
-        
         this->setValue("eq(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopNeq *node) {
-        this->clearPureState();
-        
         this->setValue("neq(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopAnd *node) {
-        this->clearPureState();
-        
         this->setValue("and(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicBinopOr *node) {
-        this->clearPureState();
-        
         this->setValue("or(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
-    void AstAnalyzer::visit(LogicBinopXor *node) {
-        this->clearPureState();
-        
+    void AstAnalyzer::visit(LogicBinopXor *node) {        
         this->setValue("xor(" + this->infix(node, ";") + ")");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(Vector *node) {
-        this->clearPureState();
-        
         std::string s;
         bool first = true;
         for (AstNode *cnode : node->getElements()) {
@@ -571,11 +483,10 @@ namespace PharmML
             }
         }
         this->setValue("vector[" + s + "]");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(Piecewise *node) {
-        this->clearPureState();
-        
         std::string s;
         bool first = true;
         for (Piece *piece : node->getPieces()) {
@@ -587,54 +498,49 @@ namespace PharmML
             }
         }
         this->setValue("Piecewise[" + s + "]");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(Piece *node) {
-        this->clearPureState();
-        
         std::string s;
         if (node->getExpression()) {
             s += this->accept(node->getExpression()) + ";";
         }
         s += "Condition[" + this->accept(node->getCondition()) + "]";
         this->setValue("Piece[" + s + "]");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicFalse *node) {
-        this->clearPureState();
-        
         this->setValue("false");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(LogicTrue *node) {
-        this->clearPureState();
-        
         this->setValue("true");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(Pi *node) {
-        this->clearPureState();
-        
         this->setValue("pi");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(Exponentiale *node) {
-        this->clearPureState();
-        
         this->setValue("exponentiale");
+        this->first_node = false;
     }
     
     void AstAnalyzer::visit(NullValue *node) {
-        this->clearPureState();
-        
         this->setValue("null");
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(FunctionCall *node) {
-        this->pure_symbref = false;
-        this->pure_scalar = false;
-        this->functioncall = node;
-        
+        if (this->first_node) {
+            this->functioncall = node;
+            this->first_node = false;
+        }
         std::string s = this->accept(node->getFunction()) + "(";
         bool first = true;
         for (FunctionArgument *argument : node->getFunctionArguments()) {
@@ -648,12 +554,11 @@ namespace PharmML
     }
 
     void AstAnalyzer::visit(FunctionArgument *node) {
-        this->clearPureState();
-        
         this->setValue(":" + node->getSymbId() + ":=" + this->accept(node->getArgument()));
+        this->first_node = false;
     }
 
     void AstAnalyzer::visit(Interval *node) {
-        this->clearPureState();
+        this->first_node = false;
     }
 }

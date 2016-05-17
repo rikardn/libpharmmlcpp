@@ -49,7 +49,7 @@ namespace PharmML
             void parse(xml::Node node);
     };
     
-    class IndividualParameter : public PharmMLSection, public Symbol
+    class IndividualParameter : public Symbol
     {
         public:
             IndividualParameter(PharmMLContext *context, xml::Node node);

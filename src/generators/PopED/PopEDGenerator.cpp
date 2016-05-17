@@ -37,6 +37,7 @@ namespace PharmML
     
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
+        this->logger.setToolname("PopED");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
@@ -78,7 +79,7 @@ namespace PharmML
         std::vector<std::string> time_names = genDoseTimeNames();
         std::vector<std::string> amount_names = genDoseAmountNames();
 
-        for (int i = 0; i < time_names.size(); i++) {
+        for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
             form.add(amount_names[i] + " = a[" + std::to_string(2*i + 1) + "]");
             form.add(time_names[i] + " = a[" + std::to_string(2*i + 2) + "]");
         }
@@ -300,14 +301,14 @@ namespace PharmML
     sigma = c(0.01), # variance units
     groupsize = 1,
     m = 2,
-    xt = list(c(8,10,13,15,18,22,26),
-              c(8,10,13,15,18,22,26,30,35,40)),
+    xt = list(c(8,10,13,15,18,22,26),       # Obs arm_1
+              c(8,10,13,15,18,22,26,30,35,40)),     # Obs arm_2
     a = list(c(DOSE_1_AMT=0,DOSE_1_TIME=0,DOSE_2_AMT=0,DOSE_2_TIME=0,DOSE_3_AMT=0,DOSE_3_TIME=0),
              c(DOSE_1_AMT=30,DOSE_1_TIME=8,DOSE_2_AMT=30,DOSE_2_TIME=12,DOSE_3_AMT=30,DOSE_3_TIME=16))
 */
 
         TextFormatter bpop;
-        bpop.openVector("c()", 0, ", ");
+        bpop.openVector("bpop = c()", 0, ", ");
         auto pop_params = this->model->getConsolidator()->getPopulationParameters();
         for (auto pop_param : pop_params) {
             if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
@@ -316,8 +317,22 @@ namespace PharmML
             }
         }
         bpop.closeVector();
-        form.add("bpop = " + bpop.createString(false));
-    
+        bpop.noFinalNewline();
+        form.add(bpop.createString());     // FIXME: what does false mean?
+
+        // Sigmas
+        TextFormatter sigma_formatter;
+        sigma_formatter.openVector("sigma = c()", 0, ", ");
+        for (auto pop_param : pop_params) {
+            if (pop_param->isVariabilityParameter()) {
+                // FIXME: Check if sigma here
+                sigma_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
+            }
+        }
+        sigma_formatter.closeVector();
+        sigma_formatter.noFinalNewline();
+        form.add(sigma_formatter.createString());
+
         form.add("d = c()");
         form.add("groupsize = 1");
         form.closeVector();

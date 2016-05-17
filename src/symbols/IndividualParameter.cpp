@@ -28,7 +28,6 @@ namespace PharmML
     void FixedEffect::parse(xml::Node node) {
         // Get either SymbRef or Scalar
         xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
-        xml::Node scalar_node = this->context->getSingleElement(node, "./ct:Scalar");
         if (symbref_node.exists()) {
             PharmML::SymbRef *symbRef = new PharmML::SymbRef(symbref_node);
             this->symbRef = symbRef;

@@ -226,7 +226,8 @@ namespace PharmML
         }
         
         // Do not include final newline for inline vector
-        return vector.createString(false);
+        vector.noFinalNewline();
+        return vector.createString();
     }
     
     // Instance-agnostic multi-row creation of a vector (formatVector replacement)
@@ -238,12 +239,11 @@ namespace PharmML
             vector.add(str, false);
         }
         
-        // Inlude final newline for multi-line vector
-        return vector.createString(true);
+        return vector.createString();
     }
     
     // Create a multirow string from this object
-    std::string TextFormatter::createString(bool final_newline) {
+    std::string TextFormatter::createString() {
         // Close vectors if still on stack (optional elision!)
         while (!vectorLevels.empty()) {
             this->closeVector();
@@ -252,7 +252,7 @@ namespace PharmML
         // Combine all rows with optional trailing newline char
         std::string result;
         for (auto &row : this->rows) {
-            if (!final_newline && &row == &this->rows.back()) {
+            if (!this->final_newline && &row == &this->rows.back()) {
                 result += row;
             } else {
                 result += row + "\n";
@@ -260,7 +260,12 @@ namespace PharmML
         }
         return result;
     }
-    
+
+    // Set the formatter to not output trailing newline upon createString   
+    void TextFormatter::noFinalNewline() {
+        this->final_newline = false;
+    }
+
     // Instance-agnostic createInlineVector wrapper for bare CSV lists
     std::string TextFormatter::createCommaSeparatedList(std::vector<std::string> list) {
         return createInlineVector(list, "", ", ");

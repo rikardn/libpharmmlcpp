@@ -38,7 +38,7 @@ namespace PharmML
 
     std::string DerivativesConsolidator::genInitVector() {
         std::vector<std::string> pairs;
-        for (int i = 0; i < this->y.size(); i++) {
+        for (std::vector<std::string>::size_type i = 0; i != this->y.size(); ++i) {
             std::string pair = this->y[i] + "=" + this->y0[i];
             pairs.push_back(pair);
         }
@@ -56,7 +56,7 @@ namespace PharmML
         // Generate standard R assigns of all symbols and expressions
         TextFormatter form;
 
-        for (int i = 0; i < symbols.size(); i++) {
+        for (std::vector<std::string>::size_type i = 0; i != symbols.size(); ++i) {
             form.add(this->symbols[i] + " <- " + this->assigns[i]);
         }
 

@@ -43,9 +43,9 @@ namespace PharmML
         
         // Get target tool data
         std::vector<xml::Node> tool_data_nodes = this->context->getElements(node, "./ds:TargetToolData");
-        for (xml::Node tool_data_node : tool_data_nodes) {
+        //for (xml::Node tool_data_node : tool_data_nodes) {
             // TODO: Support this
-        }
+        //}
         
         // TODO: Support CodeInjection
     }
@@ -113,7 +113,7 @@ namespace PharmML
         if (int_ref_node.exists()) {
             std::vector<xml::Node> ref_nodes = this->context->getElements(int_ref_node, "./ct:OidRef");
             for (xml::Node ref_node : ref_nodes) {
-                std::string ref = ds_ref_node.getAttribute("oidRef").getValue();
+                std::string ref = ref_node.getAttribute("oidRef").getValue();
                 this->interventionsRefs.push_back(ref);
             }
         }
@@ -123,7 +123,7 @@ namespace PharmML
         if (obs_ref_node.exists()) {
             std::vector<xml::Node> ref_nodes = this->context->getElements(int_ref_node, "./ct:OidRef");
             for (xml::Node ref_node : ref_nodes) {
-                std::string ref = ds_ref_node.getAttribute("oidRef").getValue();
+                std::string ref = ref_node.getAttribute("oidRef").getValue();
                 this->observationsRefs.push_back(ref);
             }
         }
@@ -371,12 +371,12 @@ namespace PharmML
                 est_param->addReference(found_symbol);
             }
         }
-        for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
+        //for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
             // TODO: Fill SimulationSteps
-        }
-        for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
+        //}
+        //for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
             // TODO: Fill OptimalDesignStep
-        }
+        //}
     }
     
     std::vector<EstimationStep *> ModellingSteps::getEstimationSteps() {

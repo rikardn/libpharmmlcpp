@@ -20,6 +20,7 @@
 namespace PharmML
 {
     ObservationModel::ObservationModel(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->ObservationModel::parse(node);
     }
@@ -123,7 +124,7 @@ namespace PharmML
             
             xml::Node cat_node = this->context->getSingleElement(disc_node, "./mdef:CategoricalData");
             xml::Node cnt_node = this->context->getSingleElement(disc_node, "./mdef:CountData");
-            xml::Node tte_node = this->context->getSingleElement(disc_node, "./mdef:TimeToEventData");
+            //TODO: xml::Node tte_node = this->context->getSingleElement(disc_node, "./mdef:TimeToEventData");
             if (cat_node.exists()) {
                 // Categorical data model
                 this->categoricalData = true;

@@ -68,6 +68,7 @@ namespace xml
         xml::Node createChild(std::string name);
         void addChild(xml::Node child);
         void setContent(std::string content);
+        long getLineNo();   // Get the line number in the xml file for a node
     };
 }
 

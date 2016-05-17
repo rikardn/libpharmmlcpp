@@ -54,8 +54,8 @@ namespace PharmML
             if (dist_node.exists()) {
                 this->distribution = new PharmML::Distribution(this->context, dist_node);
             }
-            xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");
             // TODO: Support realization of distribution (also, in general)
+            //xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");
             
             // Get transformations
             std::vector<xml::Node> trans_nodes = this->context->getElements(cont_node, "./mdef:Transformation");
@@ -67,8 +67,8 @@ namespace PharmML
                 this->transformations.push_back(new_cov);
             }
             
-            // Get interpolation
-            xml::Node int_node = this->context->getSingleElement(cont_node, "./ct:Interpolation");
+            // TODO: Get interpolation
+            //xml::Node int_node = this->context->getSingleElement(cont_node, "./ct:Interpolation");
             
             // Get assign (likely for constants)
             xml::Node assign = this->context->getSingleElement(cont_node, "./ct:Assign");

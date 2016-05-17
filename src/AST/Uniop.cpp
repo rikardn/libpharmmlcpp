@@ -24,7 +24,7 @@ namespace PharmML
     }
 
     void Uniop::setChild(AstNode *node) {
-        delete child;
+        // FIXME: how to dispose of AstNodes ? delete child;
         this->child = node;
     }
 

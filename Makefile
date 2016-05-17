@@ -4,11 +4,11 @@ LIBS = -lxml2
 
 ifeq ($(TARGET), UNIX)
   CC = g++
-  CFLAGS = -std=c++11 -g -Isrc `xml2-config --cflags`
+  CFLAGS = -Wall -std=c++11 -g -Isrc `xml2-config --cflags`
   OUTPUT = main
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -Wall -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = main.exe
 endif
 
@@ -24,8 +24,15 @@ mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGen
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o RSymbols.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o RSymbols.o
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o RSymbols.o Logger.o PharmMLSection.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o RSymbols.o Logger.o PharmMLSection.o
+
+
+PharmMLSection.o: src/PharmML/PharmMLSection.cpp src/PharmML/PharmMLSection.h
+	$(CC) -c src/PharmML/PharmMLSection.cpp -oPharmMLSection.o $(CFLAGS)
+
+Logger.o: src/helpers/Logger.cpp src/helpers/Logger.h
+	$(CC) -c src/helpers/Logger.cpp -oLogger.o $(CFLAGS)
 
 CPopulationParameters.o: src/consolidators/PopulationParameters.cpp src/consolidators/PopulationParameters.h
 	$(CC) -c src/consolidators/PopulationParameters.cpp -oCPopulationParameters.o $(CFLAGS)

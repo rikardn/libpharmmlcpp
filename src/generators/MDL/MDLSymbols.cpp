@@ -68,4 +68,8 @@ namespace PharmML
     void MDLSymbols::visit(FunctionDefinition *node) {
         this->setValue(node->getSymbId());
     }
+    
+    void MDLSymbols::visit(FunctionArgumentDefinition *node) {
+        this->setValue(node->getSymbId());
+    }
 }

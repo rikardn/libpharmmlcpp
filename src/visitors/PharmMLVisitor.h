@@ -21,6 +21,8 @@
 namespace PharmML
 {
     class FunctionDefinition;
+    class FunctionArgumentDefinition;
+    
     class PopulationParameter;
     class IndividualParameter;
     class RandomVariable;
@@ -64,6 +66,8 @@ namespace PharmML
     {
         public:
             virtual void visit(FunctionDefinition *node) = 0;
+            virtual void visit(FunctionArgumentDefinition *node) = 0;
+            
             virtual void visit(PopulationParameter *node) = 0;
             virtual void visit(IndividualParameter *node) = 0;
             virtual void visit(RandomVariable *node) = 0;

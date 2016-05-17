@@ -80,4 +80,7 @@ namespace PharmML
     
     void RSymbols::visit(FunctionDefinition *node) {
     }
+    
+    void RSymbols::visit(FunctionArgumentDefinition *node) {
+    }
 }

@@ -61,7 +61,10 @@ namespace PharmML
         public:
             std::string getValue();
             std::string generateModel(Model *model);
+            
             virtual void visit(FunctionDefinition *node);
+            virtual void visit(FunctionArgumentDefinition *node);
+            
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);
             virtual void visit(RandomVariable *node);

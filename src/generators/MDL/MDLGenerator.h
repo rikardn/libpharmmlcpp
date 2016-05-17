@@ -26,6 +26,7 @@ typedef std::pair<std::string, std::string> stringpair;
 typedef std::unordered_map<std::string, std::string> stringmap;
 
 #include <visitors/AstNodeVisitor.h>
+#include <visitors/AstAnalyzer.h>
 #include <symbols/FunctionDefinition.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
@@ -52,6 +53,8 @@ namespace PharmML
     {
         private:
             MDLAstGenerator ast_gen;
+            AstAnalyzer ast_analyzer;
+            
             std::vector<std::string> structuralParameterNames;
             std::vector<std::string> variabilityParameterNames;
             
@@ -93,6 +96,8 @@ namespace PharmML
             std::string genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj);
             
             virtual void visit(FunctionDefinition *node);
+            virtual void visit(FunctionArgumentDefinition *node);
+            
             virtual void visit(PopulationParameter *node);
             virtual void visit(IndividualParameter *node);
             virtual void visit(RandomVariable *node);

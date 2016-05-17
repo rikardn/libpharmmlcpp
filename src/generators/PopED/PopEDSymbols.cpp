@@ -73,4 +73,8 @@ namespace PharmML
     void PopEDSymbols::visit(FunctionDefinition *node) {
         this->setValue(node->getSymbId());
     }
+    
+    void PopEDSymbols::visit(FunctionArgumentDefinition *node) {
+        this->setValue(node->getSymbId());
+    }
 }

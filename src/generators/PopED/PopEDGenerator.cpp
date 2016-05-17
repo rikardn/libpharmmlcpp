@@ -342,6 +342,9 @@ namespace PharmML
     
     // Visitors
     void PopEDGenerator::visit(FunctionDefinition *node) {}
+    
+    void PopEDGenerator::visit(FunctionArgumentDefinition *node) {}
+    
     void PopEDGenerator::visit(PopulationParameter *node) {}
 
     void PopEDGenerator::visit(IndividualParameter *node) {

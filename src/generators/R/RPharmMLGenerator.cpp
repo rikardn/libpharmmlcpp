@@ -50,13 +50,22 @@ namespace PharmML
         TextFormatter form;
         
         std::string head = node->getSymbId() + " <- ";
-        std::vector<std::string> args = node->getArguments();
-        form.indentAdd(head + TextFormatter::createInlineVector(args, "function()", ", ") + " {");
+        std::vector<std::string> argument_names;
+        for (FunctionArgumentDefinition *argument : node->getArguments()) {
+            argument->accept(this);
+            argument_names.push_back(this->getValue());
+        }
+        form.indentAdd(head + TextFormatter::createInlineVector(argument_names, "function()", ", ") + " {");
         
-        form.add("return " + this->accept(node->getAssignment()));
+        form.add("return " + this->accept(node->getDefinition()));
         form.outdentAdd("}");
         
         this->setValue(form.createString());
+    }
+    
+    void RPharmMLGenerator::visit(FunctionArgumentDefinition *node) {
+        std::string arg_name = node->getSymbId();
+        this->setValue(arg_name);
     }
 
     void RPharmMLGenerator::visit(Covariate *node) {

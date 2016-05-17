@@ -453,7 +453,14 @@ namespace PharmML
         if (observationModel->hasStandardErrorModel()) {
             form.openVector(name + " : {}", 0, ", ");
             form.add("prediction = " + this->accept(observationModel->getOutput()));
-            form.add("functionCall = " + this->accept(observationModel->getErrorModel()));
+            
+            AstNode *error_model = observationModel->getErrorModel();
+            error_model->accept(&this->ast_analyzer);
+            if (this->ast_analyzer.isPureFunctionCall()) {
+                form.add("functionCall = " + this->accept(this->ast_analyzer.getPureFunctionCall()));
+            }
+            this->ast_analyzer.reset();
+            
             form.closeVector();
         }
         
@@ -491,11 +498,13 @@ namespace PharmML
         
         std::string name = node->getSymbId();
         form.openVector("FUNCTION(" + name + "){}", 1, "");
-        form.addMany(this->accept(node->getAssignment()));
+        form.addMany(this->accept(node->getDefinition()));
         form.closeVector();
         
         this->setValue(form.createString());
     }
+    
+    void MDLGenerator::visit(FunctionArgumentDefinition *node) { }
 
     void MDLGenerator::visit(Covariate *node) { }
 

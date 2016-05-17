@@ -25,21 +25,43 @@
 
 namespace PharmML
 {
+    class FunctionArgumentDefinition : public Symbol
+    {
+        public:
+            FunctionArgumentDefinition(PharmMLContext *context, xml::Node node);
+            
+            std::string getType();
+            
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+
+        private:
+            PharmMLContext *context;
+            std::string symbolType;
+            void parse(xml::Node node);
+    };
+    
     class FunctionDefinition : public Symbol
     {
         public:
             FunctionDefinition(PharmMLContext *context, xml::Node node);
-            std::string getSymbId();
-            std::vector<std::string> getArguments();
-            AstNode *getAssignment();
+            
+            std::string getType();
+            std::vector<FunctionArgumentDefinition *> getArguments();
+            AstNode *getDefinition();
+            
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
         private:
             PharmMLContext *context;
-            AstNode *assignment;
-            std::vector<std::string> arguments;
+            
+            AstNode *definition = nullptr;
+            std::string symbolType;
+            std::vector<FunctionArgumentDefinition *> arguments;
+            
             void parse(xml::Node node);
     };
 }

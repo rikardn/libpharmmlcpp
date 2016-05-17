@@ -4,11 +4,11 @@ LIBS = -lxml2
 
 ifeq ($(TARGET), UNIX)
   CC = g++
-  CFLAGS = -std=c++11 -g -Isrc `xml2-config --cflags`
+  CFLAGS = -Wall -std=c++11 -g -Isrc `xml2-config --cflags`
   OUTPUT = main
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -Wall -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = main.exe
 endif
 

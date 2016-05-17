@@ -438,24 +438,22 @@ namespace PharmML
     }
 
     void MDLAstGenerator::visit(FunctionCall *node) {
-        bool first = true;
-        std::string argument_list;
+        TextFormatter form;
+        
+        std::string name = this->accept(node->getFunctionName());
+        form.openVector(name + "()", 0, ", ");
         for (FunctionArgument *arg : node->getFunctionArguments()) {
-            if (first) {
-                first = false;
-            } else {
-                argument_list += ", ";
-            }
-            arg->accept(this);
-            argument_list += this->getValue();
+            form.add(this->accept(arg));
         }
-        node->getFunctionName()->accept(this);
-        this->setValue(this->getValue() + "(" + argument_list + ")");
+        form.closeVector();
+        
+        form.noFinalNewline();
+        this->setValue(form.createString());
     }
 
     void MDLAstGenerator::visit(FunctionArgument *node) {
         node->getArgument()->accept(this);
-        this->setValue(node->getSymbId() + "=" + this->getValue());
+        this->setValue(node->getSymbId() + " = " + this->getValue());
     }
 
     void MDLAstGenerator::visit(Interval *node) {

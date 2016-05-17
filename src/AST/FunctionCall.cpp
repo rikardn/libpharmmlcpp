@@ -23,11 +23,11 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    void FunctionCall::setFunctionName(AstNode *node) {
+    void FunctionCall::setFunctionName(SymbRef *node) {
         this->FunctionName = node;
     }
 
-    AstNode *FunctionCall::getFunctionName() {
+    SymbRef *FunctionCall::getFunctionName() {
         return this->FunctionName;
     }
 

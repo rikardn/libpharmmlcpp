@@ -198,9 +198,17 @@ namespace PharmML
     
     void ObservationModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         // FIXME: Fill this!
-        if (output) {
-            Symbol *found_symbol = this->addSymbRef(this->output, symbolMap);
-            this->addReference(found_symbol);
+        if (this->standardErrorModel) {
+            std::unordered_set<PharmML::Symbol *> found_symbols;
+            // Output
+            found_symbols.insert(this->addSymbRef(this->output, symbolMap));
+            // Error model and residual error
+            std::unordered_set<PharmML::Symbol *> error_symbols = this->symbRefsFromAst(this->errorModel, symbolMap);
+            std::unordered_set<PharmML::Symbol *> res_symbols = this->symbRefsFromAst(this->residualError, symbolMap);
+            found_symbols.insert(error_symbols.begin(), error_symbols.end());
+            found_symbols.insert(res_symbols.begin(), res_symbols.end());
+            
+            this->addReferences(found_symbols);
         }
     }
     

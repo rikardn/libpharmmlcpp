@@ -453,7 +453,7 @@ namespace PharmML
         if (observationModel->hasStandardErrorModel()) {
             form.openVector(name + " : {}", 0, ", ");
             form.add("prediction = " + this->accept(observationModel->getOutput()));
-            this->accept(observationModel->getErrorModel());
+            form.add("functionCall = " + this->accept(observationModel->getErrorModel()));
             form.closeVector();
         }
         
@@ -488,6 +488,13 @@ namespace PharmML
     // MDL visitors
     void MDLGenerator::visit(FunctionDefinition *node) {
         TextFormatter form;
+        
+        std::string name = node->getSymbId();
+        form.openVector("FUNCTION(" + name + "){}", 1, "");
+        form.addMany(this->accept(node->getAssignment()));
+        form.closeVector();
+        
+        this->setValue(form.createString());
     }
 
     void MDLGenerator::visit(Covariate *node) { }

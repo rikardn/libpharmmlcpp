@@ -40,10 +40,6 @@ namespace PharmML
     class AstAnalyzer : public AstNodeVisitor
     {
         private:
-            bool is_pure_symbref;
-            bool is_pure_scalar;
-            bool is_pure_functioncall;
-            
             SymbRef *pure_symbref;
             Scalar *pure_scalar;
             FunctionCall *pure_functioncall;
@@ -51,11 +47,8 @@ namespace PharmML
             void clearPureState();
 
         public:
+            AstAnalyzer();
             void reset();
-            
-            bool isPureSymbRef();
-            bool isPureScalar();
-            bool isPureFunctionCall();
             
             SymbRef *getPureSymbRef();
             Scalar *getPureScalar();

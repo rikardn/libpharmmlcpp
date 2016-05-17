@@ -456,11 +456,11 @@ namespace PharmML
             form.add("prediction = " + this->accept(observationModel->getOutput()));
             
             AstNode *error_model = observationModel->getErrorModel();
+            this->ast_analyzer.reset();
             error_model->accept(&this->ast_analyzer);
-            if (this->ast_analyzer.isPureFunctionCall()) {
+            if (this->ast_analyzer.getPureFunctionCall()) {
                 form.add("functionCall = " + this->accept(this->ast_analyzer.getPureFunctionCall()));
             }
-            this->ast_analyzer.reset();
             
             form.closeVector();
         }

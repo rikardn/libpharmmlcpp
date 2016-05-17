@@ -21,29 +21,22 @@ namespace PharmML
 {
     // private
     void AstAnalyzer::clearPureState() {
-        this->is_pure_symbref = false;
-        this->is_pure_scalar = false;
         this->pure_symbref = nullptr;
         this->pure_scalar = nullptr;
+        this->pure_functioncall = nullptr;
     }
     
     // public
+    AstAnalyzer::AstAnalyzer() {
+        this->reset();
+    }
+    
+    // Resets the internal state to that after construction
     void AstAnalyzer::reset() {
         this->clearPureState();
     }
     
-    bool AstAnalyzer::isPureSymbRef() {
-        return this->is_pure_symbref;
-    }
-    
-    bool AstAnalyzer::isPureScalar() {
-        return this->is_pure_scalar;
-    }
-    
-    bool AstAnalyzer::isPureFunctionCall() {
-        return this->is_pure_functioncall;
-    }
-    
+    // Methods to get a single object (if complex, return a nullptr)
     SymbRef *AstAnalyzer::getPureSymbRef() {
         return this->pure_symbref;
     }
@@ -59,7 +52,6 @@ namespace PharmML
     // visitor methods
     void AstAnalyzer::visit(SymbRef *node) {
         this->clearPureState();
-        this->is_pure_symbref = true;
         this->pure_symbref = node;
     }
 
@@ -292,13 +284,11 @@ namespace PharmML
 
     void AstAnalyzer::visit(ScalarInt *node) {
         this->clearPureState();
-        this->is_pure_scalar = true;
         this->pure_scalar = node;
     }
 
     void AstAnalyzer::visit(ScalarReal *node) {
         this->clearPureState();
-        this->is_pure_scalar = true;
         this->pure_scalar = node;
     }
 
@@ -481,7 +471,6 @@ namespace PharmML
 
     void AstAnalyzer::visit(FunctionCall *node) {
         this->clearPureState();
-        this->is_pure_functioncall = true;
         this->pure_functioncall = node;
     }
 

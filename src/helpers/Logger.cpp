@@ -63,7 +63,7 @@ namespace PharmML
         }
 
         if (currentPrintLevel > level) {
-            std::cout << tool_name << type <<  ": " << message << std::endl;
+            std::cerr << tool_name << type <<  ": " << message << std::endl;
         }
     }
 }

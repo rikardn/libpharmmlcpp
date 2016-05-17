@@ -31,7 +31,7 @@ namespace PharmML
     }
 
     PopEDAstGenerator::~PopEDAstGenerator() {
-        delete this->symbgen;
+        //FIXME: How to delete this?  delete this->symbgen;
     }
 
     void PopEDAstGenerator::visit(SymbRef *node) {

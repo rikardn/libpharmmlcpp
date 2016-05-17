@@ -257,10 +257,10 @@ namespace PharmML
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
                 }
-                for (xml::Node segment : vectorSegments) {
+                //for (xml::Node segment : vectorSegments) {
                     // TODO: Bulid vector from segments
                     //~ vector->populateSegment(segment);
-                }
+                //}
             }
             instance = vector;
         } else if (name == "Piecewise") {

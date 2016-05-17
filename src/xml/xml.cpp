@@ -21,14 +21,18 @@
 namespace xml
 {
     std::string nsToPrefix(Namespace ns) {
+        std::string ns_prefix;
+
         switch (ns) {
             case Namespace::ct:
-                return "ct:";
+                ns_prefix = "ct:";
             case Namespace::ds:
-                return "ds:";
+                ns_prefix = "ds:";
             case Namespace::math:
-                return "math:";
+                ns_prefix = "math:";
         }
+
+        return ns_prefix;
     }
     
     bool Attribute::exists() {
@@ -114,6 +118,8 @@ namespace xml
             }
             xml_node = xml_node->next;
         }
+
+        return xml::Node(nullptr);
     }
 
     xml::Node Node::getLastChild() {

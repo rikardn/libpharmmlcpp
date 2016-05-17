@@ -377,7 +377,7 @@ namespace PharmML
         }
         
         // Generate OBSERVATION block
-        std::string obs_block = this->genObservationBlock(model->getModelDefinition()->getObservationModel());
+        std::string obs_block = this->genObservationBlock(model->getModelDefinition()->getObservationModel(), model->getConsolidator()->getFunctions());
         form.addMany(obs_block);
         form.emptyLine();
         
@@ -446,7 +446,7 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genObservationBlock(PharmML::ObservationModel *observationModel) {
+    std::string MDLGenerator::genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions) {
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
         
@@ -455,11 +455,23 @@ namespace PharmML
             form.openVector(name + " : {}", 0, ", ");
             form.add("prediction = " + this->accept(observationModel->getOutput()));
             
+            // Determine if error model is a pure function call
             AstNode *error_model = observationModel->getErrorModel();
             this->ast_analyzer.reset();
             error_model->accept(&this->ast_analyzer);
-            if (this->ast_analyzer.getPureFunctionCall()) {
-                form.add("functionCall = " + this->accept(this->ast_analyzer.getPureFunctionCall()));
+            FunctionCall *function_call = this->ast_analyzer.getPureFunctionCall();
+            if (function_call) {
+                // Resolve the call
+                FunctionDefinition *function_def = functions->resolveFunctionCall(function_call);
+                
+                // Determine if function is known to MDL (tricky stuff)
+                if (functions->isStandardFunction(function_def)) {
+                    form.add("type is " + functions->getStandardFunctionName(function_def));
+                    std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> arg_map = functions->getStandardArgumentMap(function_def);
+                    for (auto arg : arg_map) {
+                        form.add(arg.first + " = UNDEF");
+                    }
+                }
             }
             
             form.closeVector();

@@ -285,7 +285,7 @@ namespace PharmML
             std::vector<xml::Node> children = node.getChildren();
             xml::Node name_node = children[0];
             children.erase(children.begin());
-            fcall->setFunctionName(new SymbRef(name_node));
+            fcall->setFunction(new SymbRef(name_node));
             for (xml::Node n : children) {
                 FunctionArgument *arg = new FunctionArgument();
                 fcall->addFunctionArgument(arg);

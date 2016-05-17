@@ -440,7 +440,7 @@ namespace PharmML
     void MDLAstGenerator::visit(FunctionCall *node) {
         TextFormatter form;
         
-        std::string name = this->accept(node->getFunctionName());
+        std::string name = this->accept(node->getFunction());
         form.openVector(name + "()", 0, ", ");
         for (FunctionArgument *arg : node->getFunctionArguments()) {
             form.add(this->accept(arg));

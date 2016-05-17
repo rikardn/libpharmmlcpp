@@ -27,12 +27,12 @@ namespace PharmML
 {
     class FunctionCall : public AstNode, public Referer
     {
-        SymbRef *FunctionName;
-        std::vector<FunctionArgument *> FunctionArguments;
+        SymbRef *function;
+        std::vector<FunctionArgument *> functionArguments;
 
         public:
-            void setFunctionName(SymbRef *node);
-            SymbRef *getFunctionName();
+            void setFunction(SymbRef *node);
+            SymbRef *getFunction();
             void addFunctionArgument(FunctionArgument *farg);
             std::vector<FunctionArgument *> getFunctionArguments();
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
@@ -42,7 +42,7 @@ namespace PharmML
     class FunctionArgument : public AstNode
     {
         std::string symbId;
-        AstNode *Argument;
+        AstNode *argument;
 
         public:
             void setSymbId(std::string symbId);

@@ -23,27 +23,27 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    void FunctionCall::setFunctionName(SymbRef *node) {
-        this->FunctionName = node;
+    void FunctionCall::setFunction(SymbRef *node) {
+        this->function = node;
     }
 
-    SymbRef *FunctionCall::getFunctionName() {
-        return this->FunctionName;
+    SymbRef *FunctionCall::getFunction() {
+        return this->function;
     }
 
     void FunctionCall::addFunctionArgument(FunctionArgument *farg) {
-        this->FunctionArguments.push_back(farg);
+        this->functionArguments.push_back(farg);
     }
     
     void FunctionCall::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->FunctionName, symbolMap);
+        std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->function, symbolMap);
         for (PharmML::Symbol *found_symbol : found_symbols) {
             this->addReference(found_symbol);
         }
     }
 
     std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
-        return this->FunctionArguments;
+        return this->functionArguments;
     }
 
     void FunctionArgument::setSymbId(std::string symbId) {
@@ -55,11 +55,11 @@ namespace PharmML
     }
 
     void FunctionArgument::setArgument(AstNode *node) {
-        this->Argument = node;
+        this->argument = node;
     }
 
     AstNode *FunctionArgument::getArgument() {
-        return this->Argument;
+        return this->argument;
     }
 
     void FunctionArgument::accept(AstNodeVisitor *visitor) {

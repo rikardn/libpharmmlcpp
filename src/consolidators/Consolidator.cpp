@@ -31,6 +31,7 @@ namespace CPharmML
         this->consolidatePopulationParameters(model);
         this->consolidateCovariates(model);
         this->consolidateVariabilityModels(model);
+        this->consolidateFunctions(model);
     }
     
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
@@ -83,6 +84,9 @@ namespace CPharmML
         std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
         for (PharmML::FunctionDefinition *fun : funs) {
             this->allSymbols.addSymbol(fun);
+            for (PharmML::FunctionArgumentDefinition *arg : fun->getArguments()) {
+                this->allSymbols.addSymbol(arg);
+            }
         }
 
         this->allSymbols.addSymbol(model->getIndependentVariable());
@@ -234,6 +238,14 @@ namespace CPharmML
             this->variabilityModels->addRandomVariable(rvar);
         }
     }
+    
+    void Consolidator::consolidateFunctions(PharmML::Model *model) {
+        this->functions = new Functions();
+        std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
+        for (PharmML::FunctionDefinition *fun : funs) {
+            this->functions->addFunctionDefinition(fun);
+        }
+    }
 
     std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
         return this->populationParameters;
@@ -245,5 +257,9 @@ namespace CPharmML
     
     CPharmML::VariabilityModels *Consolidator::getVariabilityModels() {
         return this->variabilityModels;
+    }
+    
+    CPharmML::Functions *Consolidator::getFunctions() {
+        return this->functions;
     }
 }

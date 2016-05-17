@@ -357,7 +357,7 @@ namespace PharmML
     }
 
     void SymbRefFinder::visit(FunctionCall *node) {
-        this->symbRefs.insert(node->getFunctionName());
+        this->symbRefs.insert(node->getFunction());
     }
 
     void SymbRefFinder::visit(FunctionArgument *node) {

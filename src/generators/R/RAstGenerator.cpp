@@ -438,7 +438,7 @@ namespace PharmML
             arg->accept(this);
             argument_list += this->getValue();
         }
-        node->getFunctionName()->accept(this);
+        node->getFunction()->accept(this);
         this->setValue(this->getValue() + "(" + argument_list + ")");
     }
 

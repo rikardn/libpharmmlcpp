@@ -21,6 +21,7 @@
 #include <string>
 #include <unordered_set>
 #include <visitors/AstNodeVisitor.h>
+#include <visitors/StringVisitor.h>
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
 #include <AST/Binop.h>
@@ -37,14 +38,26 @@
 
 namespace PharmML
 {
-    class AstAnalyzer : public AstNodeVisitor
+    class AstAnalyzer : public AstNodeVisitor, public StringVisitor
     {
         private:
-            SymbRef *pure_symbref;
-            Scalar *pure_scalar;
-            FunctionCall *pure_functioncall;
+            bool pure_symbref;
+            bool pure_scalar;
+            bool pure_functioncall;
             
+            SymbRef *symbref;
+            Scalar *scalar;
+            FunctionCall *functioncall;
+            
+            void setPureState();
             void clearPureState();
+            
+            std::string acceptLeft(Binop *binop);
+            std::string acceptRight(Binop *binop);
+            std::string infix(Binop *binop, std::string op); 
+            std::string acceptChild(Uniop *uniop);
+            std::string accept(AstNode *node);
+            std::string getLogicLiteral(bool value);
 
         public:
             AstAnalyzer();

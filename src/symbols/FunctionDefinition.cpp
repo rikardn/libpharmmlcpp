@@ -87,7 +87,7 @@ namespace PharmML
             this->addReferences(found_symbols);
         }
     }
-
+    
     void FunctionDefinition::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

@@ -24,7 +24,7 @@
 namespace PharmML
 {
     void PopEDErrorAstGenerator::visit(FunctionCall *node) {
-        node->getFunctionName()->accept(this);
+        node->getFunction()->accept(this);
         std::string function_name = this->getValue();
 
         bool first = true;

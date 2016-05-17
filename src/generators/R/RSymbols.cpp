@@ -38,7 +38,7 @@ namespace PharmML
     }
 
     RSymbols::~RSymbols() {
-        delete this->astgen;
+        // FIXME: Find out how to delete delete this->astgen;
     }
     
     void RSymbols::visit(ObservationModel *node) {

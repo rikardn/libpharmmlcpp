@@ -127,7 +127,7 @@ namespace PharmML
                 ordered.push_back(symbol);
             } else {
                 bool inserted = false;
-                for (int j = 0; j < ordered.size(); j++) {
+                for (std::vector<Symbol *>::size_type j = 0; j != ordered.size(); ++j) {
                     if (ordered[j]->referencedSymbols.hasSymbol(symbol)) {
                         ordered.insert(ordered.begin() + j, symbol);
                         inserted = true;

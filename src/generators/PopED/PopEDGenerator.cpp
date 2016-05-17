@@ -78,7 +78,7 @@ namespace PharmML
         std::vector<std::string> time_names = genDoseTimeNames();
         std::vector<std::string> amount_names = genDoseAmountNames();
 
-        for (int i = 0; i < time_names.size(); i++) {
+        for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
             form.add(amount_names[i] + " = a[" + std::to_string(2*i + 1) + "]");
             form.add(time_names[i] + " = a[" + std::to_string(2*i + 2) + "]");
         }

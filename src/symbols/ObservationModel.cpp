@@ -20,6 +20,7 @@
 namespace PharmML
 {
     ObservationModel::ObservationModel(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->ObservationModel::parse(node);
     }

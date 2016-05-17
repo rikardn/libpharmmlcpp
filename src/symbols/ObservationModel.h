@@ -24,10 +24,11 @@
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/SymbolVisitor.h>
 #include <symbols/VariabilityLevel.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
-    class ObservationModel : public Symbol
+    class ObservationModel : public Symbol, public PharmMLSection
     {
         public:
             ObservationModel(PharmMLContext *context, xml::Node node);

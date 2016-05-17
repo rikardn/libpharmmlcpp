@@ -19,6 +19,7 @@
 #define PHARMML_LOGGER_H_
 
 #include <string>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
@@ -30,6 +31,9 @@ namespace PharmML
             void warning(std::string message);
             void error(std::string message);
             void info(std::string message);
+            void error(std::string message, PharmMLSection *section);
+            void warning(std::string message, PharmMLSection *section);
+            void info(std::string message, PharmMLSection *section);
 
         private:
             const int error_level = 20;
@@ -37,6 +41,7 @@ namespace PharmML
             const int info_level = 40;
             std::string tool_name;
             int currentPrintLevel = 100;
+            std::string lineText(PharmMLSection *section);
             void logPrint(std::string message, int level);
     };
 }

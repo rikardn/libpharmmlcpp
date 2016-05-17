@@ -28,12 +28,28 @@ namespace PharmML
         logPrint(message, warning_level);
     }
 
+    void Logger::warning(std::string message, PharmMLSection *section) {
+        logPrint(message + lineText(section), warning_level);
+    }
+
     void Logger::error(std::string message) {
         logPrint(message, error_level);
     }
      
+    void Logger::error(std::string message, PharmMLSection *section) {
+        logPrint(message + lineText(section), error_level);
+    }
+
     void Logger::info(std::string message) {
         logPrint(message, info_level);
+    }
+
+    void Logger::info(std::string message, PharmMLSection *section) {
+        logPrint(message + lineText(section), info_level);
+    }
+
+    std::string Logger::lineText(PharmMLSection *section) {
+        return " at line " + std::to_string(section->getXMLNode().getLineNo());
     }
 
     void Logger::logPrint(std::string message, int level) {

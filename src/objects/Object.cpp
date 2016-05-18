@@ -27,4 +27,21 @@ namespace PharmML
     void Object::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
     }
+
+
+    ObjectRef::ObjectRef(xml::Node node) {
+        this->oidRef = node.getAttribute("oidRef").getValue();
+    }
+
+    std::string ObjectRef::getOidRef() {
+        return this->oidRef;
+    }
+
+    Object *ObjectRef::getObject() {
+        return this->object;
+    }
+            
+    void ObjectRef::setObject(Object *object) {
+        this->object = object;
+    }
 }

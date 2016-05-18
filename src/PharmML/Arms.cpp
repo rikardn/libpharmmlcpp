@@ -44,10 +44,6 @@ namespace PharmML
         return this->end;
     }
     
-    //~ void OccasionType::accept(AstNodeVisitor *visitor) {
-        //~ visitor->visit(this);
-    //~ }
-    
     // InterventionSequence class
     InterventionSequence::InterventionSequence(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -59,7 +55,7 @@ namespace PharmML
         xml::Node interventionList = this->context->getSingleElement(node, "./design:InterventionList");
         std::vector<xml::Node> interventionRefs = this->context->getElements(interventionList, "./design:InterventionRef");
         for (xml::Node ref : interventionRefs) {
-            this->oidRefs.push_back(ref.getAttribute("oidRef").getValue());
+            this->oidRefs.push_back(new ObjectRef(ref));
         }
         
         // Get start value
@@ -73,14 +69,14 @@ namespace PharmML
         xml::Node iseq("InterventionSequence");
         xml::Node ilist = iseq.createChild("InterventionList");
         xml::Node child;
-        for (std::string ref : this->oidRefs) {
+        for (ObjectRef *ref : this->oidRefs) {
             child = ilist.createChild("InterventionRef");
-            child.setAttribute("oidRef", ref);
+            child.setAttribute("oidRef", ref->getOidRef());
         }
         return iseq;
     }
 
-    std::vector<std::string> InterventionSequence::getOidRefs() {
+    std::vector<ObjectRef *> InterventionSequence::getOidRefs() {
         return this->oidRefs;
     }
     

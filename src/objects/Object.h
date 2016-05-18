@@ -23,7 +23,6 @@
 #include <unordered_map>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
-
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <AST/symbols.h>
@@ -40,6 +39,19 @@ namespace PharmML
         protected:
             std::string oid;
             void parse(xml::Node node);
+    };
+
+    class ObjectRef
+    {
+        public:
+            ObjectRef(xml::Node node);
+            std::string getOidRef();
+            Object *getObject();
+            void setObject(Object *object);
+
+        protected:
+            std::string oidRef;
+            Object *object;
     };
 }
 

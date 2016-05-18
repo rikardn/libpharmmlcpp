@@ -506,8 +506,8 @@ namespace PharmML
         std::string s = "list(";
         
         std::vector<std::string> refs;
-        for (std::string ref : node->getOidRefs()) {
-            refs.push_back("'" + ref + "'");
+        for (ObjectRef *ref : node->getOidRefs()) {
+            refs.push_back("'" + ref->getOidRef() + "'");
         }
         s += "refs = " + TextFormatter::createInlineVector(refs, "c()", ", ");
         if (node->getStart()) {

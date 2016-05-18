@@ -148,9 +148,9 @@ namespace CPharmML
             }
         }
 
-        for (PharmML::Object *obj : this->allObjects) {
+        /*for (PharmML::Object *obj : this->allObjects) {
             std::cout << obj->getOid() << std::endl;
-        }
+        }*/
     }
 
     // Print an error for duplicate oid

@@ -88,6 +88,7 @@ namespace PharmML
     
     // Administration class
     Administration::Administration(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -153,10 +154,6 @@ namespace PharmML
         return adm;
     }
 
-    std::string Administration::getOid() {
-        return this->oid;
-    }
-    
     std::string Administration::getType() {
         return this->type;
     }

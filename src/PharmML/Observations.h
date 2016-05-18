@@ -25,15 +25,15 @@
 #include <AST/symbols.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
+#include <objects/Object.h>
+#include <PharmML/PharmMLSection.h>
 //~ #include "ExternalDataset.h" // Check comments in this file
 
 namespace PharmML
 {
-    // Observation class
-    class Observation
+    class Observation : public Object
     {
         PharmML::PharmMLContext *context;
-        std::string oid;
         std::string oidRef;
         AstNode *number = nullptr;
         AstNode *times = nullptr;
@@ -43,7 +43,6 @@ namespace PharmML
         public:
         Observation(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getOid();
         std::string getOidRef();
         AstNode *getNumber();
         AstNode *getTimes();
@@ -53,10 +52,9 @@ namespace PharmML
     };
     
     // IndividualObservations class
-    class IndividualObservations
+    class IndividualObservations : public Object, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
-        std::string oid;
         std::vector<PharmML::ColumnMapping *> columnMappings;
         Dataset *dataset;
 
@@ -64,7 +62,6 @@ namespace PharmML
         IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         xml::Node xml();
-        std::string getOid();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
         void accept(PharmMLVisitor *visitor);

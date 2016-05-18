@@ -25,6 +25,8 @@
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
 #include <PharmML/Dataset.h>
+#include <objects/Object.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
@@ -65,10 +67,9 @@ namespace PharmML
     };
     
     
-    class Administration
+    class Administration : public Object, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
-        std::string oid;
         std::string type;
         AstNode *amount = nullptr;
         AstNode *target = nullptr; // Should probably be parent class of TargetMapping
@@ -81,7 +82,6 @@ namespace PharmML
         Administration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         xml::Node xml();
-        std::string getOid();
         std::string getType();
         AstNode *getTarget();
         AstNode *getTimes();

@@ -30,6 +30,9 @@
 #include <consolidators/Functions.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
+#include <objects/Object.h>
+#include <helpers/Logger.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace CPharmML
 {
@@ -43,21 +46,25 @@ namespace CPharmML
             CPharmML::Functions *getFunctions();
 
         private:
+            PharmML::Logger logger;
             PharmML::PharmMLContext *context;
             
             PharmML::SymbolSet allSymbols;
-            
+            std::unordered_set<PharmML::Object *> allObjects;
+
             std::vector<CPharmML::PopulationParameter *> populationParameters;
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
             
             void consolidateSymbols(PharmML::Model *model);
+            void consolidateObjects(PharmML::Model *model);
             
             void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
+            void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }
 

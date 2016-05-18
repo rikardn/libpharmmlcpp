@@ -170,6 +170,7 @@ namespace PharmML
     
     // Arm class
     Arm::Arm(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -241,11 +242,6 @@ namespace PharmML
         return arm;
     }
 
-
-    std::string Arm::getOid(){
-        return this->oid;
-    }
-    
     std::string Arm::getOidRef(){
         return this->oidRef;
     }

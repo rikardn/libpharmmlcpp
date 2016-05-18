@@ -69,11 +69,6 @@ namespace PharmML
         }
     }
 
-
-    std::string Observation::getOid() {
-        return this->oid;
-    }
-    
     std::string Observation::getOidRef() {
         return this->oidRef;
     }
@@ -100,6 +95,7 @@ namespace PharmML
     
     // IndividualObservations class
     IndividualObservations::IndividualObservations(PharmML::PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -129,10 +125,6 @@ namespace PharmML
         return io;
     }
     
-    std::string IndividualObservations::getOid() {
-        return this->oid;
-    }
-
     std::vector<ColumnMapping *> IndividualObservations::getColumnMappings() {
         return this->columnMappings;
     }

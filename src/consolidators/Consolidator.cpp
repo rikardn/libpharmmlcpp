@@ -26,6 +26,9 @@ namespace CPharmML
         
         // First, consolidate all symbols (other consolidators might require it)
         this->consolidateSymbols(model);
+
+        // Consolidate all objects (elements having the "oid" attribute)
+        this->consolidateObjects(model);
         
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
@@ -104,13 +107,57 @@ namespace CPharmML
         
         // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
         model->gatherSymbRefs(symbIdMap);
-        
-        // FIXME: Hackish, Observation should probably be a Symbol. The PharmML structure is a bit entagled need more time to think about this...
-        //~ PharmML::SymbRef *observation = model->getModelDefinition()->getObservationModel()->getOutput();
-        //~ observation->setSymbol(symbIdMap[observation->toString()]);
-        // Now it's a Symbol as it should have been from the start!
     }
-    
+   
+    void Consolidator::consolidateObjects(PharmML::Model *model) {
+        std::unordered_set<std::string> allOids;
+
+        PharmML::TrialDesign *td = model->getTrialDesign();
+
+        if (td) {
+            PharmML::Arms *arms = td->getArms();
+            if (arms) {
+                for (PharmML::Arm *arm : arms->getArms()) {
+                    // Check if oid already exists
+                    if (allOids.count(arm->getOid()) == 1) {
+                        this->duplicateOidError(arm->getOid(), arm);
+                    }
+                    allOids.insert(arm->getOid());
+                    this->allObjects.insert(arm);
+                }
+            }
+            PharmML::Observations *observations = td->getObservations();
+            if (observations) {
+                for (PharmML::IndividualObservations *observation : observations->getIndividualObservations()) {
+                    if (allOids.count(observation->getOid()) == 1) {
+                        this->duplicateOidError(observation->getOid(), observation);
+                    }
+                    allOids.insert(observation->getOid());
+                    this->allObjects.insert(observation);
+                }
+            }
+            PharmML::Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                for (PharmML::Administration *admin : interventions->getAdministrations()) {
+                    if (allOids.count(admin->getOid()) == 1) {
+                        this->duplicateOidError(admin->getOid(), admin);
+                    }
+                    allOids.insert(admin->getOid());
+                    this->allObjects.insert(admin);
+                }
+            }
+        }
+
+        for (PharmML::Object *obj : this->allObjects) {
+            std::cout << obj->getOid() << std::endl;
+        }
+    }
+
+    // Print an error for duplicate oid
+    void Consolidator::duplicateOidError(const std::string &oid, PharmML::PharmMLSection *section) {
+        this->logger.error("Duplicate oid '" + oid + "'", section);
+    }
+
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
         // Consolidate PharmML PopulationParameter's (e.g. for init statement generation)
         for (PharmML::PopulationParameter *pop_param : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {

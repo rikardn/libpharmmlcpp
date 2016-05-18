@@ -22,6 +22,8 @@
 #include <AST/symbols.h>
 #include <xml/xml.h>
 #include <symbols/VariabilityLevel.h>
+#include <objects/Object.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
@@ -83,10 +85,9 @@ namespace PharmML
         void accept(PharmMLVisitor *visitor);
     };
     
-    class Arm
+    class Arm : public Object, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
-        std::string oid;
         std::string oidRef;
         AstNode *armSize = nullptr;
         AstNode *numSamples = nullptr;
@@ -100,7 +101,6 @@ namespace PharmML
         Arm(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         xml::Node xml();
-        std::string getOid();
         std::string getOidRef();
         AstNode *getArmSize();
         AstNode *getNumSamples();

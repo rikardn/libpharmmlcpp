@@ -95,6 +95,15 @@ namespace CPharmML
                 // Set the lone parameter
                 arg_map["additive"] = num_to_arg[":1:"];
                 this->standardArgumentMaps[functionDefinition] = arg_map;
+            } else if (anon_sig == "times(:::;:::)") {
+                // proportionalError: 'times(:1:;:2:)', where :1:(proportional), :2:(f)
+                this->standardFunctions[functionDefinition] = "proportionalError";
+                this->standardArgumentMaps.emplace(functionDefinition, arg_map);
+                
+                // Set the parameters
+                arg_map["proportional"] = num_to_arg[":1:"];
+                arg_map["f"]            = num_to_arg[":2:"];
+                this->standardArgumentMaps[functionDefinition] = arg_map;
             } else if (anon_sig == "plus(:::;times(:::;:::))" || anon_sig == "plus(times(:::;:::);:::)") {
                 // combinedError1: 'plus(:1:;times(:2:;:3:))', where :1:(additive), :2:(proportional), :3:(f)
                 this->standardFunctions[functionDefinition] = "combinedError1";

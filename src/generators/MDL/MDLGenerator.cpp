@@ -497,15 +497,19 @@ namespace PharmML
                     // TODO: Non-standard function call must be resolved
                     form.openVector(obs_name + " : {}", 0, ", ");
                     form.add("type is \"" + function_def->getSymbId() + "\"");
-                    form.append(" # Function call not recognized");
                     form.closeVector();
+                    form.append(" # Error function definition not recognized as MDL standard");
                 }
             } else {
-                // Not a pure function call, so dump in explicit assignment
+                // Not a pure function call, so dump explicit assignment
                 AstNode *res_err = observationModel->getResidualError();
                 form.add(obs_name + " = " + this->accept(error_model) + " + " + this->accept(res_err));
                 form.append(" # Is this how you expect the residual error to associate?");
             }
+        } else if (observationModel->hasGeneralErrorModel()) {
+            // General error model, so dump explicit assignment
+            AstNode *assignment = observationModel->getAssignment();
+            form.add(obs_name + " = " + this->accept(assignment));
         }
         
         form.closeVector();

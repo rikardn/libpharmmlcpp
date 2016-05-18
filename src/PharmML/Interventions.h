@@ -95,7 +95,7 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         xml::Node xml_node;
-        std::string oidRef;
+        ObjectRef *oidRef;
         std::vector<PharmML::ColumnMapping *> columnMappings;
         Dataset *dataset;
         
@@ -103,7 +103,7 @@ namespace PharmML
         IndividualAdministration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         xml::Node xml();
-        std::string getOidRef();
+        ObjectRef *getOidRef();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
         void accept(PharmMLVisitor *visitor);

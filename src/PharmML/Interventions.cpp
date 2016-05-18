@@ -192,7 +192,7 @@ namespace PharmML
         // Get intervention (oid) reference (for which individual times/amounts will be defined)
         xml::Node ref_node = this->context->getSingleElement(node, "./design:InterventionRef");
         if (ref_node.exists()) {
-            this->oidRef = ref_node.getAttribute("oidRef").getValue();
+            this->oidRef = new ObjectRef(ref_node);
         }
         
         // Get column mappings
@@ -211,7 +211,7 @@ namespace PharmML
     xml::Node IndividualAdministration::xml() {
         xml::Node ia("IndividualAdministration");
         xml::Node iref = ia.createChild("InterventionRef");
-        iref.setAttribute("oidRef", this->oidRef);
+        iref.setAttribute("oidRef", this->oidRef->getOidRef());
         for (ColumnMapping *cm : this->columnMappings) {
             ia.addChild(cm->xml());
         }
@@ -219,7 +219,7 @@ namespace PharmML
         return ia;
     }
 
-    std::string IndividualAdministration::getOidRef() {
+    ObjectRef *IndividualAdministration::getOidRef() {
         return this->oidRef;
     }
     

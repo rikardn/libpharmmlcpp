@@ -315,8 +315,8 @@ namespace PharmML
         std::string s = " = list(";
         std::vector<std::string> list;
         
-        if (node->getOidRef() != "") {
-            std::string s = "intervention_ref = '" + node->getOidRef() + "', ";
+        if (node->getOidRef()->getOidRef() != "") {
+            std::string s = "intervention_ref = '" + node->getOidRef()->getOidRef() + "', ";
             std::vector<std::string> list;
         }
         

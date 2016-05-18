@@ -52,7 +52,7 @@ namespace PharmML
             // Standard error model
             SymbRef *getOutput();
             AstNode *getErrorModel();
-            AstNode *getResidualError();
+            SymbRef *getResidualError();
             
             // General error model
             AstNode *getAssignment();
@@ -88,7 +88,7 @@ namespace PharmML
             // Standard error model
             SymbRef *output = nullptr;
             AstNode *errorModel = nullptr;
-            AstNode *residualError = nullptr;
+            SymbRef *residualError = nullptr;
             
             // General error model
             AstNode *generalAssignment = nullptr;

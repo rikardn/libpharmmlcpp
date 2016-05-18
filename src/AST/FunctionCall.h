@@ -39,7 +39,7 @@ namespace PharmML
             virtual void accept(AstNodeVisitor *visitor);
     };
     
-    class FunctionArgument : public AstNode
+    class FunctionArgument : public AstNode, public Referer
     {
         std::string symbId;
         AstNode *argument;
@@ -49,6 +49,7 @@ namespace PharmML
             std::string getSymbId();
             void setArgument(AstNode *node);
             AstNode *getArgument();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             virtual void accept(AstNodeVisitor *visitor);
     };
 }

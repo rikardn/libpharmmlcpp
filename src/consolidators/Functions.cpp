@@ -102,7 +102,7 @@ namespace CPharmML
                 
                 // Set the parameters
                 arg_map["proportional"] = num_to_arg[":1:"];
-                arg_map["f"]            = num_to_arg[":2:"];
+                arg_map["prediction"]   = num_to_arg[":2:"];
                 this->standardArgumentMaps[functionDefinition] = arg_map;
             } else if (anon_sig == "plus(:::;times(:::;:::))" || anon_sig == "plus(times(:::;:::);:::)") {
                 // combinedError1: 'plus(:1:;times(:2:;:3:))', where :1:(additive), :2:(proportional), :3:(f)
@@ -113,10 +113,10 @@ namespace CPharmML
                 if (anon_sig == "plus(:::;times(:::;:::))") {
                     arg_map["additive"]     = num_to_arg[":1:"];
                     arg_map["proportional"] = num_to_arg[":2:"];
-                    arg_map["f"]            = num_to_arg[":3:"];
+                    arg_map["prediction"]   = num_to_arg[":3:"];
                 } else { // anon_sig == "plus(times(:::;:::);:::)"
                     arg_map["proportional"] = num_to_arg[":1:"];
-                    arg_map["f"]            = num_to_arg[":2:"];
+                    arg_map["prediction"]   = num_to_arg[":2:"];
                     arg_map["additive"]     = num_to_arg[":3:"];
                 }
                 this->standardArgumentMaps[functionDefinition] = arg_map;

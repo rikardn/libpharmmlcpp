@@ -26,7 +26,7 @@ namespace PharmML
     class Logger
     {
         public:
-            void setToolname(std::string name);
+            void setToolName(std::string name);
             
             void warning(std::string message);
             void error(std::string message);

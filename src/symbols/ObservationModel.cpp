@@ -75,7 +75,7 @@ namespace PharmML
                 
                 // Get residual error (eps)
                 xml::Node res_node = this->context->getSingleElement(stand_node, "./mdef:ResidualError");
-                this->residualError = this->context->factory.create(res_node.getChild());
+                this->residualError = new SymbRef(res_node.getChild());
             } else if (general_node.exists()) {
                 // General/distributional error model (type 2/3): h(y) = H(f, xi, eps) / u(y) ~ distribution(parameter1, parameter2, ...)
                 this->Symbol::parse(general_node);
@@ -184,7 +184,7 @@ namespace PharmML
         return this->errorModel;
     }
     
-    AstNode *ObservationModel::getResidualError() {
+    SymbRef *ObservationModel::getResidualError() {
         return this->residualError;
     }
     

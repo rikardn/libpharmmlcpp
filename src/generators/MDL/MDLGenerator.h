@@ -47,6 +47,8 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <consolidators/Consolidator.h>
 #include <consolidators/PopulationParameters.h>
 
+#include <helpers/Logger.h>
+
 namespace PharmML
 {
     class MDLGenerator : public PharmMLVisitor
@@ -54,6 +56,7 @@ namespace PharmML
         private:
             MDLAstGenerator ast_gen;
             AstAnalyzer ast_analyzer;
+            Logger logger;
             
             std::vector<std::string> structuralParameterNames;
             std::vector<std::string> variabilityParameterNames;

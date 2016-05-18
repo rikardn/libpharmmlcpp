@@ -60,6 +60,7 @@ namespace PharmML
     
     // Generators
     std::string MDLGenerator::generateModel(Model *model) {
+        this->logger.setToolName("MDL");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         TextFormatter form;
         
@@ -463,9 +464,9 @@ namespace PharmML
                 
                 // Get the caller arguments
                 std::vector<FunctionArgument *> call_args = function_call->getFunctionArguments();
-                std::unordered_map<std::string, AstNode *> call_value;
+                std::unordered_map<std::string, FunctionArgument *> call_arg_map;
                 for (FunctionArgument *call_arg : call_args) {
-                    call_value[call_arg->getSymbId()] = call_arg->getArgument();
+                    call_arg_map[call_arg->getSymbId()] = call_arg;
                 }
                 
                 // Determine if function is known to MDL (tricky stuff)
@@ -481,18 +482,35 @@ namespace PharmML
                         form.add("trans is " + trans);
                     }
                     
+                    // Get structural model output and make a list of arguments referencing it
+                    SymbRef *output = observationModel->getOutput();
+                    std::vector<std::string> output_arg_names;
+                    
                     // Output the mapped arguments
-                    std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> arg_map = functions->getStandardArgumentMap(function_def);
-                    for (auto arg : arg_map) {
-                        std::string standard_arg_name = arg.first;
-                        std::string actual_arg_name = arg.second->getSymbId();
-                        form.add(standard_arg_name + " = " + this->accept(call_value[actual_arg_name]));
+                    std::unordered_map<std::string, FunctionArgumentDefinition *> def_arg_map = functions->getStandardArgumentMap(function_def);
+                    for (auto def_arg : def_arg_map) {
+                        std::string standard_arg_name = def_arg.first;
+                        std::string actual_arg_name = def_arg.second->getSymbId();
+                        
+                        // Check if it's a prediction argument and output the argument in standardized form
+                        FunctionArgument *call_arg = call_arg_map[actual_arg_name];
+                        if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
+                            output_arg_names.push_back(actual_arg_name);
+                        }
+                        form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
                     }
                     
-                    // Add the residual error and prediction
+                    // Add the residual error
                     form.add("eps = " + this->accept(observationModel->getResidualError()));
-                    form.add("prediction = " + this->accept(observationModel->getOutput()));
                     form.closeVector();
+                    
+                    // Warn if unexpected structure with regards to the output symbol
+                    if (output_arg_names.empty()) {
+                        this->logger.warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
+                    } else if (output_arg_names.size() > 1) {
+                        this->logger.warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
+                            + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", observationModel);
+                    }
                 } else {
                     // TODO: Non-standard function call must be resolved
                     form.openVector(obs_name + " : {}", 0, ", ");

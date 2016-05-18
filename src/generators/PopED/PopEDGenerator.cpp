@@ -37,7 +37,7 @@ namespace PharmML
     
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
-        this->logger.setToolname("PopED");
+        this->logger.setToolName("PopED");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;

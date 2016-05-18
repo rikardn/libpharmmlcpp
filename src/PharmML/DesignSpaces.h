@@ -30,9 +30,9 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::string oid;
-        std::vector<std::string> interventionRefs;
-        std::vector<std::string> observationRefs;
-        std::vector<std::string> armRefs;
+        std::vector<ObjectRef *> interventionRefs;
+        std::vector<ObjectRef *> observationRefs;
+        std::vector<ObjectRef *> armRefs;
         AstNode *dosingTimes = nullptr;
         
         public:
@@ -40,9 +40,9 @@ namespace PharmML
         void parse(xml::Node node);
         xml::Node xml();
         std::string getOid();
-        std::vector<std::string> getInterventionRefs();
-        std::vector<std::string> getObservationRefs();
-        std::vector<std::string> getArmRefs();
+        std::vector<ObjectRef *> getInterventionRefs();
+        std::vector<ObjectRef *> getObservationRefs();
+        std::vector<ObjectRef *> getArmRefs();
         AstNode *getDosingTimes();
         void accept(PharmMLVisitor *visitor);
     };

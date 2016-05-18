@@ -31,15 +31,15 @@ namespace PharmML
         // Get (oid) references
         std::vector<xml::Node> refs = this->context->getElements(node, "./design:InterventionRef");
         for (xml::Node ref : refs) {
-            this->interventionRefs.push_back(ref.getAttribute("oidRef").getValue());
+            this->interventionRefs.push_back(new ObjectRef(ref));
         }
         refs = this->context->getElements(node, "./design:ObservationRef");
         for (xml::Node ref : refs) {
-            this->observationRefs.push_back(ref.getAttribute("oidRef").getValue());
+            this->observationRefs.push_back(new ObjectRef(ref));
         }
         refs = this->context->getElements(node, "./design:ArmRef");
         for (xml::Node ref : refs) {
-            this->armRefs.push_back(ref.getAttribute("oidRef").getValue());
+            this->armRefs.push_back(new ObjectRef(ref));
         }
         xml::Node dosing_times = this->context->getSingleElement(node, "./design:DosingTimes");
         if (dosing_times.exists()) {
@@ -49,9 +49,9 @@ namespace PharmML
    
     xml::Node DesignSpace::xml() {
         xml::Node ds("DesignSpace");
-        for (std::string ref : this->interventionRefs) {
+        for (ObjectRef *ref : this->interventionRefs) {
             xml::Node iref = ds.createChild("InterventionRef");
-            iref.setAttribute("oidRef", ref);
+            iref.setAttribute("oidRef", ref->getOidRef());
         }
         if (this->dosingTimes) {
             xml::Node dt = ds.createChild("DosingTimes");
@@ -68,15 +68,15 @@ namespace PharmML
         return this->oid;
     }
     
-    std::vector<std::string> DesignSpace::getInterventionRefs() {
+    std::vector<ObjectRef *> DesignSpace::getInterventionRefs() {
         return this->interventionRefs;
     }
     
-    std::vector<std::string> DesignSpace::getObservationRefs() {
+    std::vector<ObjectRef *> DesignSpace::getObservationRefs() {
         return this->observationRefs;
     }
     
-    std::vector<std::string> DesignSpace::getArmRefs() {
+    std::vector<ObjectRef *> DesignSpace::getArmRefs() {
         return this->armRefs;
     }
         

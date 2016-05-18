@@ -671,20 +671,20 @@ namespace PharmML
         std::vector<std::string> list;
         
         std::vector<std::string> int_refs;
-        for (std::string ref : node->getInterventionRefs()) {
-            int_refs.push_back("'" + ref + "'");
+        for (ObjectRef *ref : node->getInterventionRefs()) {
+            int_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("intervention_refs = " + TextFormatter::createInlineVector(int_refs, "c()", ", "));
         
         std::vector<std::string> obs_refs;
-        for (std::string ref : node->getObservationRefs()) {
-            obs_refs.push_back("'" + ref + "'");
+        for (ObjectRef *ref : node->getObservationRefs()) {
+            obs_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("observation_refs = " + TextFormatter::createInlineVector(obs_refs, "c()", ", "));
         
         std::vector<std::string> arm_refs;
-        for (std::string ref : node->getArmRefs()) {
-            arm_refs.push_back("'" + ref + "'");
+        for (ObjectRef *ref : node->getArmRefs()) {
+            arm_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("arm_refs = " + TextFormatter::createInlineVector(arm_refs, "c()", ", "));
         

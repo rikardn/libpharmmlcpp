@@ -81,6 +81,7 @@ namespace PharmML
         public:
         Administration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
         xml::Node xml();
         std::string getType();
         AstNode *getTarget();
@@ -91,7 +92,7 @@ namespace PharmML
         void accept(PharmMLVisitor *visitor);
     };
     
-    class IndividualAdministration
+    class IndividualAdministration : public ObjectReferer
     {
         PharmML::PharmMLContext *context;
         xml::Node xml_node;
@@ -102,6 +103,7 @@ namespace PharmML
         public:
         IndividualAdministration(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
         xml::Node xml();
         ObjectRef *getOidRef();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();

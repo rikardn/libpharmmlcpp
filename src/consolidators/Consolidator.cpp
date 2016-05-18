@@ -148,9 +148,12 @@ namespace CPharmML
             }
         }
 
-        /*for (PharmML::Object *obj : this->allObjects) {
-            std::cout << obj->getOid() << std::endl;
-        }*/
+        // Obtain a map from all oids to Objects. Will be used to populate ObjectRefs
+        std::unordered_map<std::string, PharmML::Object *> oidMap;
+        for (PharmML::Object *object : this->allObjects) {
+            oidMap[object->getOid()] = object;
+        }
+
     }
 
     // Print an error for duplicate oid

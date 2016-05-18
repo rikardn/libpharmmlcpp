@@ -377,8 +377,8 @@ namespace PharmML
         std::string s = node->getOid() + " <- list(";
         
         s += "times = " + this->accept(node->getTimes());
-        if (node->getOidRef() != "") {
-            s += ", oidRef = \"" + node->getOidRef() + "\"";
+        if (node->getOidRef()->getOidRef() != "") {
+            s += ", oidRef = \"" + node->getOidRef()->getOidRef() + "\"";
         }
         if (node->getNumber()) {
             s += ", number = " + this->accept(node->getNumber());

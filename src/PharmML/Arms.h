@@ -100,6 +100,7 @@ namespace PharmML
         public:
         Arm(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
         xml::Node xml();
         std::string getOidRef();
         AstNode *getArmSize();

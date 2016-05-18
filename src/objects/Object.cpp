@@ -23,11 +23,10 @@ namespace PharmML
     std::string Object::getOid() {
         return this->oid;
     }
-    
+
     void Object::parse(xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
     }
-
 
     ObjectRef::ObjectRef(xml::Node node) {
         this->oidRef = node.getAttribute("oidRef").getValue();
@@ -40,7 +39,7 @@ namespace PharmML
     Object *ObjectRef::getObject() {
         return this->object;
     }
-            
+
     void ObjectRef::setObject(Object *object) {
         this->object = object;
     }

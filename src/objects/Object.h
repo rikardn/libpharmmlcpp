@@ -29,11 +29,16 @@
 
 namespace PharmML
 {
-    class Object
+    class Object;
+    class ObjectReferer
+    {
+        virtual void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) = 0;
+    };
+
+    class Object : public ObjectReferer
     {
         public:
             std::string getOid();
-            //virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
             //TODO: Visitor for virtual void accept(ObjectVisitor *visitor) = 0;
 
         protected:

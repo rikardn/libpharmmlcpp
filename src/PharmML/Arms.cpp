@@ -217,7 +217,7 @@ namespace PharmML
             ObservationSequence *sequence = new ObservationSequence(this->context, node);
             this->observationSequences.push_back(sequence);
         }
-        
+
         // Get occasion sequences
         sequence = this->context->getElements(node, "./design:OccasionSequence");
         for (xml::Node node : sequence) {
@@ -225,7 +225,20 @@ namespace PharmML
             this->occasionSequences.push_back(sequence);
         }
     }
-   
+
+    void Arm::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
+        for (InterventionSequence *is : this->interventionSequences) {
+            for (ObjectRef *ref : is->getOidRefs()) {
+                ref->setObject(oidMap[ref->getOidRef()]);
+            }
+        }
+        for (ObservationSequence *os : this->observationSequences) {
+            for (ObjectRef *ref : os->getOidRefs()) {
+                ref->setObject(oidMap[ref->getOidRef()]);
+            }
+        }
+    }
+
     xml::Node Arm::xml() {
         xml::Node arm("Arm");
         arm.setAttribute("oid", this->oid);

@@ -34,7 +34,7 @@ namespace PharmML
     class Observation : public Object
     {
         PharmML::PharmMLContext *context;
-        std::string oidRef;
+        ObjectRef *oidRef;
         AstNode *number = nullptr;
         AstNode *times = nullptr;
         std::vector<PharmML::SymbRef *> continuousVariables;
@@ -43,7 +43,8 @@ namespace PharmML
         public:
         Observation(PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
-        std::string getOidRef();
+        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
+        ObjectRef* getOidRef();
         AstNode *getNumber();
         AstNode *getTimes();
         std::vector<PharmML::SymbRef *> getContinuousVariables();
@@ -61,6 +62,7 @@ namespace PharmML
         public:
         IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
+        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
         xml::Node xml();
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();

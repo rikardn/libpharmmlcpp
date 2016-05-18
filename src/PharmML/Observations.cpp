@@ -31,7 +31,7 @@ namespace PharmML
         // Get (oid) observation references (to observations already defined)
         xml::Node reference = this->context->getSingleElement(node, "./design:ObservationRef");
         if (reference.exists()) {
-            this->oidRef = reference.getAttribute("oidRef").getValue();
+            this->oidRef = new ObjectRef(reference);
         }
         
         // Get NumberTimes (what is this even?)
@@ -69,7 +69,11 @@ namespace PharmML
         }
     }
 
-    std::string Observation::getOidRef() {
+    void Observation::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
+        this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+    }
+
+    ObjectRef* Observation::getOidRef() {
         return this->oidRef;
     }
     

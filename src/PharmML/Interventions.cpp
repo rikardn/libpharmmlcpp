@@ -208,6 +208,10 @@ namespace PharmML
         this->dataset = ds;
     }
    
+    void IndividualAdministration::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
+        this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+    }
+
     xml::Node IndividualAdministration::xml() {
         xml::Node ia("IndividualAdministration");
         xml::Node iref = ia.createChild("InterventionRef");

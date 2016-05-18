@@ -154,6 +154,19 @@ namespace CPharmML
             oidMap[object->getOid()] = object;
         }
 
+        for (PharmML::Object *object : this->allObjects) {
+            object->gatherObjectRefs(oidMap);
+        }
+
+        // Populate ObjectReferer ObjectRefs
+        if (td) {
+            PharmML::Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                for (PharmML::IndividualAdministration *ia : interventions->getIndividualAdministrations()) {
+                    ia->gatherObjectRefs(oidMap);
+                }
+            }
+        }
     }
 
     // Print an error for duplicate oid

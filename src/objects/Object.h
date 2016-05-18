@@ -32,7 +32,8 @@ namespace PharmML
     class Object;
     class ObjectReferer
     {
-        virtual void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) = 0;
+        public:
+            virtual void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) = 0;
     };
 
     class Object : public ObjectReferer

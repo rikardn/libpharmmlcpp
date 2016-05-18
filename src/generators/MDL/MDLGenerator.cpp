@@ -538,6 +538,11 @@ namespace PharmML
         TextFormatter form;
         
         form.indentAdd("taskObj {");
+        
+        form.openVector("ESTIMATE {}", 1, "");
+        form.add("set algo is saem");
+        form.closeVector();
+        
         form.outdentAdd("}");
         
         return form.createString();

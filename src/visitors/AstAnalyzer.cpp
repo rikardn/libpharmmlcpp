@@ -506,8 +506,12 @@ namespace PharmML
         if (node->getExpression()) {
             s += this->accept(node->getExpression()) + ";";
         }
-        s += "Condition[" + this->accept(node->getCondition()) + "]";
-        this->setValue("Piece[" + s + "]");
+        if (!node->isOtherwise()) {
+            s += "Condition[" + this->accept(node->getCondition()) + "]";
+            this->setValue("Piece[" + s + "]");
+        } else {
+            this->setValue("Otherwise[" + s + "]");
+        }
         this->first_node = false;
     }
     

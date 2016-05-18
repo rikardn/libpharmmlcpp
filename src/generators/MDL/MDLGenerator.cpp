@@ -450,11 +450,8 @@ namespace PharmML
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
         
-        std::string name = observationModel->getSymbId();
+        std::string obs_name = observationModel->getSymbId();
         if (observationModel->hasStandardErrorModel()) {
-            form.openVector(name + " : {}", 0, ", ");
-            form.add("prediction = " + this->accept(observationModel->getOutput()));
-            
             // Determine if error model is a pure function call
             AstNode *error_model = observationModel->getErrorModel();
             this->ast_analyzer.reset();
@@ -464,17 +461,51 @@ namespace PharmML
                 // Resolve the call
                 FunctionDefinition *function_def = functions->resolveFunctionCall(function_call);
                 
+                // Get the caller arguments
+                std::vector<FunctionArgument *> call_args = function_call->getFunctionArguments();
+                std::unordered_map<std::string, AstNode *> call_value;
+                for (FunctionArgument *call_arg : call_args) {
+                    call_value[call_arg->getSymbId()] = call_arg->getArgument();
+                }
+                
                 // Determine if function is known to MDL (tricky stuff)
                 if (functions->isStandardFunction(function_def)) {
+                    form.openVector(obs_name + " : {}", 0, ", ");
                     form.add("type is " + functions->getStandardFunctionName(function_def));
+                    
+                    // Get transformation is available (don't know MDL syntax definitely)
+                    std::string trans = observationModel->getTransformation();
+                    if (trans == "log") {
+                        form.add("trans is ln");
+                    } else if (trans != "") {
+                        form.add("trans is " + trans);
+                    }
+                    
+                    // Output the mapped arguments
                     std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> arg_map = functions->getStandardArgumentMap(function_def);
                     for (auto arg : arg_map) {
-                        form.add(arg.first + " = I_SLEEP");
+                        std::string standard_arg_name = arg.first;
+                        std::string actual_arg_name = arg.second->getSymbId();
+                        form.add(standard_arg_name + " = " + this->accept(call_value[actual_arg_name]));
                     }
+                    
+                    // Add the residual error and prediction
+                    form.add("eps = " + this->accept(observationModel->getResidualError()));
+                    form.add("prediction = " + this->accept(observationModel->getOutput()));
+                    form.closeVector();
+                } else {
+                    // TODO: Non-standard function call must be resolved
+                    form.openVector(obs_name + " : {}", 0, ", ");
+                    form.add("type is \"" + function_def->getSymbId() + "\"");
+                    form.append(" # Function call not recognized");
+                    form.closeVector();
                 }
+            } else {
+                // Not a pure function call, so dump in explicit assignment
+                AstNode *res_err = observationModel->getResidualError();
+                form.add(obs_name + " = " + this->accept(error_model) + " + " + this->accept(res_err));
+                form.append(" # Is this how you expect the residual error to associate?");
             }
-            
-            form.closeVector();
         }
         
         form.closeVector();

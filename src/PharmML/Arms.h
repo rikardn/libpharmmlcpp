@@ -59,14 +59,14 @@ namespace PharmML
     class ObservationSequence
     {
         PharmML::PharmMLContext *context;
-        std::vector<std::string> oidRefs;
+        std::vector<ObjectRef *> oidRefs;
         AstNode *start = nullptr;
         
         public:
         ObservationSequence(PharmML::PharmMLContext *context, xml::Node node);
         void parse(xml::Node node);
         xml::Node xml();
-        std::vector <std::string> getOidRefs();
+        std::vector<ObjectRef *> getOidRefs();
         AstNode *getStart();
         void accept(PharmMLVisitor *visitor);
     };

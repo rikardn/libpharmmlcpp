@@ -99,7 +99,7 @@ namespace PharmML
         xml::Node observationList = this->context->getSingleElement(node, "./design:ObservationList");
         std::vector<xml::Node> observationRefs = this->context->getElements(observationList, "./design:ObservationRef");
         for (xml::Node ref : observationRefs) {
-            this->oidRefs.push_back(ref.getAttribute("oidRef").getValue());
+            this->oidRefs.push_back(new ObjectRef(ref));
         }
         
         // Get start value
@@ -113,14 +113,14 @@ namespace PharmML
         xml::Node oseq("ObservationSequence");
         xml::Node olist = oseq.createChild("ObservationList");
         xml::Node child;
-        for (std::string ref : this->oidRefs) {
+        for (ObjectRef *ref : this->oidRefs) {
             child = olist.createChild("ObservationRef");
-            child.setAttribute("oidRef", ref);
+            child.setAttribute("oidRef", ref->getOidRef());
         }
         return oseq;
     }
 
-    std::vector<std::string> ObservationSequence::getOidRefs() {
+    std::vector<ObjectRef *> ObservationSequence::getOidRefs() {
         return this->oidRefs;
     }
     

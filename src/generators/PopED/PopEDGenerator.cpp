@@ -335,8 +335,23 @@ namespace PharmML
 
         form.add("d = c()");
         form.add("groupsize = 1");
+
+        // Generate trial design information
+        PopEDObjects td_visitor;
+
+        TrialDesign *td = this->model->getTrialDesign();
+        if (td) {
+            Arms *arms = td->getArms();
+            if (arms) {
+                for (Arm *arm : arms->getArms()) {
+                    arm->accept(&td_visitor);
+                    std::cout << td_visitor.getValue() << std::endl;
+                }
+            }
+        }
+
         form.closeVector();
-        
+
         return form.createString();
     }
     

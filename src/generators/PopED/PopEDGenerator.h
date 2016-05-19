@@ -34,6 +34,7 @@
 #include <generators/PopED/PopEDPastDerivativesSymbols.h>
 #include <generators/PopED/PopEDErrorAstGenerator.h>
 #include <helpers/Logger.h>
+#include <generators/PopED/PopEDObjects.h>
 
 namespace PharmML
 {

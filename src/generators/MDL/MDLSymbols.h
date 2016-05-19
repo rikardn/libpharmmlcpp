@@ -46,18 +46,18 @@ namespace PharmML
             std::unordered_map<Symbol *, int> symbol_numbermap;
 
         public:
-            void visit(ObservationModel *node);
-            void visit(PopulationParameter *node);
-            void visit(IndividualParameter *node);
-            void visit(RandomVariable *node);
-            void visit(VariabilityLevel *node);
-            void visit(IndependentVariable *node);
-            void visit(Variable *node);
-            void visit(DerivativeVariable *node);
-            void visit(Covariate *node);
+            void visit(ObservationModel *node) override;
+            void visit(PopulationParameter *node) override;
+            void visit(IndividualParameter *node) override;
+            void visit(RandomVariable *node) override;
+            void visit(VariabilityLevel *node) override;
+            void visit(IndependentVariable *node) override;
+            void visit(Variable *node) override;
+            void visit(DerivativeVariable *node) override;
+            void visit(Covariate *node) override;
             
-            void visit(FunctionDefinition *node);
-            void visit(FunctionArgumentDefinition *node);
+            void visit(FunctionDefinition *node) override;
+            void visit(FunctionArgumentDefinition *node) override;
     };
 }
 

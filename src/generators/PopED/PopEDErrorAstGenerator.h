@@ -45,7 +45,7 @@ namespace PharmML
     class PopEDErrorAstGenerator : public RAstGenerator
     {
         public:
-            void visit(FunctionCall *node);
+            void visit(FunctionCall *node) override;
     };
 }
 

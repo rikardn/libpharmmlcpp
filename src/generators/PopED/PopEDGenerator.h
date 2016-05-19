@@ -61,48 +61,48 @@ namespace PharmML
         public:
             std::string getValue();
             std::string generateModel(Model *model);
-            
-            virtual void visit(FunctionDefinition *node);
-            virtual void visit(FunctionArgumentDefinition *node);
-            
-            virtual void visit(PopulationParameter *node);
-            virtual void visit(IndividualParameter *node);
-            virtual void visit(RandomVariable *node);
-            virtual void visit(VariabilityLevel *node);
-            virtual void visit(Correlation *node);
-            virtual void visit(Covariate *node);
-            virtual void visit(IndependentVariable *node);
-            virtual void visit(Variable *node);
-            virtual void visit(DerivativeVariable *node);
-            virtual void visit(ObservationModel *node);
-            virtual void visit(Distribution *node);
-            virtual void visit(ColumnMapping *node);
-            
-            virtual void visit(ExternalFile *node);
-            virtual void visit(DataColumn *node);
-            virtual void visit(Dataset *node);
-            
-            virtual void visit(ExternalDataset *node);
-            
-            virtual void visit(Interventions *node);
-            virtual void visit(Administration *node);
-            virtual void visit(IndividualAdministration *node);
-            
-            virtual void visit(Observations *node);
-            virtual void visit(Observation *node);
-            virtual void visit(IndividualObservations *node);
-            virtual void visit(ObservationCombination *node);
-            
-            virtual void visit(Arms *node);
-            virtual void visit(Arm *node);
-            virtual void visit(InterventionSequence *node);
-            virtual void visit(ObservationSequence *node);
-            virtual void visit(OccasionSequence *node);
-            
-            virtual void visit(DesignSpaces *node);
-            virtual void visit(DesignSpace *node);
-            
-            virtual void visit(ParameterEstimation *node);
+
+            void visit(FunctionDefinition *node) override;
+            void visit(FunctionArgumentDefinition *node) override;
+
+            void visit(PopulationParameter *node) override;
+            void visit(IndividualParameter *node) override;
+            void visit(RandomVariable *node) override;
+            void visit(VariabilityLevel *node) override;
+            void visit(Correlation *node) override;
+            void visit(Covariate *node) override;
+            void visit(IndependentVariable *node) override;
+            void visit(Variable *node) override;
+            void visit(DerivativeVariable *node) override;
+            void visit(ObservationModel *node) override;
+            void visit(Distribution *node) override;
+            void visit(ColumnMapping *node) override;
+
+            void visit(ExternalFile *node) override;
+            void visit(DataColumn *node) override;
+            void visit(Dataset *node) override;
+
+            void visit(ExternalDataset *node) override;
+
+            void visit(Interventions *node) override;
+            void visit(Administration *node) override;
+            void visit(IndividualAdministration *node) override;
+
+            void visit(Observations *node) override;
+            void visit(Observation *node) override;
+            void visit(IndividualObservations *node) override;
+            void visit(ObservationCombination *node) override;
+
+            void visit(Arms *node) override;
+            void visit(Arm *node) override;
+            void visit(InterventionSequence *node) override;
+            void visit(ObservationSequence *node) override;
+            void visit(OccasionSequence *node) override;
+
+            void visit(DesignSpaces *node) override;
+            void visit(DesignSpace *node) override;
+
+            void visit(ParameterEstimation *node) override;
     };
 }
 

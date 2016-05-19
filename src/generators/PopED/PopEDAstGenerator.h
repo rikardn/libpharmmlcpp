@@ -48,7 +48,7 @@ namespace PharmML
             PopEDAstGenerator();
             PopEDAstGenerator(PopEDSymbols *symbgen);
             ~PopEDAstGenerator();
-            void visit(SymbRef *node);
+            void visit(SymbRef *node) override;
     };
 }
 

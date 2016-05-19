@@ -38,15 +38,15 @@ namespace PharmML
     class PopEDPastDerivativesSymbols : public PopEDSymbols
     {
         public:
-            virtual void visit(ObservationModel *node);
-            virtual void visit(PopulationParameter *node);
-            virtual void visit(IndividualParameter *node);
-            virtual void visit(VariabilityLevel *node);
-            virtual void visit(IndependentVariable *node);
-            virtual void visit(Variable *node);
-            virtual void visit(DerivativeVariable *node);
-            virtual void visit(RandomVariable *node);
-            virtual void visit(FunctionDefinition *node);
+            void visit(ObservationModel *node) override;
+            void visit(PopulationParameter *node) override;
+            void visit(IndividualParameter *node) override;
+            void visit(VariabilityLevel *node) override;
+            void visit(IndependentVariable *node) override;
+            void visit(Variable *node) override;
+            void visit(DerivativeVariable *node) override;
+            void visit(RandomVariable *node) override;
+            void visit(FunctionDefinition *node) override;
     };
 }
 

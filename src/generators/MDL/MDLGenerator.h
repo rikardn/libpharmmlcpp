@@ -51,6 +51,19 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 
 namespace PharmML
 {
+    struct MDLObject {
+        std::string name;
+        std::string code;
+    };
+    
+    struct MDLObjects {
+        std::vector<MDLObject> data;
+        std::vector<MDLObject> parameter;
+        std::vector<MDLObject> model;
+        std::vector<MDLObject> task;
+        std::vector<MDLObject> mog;
+    };
+    
     class MDLGenerator : public PharmMLVisitor
     {
         private:
@@ -96,7 +109,8 @@ namespace PharmML
             
             std::string genMdlObj(PharmML::Model *model);
             std::string genTaskObj();
-            std::string genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj);
+            std::string genMogObj(MDLObjects &objects);
+            std::string genCompleteMDL(MDLObjects &objects);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;

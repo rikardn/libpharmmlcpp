@@ -62,16 +62,19 @@ namespace PharmML
     std::string MDLGenerator::generateModel(Model *model) {
         this->logger.setToolName("MDL");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
-        TextFormatter form;
+        
+        // Store generated objects here
+        MDLObjects objects;
+
+        std::string name;
         
         // Generate the MDL data object(s)
         std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
-        std::vector<std::string> dataObjNames;
         for (ExternalDataset *ext_ds : ext_dss) {
-            std::string name = ext_ds->getOid();
-            dataObjNames.push_back(name);
-            form.addMany(name + " = " + this->genDataObj(ext_ds));
-            form.add("");
+            MDLObject object;
+            object.name = ext_ds->getOid();
+            object.code = this->genDataObj(ext_ds);
+            objects.data.push_back(object);
         }
         
         // Generate the MDL parameter object(s)
@@ -79,33 +82,33 @@ namespace PharmML
         //~ std::vector<ParameterModel *> par_models = model->getModelDefinition()->getParameterModels();
         //~ for (par_model : par_models) {
         ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
-        std::vector<std::string> parObjNames;
-        std::string name = par_model->getBlkId();
-        parObjNames.push_back(name);
+        MDLObject object;
+        object.name = par_model->getBlkId();
         std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
         //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
         std::vector<CPharmML::PopulationParameter *> populationParameters = model->getConsolidator()->getPopulationParameters();
-        form.addMany(name + " = " + this->genParObj(populationParameters));
-        form.add("");
+        object.code = this->genParObj(populationParameters);
+        objects.parameter.push_back(object);
         //~ }
         
         
         // Generate the MDL model object(s)
-        std::vector<std::string> mdlObjNames;
-        mdlObjNames.push_back("mdl_object");
-        form.addMany(mdlObjNames[0] + " = " + this->genMdlObj(model));
-        form.add("");
+        object.name = "mdl_object";
+        object.code = this->genMdlObj(model);
+        objects.model.push_back(object);
         
         // Generate the MDL task object(s)
-        std::vector<std::string> taskObjNames;
-        taskObjNames.push_back("task_object");
-        form.addMany(taskObjNames[0] + " = " + this->genTaskObj());
-        form.add("");
+        object.name = "task_object";
+        object.code = this->genTaskObj();
+        objects.task.push_back(object);
         
         // Generate the MDL mog object(s)
-        form.addMany("mog_object = " + this->genMogObj(dataObjNames[0], parObjNames[0], mdlObjNames[0], taskObjNames[0]));
+        object.name = "mog_obj";
+        object.code = this->genMogObj(objects);
+        objects.mog.push_back(object);
         
-        return form.createString();
+        // Output collection of MDL object(s)
+        return this->genCompleteMDL(objects);
     }
     
     std::string MDLGenerator::genDataObj(ExternalDataset* ext_ds) {
@@ -548,17 +551,60 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genMogObj(std::string dataObj, std::string parObj, std::string mdlObj, std::string taskObj) {
+    std::string MDLGenerator::genMogObj(MDLObjects &objects) {
         TextFormatter form;
         
         form.indentAdd("mogObj {");
         form.openVector("OBJECTS {}", 1, "");
-        form.add(dataObj + " : { type is dataObj }");
-        form.add(parObj + " : { type is parObj }");
-        form.add(mdlObj + " : { type is mdlObj }");
-        form.add(taskObj + " : { type is taskObj }");
+        
+        // Object selection
+        std::vector<std::pair<std::string, std::vector<MDLObject>>> typed_objects({
+            {"dataObj", objects.data},
+            {"parObj", objects.parameter},
+            {"mdlObj", objects.model},
+            {"taskObj", objects.task}
+        });
+        for (auto it = typed_objects.begin(); it != typed_objects.end(); ++it) {
+            std::string type = (*it).first;
+            std::vector<MDLObject> objs = (*it).second;
+            if (objs.empty()) {
+                this->logger.warning("No objects of type '" + type + "' for Modelling Object Group generated");
+            } else {
+                form.add(objs[0].name + " : { type is " + type + " }");
+                if (objs.size() > 1) {
+                    this->logger.warning("Multiple objects of type '" + type + "' generated: Only one set active in Modelling Object Group");
+                    for (auto it = objs.begin() + 1; it != objs.end(); ++it) {
+                        form.add("# " + (*it).name + " : { type is " + type + " }");
+                    }
+                }
+            }
+        }
+        
         form.closeVector();
         form.outdentAdd("}");
+        
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genCompleteMDL(MDLObjects &objects) {
+        TextFormatter form;
+        
+        // Output all objects
+        std::vector<std::pair<std::string, std::vector<MDLObject>>> typed_objects({
+            {"dataObj", objects.data},
+            {"parObj", objects.parameter},
+            {"mdlObj", objects.model},
+            {"taskObj", objects.task},
+            {"mogObj", objects.mog},
+        });
+        for (auto it = typed_objects.begin(); it != typed_objects.end(); ++it) {
+            std::string type = (*it).first;
+            std::vector<MDLObject> objs = (*it).second;
+            for (MDLObject obj : objs) {
+                form.addMany(obj.name + " = " + obj.code);
+                form.emptyLine();
+            }
+        }
         
         return form.createString();
     }

@@ -27,6 +27,7 @@
 #include <PharmML/Dataset.h>
 #include <objects/Object.h>
 #include <PharmML/PharmMLSection.h>
+#include <visitors/ObjectVisitor.h>
 
 namespace PharmML
 {
@@ -90,6 +91,7 @@ namespace PharmML
         AstNode *getDuration();
         AstNode *getRate();
         void accept(PharmMLVisitor *visitor);
+        void accept(ObjectVisitor *visitor);
     };
     
     class IndividualAdministration : public ObjectReferer

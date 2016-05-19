@@ -27,6 +27,7 @@
 #include <PharmML/Dataset.h>
 #include <objects/Object.h>
 #include <PharmML/PharmMLSection.h>
+#include <visitors/ObjectVisitor.h>
 //~ #include "ExternalDataset.h" // Check comments in this file
 
 namespace PharmML
@@ -50,6 +51,7 @@ namespace PharmML
         std::vector<PharmML::SymbRef *> getContinuousVariables();
         std::vector<PharmML::SymbRef *> getDiscreteVariables();
         void accept(PharmMLVisitor *visitor);
+        void accept(ObjectVisitor *visitor);
     };
     
     // IndividualObservations class
@@ -67,6 +69,7 @@ namespace PharmML
         std::vector<PharmML::ColumnMapping *> getColumnMappings();
         Dataset *getDataset();
         void accept(PharmMLVisitor *visitor);
+        void accept(ObjectVisitor *visitor);
     };
     
     // ObservationCombination class

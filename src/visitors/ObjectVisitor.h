@@ -15,14 +15,15 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_OBJECT_H_
-#define PHARMML_OBJECT_H_
+#ifndef PHARMML_OBJECTVISITOR_H_
+#define PHARMML_OBJECTVISITOR_H_
 
 namespace PharmML
 {
     class Arm;
     class Administration;
     class IndividualObservations;
+    class Observation;
 
     class ObjectVisitor
     {

@@ -18,6 +18,7 @@
 #ifndef PHARMML_ARMS_H_
 #define PHARMML_ARMS_H_
 
+#include <visitors/ObjectVisitor.h>
 #include <symbols/Variable.h>
 #include <AST/symbols.h>
 #include <xml/xml.h>
@@ -109,7 +110,8 @@ namespace PharmML
         AstNode *getSameTimes();
         std::vector<InterventionSequence *> getInterventionSequences();
         std::vector<ObservationSequence *> getObservationSequences();
-        void accept(PharmMLVisitor *visitor);
+        void accept(PharmMLVisitor *visitor);   // FIXME: Remove this
+        void accept(ObjectVisitor *visitor);
     };
     
     class Arms

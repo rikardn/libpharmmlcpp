@@ -96,7 +96,11 @@ namespace PharmML
     void Observation::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
-    
+   
+    void Observation::accept(ObjectVisitor *visitor) {
+        visitor->visit(this);
+    }
+
     // IndividualObservations class
     IndividualObservations::IndividualObservations(PharmML::PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
@@ -140,7 +144,11 @@ namespace PharmML
     void IndividualObservations::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
-    
+
+    void IndividualObservations::accept(ObjectVisitor *visitor) {
+        visitor->visit(this);
+    }
+
     // ObservationCombination class
     ObservationCombination::ObservationCombination(PharmMLContext *context, xml::Node node) {
         this->context = context;

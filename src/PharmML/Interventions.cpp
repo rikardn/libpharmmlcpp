@@ -181,7 +181,11 @@ namespace PharmML
     void Administration::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
-    
+
+    void Administration::accept(ObjectVisitor *visitor) {
+        visitor->visit(this);
+    }
+
     // IndividualAdministration class
     IndividualAdministration::IndividualAdministration(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;

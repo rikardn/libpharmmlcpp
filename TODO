@@ -1,5 +1,7 @@
 * Should not assume that for example one and only one ParameterModel exists.
 * blkId as namespace to symbIds
 * gather Symbols/Objects to be done via call to model and recursion
+* Remove Objects from PharmML visitor. Now kept duplicated
+
 
 * IndividualParameter to have method to create assignment of structured form (and back would be good of course!)

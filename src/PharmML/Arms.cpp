@@ -279,10 +279,14 @@ namespace PharmML
         return this->observationSequences;
     }
     
+    void Arm::accept(ObjectVisitor *visitor) {
+        visitor->visit(this);
+    }
+
     void Arm::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
-    
+
     // Arms class
     Arms::Arms(PharmMLContext *context, xml::Node node) {
         this->context = context;

@@ -64,6 +64,7 @@ namespace CPharmML
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
+            void consolidateTrialDesign(PharmML::Model *model);
             void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }

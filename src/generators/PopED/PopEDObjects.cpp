@@ -36,10 +36,9 @@ namespace PharmML
     void PopEDObjects::visit(IndividualObservations *object) {
         Dataset *ds = object->getDataset();
         DataColumn *col = ds->getIdvColumn();
-        if (!col) {     // No idv column was found
-            this->logger.error("Missing idv column in IndividualObservations", object);
-            return;
-        }
         std::vector<AstNode *> data = col->getData();
+        //for (AstNode *node : data) {
+            
+        //}
     }
 }

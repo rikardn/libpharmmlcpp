@@ -20,6 +20,7 @@
 
 #include <string>
 #include <visitors/AstNodeVisitor.h>
+#include <visitors/AstAnalyzer.h>
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
 #include <AST/Binop.h>
@@ -35,13 +36,16 @@
 #include <PharmML/Interventions.h>
 #include <generators/TextFormatter.h>
 #include <generators/MDL/MDLSymbols.h> // Include for now
+#include <helpers/Logger.h>
 
 namespace PharmML
 {
     class MDLAstGenerator : public AstNodeVisitor
     {
         private:
+            Logger *logger;
             MDLSymbols symbgen;
+            AstAnalyzer ast_analyzer;
             
         protected:
             std::string value;
@@ -54,6 +58,7 @@ namespace PharmML
             std::string getLogicLiteral(bool value);
 
         public:
+            MDLAstGenerator(Logger *logger);
             std::string getValue();
 
             void visit(SymbRef *node) override;

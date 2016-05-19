@@ -20,10 +20,11 @@
 
 #include <string>
 #include <visitors/AstNodeVisitor.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
-    class AstNode
+    class AstNode : public PharmMLSection
     {
         public:
             virtual void accept(AstNodeVisitor *visitor) = 0;

@@ -46,6 +46,7 @@ namespace PharmML
             SymbRef *symbref;
             Scalar *scalar;
             FunctionCall *functioncall;
+            Piecewise *piecewise;
             
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);
@@ -61,6 +62,7 @@ namespace PharmML
             SymbRef *getPureSymbRef();
             Scalar *getPureScalar();
             FunctionCall *getPureFunctionCall();
+            Piecewise *getPurePiecewise();
             
             virtual void visit(SymbRef *node);
             virtual void visit(SteadyStateParameter *node);

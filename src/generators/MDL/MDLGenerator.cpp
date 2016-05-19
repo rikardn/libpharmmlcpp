@@ -37,11 +37,16 @@ namespace PharmML
     }
 
     std::string MDLGenerator::accept(AstNode *node) {
-        node->accept(&this->ast_gen);
-        return ast_gen.getValue();
+        node->accept(this->ast_gen);
+        return ast_gen->getValue();
     }
 
     // public
+    MDLGenerator::MDLGenerator() {
+        this->logger.setToolName("MDL");
+        this->ast_gen = new MDLAstGenerator(&this->logger);
+    }
+    
     std::string MDLGenerator::getValue() {
         return this->value;
     }
@@ -60,7 +65,6 @@ namespace PharmML
     
     // Generators
     std::string MDLGenerator::generateModel(Model *model) {
-        this->logger.setToolName("MDL");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         
         // Store generated objects here
@@ -698,8 +702,7 @@ namespace PharmML
                 form.add("ranEff = " + TextFormatter::createInlineVector(rands, "[]", ", "));
             }
         } else {
-            node->getAssignment()->accept(&this->ast_gen);
-            std::string assign = this->ast_gen.getValue();
+            std::string assign = this->accept(node->getAssignment());
             form.add(name + " = " + assign);
         }
        

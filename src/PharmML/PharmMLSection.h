@@ -28,10 +28,10 @@ namespace PharmML
             xml::Node xml_node;
 
         protected:
-            void setXMLNode(xml::Node node);
 
         public:
             xml::Node getXMLNode();
+            void setXMLNode(xml::Node node);
     };
 }
 

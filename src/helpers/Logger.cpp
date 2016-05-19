@@ -20,6 +20,14 @@
 
 namespace PharmML
 {
+    Logger::Logger() {
+        
+    }
+    
+    Logger::Logger(std::string name) {
+        this->setToolName(name);
+    }
+    
     void Logger::setToolName(std::string name) {
         tool_name = name + " ";
     }

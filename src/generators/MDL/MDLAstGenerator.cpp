@@ -16,6 +16,7 @@
  */
 
 #include "MDLAstGenerator.h"
+#include <generators/TextFormatter.h>
 
 namespace PharmML
 {
@@ -55,13 +56,17 @@ namespace PharmML
 
     std::string MDLAstGenerator::getLogicLiteral(bool value) {
         if (value) {
-            return "TRUE";
+            return "true";
         } else {
-            return "FALSE";
+            return "false";
         }
     }
 
     // public
+    MDLAstGenerator::MDLAstGenerator(Logger *logger) {
+        this->logger = logger;
+    }
+    
     std::string MDLAstGenerator::getValue() {
         return this->value;
     }
@@ -96,7 +101,7 @@ namespace PharmML
     }
 
     void MDLAstGenerator::visit(UniopLog *node) {
-        this->setValue("log(" + this->acceptChild(node) + ")");
+        this->setValue("ln(" + this->acceptChild(node) + ")");
     }
     
     void MDLAstGenerator::visit(UniopLog2 *node) {
@@ -128,7 +133,7 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(UniopLogit *node) {
-        this->setValue("log((" + this->acceptChild(node) + ")/(1 - " + this->acceptChild(node) + "))");
+        this->setValue("ln((" + this->acceptChild(node) + ")/(1 - " + this->acceptChild(node) + "))");
     }
     
     void MDLAstGenerator::visit(UniopProbit *node) {
@@ -300,7 +305,7 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(BinopLogx *node) {
-        this->setValue("log(" + this->acceptLeft(node) + ", base = " + this->acceptRight(node) + ")");
+        this->setValue("ln((" + this->acceptLeft(node) + ") / ln(" + this->acceptRight(node) + "))");
     }
     
     void MDLAstGenerator::visit(BinopRoot *node) {
@@ -316,7 +321,7 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(BinopRem *node) {
-        this->setValue("(" + this->acceptLeft(node) + " %% " + this->acceptRight(node) + ")");
+        this->setValue("(" + this->acceptLeft(node) + " mod " + this->acceptRight(node) + ")");
     }
     
     void MDLAstGenerator::visit(BinopAtan2 *node) {
@@ -324,7 +329,7 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(LogicUniopIsdefined *node) {
-        this->setValue("!is.null(" + this->acceptChild(node) + ")");
+        this->setValue("isDefined(" + this->acceptChild(node) + ")");
     }
     
     void MDLAstGenerator::visit(LogicUniopNot *node) {
@@ -370,59 +375,64 @@ namespace PharmML
     
     void MDLAstGenerator::visit(Vector *node) {
         std::vector<AstNode *> elements = node->getElements();
-        std::string s = "c(";
-        bool first = true;
+        std::vector<std::string> str_elements;
         for (AstNode *element : elements) {
-            if (first) {
-                first = false;
-            } else {
-                s += ", ";
-            }
-            element->accept(this);
-            s += this->getValue();
+            str_elements.push_back(this->accept(element));
         }
-        this->setValue(s + ")");
+        
+        this->setValue(TextFormatter::createInlineVector(str_elements, "[]", ", "));
     }
     
     void MDLAstGenerator::visit(Piecewise *node) {
         TextFormatter form;
         
         std::vector<Piece *> pieces = node->getPieces();
+        if (pieces.size() > 2) {
+            this->logger->warning("More than 2 pieces", pieces[2]);
+        }
+        
         Piece *otherwise = nullptr;
-        form.add("if ");
+        form.indentAdd("if");
         for (Piece *p : pieces) {
             if (!p->isOtherwise()) {
                 p->accept(this);
-                form.append(this->getValue());
+                form.addMany(this->getValue());
             } else {
                 otherwise = p; // Only one otherwise per Piece
             }
         }
         if (otherwise) {
-            form.openIndent();
             otherwise->getExpression()->accept(this);
             form.addMany("else " + this->getValue());
         } else {
-            form.append(" # Otherwise piece missing!");
+            this->logger->warning("Otherwise piece missing", pieces.back()->getCondition());
         }
+        form.closeIndent();
         
         this->setValue(form.createString());
     }
 
     void MDLAstGenerator::visit(Piece *node) {
+        this->ast_analyzer.reset();
+        node->getExpression()->accept(&this->ast_analyzer);
+        if (ast_analyzer.getPurePiecewise()) {
+            this->logger->warning("Nested piecewise detected", node->getExpression());
+        }
+        
         node->getCondition()->accept(this);
         std::string cond = this->getValue();
         node->getExpression()->accept(this);
         std::string expr = this->getValue();
+        
         this->setValue(cond + " then " + expr);
     }
     
     void MDLAstGenerator::visit(LogicFalse *node) {
-        this->setValue("(FALSE)");
+        this->setValue("(" + this->getLogicLiteral(false) + ")");
     }
     
     void MDLAstGenerator::visit(LogicTrue *node) {
-        this->setValue("(TRUE)");
+        this->setValue("(" + this->getLogicLiteral(true) + ")");
     }
     
     void MDLAstGenerator::visit(Pi *node) {
@@ -434,7 +444,7 @@ namespace PharmML
     }
     
     void MDLAstGenerator::visit(NullValue *node) {
-        this->setValue("NULL");
+        this->setValue("null");
     }
 
     void MDLAstGenerator::visit(FunctionCall *node) {

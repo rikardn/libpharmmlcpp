@@ -268,6 +268,7 @@ namespace PharmML
             std::vector<xml::Node> children = node.getChildren();
             for (xml::Node n : children) {
                 Piece *piece = new Piece();
+                piece->setXMLNode(n);
                 piecewise->addPiece(piece);
                 // Assumes expression is first child and condition last child
                 xml::Node expression = n.getChild();
@@ -296,7 +297,12 @@ namespace PharmML
         } else if (name == "Interval") {
             instance = new Interval(node);
         } 
-
+        
+        // The following might and might not be a good idea
+        if (instance) {
+            instance->setXMLNode(node);
+        }
+        
         return instance;
     }
 }

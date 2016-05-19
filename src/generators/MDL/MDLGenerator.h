@@ -67,7 +67,7 @@ namespace PharmML
     class MDLGenerator : public PharmMLVisitor
     {
         private:
-            MDLAstGenerator ast_gen;
+            MDLAstGenerator *ast_gen;
             AstAnalyzer ast_analyzer;
             Logger logger;
             
@@ -89,6 +89,7 @@ namespace PharmML
             std::string accept(AstNode *);
 
         public:
+            MDLGenerator();
             std::string getValue();
             std::vector<std::string> getValues();
             stringpair getPairValue();

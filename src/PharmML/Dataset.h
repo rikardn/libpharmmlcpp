@@ -133,6 +133,7 @@ namespace PharmML
         bool isExternal();
         ExternalFile *getExternal();
         std::vector<DataColumn *> getColumns();
+        DataColumn *getIdvColumn();
         void setName(std::string name);
         std::string getName();
         void accept(PharmMLVisitor *visitor);

@@ -343,7 +343,17 @@ namespace PharmML
     std::vector<DataColumn *> Dataset::getColumns() {
         return this->columns;
     }
-    
+
+    DataColumn *Dataset::getIdvColumn() {
+        for (DataColumn *column : this->columns) {
+            ColumnDefinition *cd = column->getDefinition();
+            if (cd->getType() == "idv") {
+                return column;
+            }
+        }
+        return nullptr;
+    }
+
     void Dataset::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

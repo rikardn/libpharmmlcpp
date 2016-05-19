@@ -200,12 +200,14 @@ namespace PharmML
         }
         
         // Fill DECLARED_VARIABLES with correlated variable names
-        form.openVector("DECLARED_VARIABLES {}", 0, " ");
-        for (std::string corr_name: correlatedVariables) {
-            form.add(corr_name);
+        if (!correlatedVariables.empty()) {
+            form.openVector("DECLARED_VARIABLES {}", 0, " ");
+            for (std::string corr_name : correlatedVariables) {
+                form.add(corr_name);
+            }
+            form.closeVector();
+            form.emptyLine();
         }
-        form.closeVector();
-        form.emptyLine();
         
         // Generate STRUCTURAL and VARIABILITY block
         form.addMany(this->genStructuralBlock(structuralParameters));
@@ -834,12 +836,14 @@ namespace PharmML
             if (dataset->isExternal()) {
                 // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
                 std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
-                form.openVector("DECLARED_VARIABLES {}", 0, " ");
-                for (stringpair pair : mappings) {
-                    form.add(pair.second);
+                if (!mappings.empty()) {
+                    form.openVector("DECLARED_VARIABLES {}", 0, " ");
+                    for (stringpair pair : mappings) {
+                        form.add(pair.second);
+                    }
+                    form.closeVector();
+                    form.add("");
                 }
-                form.closeVector();
-                form.add("");
                 
                 // Output DATA_INPUT_VARIABLES
                 form.openVector("DATA_INPUT_VARIABLES {}", 1, "");

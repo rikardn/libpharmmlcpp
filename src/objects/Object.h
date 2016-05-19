@@ -26,6 +26,7 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <AST/symbols.h>
+#include <visitors/ObjectVisitor.h>
 
 namespace PharmML
 {
@@ -40,7 +41,7 @@ namespace PharmML
     {
         public:
             std::string getOid();
-            //TODO: Visitor for virtual void accept(ObjectVisitor *visitor) = 0;
+            virtual void accept(ObjectVisitor *visitor) = 0;
 
         protected:
             std::string oid;

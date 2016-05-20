@@ -48,9 +48,13 @@ namespace PharmML
         formatter.openVector("c()", 0, ", ");
         for (std::vector<AstNode *>::size_type i = 0; i != idv_data.size(); i++) {
             dose_data[i]->accept(&this->rast);
-            formatter.add("DOSE_" + std::to_string(i) + "_AMT=" + this->rast.getValue());
+            std::string dose_name = "DOSE_" + std::to_string(i) + "_AMT";
+            std::string time_name = "DOSE_" + std::to_string(i) + "_TIME";
+            this->doseNames.push_back(dose_name);      // Needed for the placebo arm
+            this->timeNames.push_back(time_name);
+            formatter.add(dose_name + "=" + this->rast.getValue());
             idv_data[i]->accept(&this->rast);
-            formatter.add("DOSE_" + std::to_string(i) + "_TIME=" + this->rast.getValue());
+            formatter.add(time_name + "=" + this->rast.getValue());
         }
         formatter.closeVector();
         formatter.noFinalNewline();
@@ -70,6 +74,20 @@ namespace PharmML
         }
 
         std::vector<InterventionSequence *> int_seqs = object->getInterventionSequences();
+
+        if (int_seqs.size() == 0) {     // No intervention i.e. placebo. Currently assumes the a[1] = ..AMT, a[2] = ..TIME structure
+            TextFormatter placebo_formatter;
+            placebo_formatter.openVector("c()", 0, ", ");
+   
+            for (std::vector<AstNode *>::size_type i = 0; i != this->doseNames.size(); i++) {
+                placebo_formatter.add(this->doseNames[i] + "=0");
+                placebo_formatter.add(this->timeNames[i] + "=0");
+            }
+
+            placebo_formatter.closeVector();
+            placebo_formatter.noFinalNewline();
+            a_formatter.add(placebo_formatter.createString());
+        }
 
         for (InterventionSequence *int_seq : int_seqs) {
             std::vector<ObjectRef *> obj_refs = int_seq->getOidRefs();

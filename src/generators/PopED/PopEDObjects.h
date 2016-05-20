@@ -23,6 +23,7 @@
 #include <helpers/Logger.h>
 #include <generators/R/RAstGenerator.h>
 #include <generators/TextFormatter.h>
+#include <PharmML/Interventions.h>
 
 namespace PharmML
 {
@@ -32,14 +33,18 @@ namespace PharmML
             RAstGenerator rast;
 
             TextFormatter xt_formatter;
+            TextFormatter a_formatter;
+            std::vector<IndividualAdministration *> individualAdministrations;
+            std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
 
         public:
             PopEDObjects();
             std::string getDatabaseAdditions();
- 
+            void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
+
             void visit(Arm *object) override;
-            //void visit(Administration *object);
-            //void visit(Observation *object);
+            void visit(Administration *object) override;
+            //void visit(Observation *object) override;
             void visit(IndividualObservations *object) override;
     };
 }

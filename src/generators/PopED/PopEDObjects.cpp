@@ -23,12 +23,38 @@
 namespace PharmML
 {
     PopEDObjects::PopEDObjects() {
-        this->xt_formatter.openVector("xt = list()", 0, ", ");
+        this->xt_formatter.openVector("xt = list()", 2, ", ");
+        this->a_formatter.openVector("a = list()", 2, ", ");
     }
 
     std::string PopEDObjects::getDatabaseAdditions() {
         xt_formatter.closeVector();
-        return xt_formatter.createString();
+        a_formatter.closeVector();
+        return xt_formatter.createString() + a_formatter.createString();
+    }
+
+    void PopEDObjects::setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations) {
+        this->individualAdministrations = individualAdministrations;
+    }
+
+    std::string PopEDObjects::generateIndividualAdministration(IndividualAdministration *individualAdministration) {
+        Dataset *ds = individualAdministration->getDataset();
+        DataColumn *idv_col = ds->getIdvColumn();
+        DataColumn *dose_col = ds->getColumnFromType("dose");
+        std::vector<AstNode *> idv_data = idv_col->getData();
+        std::vector<AstNode *> dose_data = dose_col->getData();
+
+        TextFormatter formatter;
+        formatter.openVector("c()", 0, ", ");
+        for (std::vector<AstNode *>::size_type i = 0; i != idv_data.size(); i++) {
+            dose_data[i]->accept(&this->rast);
+            formatter.add("DOSE_" + std::to_string(i) + "_AMT=" + this->rast.getValue());
+            idv_data[i]->accept(&this->rast);
+            formatter.add("DOSE_" + std::to_string(i) + "_TIME=" + this->rast.getValue());
+        }
+        formatter.closeVector();
+        formatter.noFinalNewline();
+        return formatter.createString();
     }
 
     void PopEDObjects::visit(Arm *object) {
@@ -41,6 +67,35 @@ namespace PharmML
                 obj->accept(this);
                 xt_formatter.add(this->getValue());
             }
+        }
+
+        std::vector<InterventionSequence *> int_seqs = object->getInterventionSequences();
+
+        for (InterventionSequence *int_seq : int_seqs) {
+            std::vector<ObjectRef *> obj_refs = int_seq->getOidRefs();
+            for (ObjectRef *obj_ref : obj_refs) {
+                Object *obj = obj_ref->getObject();
+                obj->accept(this);
+                if (!this->getValue().empty()) {
+                    a_formatter.add(this->getValue());
+                }
+            }
+        }
+    }
+
+    void PopEDObjects::visit(Administration *object) {
+        // Check if this is being refered to by an IndividualAdministration
+        IndividualAdministration *found_ia = nullptr;
+        for (IndividualAdministration *ia : this->individualAdministrations) {
+            if (ia->getOidRef()->getObject() == object) {
+                found_ia = ia;
+            }
+        }
+
+        if (found_ia) {
+            setValue(this->generateIndividualAdministration(found_ia));
+        } else {
+            setValue("");
         }
     }
 

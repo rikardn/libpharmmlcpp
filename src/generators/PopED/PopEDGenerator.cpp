@@ -342,13 +342,22 @@ namespace PharmML
         TrialDesign *td = this->model->getTrialDesign();
         if (td) {
             Arms *arms = td->getArms();
+            form.add("m = " + std::to_string(arms->getArms().size()));
+           
+            // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
+            // This might change in future versions of PharmML 
+            Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
+                td_visitor.setIndividualAdministrations(ia);
+            }
+
             if (arms) {
                 for (Arm *arm : arms->getArms()) {
                     arm->accept(&td_visitor);
                 }
             }
         }
-
         form.add(td_visitor.getDatabaseAdditions());
 
         form.closeVector();

@@ -22,23 +22,42 @@
 
 namespace PharmML
 {
+    PopEDObjects::PopEDObjects() {
+        this->xt_formatter.openVector("xt = list()", 0, ", ");
+    }
+
+    std::string PopEDObjects::getDatabaseAdditions() {
+        xt_formatter.closeVector();
+        return xt_formatter.createString();
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
+
         for (ObservationSequence *obs_seq : obs_seqs) {
             std::vector<ObjectRef *> obj_refs = obs_seq->getOidRefs();
             for (ObjectRef *obj_ref : obj_refs) {
                 Object *obj = obj_ref->getObject();
                 obj->accept(this);
+                xt_formatter.add(this->getValue());
             }
         }
     }
 
+    // Visit IndividualObservations to generate a vector from the Dataset
     void PopEDObjects::visit(IndividualObservations *object) {
         Dataset *ds = object->getDataset();
         DataColumn *col = ds->getIdvColumn();
         std::vector<AstNode *> data = col->getData();
-        //for (AstNode *node : data) {
-            
-        //}
+
+        TextFormatter formatter;
+        formatter.openVector("c()", 0, ", ");
+        for (AstNode *node : data) {
+            node->accept(&this->rast);
+            formatter.add(this->rast.getValue());
+        }
+        formatter.closeVector();
+        formatter.noFinalNewline();
+        this->setValue(formatter.createString());
     }
 }

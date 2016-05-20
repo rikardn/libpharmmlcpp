@@ -345,10 +345,11 @@ namespace PharmML
             if (arms) {
                 for (Arm *arm : arms->getArms()) {
                     arm->accept(&td_visitor);
-                    std::cout << td_visitor.getValue() << std::endl;
                 }
             }
         }
+
+        form.add(td_visitor.getDatabaseAdditions());
 
         form.closeVector();
 

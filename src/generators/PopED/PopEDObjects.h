@@ -21,15 +21,22 @@
 #include <visitors/ObjectVisitor.h>
 #include <visitors/StringVisitor.h>
 #include <helpers/Logger.h>
+#include <generators/R/RAstGenerator.h>
+#include <generators/TextFormatter.h>
 
 namespace PharmML
 {
     class PopEDObjects : public ObjectVisitor, public StringVisitor
     {
         private:
-            Logger logger;
-        
+            RAstGenerator rast;
+
+            TextFormatter xt_formatter;
+
         public:
+            PopEDObjects();
+            std::string getDatabaseAdditions();
+ 
             void visit(Arm *object) override;
             //void visit(Administration *object);
             //void visit(Observation *object);

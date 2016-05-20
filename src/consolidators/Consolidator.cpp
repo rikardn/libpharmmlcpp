@@ -325,10 +325,28 @@ namespace CPharmML
                     PharmML::DataColumn *col = ds->getIdvColumn();
                     if (!col) {     // No idv column was found
                         this->logger.error("Missing idv column in IndividualObservations", ind_obs);
-                        return;
+                        return;     // FIXME: Should we really return here?
                     }
                     // FIXME: Need to check ColumnMapping and IndependentVariables also
                     // FIXME: What happens if there is no Column definitions and/or ColumnMapping. Error checking is hard!
+                }
+            }
+            PharmML::Interventions *ints = td->getInterventions();
+            if (ints) {
+                // Check that all individual administrations have an independent variable and a dose column
+                std::vector<PharmML::IndividualAdministration *> ind_adms = ints->getIndividualAdministrations();
+                for (PharmML::IndividualAdministration *ind_adm : ind_adms) {
+                    PharmML::Dataset *ds = ind_adm->getDataset();
+                    PharmML::DataColumn *idv_col = ds->getIdvColumn();
+                    if (!idv_col) {     // No idv column was found
+                        this->logger.error("Missing idv column in IndividualAdministration", ind_adm);
+                        return;
+                    }
+                    PharmML::DataColumn *dose_col = ds->getColumnFromType("dose");
+                    if (!dose_col) {
+                        this->logger.error("Missing dose column in IndividualAdministration", ind_adm);
+                        return;
+                    }
                 }
             }
         }

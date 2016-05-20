@@ -28,6 +28,7 @@
 #include <objects/Object.h>
 #include <PharmML/PharmMLSection.h>
 #include <visitors/ObjectVisitor.h>
+#include <PharmML/PharmMLSection.h>
 
 namespace PharmML
 {
@@ -94,10 +95,9 @@ namespace PharmML
         void accept(ObjectVisitor *visitor);
     };
     
-    class IndividualAdministration : public ObjectReferer
+    class IndividualAdministration : public ObjectReferer, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
-        xml::Node xml_node;
         ObjectRef *oidRef;
         std::vector<PharmML::ColumnMapping *> columnMappings;
         Dataset *dataset;

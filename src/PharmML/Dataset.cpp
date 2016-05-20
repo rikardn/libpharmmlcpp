@@ -344,14 +344,25 @@ namespace PharmML
         return this->columns;
     }
 
-    DataColumn *Dataset::getIdvColumn() {
+    // Get the column with corresponding columnType.
+    // If more than one column of the same type exists or if column could not be found return nullptr
+    DataColumn *Dataset::getColumnFromType(std::string columnType) {
+        DataColumn *found = nullptr;
         for (DataColumn *column : this->columns) {
             ColumnDefinition *cd = column->getDefinition();
-            if (cd->getType() == "idv") {
-                return column;
+            if (cd->getType() == columnType) {
+                if (found) {        // Duplicate columns of same columnType
+                    return nullptr;
+                } else {
+                    found = column;
+                }
             }
         }
-        return nullptr;
+        return found;
+    }
+
+    DataColumn *Dataset::getIdvColumn() {
+        return this->getColumnFromType("idv");
     }
 
     void Dataset::accept(PharmMLVisitor *visitor) {

@@ -188,6 +188,7 @@ namespace PharmML
 
     // IndividualAdministration class
     IndividualAdministration::IndividualAdministration(PharmML::PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }

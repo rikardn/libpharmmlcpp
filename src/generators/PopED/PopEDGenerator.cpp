@@ -299,7 +299,10 @@ namespace PharmML
 
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");
-        auto pop_params = this->model->getConsolidator()->getPopulationParameters();
+        auto pop_params_obj = this->model->getConsolidator()->getPopulationParameters();
+        /* Note: One more level in-between. Should make support of multiple parameter models easier and present a nice place (CPharmML::PopulationParameters)
+         * for convenience functions that can do more than only gett the consolidated objects. */
+        auto pop_params = pop_params_obj->getPopulationParameters();
         for (auto pop_param : pop_params) {
             if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
                 std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?

@@ -188,7 +188,9 @@ namespace CPharmML
         std::vector<PharmML::EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
         cpop_params->addRandomVariables(rand_vars);
         cpop_params->addIndividualParameters(ind_params);
-        cpop_params->addEstimationStep(est_steps[0]); // TODO: Plurality support!
+        if (est_steps.size() > 0) {     // No estimation steps
+            cpop_params->addEstimationStep(est_steps[0]); // TODO: Plurality support!
+        }
         
         // TODO: Add plurality support for multiple parameter models
         this->populationParameters.push_back(cpop_params);

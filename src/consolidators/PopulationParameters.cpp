@@ -205,7 +205,7 @@ namespace CPharmML
             }
         }
     }
-    
+
     void PopulationParameters::addEstimationStep(PharmML::EstimationStep *estimationStep) {
         for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
             PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();

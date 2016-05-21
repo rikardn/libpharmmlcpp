@@ -319,10 +319,16 @@ namespace PharmML
         if (opt_on_node.exists()) {
             this->optOn = new OptimiseOn(this->context, opt_on_node);
         }
-        
-        // TODO: Get a lot of stuff here
-    } 
     
+        std::vector<xml::Node> param_nodes = this->context->getElements(node, "./msteps:ParametersToEstimate/msteps:ParameterEstimation");
+        for (xml::Node param_node : param_nodes) {
+            ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
+            this->parameterEstimations.push_back(param);
+        }
+
+        // TODO: Get more stuff here
+    } 
+
     ModellingSteps::ModellingSteps(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->xml_node = node;
@@ -336,7 +342,7 @@ namespace PharmML
             TargetTool *tool = new TargetTool(this->context, tool_node);
             this->tools.push_back(tool);
         }
-        
+
         // Get modelling steps (estimation and simulation)
         std::vector<xml::Node> estep_nodes = this->context->getElements(node, "./msteps:EstimationStep");
         std::vector<xml::Node> sstep_nodes = this->context->getElements(node, "./msteps:SimulationStep");
@@ -348,21 +354,21 @@ namespace PharmML
             SimulationStep *sstep = new SimulationStep(this->context, sstep_node);
             this->simSteps.push_back(sstep);
         }
-        
+
         // Get optimal design steps
         std::vector<xml::Node> ostep_nodes = this->context->getElements(node, "./msteps:OptimalDesignStep");
         for (xml::Node ostep_node : ostep_nodes) {
             OptimalDesignStep *ostep = new OptimalDesignStep(this->context, ostep_node);
             this->optSteps.push_back(ostep);
         }
-        
+
         // Get step dependencies
         xml::Node step_dep_node = this->context->getSingleElement(node, "./msteps:StepDependencies");
         if (step_dep_node.exists()) {
             // TODO: Support this
         }
     }
-    
+
     void ModellingSteps::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (PharmML::EstimationStep *est_step : this->getEstimationSteps()) {
             std::vector<ParameterEstimation *> est_params = est_step->getParameters();

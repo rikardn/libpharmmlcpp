@@ -37,14 +37,18 @@ namespace PharmML
     }
 
     std::string MDLGenerator::accept(AstNode *node) {
-        node->accept(this->ast_gen);
+        node->accept(this->ast_gen.get());
         return ast_gen->getValue();
     }
 
     // public
     MDLGenerator::MDLGenerator() {
-        this->logger.setToolName("MDL");
-        this->ast_gen = new MDLAstGenerator(&this->logger);
+        this->logger = std::make_shared<Logger>("MDL");
+        
+        std::unique_ptr<MDLAstGenerator> ast_gen(new MDLAstGenerator(this->logger));
+        this->ast_gen = std::move(ast_gen);
+        std::unique_ptr<MDLSymbols> symb_gen(new MDLSymbols(this->logger));
+        this->symb_gen = std::move(symb_gen);
     }
     
     std::string MDLGenerator::getValue() {
@@ -275,7 +279,7 @@ namespace PharmML
                     form.add(name + " : {value = " + value + "}");
                     this->variabilityParameterNames.push_back(name); // TODO: Fix this ugly global variable
                 } else {
-                    this->logger.error("Correlation '" + name + "' is of unsupported Matrix type", corr);
+                    this->logger->error("Correlation '" + name + "' is of unsupported Matrix type", corr);
                     form.add("# " + name + " correlation of unsupported matrix type");
                     // TODO: Matrix support
                 }
@@ -473,26 +477,12 @@ namespace PharmML
         TextFormatter form;
         form.openVector("MODEL_PREDICTION {}", 1, "");
         
+        // Get CommonVariable's (Variable's and Derivative's), sort and generate
         std::vector<CommonVariable *> vars = structuralModel->getVariables();
-        std::vector<CommonVariable *> ordered;
-        ordered.push_back(vars[0]);
-        bool inserted;
-        for (std::vector<CommonVariable>::size_type i = 1; i < vars.size(); i++) {
-            inserted = false;
-            for (auto j = ordered.begin(); j < ordered.end(); j++) {
-                if (ordered[j - ordered.begin()]->getDependencies().hasDependency(vars[i]->getSymbId())) {
-                    ordered.insert(j, vars[i]);
-                    inserted = true;
-                    break;
-                }
-            } 
-            if (!inserted) {
-                ordered.push_back(vars[i]);
-            }
-        }
-        for (CommonVariable *v : ordered) {
-            v->accept(this);
-            form.addMany(this->getValue());
+        SymbolSet var_set(std::unordered_set<Symbol *>(vars.begin(), vars.end()));
+        for (Symbol *var : var_set.getOrdered()) {
+            var->accept(this->symb_gen.get());
+            form.addMany(symb_gen->getValue());
         }
         
         form.closeVector();
@@ -558,9 +548,9 @@ namespace PharmML
                     
                     // Warn if unexpected structure with regards to the output symbol
                     if (output_arg_names.empty()) {
-                        this->logger.warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
+                        this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
                     } else if (output_arg_names.size() > 1) {
-                        this->logger.warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
+                        this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
                             + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", observationModel);
                     }
                 } else {
@@ -617,11 +607,11 @@ namespace PharmML
             std::string type = (*it).first;
             std::vector<MDLObject> objs = (*it).second;
             if (objs.empty()) {
-                this->logger.warning("No objects of type '" + type + "' for Modelling Object Group generated");
+                this->logger->warning("No objects of type '" + type + "' for Modelling Object Group generated");
             } else {
                 form.add(objs[0].name + " : { type is " + type + " }");
                 if (objs.size() > 1) {
-                    this->logger.warning("Multiple objects of type '" + type + "' generated: Only one set active in Modelling Object Group");
+                    this->logger->warning("Multiple objects of type '" + type + "' generated: Only one set active in Modelling Object Group");
                     for (auto it = objs.begin() + 1; it != objs.end(); ++it) {
                         form.add("# " + (*it).name + " : { type is " + type + " }");
                     }
@@ -903,11 +893,11 @@ namespace PharmML
                 form.closeVector();
                 form.closeVector();
             } else {
-                this->logger.error("Table as opposed to external resource not supported in ExternalDataset", dataset);
+                this->logger->error("Table as opposed to external resource not supported in ExternalDataset", dataset);
                 form.add("# No external dataset file");
             }
         } else {
-            this->logger.error("Unknown dataset encoding tool/style '" + tool + "'", node);
+            this->logger->error("Unknown dataset encoding tool/style '" + tool + "'", node);
             form.add("# Unknown dataset encoding tool/style: \"" + tool + "\"!");
             form.add("# Current support is limited to NONMEM datasets");
         }

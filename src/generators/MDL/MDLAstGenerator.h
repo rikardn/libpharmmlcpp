@@ -18,6 +18,7 @@
 #ifndef PHARMML_MDLASTGENERATOR_H_
 #define PHARMML_MDLASTGENERATOR_H_
 
+#include <memory>
 #include <string>
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/AstAnalyzer.h>
@@ -35,7 +36,6 @@
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
 #include <generators/TextFormatter.h>
-#include <generators/MDL/MDLSymbols.h> // Include for now
 #include <helpers/Logger.h>
 
 namespace PharmML
@@ -43,8 +43,7 @@ namespace PharmML
     class MDLAstGenerator : public AstNodeVisitor
     {
         private:
-            Logger *logger;
-            MDLSymbols symbgen;
+            std::shared_ptr<Logger> logger;
             AstAnalyzer ast_analyzer;
             
         protected:
@@ -54,12 +53,12 @@ namespace PharmML
             std::string acceptRight(Binop *binop);
             std::string infix(Binop *binop, std::string op); 
             std::string acceptChild(Uniop *uniop);
-            std::string accept(AstNode *node);
             std::string getLogicLiteral(bool value);
 
         public:
-            MDLAstGenerator(Logger *logger);
+            MDLAstGenerator(std::shared_ptr<Logger> logger);
             std::string getValue();
+            std::string accept(AstNode *node);
 
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;

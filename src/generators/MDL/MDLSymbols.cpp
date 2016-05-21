@@ -27,8 +27,16 @@
 #include <symbols/Covariate.h>
 #include <symbols/FunctionDefinition.h>
 
+#include <generators/MDL/MDLAstGenerator.h>
+
 namespace PharmML
 {
+    MDLSymbols::MDLSymbols(std::shared_ptr<Logger> logger) {
+        this->logger = logger;
+        std::unique_ptr<MDLAstGenerator> ast_gen(new MDLAstGenerator(logger));
+        this->ast_gen = std::move(ast_gen);
+    }
+    
     void MDLSymbols::visit(ObservationModel *node) {
         this->setValue(node->getSymbId());
     }
@@ -52,13 +60,26 @@ namespace PharmML
     void MDLSymbols::visit(IndependentVariable *node) {
         this->setValue(node->getSymbId());
     }
-
+    
     void MDLSymbols::visit(Variable *node) {
-        this->setValue(node->getSymbId());
+        if (node->getAssignment()) {
+            this->setValue(node->getSymbId() + " = " + this->ast_gen->accept(node->getAssignment()));
+        } else {
+            this->setValue(node->getSymbId() + "::dosingVar"); // FIXME: This is a hack! I'm not sure if dosingVar is the only reasonable alternative.
+        }
     }
-
+    
     void MDLSymbols::visit(DerivativeVariable *node) {
-        this->setValue(node->getSymbId());
+        TextFormatter form;
+        
+        std::string name = node->getSymbId();
+        form.openVector(name + " : {}", 0, ", ");
+        form.add("deriv = " + this->ast_gen->accept(node->getAssignment()));
+        form.add("init = " + this->ast_gen->accept(node->getInitialValue()));
+        form.add("x0 = " + this->ast_gen->accept(node->getInitialTime()));
+        form.closeVector();
+        
+        this->setValue(form.createString());
     }
     
     void MDLSymbols::visit(Covariate *node) {

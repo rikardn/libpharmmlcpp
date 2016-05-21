@@ -18,13 +18,18 @@
 #ifndef PHARMML_MDLSYMBOLS_H_
 #define PHARMML_MDLSYMBOLS_H_
 
+#include <memory>
 #include <unordered_map>
 #include <visitors/StringVisitor.h>
 #include <visitors/SymbolVisitor.h>
 #include <symbols/Symbol.h>
+#include <generators/TextFormatter.h>
+#include <helpers/Logger.h>
 
 namespace PharmML
 {
+    class MDLAstGenerator;
+    
     class ObservationModel;
     class PopulationParameter;
     class IndividualParameter;
@@ -41,11 +46,12 @@ namespace PharmML
     class MDLSymbols : public SymbolVisitor, public StringVisitor
     {
         private:
-            int next_popparm = 1;
-            int next_randvar = 1;
-            std::unordered_map<Symbol *, int> symbol_numbermap;
+            std::shared_ptr<Logger> logger;
+            std::unique_ptr<MDLAstGenerator> ast_gen;
 
         public:
+            MDLSymbols(std::shared_ptr<Logger> logger);
+            
             void visit(ObservationModel *node) override;
             void visit(PopulationParameter *node) override;
             void visit(IndividualParameter *node) override;

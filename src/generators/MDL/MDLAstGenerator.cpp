@@ -48,11 +48,6 @@ namespace PharmML
         uniop->getChild()->accept(this);
         return this->getValue();
     }
-   
-    std::string MDLAstGenerator::accept(AstNode *node) {
-        node->accept(this);
-        return this->getValue();
-    }
 
     std::string MDLAstGenerator::getLogicLiteral(bool value) {
         if (value) {
@@ -63,7 +58,7 @@ namespace PharmML
     }
 
     // public
-    MDLAstGenerator::MDLAstGenerator(Logger *logger) {
+    MDLAstGenerator::MDLAstGenerator(std::shared_ptr<Logger> logger) {
         this->logger = logger;
     }
     
@@ -71,11 +66,15 @@ namespace PharmML
         return this->value;
     }
     
+    std::string MDLAstGenerator::accept(AstNode *node) {
+        node->accept(this);
+        return this->getValue();
+    }
+    
     void MDLAstGenerator::visit(SymbRef *node) {
         Symbol *symbol = node->getSymbol();
         if (symbol != nullptr) {
-            symbol->accept(&this->symbgen);
-            this->setValue(this->symbgen.getValue());
+            this->setValue(symbol->getSymbId());
         } else {
             this->setValue("UNDEF");
         }

@@ -18,6 +18,7 @@
 #ifndef PHARMML_MDLPHARMMLGENERATOR_H_
 #define PHARMML_MDLPHARMMLGENERATOR_H_
 
+#include <memory>
 #include <string>
 #include <sstream>
 #include <unordered_set>
@@ -40,6 +41,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
 #include <PharmML/ModellingSteps.h>
+#include <generators/MDL/MDLSymbols.h>
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy)
 #include <PharmML/Model.h>
 #include <generators/TextFormatter.h>
@@ -67,9 +69,10 @@ namespace PharmML
     class MDLGenerator : public PharmMLVisitor
     {
         private:
-            MDLAstGenerator *ast_gen;
+            std::unique_ptr<MDLAstGenerator> ast_gen;
+            std::unique_ptr<MDLSymbols> symb_gen;
             AstAnalyzer ast_analyzer;
-            Logger logger;
+            std::shared_ptr<Logger> logger;
             
             std::vector<std::string> structuralParameterNames;
             std::vector<std::string> variabilityParameterNames;

@@ -41,7 +41,8 @@ namespace PharmML
 
         public:
             PopEDObjects();
-            std::string getDatabaseAdditions();
+            TextFormatter& getDatabaseXT();
+            TextFormatter& getDatabaseA();
             void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
 
             void visit(Arm *object) override;

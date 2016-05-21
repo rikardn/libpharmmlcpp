@@ -19,18 +19,23 @@
 #include <vector>
 #include <PharmML/Arms.h>
 #include <PharmML/Observations.h>
+#include <iostream>
 
 namespace PharmML
 {
     PopEDObjects::PopEDObjects() {
-        this->xt_formatter.openVector("xt = list()", 2, ", ");
-        this->a_formatter.openVector("a = list()", 2, ", ");
+        this->xt_formatter.openVector("xt = list()", 1, ", ");
+        this->a_formatter.openVector("a = list()", 1, ", ");
     }
 
-    std::string PopEDObjects::getDatabaseAdditions() {
+    TextFormatter& PopEDObjects::getDatabaseXT() {
         xt_formatter.closeVector();
+        return xt_formatter;
+    }
+
+    TextFormatter& PopEDObjects::getDatabaseA() {
         a_formatter.closeVector();
-        return xt_formatter.createString() + a_formatter.createString();
+        return a_formatter;
     }
 
     void PopEDObjects::setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations) {

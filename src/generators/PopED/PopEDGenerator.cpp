@@ -297,16 +297,6 @@ namespace PharmML
         form.add("fg_fun = 'sfg'");
         form.add("fError_fun = 'feps'");
 
-/*     
-    sigma = c(0.01), # variance units
-    groupsize = 1,
-    m = 2,
-    xt = list(c(8,10,13,15,18,22,26),       # Obs arm_1
-              c(8,10,13,15,18,22,26,30,35,40)),     # Obs arm_2
-    a = list(c(DOSE_1_AMT=0,DOSE_1_TIME=0,DOSE_2_AMT=0,DOSE_2_TIME=0,DOSE_3_AMT=0,DOSE_3_TIME=0),
-             c(DOSE_1_AMT=30,DOSE_1_TIME=8,DOSE_2_AMT=30,DOSE_2_TIME=12,DOSE_3_AMT=30,DOSE_3_TIME=16))
-*/
-
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");
         auto pop_params = this->model->getConsolidator()->getPopulationParameters();
@@ -358,7 +348,8 @@ namespace PharmML
                 }
             }
         }
-        form.add(td_visitor.getDatabaseAdditions());
+        form.addMany(td_visitor.getDatabaseXT());
+        form.addMany(td_visitor.getDatabaseA());
 
         form.closeVector();
 

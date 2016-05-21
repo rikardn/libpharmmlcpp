@@ -148,6 +148,11 @@ namespace PharmML
         }
     }
 
+    // Add the contents of other TextFormatter
+    void TextFormatter::addMany(TextFormatter& tf) {
+        this->addMany(tf.rows, false);
+    }
+
     // Increase indent one level
     void TextFormatter::openIndent() {
         if (this->vectorLevels.empty()) {

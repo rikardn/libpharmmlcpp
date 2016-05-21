@@ -55,6 +55,7 @@ namespace PharmML
             void outdentAdd(std::string str);
             void addMany(std::string str);
             void addMany(std::vector<std::string> strs, bool separate = true);
+            void addMany(TextFormatter& tf);
             
             void openIndent();
             void closeIndent();

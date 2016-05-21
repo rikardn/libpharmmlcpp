@@ -267,12 +267,18 @@ namespace PharmML
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             if (variabilityParameter->isCorrelation()) {
                 // Correlations
-                variabilityParameter->getCorrelation()->accept(this);
-                std::vector<std::string> init_attr = this->getValues();
+                PharmML::Correlation *corr = variabilityParameter->getCorrelation();
                 std::string name = variabilityParameter->getName();
-                form.openVector(name + " : {}", 0, ", ");
-                form.addMany(init_attr);
-                form.closeVector();
+                if (corr->isPairwise()) {
+                    form.openVector(name + " : {}", 0, ", ");
+                    corr->accept(this);
+                    form.addMany(this->getValues());
+                    form.closeVector();
+                } else {
+                    this->logger.error("Correlation '" + name + "' is of unsupported Matrix type", corr);
+                    form.add("# " + name + " correlation of unsupported matrix type");
+                    // TODO: Matrix support
+                }
             } else {
                 // Ordinary variability parameters
                 variabilityParameter->getPopulationParameter()->accept(this);
@@ -766,17 +772,17 @@ namespace PharmML
     void MDLGenerator::visit(Correlation *node) {
         std::vector<std::string> attr;
         if (node->isPairwise()) {
-            std::vector<SymbRef *> symbRefs = node->getPairwiseSymbRefs();
-            attr.push_back("parameter = [" + this->accept(symbRefs[0]) + ", " + this->accept(symbRefs[1]) + "]");
+            //~ std::vector<SymbRef *> symbRefs = node->getPairwiseSymbRefs();
+            //~ attr.push_back("parameter = [" + this->accept(symbRefs[0]) + ", " + this->accept(symbRefs[1]) + "]");
             
-            attr.push_back("value = [" + this->accept(node->getPairwiseAssignment()) + "]");
+            attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
             
-            std::string type = node->getPairwiseType();
-            if (type == "CorrelationCoefficient") {
-                attr.push_back("type is corr");
-            } else if (type == "Covariance") {
-                attr.push_back("type is cov");
-            }
+            //~ std::string type = node->getPairwiseType();
+            //~ if (type == "CorrelationCoefficient") {
+                //~ attr.push_back("type is corr");
+            //~ } else if (type == "Covariance") {
+                //~ attr.push_back("type is cov");
+            //~ }
         } else {
             // TODO: Matrix support
         }
@@ -869,9 +875,9 @@ namespace PharmML
                 // Generate SOURCE
                 form.openVector("SOURCE {}", 1, "");
                 ExternalFile *file = dataset->getExternal();
-                form.add("# Name: " + file->getOid() +
-                    ",type: " + file->getFormat() +
-                    ",delimiter: \"" + file->getDelimiter() + "\"");
+                form.add("# Name: \"" + file->getOid() +
+                    "\", type: " + file->getFormat() +
+                    ", delimiter: \"" + file->getDelimiter() + "\"");
                 form.openVector("srcfile : {}", 1, ", ");
                 form.add("file = \"" + file->getPath() + "\"");
                 form.add("inputFormat is nonmemFormat");

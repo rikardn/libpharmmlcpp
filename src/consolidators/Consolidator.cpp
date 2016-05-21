@@ -231,10 +231,41 @@ namespace CPharmML
         
         // Find Correlation (no associated PopulationParameter however)
         std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
-        for(auto it = corrs.begin(); it != corrs.end(); ++it) {
-            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(*it);
-            std::string name = "OMEGA_" + std::to_string(it - corrs.begin() + 1);
-            cpop_param->setName(name);
+        for (auto it = corrs.begin(); it != corrs.end(); ++it) {
+            PharmML::Correlation *corr = *it;
+            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(corr);
+            
+            // Find RandomVariable's referenced by this correlation
+            std::vector<std::string> names;
+            std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+            for (PharmML::RandomVariable *random_var : random_vars) {
+                if (corr->referencedSymbols.hasSymbol(random_var)) {
+                    cpop_param->addRandomVariable(random_var);
+                    names.push_back(random_var->getSymbId());
+                }
+            }
+            
+            // Try to find common prefix on random variable names
+            bool unique = false;
+            size_t prefix_len = 0;
+            while (!unique) {
+                prefix_len++;
+                std::string prefix = names[0].substr(0, prefix_len);
+                for (auto it = names.begin()+1; it != names.end(); ++it) {
+                    if ((*it).find(prefix, 0) == std::string::npos) {
+                        unique = true;
+                    }
+                }
+            }
+            
+            // Set name
+            std::string corr_name = "CORR";
+            for (std::string name : names) {
+                name.replace(0, prefix_len-1, "");
+                corr_name += "_" + name;
+            }
+            cpop_param->setName(corr_name);
+            
             this->populationParameters.push_back(cpop_param);
         }
     }

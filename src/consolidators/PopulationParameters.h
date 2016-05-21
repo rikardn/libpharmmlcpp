@@ -40,7 +40,6 @@ namespace CPharmML
             void addRandomVariable(PharmML::RandomVariable *randomVariable);
             void addIndividualParameter(PharmML::IndividualParameter *individualParameter);
             void addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation);
-            void addCorrelation(PharmML::Correlation *correlation);
             
             // Get PharmML objects used to consolidate
             PharmML::PopulationParameter *getPopulationParameter();

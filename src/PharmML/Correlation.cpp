@@ -24,6 +24,7 @@
 namespace PharmML
 {
     Correlation::Correlation(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }

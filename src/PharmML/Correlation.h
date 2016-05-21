@@ -20,6 +20,7 @@
 
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLSection.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/VariabilityLevel.h>
@@ -28,7 +29,7 @@
 
 namespace PharmML
 {
-    class Correlation : public Referer
+    class Correlation : public Referer, public PharmMLSection
     {
         private:
             PharmML::PharmMLContext *context;

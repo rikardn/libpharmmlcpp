@@ -25,6 +25,7 @@ namespace CPharmML
     }
     
     PopulationParameter::PopulationParameter(PharmML::Correlation *correlation) {
+        // Construct name for the (normally unnamed) correlation parameter
         this->correlation = correlation;
         this->correlationType = true;
     }

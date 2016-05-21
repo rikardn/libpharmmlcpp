@@ -100,10 +100,10 @@ namespace PharmML
             std::string genDataObj(ExternalDataset *ext_ds);
             std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
             
-            std::string genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters);
+            std::string genParObj(CPharmML::PopulationParameters *populationParameters);
             std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
             std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
-            std::string genRandomVariableDefinitionBlock(std::vector<PharmML::RandomVariable *> random_vars, PharmML::VariabilityLevel *level);
+            std::string genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
             std::string genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(PharmML::StructuralModel *structuralModel);
             std::string genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions);

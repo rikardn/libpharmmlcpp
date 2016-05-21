@@ -177,97 +177,21 @@ namespace CPharmML
     }
 
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
-        // Consolidate PharmML PopulationParameter's (e.g. for init statement generation)
-        for (PharmML::PopulationParameter *pop_param : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
-            // Create new consolidated population parameter
-            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(pop_param);
-            
-            // Find RandomVariable's referencing this PopulationParameter
-            std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-            for (PharmML::RandomVariable *random_var : random_vars) {
-                bool depends_on_pop = random_var->referencedSymbols.hasSymbol(pop_param);
-                if (depends_on_pop) {
-                    cpop_param->addRandomVariable(random_var);
-                    
-                    // Get distribution for variable
-                    PharmML::Distribution *dist = random_var->getDistribution();
-                    cpop_param->addDistributionName(dist->getName());
-                    
-                    // Find DistributionParameter's referencing this PopulationParameter
-                    for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
-                        bool depends_on_pop = dist_param->refersIndirectlyTo(pop_param); // Try out the new Referer system
-                        if (depends_on_pop) {
-                            cpop_param->addDistributionParameterType(dist_param->getName());
-                            // TODO: Transformation support (AstNode containing SymbRef to PopulationParameter should at least know if it's simple)
-                        }
-                    }
-                }
-            }
-            
-            // Find IndividualParameter's refering this PopulationParameter
-            std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-            for (PharmML::IndividualParameter *indiv_param : indiv_params) {
-                bool depends_on_pop = indiv_param->referencedSymbols.hasSymbol(pop_param);
-                if (depends_on_pop) {
-                    cpop_param->addIndividualParameter(indiv_param);
-                }
-            }
-            
-            // Find ParameterEstimation for this PopulationParameter
-            // TODO: Figure out how to deal with multiple EstimationStep's
-            PharmML::EstimationStep *est_step1 = model->getModellingSteps()->getEstimationSteps()[0];
-            std::vector<PharmML::ParameterEstimation *> est_params = est_step1->getParameters();
-            for (PharmML::ParameterEstimation *est_param : est_params) {
-                bool depends_on_pop = est_param->refersIndirectlyTo(pop_param);
-                if (depends_on_pop) {
-                    cpop_param->addParameterEstimation(est_param);
-                    break;
-                }
-            }
-            
-            // Add the finished consolidated PopulationParameter object
-            this->populationParameters.push_back(cpop_param);
-        }
-        
-        // Find Correlation (no associated PopulationParameter however)
+        // Consolidate PharmML PopulationParameter's and Correlation's into a wrapping object (with convenience functions)
+        std::vector<PharmML::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
         std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
-        for (auto it = corrs.begin(); it != corrs.end(); ++it) {
-            PharmML::Correlation *corr = *it;
-            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(corr);
-            
-            // Find RandomVariable's referenced by this correlation
-            std::vector<std::string> names;
-            std::vector<PharmML::RandomVariable *> random_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-            for (PharmML::RandomVariable *random_var : random_vars) {
-                if (corr->referencedSymbols.hasSymbol(random_var)) {
-                    cpop_param->addRandomVariable(random_var);
-                    names.push_back(random_var->getSymbId());
-                }
-            }
-            
-            // Try to find common prefix on random variable names
-            bool unique = false;
-            size_t prefix_len = 0;
-            while (!unique) {
-                prefix_len++;
-                std::string prefix = names[0].substr(0, prefix_len);
-                for (auto it = names.begin()+1; it != names.end(); ++it) {
-                    if ((*it).find(prefix, 0) == std::string::npos) {
-                        unique = true;
-                    }
-                }
-            }
-            
-            // Set name
-            std::string corr_name = "CORR";
-            for (std::string name : names) {
-                name.replace(0, prefix_len-1, "");
-                corr_name += "_" + name;
-            }
-            cpop_param->setName(corr_name);
-            
-            this->populationParameters.push_back(cpop_param);
-        }
+        CPharmML::PopulationParameters *cpop_params = new PopulationParameters(pop_params, corrs);
+        
+        // Merge in information from PharmML RandomVariable's, IndividualParameter's and EstimationStep's
+        std::vector<PharmML::RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        std::vector<PharmML::IndividualParameter *> ind_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        std::vector<PharmML::EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
+        cpop_params->addRandomVariables(rand_vars);
+        cpop_params->addIndividualParameters(ind_params);
+        cpop_params->addEstimationStep(est_steps[0]); // TODO: Plurality support!
+        
+        // TODO: Add plurality support for multiple parameter models
+        this->populationParameters.push_back(cpop_params);
     }
     
     void Consolidator::consolidateCovariates(PharmML::Model *model) {
@@ -333,6 +257,11 @@ namespace CPharmML
         for (PharmML::RandomVariable *rvar : rvars) {
             this->variabilityModels->addRandomVariable(rvar);
         }
+        // Add Correlation's (consolidated, because they know their generated name)
+        std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
+        for (PharmML::Correlation *corr : corrs) {
+            this->variabilityModels->addCorrelation(corr);
+        }
     }
     
     void Consolidator::consolidateFunctions(PharmML::Model *model) {
@@ -383,8 +312,9 @@ namespace CPharmML
         }
     }
  
-    std::vector<CPharmML::PopulationParameter *> Consolidator::getPopulationParameters() {
-        return this->populationParameters;
+    CPharmML::PopulationParameters *Consolidator::getPopulationParameters() {
+        // TODO: Plurality support for different parameter models
+        return this->populationParameters[0];
     }
     
     std::vector<CPharmML::Covariate *> Consolidator::getCovariates() {

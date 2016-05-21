@@ -75,6 +75,21 @@ namespace CPharmML
             std::unordered_set<std::string> distParTypes;
             std::string name; // For Correlations lacking PharmML naming
     };
+    
+    class PopulationParameters
+    {
+        public:
+            PopulationParameters(std::vector<PharmML::PopulationParameter *> populationParameters, std::vector<PharmML::Correlation *> correlations);
+            void addRandomVariables(std::vector<PharmML::RandomVariable *> randomVariables);
+            void addIndividualParameters(std::vector<PharmML::IndividualParameter *> individualParameters);
+            void addEstimationStep(PharmML::EstimationStep *estimationStep);
+            
+            std::vector<PopulationParameter *> getPopulationParameters();
+            std::vector<PopulationParameter *> getPopulationParameters(std::vector<PharmML::Correlation *> correlations);
+        
+        private:
+            std::vector<PopulationParameter *> populationParameters;
+    };
 }
 
 #endif

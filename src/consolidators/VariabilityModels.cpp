@@ -53,13 +53,24 @@ namespace CPharmML
         std::vector<PharmML::VariabilityReference *> var_refs = randomVariable->getVariabilityReferences();
         for (PharmML::VariabilityReference *var_ref : var_refs) {
             PharmML::Symbol *level = var_ref->getLevelReference()->getSymbol();
-            if (!this->randomVariablesOnLevel.count(level)) {
+            if (this->randomVariablesOnLevel.count(level) == 0) {
                 // Need to initialize vector first (insert and std::make_pair if not C++11)
                 this->randomVariablesOnLevel.emplace(level, std::vector<PharmML::RandomVariable *>());
             }
             this->randomVariablesOnLevel[level].push_back(randomVariable);
         }
     }
+    
+    // Add a Correlation
+    void VariabilityModels::addCorrelation(PharmML::Correlation *correlation) {
+        PharmML::VariabilityReference *var_ref = correlation->getVariabilityReference();
+        PharmML::Symbol *level = var_ref->getLevelReference()->getSymbol();
+        if (this->correlationsOnLevel.count(level) == 0) {
+            // Need to initialize vector first (insert and std::make_pair if not C++11)
+            this->correlationsOnLevel.emplace(level, std::vector<PharmML::Correlation *>());
+        }
+        this->correlationsOnLevel[level].push_back(correlation);
+}
     
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::getParameterLevelChain() {
         return this->buildDependencyChain(this->parameterLevels);
@@ -71,6 +82,10 @@ namespace CPharmML
     
     std::vector<PharmML::RandomVariable *> VariabilityModels::getRandomVariablesOnLevel(PharmML::Symbol *level) {
         return this->randomVariablesOnLevel[level];
+    }
+    
+    std::vector<PharmML::Correlation *> VariabilityModels::getCorrelationsOnLevel(PharmML::Symbol *level) {
+        return this->correlationsOnLevel[level];
     }
     
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::buildDependencyChain(std::unordered_set<PharmML::VariabilityLevel *> levelSet) {

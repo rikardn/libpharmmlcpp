@@ -40,7 +40,7 @@ namespace CPharmML
     {
         public:
             Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model);
-            std::vector<CPharmML::PopulationParameter *> getPopulationParameters();
+            CPharmML::PopulationParameters *getPopulationParameters();
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
             CPharmML::Functions *getFunctions();
@@ -52,7 +52,7 @@ namespace CPharmML
             PharmML::SymbolSet allSymbols;
             std::unordered_set<PharmML::Object *> allObjects;
 
-            std::vector<CPharmML::PopulationParameter *> populationParameters;
+            std::vector<CPharmML::PopulationParameters *> populationParameters; // Vector with one wrapper object per parameter model
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;

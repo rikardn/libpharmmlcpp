@@ -90,7 +90,7 @@ namespace PharmML
         object.name = par_model->getBlkId();
         std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
         //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
-        std::vector<CPharmML::PopulationParameter *> populationParameters = model->getConsolidator()->getPopulationParameters();
+        CPharmML::PopulationParameters *populationParameters = model->getConsolidator()->getPopulationParameters(); // TODO: Plurality support for multiple parameter models
         object.code = this->genParObj(populationParameters);
         objects.parameter.push_back(object);
         //~ }
@@ -191,26 +191,27 @@ namespace PharmML
         }
     }
     
-    std::string MDLGenerator::genParObj(std::vector<CPharmML::PopulationParameter *> populationParameters) {
+    std::string MDLGenerator::genParObj(CPharmML::PopulationParameters *populationParameters) {
         TextFormatter form;
         
         form.indentAdd("parObj {");
         
+        std::vector<CPharmML::PopulationParameter *> cpop_params = populationParameters->getPopulationParameters();
         // Split into structural and variability parameters
         std::vector<CPharmML::PopulationParameter *> structuralParameters;
         std::vector<CPharmML::PopulationParameter *> variabilityParameters;
         std::vector<std::string> correlatedVariables;
-        for (CPharmML::PopulationParameter *populationParameter : populationParameters) {
-            if (populationParameter->isVariabilityParameter()) {
-                variabilityParameters.push_back(populationParameter);
-            } else if (populationParameter->isCorrelation()) {
-                variabilityParameters.push_back(populationParameter);
+        for (CPharmML::PopulationParameter *cpop_param : cpop_params) {
+            if (cpop_param->isVariabilityParameter()) {
+                variabilityParameters.push_back(cpop_param);
+            } else if (cpop_param->isCorrelation()) {
+                variabilityParameters.push_back(cpop_param);
                 // Get correlated variable names
-                std::vector<SymbRef *> symbRefs = populationParameter->getCorrelation()->getPairwiseSymbRefs();
+                std::vector<SymbRef *> symbRefs = cpop_param->getCorrelation()->getPairwiseSymbRefs();
                 correlatedVariables.push_back(this->accept(symbRefs[0]));
                 correlatedVariables.push_back(this->accept(symbRefs[1]));
             } else {
-                structuralParameters.push_back(populationParameter);
+                structuralParameters.push_back(cpop_param);
             }
         }
         
@@ -270,10 +271,9 @@ namespace PharmML
                 PharmML::Correlation *corr = variabilityParameter->getCorrelation();
                 std::string name = variabilityParameter->getName();
                 if (corr->isPairwise()) {
-                    form.openVector(name + " : {}", 0, ", ");
-                    corr->accept(this);
-                    form.addMany(this->getValues());
-                    form.closeVector();
+                    std::string value = this->accept(corr->getPairwiseAssignment());
+                    form.add(name + " : {value = " + value + "}");
+                    this->variabilityParameterNames.push_back(name); // TODO: Fix this ugly global variable
                 } else {
                     this->logger.error("Correlation '" + name + "' is of unsupported Matrix type", corr);
                     form.add("# " + name + " correlation of unsupported matrix type");
@@ -380,7 +380,9 @@ namespace PharmML
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for parameter variability)
         for (auto it = par_levels.rbegin(); it != par_levels.rend(); ++it) {
             std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::string block = this->genRandomVariableDefinitionBlock(random_vars, *it);
+            std::vector<PharmML::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
+            std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
+            std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
             form.addMany(block);
             form.emptyLine();
         }
@@ -398,7 +400,9 @@ namespace PharmML
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
         for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
             std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::string block = this->genRandomVariableDefinitionBlock(random_vars, *it);
+            std::vector<PharmML::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
+            std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
+            std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
             form.addMany(block);
             form.emptyLine();
         }
@@ -414,7 +418,7 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genRandomVariableDefinitionBlock(std::vector<PharmML::RandomVariable *> random_vars, PharmML::VariabilityLevel *level) {
+    std::string MDLGenerator::genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs) {
         TextFormatter form;
         this->visit(level);
         std::string name = getValue();
@@ -423,6 +427,28 @@ namespace PharmML
         for (PharmML::RandomVariable *random_var : random_vars) {
             this->visit(random_var);
             form.add(this->getValue());
+        }
+        for (CPharmML::PopulationParameter *cpop_corr : cpop_corrs) {
+            std::string name = cpop_corr->getName();
+            
+            PharmML::Correlation *corr = cpop_corr->getCorrelation();
+            if (corr->isPairwise()) {
+                form.openVector(":: {}", 0, ", ");
+                
+                std::vector<SymbRef *> symbRefs = corr->getPairwiseSymbRefs();
+                form.add("rv1 = " + this->accept(symbRefs[0]) + ", rv2 = " + this->accept(symbRefs[1]));
+                std::string type = corr->getPairwiseType();
+                if (type == "CorrelationCoefficient") {
+                    form.add("type is correlation");
+                } else if (type == "Covariance") {
+                    form.add("type is covariance");
+                }
+                form.add("value = " + name);
+                
+                form.closeVector();
+            } else {
+                form.add("# " + name + " correlation of unsupported matrix type");
+            }
         }
         
         form.closeVector();
@@ -770,22 +796,15 @@ namespace PharmML
     }
     
     void MDLGenerator::visit(Correlation *node) {
+        TextFormatter form;
+        
         std::vector<std::string> attr;
         if (node->isPairwise()) {
-            //~ std::vector<SymbRef *> symbRefs = node->getPairwiseSymbRefs();
-            //~ attr.push_back("parameter = [" + this->accept(symbRefs[0]) + ", " + this->accept(symbRefs[1]) + "]");
-            
             attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
-            
-            //~ std::string type = node->getPairwiseType();
-            //~ if (type == "CorrelationCoefficient") {
-                //~ attr.push_back("type is corr");
-            //~ } else if (type == "Covariance") {
-                //~ attr.push_back("type is cov");
-            //~ }
         } else {
             // TODO: Matrix support
         }
+        
         this->setValue(attr);
     }
 

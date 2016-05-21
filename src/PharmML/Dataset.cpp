@@ -262,6 +262,7 @@ namespace PharmML
     
     // Class Dataset (top-level of above)
     Dataset::Dataset(PharmML::PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -292,7 +293,7 @@ namespace PharmML
     
     xml::Node Dataset::xml() {
         xml::Node ds("DataSet");
-	    ds.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/Dataset");
+        ds.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/Dataset");
         if (this->oid != "") {
             ds.setAttribute("oid", this->oid);
         }

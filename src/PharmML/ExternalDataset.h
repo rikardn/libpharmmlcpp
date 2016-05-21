@@ -19,6 +19,7 @@
 #define PHARMML_EXTERNALDATASET_H_
 
 #include "PharmMLContext.h"
+#include <PharmML/PharmMLSection.h>
 #include <PharmML/ColumnMapping.h>
 #include <symbols/Symbol.h>
 
@@ -29,23 +30,25 @@ namespace PharmML
     // Both have unbounded ds:ColumnMappingType's and one ds:Dataset; Although ExternalDataSetType might
     // have design:CodeInjectionType instead of ds:DataSet and ds:ColumnTransformationType's/ds:MultipleDVMappingType's
     // instead of ds:ColumnMappingType's (plus an attribute, toolName). I'm unsure of the wisest path here.
-    class ExternalDataset {
-        PharmML::PharmMLContext *context;
-        std::string oid;
-        std::vector<PharmML::ColumnMapping *> ColumnMappings;
-        Dataset *dataset;
-        // Why don't we even have an accept for this?
-        std::string toolName;
-
+    class ExternalDataset : public PharmMLSection
+    {
         public:
-        ExternalDataset(PharmML::PharmMLContext *context, xml::Node node);
-        std::string getOid();
-        std::vector<PharmML::ColumnMapping *> getColumnMappings();
-        Dataset *getDataset();
-        std::string getToolName();
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
+            ExternalDataset(PharmML::PharmMLContext *context, xml::Node node);
+            std::string getOid();
+            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            Dataset *getDataset();
+            std::string getToolName();
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            std::string oid;
+            std::vector<PharmML::ColumnMapping *> ColumnMappings;
+            Dataset *dataset;
+            // Why don't we even have an accept for this?
+            std::string toolName;
     };
 }
 

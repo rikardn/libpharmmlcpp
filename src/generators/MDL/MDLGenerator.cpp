@@ -147,13 +147,16 @@ namespace PharmML
                 
                 // Set type as MDL expects
                 std::string type = col_def->getType();
-                if(type == "undefined") {
-                    type = "ignored";
+                if (type == "undefined") {
+                    type = "ignore";
                 } else if (type == "reg") {
                     type = "covariate";
+                } else if (type == "dose") {
+                    type = "amt";
                 }
                 form.add("use is " + type);
                 
+                // Prune column map for caller
                 if (type == "covariate" && id == column_mappings[id]) {
                     // Trim column_mappings to not contain implicit (same-name) covariate mappings
                     column_mappings.erase(id);
@@ -168,6 +171,14 @@ namespace PharmML
                             column_mappings.erase(id);
                         }
                     }
+                }
+                
+                // Add type value to caller map
+                if (type == "amt") {
+                    column_mappings[id] = column_mappings[id] + "::dosingTarget";
+                } else if (type == "dv") {
+                    // FIXME: Consolidate the map with the targets (to determine type)
+                    column_mappings[id] = column_mappings[id] + "::continuousObs";
                 }
                 
                 form.closeVector();
@@ -840,6 +851,7 @@ namespace PharmML
                 // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
                 std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
                 if (!mappings.empty()) {
+                    // Output pruned and formatted map from genDataInputVariablesBlock
                     form.openVector("DECLARED_VARIABLES {}", 0, " ");
                     for (stringpair pair : mappings) {
                         form.add(pair.second);
@@ -855,19 +867,22 @@ namespace PharmML
                 form.add("");
                 
                 // Generate SOURCE
-                form.indentAdd("SOURCE {");
+                form.openVector("SOURCE {}", 1, "");
                 ExternalFile *file = dataset->getExternal();
-                form.add("# Name: " + file->getOid());
-                form.add("# Type: " + file->getFormat());
-                form.add("# Delimiter: \"" + file->getDelimiter() + "\"");
+                form.add("# Name: " + file->getOid() +
+                    ",type: " + file->getFormat() +
+                    ",delimiter: \"" + file->getDelimiter() + "\"");
                 form.openVector("srcfile : {}", 1, ", ");
                 form.add("file = \"" + file->getPath() + "\"");
-                form.add("inputFormat = nonmemFormat");
+                form.add("inputFormat is nonmemFormat");
+                form.closeVector();
                 form.closeVector();
             } else {
-                form.add("# Lack of external dataset!");
+                this->logger.error("Table as opposed to external resource not supported in ExternalDataset", dataset);
+                form.add("# No external dataset file");
             }
         } else {
+            this->logger.error("Unknown dataset encoding tool/style '" + tool + "'", node);
             form.add("# Unknown dataset encoding tool/style: \"" + tool + "\"!");
             form.add("# Current support is limited to NONMEM datasets");
         }

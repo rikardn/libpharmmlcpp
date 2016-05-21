@@ -326,7 +326,6 @@ namespace PharmML
         sigma_formatter.noFinalNewline();
         form.add(sigma_formatter.createString());
 
-        form.add("d = c()");
         form.add("groupsize = 1");
 
         // Generate trial design information

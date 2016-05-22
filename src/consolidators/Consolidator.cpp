@@ -338,5 +338,9 @@ namespace CPharmML
     CPharmML::Functions *Consolidator::getFunctions() {
         return this->functions;
     }
+    
+    CPharmML::PKMacros *Consolidator::getPKMacros() {
+        return this->pk_macros;
+    }
 
 }

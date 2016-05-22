@@ -31,20 +31,35 @@
 
 namespace CPharmML
 {
+    class PKMacro
+    {
+        public:
+            PKMacro(PharmML::PKMacro *macro);
+            PharmML::PKMacro *getMacro();
+            void setName(std::string name);
+            std::string getName();
+        
+        private:
+            PharmML::PKMacro *macro;
+            std::string name;
+    };
+    
     class PKMacros
     {
         public:
             PKMacros(std::vector<PharmML::PKMacro *> pk_macros, std::shared_ptr<PharmML::Logger> logger);
             void validate();
             
-            std::vector<PharmML::PKMacro *> getMacros();
-            PharmML::PKMacro *getCompartment(int cmt_num);
-            PharmML::PKMacro *getAdministration(int adm_num);
+            bool exists();
+            std::vector<PKMacro *> getMacros();
+            PKMacro *getCompartment(int cmt_num);
+            std::vector<PKMacro *> getAdministrations();
+            PKMacro *getAdministration(int adm_num);
         
         private:
             std::shared_ptr<PharmML::Logger> logger;
             PharmML::AstAnalyzer ast_analyzer;
-            std::vector<PharmML::PKMacro *> pk_macros;
+            std::vector<PKMacro *> cmacros;
     };
 }
 

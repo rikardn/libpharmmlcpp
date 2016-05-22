@@ -397,7 +397,7 @@ namespace PharmML
         form.emptyLine();
         
         // Generate MODEL_PREDICTION
-        std::string model_pred = this->genModelPredictionBlock(model->getModelDefinition()->getStructuralModel());
+        std::string model_pred = this->genModelPredictionBlock(model->getModelDefinition()->getStructuralModel(), model->getConsolidator()->getPKMacros());
         form.addMany(model_pred);
         form.emptyLine();
         
@@ -472,7 +472,7 @@ namespace PharmML
         return form.createString();
     }
     
-    std::string MDLGenerator::genModelPredictionBlock(PharmML::StructuralModel *structuralModel) {
+    std::string MDLGenerator::genModelPredictionBlock(PharmML::StructuralModel *structuralModel, CPharmML::PKMacros *pk_macros) {
         // TODO: Consolidator for CommonVariable (Variable and DerivativeVariable)!
         TextFormatter form;
         form.openVector("MODEL_PREDICTION {}", 1, "");
@@ -483,6 +483,11 @@ namespace PharmML
         for (Symbol *var : var_set.getOrdered()) {
             var->accept(this->symb_gen.get());
             form.addMany(symb_gen->getValue());
+        }
+        
+        // Get PKMacro's, sort and generate
+        if (pk_macros->exists()) {
+            std::vector<CPharmML::PKMacro *> adm = pk_macros->getAdministrations();
         }
         
         form.closeVector();

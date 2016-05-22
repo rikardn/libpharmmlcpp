@@ -19,24 +19,47 @@
 
 namespace CPharmML
 {
+    // Wrapping class for PharmML::PKMacro's (mostly because PharmML is terribly non-namey here)
+    PKMacro::PKMacro(PharmML::PKMacro *macro) {
+        this->macro = macro;
+    }
+    
+    PharmML::PKMacro *PKMacro::getMacro() {
+        return this->macro;
+    }
+    
+    void PKMacro::setName(std::string name) {
+        this->name = name;
+    }
+    
+    std::string PKMacro::getName() {
+        return this->name;
+    }
+    
     // Construct with PKMacro's as base
-    PKMacros::PKMacros(std::vector<PharmML::PKMacro *> pk_macros, std::shared_ptr<PharmML::Logger> logger) {
+    PKMacros::PKMacros(std::vector<PharmML::PKMacro *> macros, std::shared_ptr<PharmML::Logger> logger) {
         this->logger = logger;
-        this->pk_macros.reserve(pk_macros.size());
-        this->pk_macros.insert(this->pk_macros.begin(), pk_macros.begin(), pk_macros.end());
+        
+        // Collect CPharmML wrapping objects
+        this->cmacros.reserve(macros.size());
+        for (PharmML::PKMacro *macro : macros) {
+            PKMacro *cmacro = new PKMacro(macro);
+            this->cmacros.push_back(cmacro);
+        }
     }
     
     // Validate the internals
     void PKMacros::validate() {
-        // Map from name of attribute to (referable) integer codes (and their PKMacro objects)
-        std::unordered_map<std::string, std::unordered_map<int, PharmML::PKMacro *>> int_codes = {
-            { "cmt", std::unordered_map<int, PharmML::PKMacro *>() },
-            { "adm", std::unordered_map<int, PharmML::PKMacro *>() },
+        // Map from name of attribute to (referable) integer codes (and the referables)
+        std::unordered_map<std::string, std::unordered_map<int, PKMacro *>> int_codes = {
+            { "cmt", std::unordered_map<int, PKMacro *>() },
+            { "adm", std::unordered_map<int, PKMacro *>() },
         };
         
         // Check all macros
-        for (PharmML::PKMacro *macro : this->pk_macros) {
+        for (PKMacro *cmacro : this->cmacros) {
             // Get name of macro ("Absorption", "Compartment", etc.)
+            PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = macro->getName();
             
             // Check all values in macro
@@ -63,28 +86,35 @@ namespace CPharmML
                         int num = scalar_int->toInt();
                         auto got = int_codes[attribute].find(num);
                         if (got != int_codes[attribute].end()) {
-                            PharmML::PKMacro *m2 = int_codes[attribute][num];
+                            PKMacro *dup_cmacro = int_codes[attribute][num];
+                            PharmML::PKMacro *dup_macro = dup_cmacro->getMacro();
                             this->logger->error("PK macro '" + name + "' (%a) shares identifier '"
-                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + m2->getName() + "' (%b)", macro, m2);
+                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getName() + "' (%b)", macro, dup_macro);
                         }
                         
-                        // Link attribute, code and macro for above check
-                        int_codes[attribute][num] = macro;
+                        // Link attribute, code and cmacro for above check
+                        int_codes[attribute][num] = cmacro;
                     }
                 }
             }
         }
     }
     
-    // Get PharmML objects used to consolidate
-    std::vector<PharmML::PKMacro *> PKMacros::getMacros() {
-        return this->pk_macros;
+    // Check if this model has PK macros
+    bool PKMacros::exists() {
+        return !this->cmacros.empty();
+    }
+    
+    // Get wrapping objects (CPharmML::PKMacro*)
+    std::vector<PKMacro *> PKMacros::getMacros() {
+        return this->cmacros;
     }
     
     // Find and return a compartment from compartment number
-    PharmML::PKMacro *PKMacros::getCompartment(int cmt_num) {
-        for (PharmML::PKMacro *macro : this->pk_macros) {
+    PKMacro *PKMacros::getCompartment(int cmt_num) {
+        for (PKMacro *cmacro : this->cmacros) {
             // Find compartment
+            PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = macro->getName();
             if (name == "Compartment") {
                 // Find 'cmt' attribute
@@ -96,7 +126,7 @@ namespace CPharmML
                         assignment->accept(&ast_analyzer);
                         PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                         if (scalar_int->toInt() == cmt_num) {
-                            return macro;
+                            return cmacro;
                         }
                     }
                 }
@@ -105,10 +135,25 @@ namespace CPharmML
         return nullptr;
     }
     
-    // Find and return an administration process from administration number
-    PharmML::PKMacro *PKMacros::getAdministration(int adm_num) {
-        for (PharmML::PKMacro *macro : this->pk_macros) {
+    // Get all administration type macro's
+    std::vector<PKMacro *> PKMacros::getAdministrations() {
+        std::vector<PKMacro *> adms;
+        for (PKMacro *cmacro : this->cmacros) {
             // Find administration
+            PharmML::PKMacro *macro = cmacro->getMacro();
+            std::string name = macro->getName();
+            if (name == "Absorption" || name == "IV" || name == "Depot") {
+                adms.push_back(cmacro);
+            }
+        }
+        return adms;
+    }
+    
+    // Find and return an administration process from administration number
+    PKMacro *PKMacros::getAdministration(int adm_num) {
+        for (PKMacro *cmacro : this->cmacros) {
+            // Find administration
+            PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = macro->getName();
             if (name == "Absorption" || name == "IV" || name == "Depot") {
                 // Find 'adm' attribute
@@ -120,7 +165,7 @@ namespace CPharmML
                         assignment->accept(&ast_analyzer);
                         PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                         if (scalar_int->toInt() == adm_num) {
-                            return macro;
+                            return cmacro;
                         }
                     }
                 }

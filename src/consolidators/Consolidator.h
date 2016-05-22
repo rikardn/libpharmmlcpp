@@ -46,6 +46,7 @@ namespace CPharmML
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
             CPharmML::Functions *getFunctions();
+            CPharmML::PKMacros *getPKMacros();
 
         private:
             std::shared_ptr<PharmML::Logger> logger;

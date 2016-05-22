@@ -18,6 +18,7 @@
 #ifndef CPHARMML_CONSOLIDATOR_H_
 #define CPHARMML_CONSOLIDATOR_H_
 
+#include <memory>
 #include <vector>
 #include <string>
 #include <unordered_set>
@@ -47,7 +48,7 @@ namespace CPharmML
             CPharmML::Functions *getFunctions();
 
         private:
-            PharmML::Logger logger;
+            std::shared_ptr<PharmML::Logger> logger;
             PharmML::PharmMLContext *context;
             
             PharmML::SymbolSet allSymbols;

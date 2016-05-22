@@ -23,6 +23,7 @@ namespace CPharmML
 {
     Consolidator::Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model) {
         this->context = context;
+        this->logger = std::make_shared<PharmML::Logger>("Post");
         
         // First, consolidate all symbols (other consolidators might require it)
         this->consolidateSymbols(model);
@@ -174,7 +175,7 @@ namespace CPharmML
 
     // Print an error for duplicate oid
     void Consolidator::duplicateOidError(const std::string &oid, PharmML::PharmMLSection *section) {
-        this->logger.error("Duplicate oid '" + oid + "'", section);
+        this->logger->error("Duplicate oid '" + oid + "'", section);
     }
 
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
@@ -278,6 +279,7 @@ namespace CPharmML
     void Consolidator::consolidatePKMacros(PharmML::Model *model) {
         std::vector<PharmML::PKMacro *> pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
         this->pk_macros = new PKMacros(pk_macros);
+        this->pk_macros->validate(this->logger);
     }
 
     void Consolidator::consolidateTrialDesign(PharmML::Model *model) {
@@ -292,7 +294,7 @@ namespace CPharmML
                     PharmML::Dataset *ds = ind_obs->getDataset();
                     PharmML::DataColumn *col = ds->getIdvColumn();
                     if (!col) {     // No idv column was found
-                        this->logger.error("Missing idv column in IndividualObservations", ind_obs);
+                        this->logger->error("Missing idv column in IndividualObservations", ind_obs);
                         return;     // FIXME: Should we really return here?
                     }
                     // FIXME: Need to check ColumnMapping and IndependentVariables also
@@ -307,12 +309,12 @@ namespace CPharmML
                     PharmML::Dataset *ds = ind_adm->getDataset();
                     PharmML::DataColumn *idv_col = ds->getIdvColumn();
                     if (!idv_col) {     // No idv column was found
-                        this->logger.error("Missing idv column in IndividualAdministration", ind_adm);
+                        this->logger->error("Missing idv column in IndividualAdministration", ind_adm);
                         return;
                     }
                     PharmML::DataColumn *dose_col = ds->getColumnFromType("dose");
                     if (!dose_col) {
-                        this->logger.error("Missing dose column in IndividualAdministration", ind_adm);
+                        this->logger->error("Missing dose column in IndividualAdministration", ind_adm);
                         return;
                     }
                 }

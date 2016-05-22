@@ -25,6 +25,18 @@ namespace CPharmML
         this->pk_macros.insert(this->pk_macros.begin(), pk_macros.begin(), pk_macros.end());
     }
     
+    // Validate the internals
+    void PKMacros::validate(const std::shared_ptr<PharmML::Logger> &logger) {
+        for (PharmML::PKMacro *macro : this->pk_macros) {
+            std::string name = macro->getName();
+            for (PharmML::MacroValue value : macro->getValues()) {
+                if (value.first == "") {
+                    logger->warning("PK macro '" + name + "' has a value without attribute type", macro);
+                }
+            }
+        }
+    }
+    
     // Get PharmML objects used to consolidate
     std::vector<PharmML::PKMacro *> PKMacros::getMacros() {
         return this->pk_macros;

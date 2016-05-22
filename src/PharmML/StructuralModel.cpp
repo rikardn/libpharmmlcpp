@@ -39,22 +39,21 @@ namespace PharmML
             this->variables.push_back(var);
         }
         // Get all PK macros (nice that they are homologous, right?)
-        xml::Node macros_node = this->context->getSingleElement(node, "./mdef:PKMacros");
+        xml::Node macros_node = this->context->getSingleElement(node, "./mdef:PKmacros");
         if (macros_node.exists()) {
-            std::vector<xml::Node> abs = this->context->getElements(node, "./mdef:Absorption");
-            std::vector<xml::Node> cmt = this->context->getElements(node, "./mdef:Compartment");
-            std::vector<xml::Node> dpt = this->context->getElements(node, "./mdef:Depot");
-            std::vector<xml::Node> eff = this->context->getElements(node, "./mdef:Effect");
-            std::vector<xml::Node> el = this->context->getElements(node, "./mdef:Elimination");
-            std::vector<xml::Node> iv = this->context->getElements(node, "./mdef:IV");
-            std::vector<xml::Node> orl = this->context->getElements(node, "./mdef:Oral");
-            std::vector<xml::Node> per = this->context->getElements(node, "./mdef:Peripheral");
-            std::vector<xml::Node> tra = this->context->getElements(node, "./mdef:Transfer");
+            std::vector<xml::Node> abs = this->context->getElements(macros_node, "./mdef:Absorption");
+            std::vector<xml::Node> cmt = this->context->getElements(macros_node, "./mdef:Compartment");
+            std::vector<xml::Node> dpt = this->context->getElements(macros_node, "./mdef:Depot");
+            std::vector<xml::Node> eff = this->context->getElements(macros_node, "./mdef:Effect");
+            std::vector<xml::Node> el = this->context->getElements(macros_node, "./mdef:Elimination");
+            std::vector<xml::Node> iv = this->context->getElements(macros_node, "./mdef:IV");
+            std::vector<xml::Node> orl = this->context->getElements(macros_node, "./mdef:Oral");
+            std::vector<xml::Node> per = this->context->getElements(macros_node, "./mdef:Peripheral");
+            std::vector<xml::Node> tra = this->context->getElements(macros_node, "./mdef:Transfer");
             std::vector<xml::Node> macro_nodes;
             macro_nodes.reserve(abs.size() + cmt.size() + dpt.size() + eff.size() + el.size() + iv.size() + orl.size() + per.size() + tra.size());
             macro_nodes.insert(macro_nodes.end(), abs.begin(), abs.end());
             macro_nodes.insert(macro_nodes.end(), cmt.begin(), cmt.end());
-            macro_nodes.insert(macro_nodes.end(), abs.begin(), abs.end());
             macro_nodes.insert(macro_nodes.end(), dpt.begin(), dpt.end());
             macro_nodes.insert(macro_nodes.end(), eff.begin(), eff.end());
             macro_nodes.insert(macro_nodes.end(), el.begin(), el.end());

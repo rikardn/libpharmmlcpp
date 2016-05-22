@@ -18,10 +18,13 @@
 #ifndef CPHARMML_PKMACROS_H_
 #define CPHARMML_PKMACROS_H_
 
+#include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
 #include <PharmML/PKMacro.h>
+
+#include <helpers/Logger.h>
 
 namespace CPharmML
 {
@@ -29,6 +32,7 @@ namespace CPharmML
     {
         public:
             PKMacros(std::vector<PharmML::PKMacro *> pk_macros);
+            void validate(const std::shared_ptr<PharmML::Logger> &logger);
             
             std::vector<PharmML::PKMacro *> getMacros();
             PharmML::PKMacro *getCompartment(int cmt_num);

@@ -157,6 +157,8 @@ namespace PharmML
             void visit(DesignSpace *node) override;
             
             void visit(ParameterEstimation *node) override;
+            
+            void visit(PKMacro *node) override;
     };
 }
 

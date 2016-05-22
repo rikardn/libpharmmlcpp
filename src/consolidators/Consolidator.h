@@ -28,6 +28,7 @@
 #include <consolidators/Covariates.h>
 #include <consolidators/VariabilityModels.h>
 #include <consolidators/Functions.h>
+#include <consolidators/PKMacros.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <objects/Object.h>
@@ -56,6 +57,7 @@ namespace CPharmML
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
+            CPharmML::PKMacros *pk_macros;
             
             void consolidateSymbols(PharmML::Model *model);
             void consolidateObjects(PharmML::Model *model);
@@ -65,6 +67,7 @@ namespace CPharmML
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
             void consolidateTrialDesign(PharmML::Model *model);
+            void consolidatePKMacros(PharmML::Model *model);
             void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }

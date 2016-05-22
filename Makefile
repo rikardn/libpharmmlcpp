@@ -24,8 +24,8 @@ mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGen
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o CPKMacros.o RSymbols.o Logger.o PharmMLSection.o Object.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dependencies.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o CPKMacros.o RSymbols.o Logger.o PharmMLSection.o Object.o
 
 Object.o: src/objects/Object.cpp src/objects/Object.h
 	$(CC) -c src/objects/Object.cpp -oObject.o $(CFLAGS)
@@ -47,6 +47,9 @@ CVariabilityModels.o: src/consolidators/VariabilityModels.cpp src/consolidators/
 
 CFunctions.o: src/consolidators/Functions.cpp src/consolidators/Functions.h
 	$(CC) -c src/consolidators/Functions.cpp -oCFunctions.o $(CFLAGS)
+
+CPKMacros.o: src/consolidators/PKMacros.cpp src/consolidators/PKMacros.h
+	$(CC) -c src/consolidators/PKMacros.cpp -oCPKMacros.o $(CFLAGS)
 
 RSymbols.o: src/generators/R/RSymbols.cpp src/generators/R/RSymbols.h
 	$(CC) -c src/generators/R/RSymbols.cpp -oRSymbols.o $(CFLAGS)
@@ -152,6 +155,9 @@ StructuralModel.o: src/PharmML/StructuralModel.cpp src/PharmML/StructuralModel.h
 
 Variable.o: src/symbols/Variable.cpp src/symbols/Variable.h
 	$(CC) -c src/symbols/Variable.cpp -oVariable.o $(CFLAGS)
+
+PKMacro.o: src/PharmML/PKMacro.cpp src/PharmML/PKMacro.h
+	$(CC) -c src/PharmML/PKMacro.cpp -oPKMacro.o $(CFLAGS)
 
 RPharmMLGenerator.o: src/generators/R/RPharmMLGenerator.cpp src/generators/R/RPharmMLGenerator.h
 	$(CC) -c src/generators/R/RPharmMLGenerator.cpp -oRPharmMLGenerator.o $(CFLAGS)

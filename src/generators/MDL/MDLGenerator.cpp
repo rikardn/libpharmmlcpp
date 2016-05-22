@@ -954,4 +954,7 @@ namespace PharmML
         }
         this->setValue(attr);
     }
+    
+    // Class PKMacro
+    void MDLGenerator::visit(PKMacro *node) { }
 }

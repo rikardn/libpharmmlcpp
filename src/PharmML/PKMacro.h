@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_STRUCTURALMODEL_H_
-#define PHARMML_STRUCTURALMODEL_H_
+#ifndef PHARMML_PKMACRO_H_
+#define PHARMML_PKMACRO_H_
 
 #include <vector>
 #include <PharmML/PharmMLContext.h>
@@ -24,28 +24,27 @@
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
-#include <symbols/Variable.h>
-#include <symbols/DerivativeVariable.h>
-#include <PharmML/PKMacro.h>
 
 namespace PharmML
 {
-    class StructuralModel
+    typedef std::pair<std::string, AstNode *> MacroValue;
+    class PKMacro : public PharmMLSection, public Referer
     {
-        PharmML::PharmMLContext *context;
-        std::string blkId;
-        std::vector<PharmML::CommonVariable *> variables;
-        std::vector<PharmML::PKMacro *> pk_macros;
-
         public:
-        StructuralModel(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::vector<PharmML::CommonVariable *> getVariables();
-        std::vector<PharmML::CommonVariable *> getDerivatives();
-        std::vector<PharmML::PKMacro *> getPKMacros();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
-        std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);
+            PKMacro(PharmMLContext *context, xml::Node node);
+            
+            std::string getName();
+            std::vector<MacroValue> getValues();
+            
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            void parse(xml::Node node);
+            
+            std::string name;
+            std::vector<MacroValue> values;
     };
 }
 

@@ -61,6 +61,8 @@ namespace PharmML
     class DesignSpace;
     
     class ParameterEstimation;
+    
+    class PKMacro;
 
     class PharmMLVisitor
     {
@@ -106,6 +108,8 @@ namespace PharmML
             virtual void visit(DesignSpace *node) = 0;
             
             virtual void visit(ParameterEstimation *node) = 0;
+            
+            virtual void visit(PKMacro *node) = 0;
     };
 }
 

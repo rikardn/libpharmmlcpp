@@ -31,6 +31,7 @@ namespace PharmML
             SymbolSet(Symbol *symbol);
             SymbolSet(std::unordered_set<Symbol *> symbol_set);
             void addSymbol(Symbol *symbol);
+            void addSymbols(std::unordered_set<Symbol *> symbol_set);
             bool hasSymbol(Symbol *symbol);
             bool dependsOn(Symbol *symbol);
             void merge(SymbolSet& set);

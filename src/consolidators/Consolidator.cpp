@@ -35,6 +35,7 @@ namespace CPharmML
         this->consolidateCovariates(model);
         this->consolidateVariabilityModels(model);
         this->consolidateFunctions(model);
+        this->consolidatePKMacros(model);
         
         this->consolidateTrialDesign(model);
     }
@@ -272,6 +273,11 @@ namespace CPharmML
         for (PharmML::FunctionDefinition *fun : funs) {
             this->functions->addFunctionDefinition(fun);
         }
+    }
+    
+    void Consolidator::consolidatePKMacros(PharmML::Model *model) {
+        std::vector<PharmML::PKMacro *> pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
+        this->pk_macros = new PKMacros(pk_macros);
     }
 
     void Consolidator::consolidateTrialDesign(PharmML::Model *model) {

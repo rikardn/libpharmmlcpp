@@ -30,9 +30,7 @@ namespace PharmML
     }
     
     SymbolSet::SymbolSet(std::unordered_set<Symbol *> symbol_set) {
-        for (Symbol *symbol : symbol_set) {
-            this->addSymbol(symbol);
-        }
+        this->addSymbols(symbol_set);
     }
     
     // Make the SymbolSet iterable
@@ -46,6 +44,12 @@ namespace PharmML
 
     void SymbolSet::addSymbol(Symbol *symbol) {
         this->symbols.insert(symbol);
+    }
+    
+    void SymbolSet::addSymbols(std::unordered_set<Symbol *> symbol_set) {
+        for (Symbol *symbol : symbol_set) {
+            this->addSymbol(symbol);
+        }
     }
 
     bool SymbolSet::hasSymbol(Symbol *symbol) {

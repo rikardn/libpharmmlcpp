@@ -477,6 +477,11 @@ namespace PharmML
         TextFormatter form;
         form.openVector("MODEL_PREDICTION {}", 1, "");
         
+        // Generate MDL COMPARTMENT block (if there's PKMacro's)
+        if (pk_macros->exists()) {
+            form.addMany(this->genCompartmentBlock(pk_macros));
+        }
+        
         // Get CommonVariable's (Variable's and Derivative's), sort and generate
         std::vector<CommonVariable *> vars = structuralModel->getVariables();
         SymbolSet var_set(std::unordered_set<Symbol *>(vars.begin(), vars.end()));
@@ -485,9 +490,139 @@ namespace PharmML
             form.addMany(symb_gen->getValue());
         }
         
+        
+        
+        form.closeVector();
+        return form.createString();
+    }
+    
+    std::string MDLGenerator::genCompartmentBlock(CPharmML::PKMacros *pk_macros) {
+        TextFormatter form;
+        
         // Get PKMacro's, sort and generate
-        if (pk_macros->exists()) {
-            std::vector<CPharmML::PKMacro *> adm = pk_macros->getAdministrations();
+        form.openVector("COMPARTMENT {}", 1, "");
+        
+        // Figure out max length to copy MDL spacing standard
+        int max_length = 0;
+        for (CPharmML::PKMacro *macro : pk_macros->getMacros()) {
+            int length = macro->getName().length();
+            max_length = length > max_length ? length : max_length;
+        }
+        
+        // Add administrations first
+        std::vector<CPharmML::PKMacro *> adm = pk_macros->getAdministrations();
+        for (CPharmML::PKMacro *cmacro : adm) {
+            PharmML::PKMacro *macro = cmacro->getMacro();
+            std::string name = cmacro->getName();
+            std::string pad = std::string(" ", max_length - name.length());
+            std::string prefix = name + pad;
+            form.openVector(name + " : {}", 0, ", ");
+            
+            std::string type = macro->getName();
+            if (type == "Absorption" || type == "Oral" || type == "Depot") {
+                form.add("type is depot");
+                
+                // MDL seems to prefer numbering absorptions as compartments
+                int model_cmt = 1;
+                cmacro->tryParseInt("adm", model_cmt, this->ast_analyzer);
+                while (pk_macros->getCompartment(model_cmt)) {
+                    model_cmt++;
+                }
+                form.add("modelCmt = " + std::to_string(model_cmt));
+                
+                // Get compartment target
+                int to_cmt;
+                AstNode *target = macro->getAssignment("target");
+                if ( cmacro->tryParseInt("cmt", to_cmt, this->ast_analyzer) ) {
+                    std::string to_name = pk_macros->getCompartment(to_cmt)->getName();
+                    form.add("to = " + to_name);
+                } else if ( target ) {
+                    // Depot should have 'target' instead of 'cmt'
+                    form.add("target = " + this->accept(target));
+                }
+                
+                // Get parameterization (and assume validation makes sure no strange combinations are present)
+                AstNode *tlag = macro->getAssignment("Tlag");
+                if (tlag) {
+                    form.add("tlag = " + this->accept(tlag));
+                }
+                AstNode *p = macro->getAssignment("p");
+                if (p) {
+                    form.add("finput = " + this->accept(p));
+                }
+                AstNode *tk0 = macro->getAssignment("Tk0");
+                if (tk0) {
+                    form.add("tk0 = " + this->accept(tk0));
+                }
+                AstNode *ka = macro->getAssignment("ka");
+                if (ka) {
+                    form.add("ka = " + this->accept(ka));
+                }
+                AstNode *ktr = macro->getAssignment("Ktr");
+                if (ktr) {
+                    form.add("ktr = " + this->accept(ktr));
+                }
+                AstNode *mtt = macro->getAssignment("Mtt");
+                if (mtt) {
+                    form.add("mtt = " + this->accept(mtt));
+                }
+            } else if (type == "IV") {
+                form.add("type is direct");
+                
+                // Get compartment target
+                int to_cmt;
+                if ( cmacro->tryParseInt("cmt", to_cmt, this->ast_analyzer) ) {
+                    std::string to_name = pk_macros->getCompartment(to_cmt)->getName();
+                    form.add("to = " + to_name);
+                }
+                
+                // Get parameterization (and assume validation makes sure no strange combinations are present)
+                AstNode *tlag = macro->getAssignment("Tlag");
+                if (tlag) {
+                    form.add("tlag = " + this->accept(tlag));
+                }
+                AstNode *p = macro->getAssignment("p");
+                if (p) {
+                    form.add("finput = " + this->accept(p));
+                }
+            }
+            form.closeVector();
+        }
+        
+        // Add compartments
+        std::vector<CPharmML::PKMacro *> cmts = pk_macros->getCompartments();
+        for (CPharmML::PKMacro *cmacro : cmts) {
+            PharmML::PKMacro *macro = cmacro->getMacro();
+            std::string name = cmacro->getName();
+            std::string pad = std::string(" ", max_length - name.length());
+            std::string prefix = name + pad;
+            form.openVector(name + " : {}", 0, ", ");
+            
+            std::string type = macro->getName();
+            if (type == "Compartment") {
+                form.add("type is compartment");
+                
+                // Output a model compartment number for MDL
+                int model_cmt = 1;
+                cmacro->tryParseInt("cmt", model_cmt, this->ast_analyzer);
+                while (pk_macros->getCompartment(model_cmt) != cmacro) {
+                    model_cmt++;
+                }
+                form.add("modelCmt = " + std::to_string(model_cmt));
+                
+                // Get parameterization
+                AstNode *vol = macro->getAssignment("volume");
+                if (vol) {
+                    form.add("volume = " + this->accept(vol));
+                }
+                AstNode *conc = macro->getAssignment("concentration");
+                if (conc) {
+                    form.add("conc = " + this->accept(conc));
+                }
+            } else if (type == "Peripheral") {
+                
+            }
+            form.closeVector();
         }
         
         form.closeVector();

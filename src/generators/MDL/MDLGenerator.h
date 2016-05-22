@@ -109,6 +109,7 @@ namespace PharmML
             std::string genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
             std::string genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(PharmML::StructuralModel *structuralModel, CPharmML::PKMacros *pk_macros);
+            std::string genCompartmentBlock(CPharmML::PKMacros *pk_macros);
             std::string genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions);
             
             std::string genMdlObj(PharmML::Model *model);

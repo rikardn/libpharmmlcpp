@@ -35,10 +35,14 @@ namespace CPharmML
     {
         public:
             PKMacro(PharmML::PKMacro *macro);
+            
             PharmML::PKMacro *getMacro();
             std::string getName();
             void setName(std::string name);
             std::string generateName(PharmML::AstAnalyzer &ast_analyzer);
+            
+            // Convenience function; try to parse an attribute into int
+            bool tryParseInt(std::string attribute, int &result, PharmML::AstAnalyzer &ast_analyzer);
         
         private:
             PharmML::PKMacro *macro;
@@ -53,6 +57,7 @@ namespace CPharmML
             
             bool exists();
             std::vector<PKMacro *> getMacros();
+            std::vector<PKMacro *> getCompartments();
             PKMacro *getCompartment(int cmt_num);
             std::vector<PKMacro *> getAdministrations();
             PKMacro *getAdministration(int adm_num);

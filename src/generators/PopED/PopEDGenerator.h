@@ -23,6 +23,7 @@
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/Variable.h>
+#include <PharmML/PKMacro.h>
 #include <generators/R/RAstGenerator.h>
 #include <generators/R/RPharmMLGenerator.h>
 #include <visitors/PharmMLVisitor.h>
@@ -104,6 +105,8 @@ namespace PharmML
             void visit(DesignSpace *node) override;
 
             void visit(ParameterEstimation *node) override;
+            
+            void visit(PKMacro *node) override;
     };
 }
 

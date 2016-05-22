@@ -30,6 +30,7 @@
 #include <symbols/ObservationModel.h>
 #include <symbols/IndependentVariable.h>
 #include <symbols/RandomVariable.h>
+#include <PharmML/PKMacro.h>
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
@@ -100,6 +101,8 @@ namespace PharmML
             void visit(DesignSpace *node) override;
             
             void visit(ParameterEstimation *node) override;
+            
+            void visit(PKMacro *node) override;
     };
 }
 

@@ -725,4 +725,6 @@ namespace PharmML
     }
     
     void RPharmMLGenerator::visit(ParameterEstimation *node) { }
+    
+    void RPharmMLGenerator::visit(PKMacro *node) { }
 }

@@ -36,8 +36,9 @@ namespace CPharmML
         public:
             PKMacro(PharmML::PKMacro *macro);
             PharmML::PKMacro *getMacro();
-            void setName(std::string name);
             std::string getName();
+            void setName(std::string name);
+            std::string generateName(PharmML::AstAnalyzer &ast_analyzer);
         
         private:
             PharmML::PKMacro *macro;

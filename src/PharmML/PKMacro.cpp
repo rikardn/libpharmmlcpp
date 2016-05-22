@@ -55,8 +55,19 @@ namespace PharmML
         return this->name;
     }
     
+    // Get pairs of all attributes and values
     std::vector<MacroValue> PKMacro::getValues() {
         return this->values;
+    }
+    
+    // Find and get a specific attribute's assignment
+    AstNode *PKMacro::getAssignment(std::string attribute) {
+        for (MacroValue value : this->values) {
+            if (value.first == attribute) {
+                return value.second;
+            }
+        }
+        return nullptr;
     }
     
     void PKMacro::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

@@ -24,6 +24,7 @@
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
+#include <AST/AstNode.h>
 
 namespace PharmML
 {
@@ -35,6 +36,7 @@ namespace PharmML
             
             std::string getName();
             std::vector<MacroValue> getValues();
+            AstNode *getAssignment(std::string attribute);
             
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);

@@ -87,7 +87,11 @@ namespace PharmML
             this->first_node = false;
         }
         Symbol *symbol = node->getSymbol();
-        this->setValue(":" + symbol->getSymbId() + ":");
+        if (symbol) {
+            this->setValue(":" + symbol->getSymbId() + ":");
+        } else {
+            this->setValue(":UNDEF:");
+        }
     }
 
     void AstAnalyzer::visit(SteadyStateParameter *node) {

@@ -139,12 +139,14 @@ namespace PharmML
     
     // Add vector (plural of add()) as individual units
     void TextFormatter::addMany(std::vector<std::string> strs, bool separate) {
-        // First row adds a separator (if vector open)
-        this->add(strs.front(), false);
-        
-        // If desired, subsequent lines adds separators (if vector open)
-        for(auto it = strs.begin()+1; it != strs.end(); ++it) {
-            this->add(*it, !separate);
+        if (!strs.empty()) {
+            // First row adds a separator (if vector open)
+            this->add(strs.front(), false);
+            
+            // If desired, subsequent lines adds separators (if vector open)
+            for(auto it = strs.begin()+1; it != strs.end(); ++it) {
+                this->add(*it, !separate);
+            }
         }
     }
 

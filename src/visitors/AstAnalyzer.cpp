@@ -49,6 +49,8 @@ namespace PharmML
         this->first_node = true;
         this->symbref = nullptr;
         this->scalar = nullptr;
+        this->scalar_int = nullptr;
+        this->scalar_real = nullptr;
         this->functioncall = nullptr;
         this->piecewise = nullptr;
     }
@@ -60,6 +62,14 @@ namespace PharmML
     
     Scalar *AstAnalyzer::getPureScalar() {
         return this->scalar;
+    }
+    
+    ScalarInt *AstAnalyzer::getPureScalarInt() {
+        return this->scalar_int;
+    }
+    
+    ScalarReal *AstAnalyzer::getPureScalarReal() {
+        return this->scalar_real;
     }
     
     FunctionCall *AstAnalyzer::getPureFunctionCall() {
@@ -353,6 +363,7 @@ namespace PharmML
     void AstAnalyzer::visit(ScalarInt *node) {
         if (this->first_node) {
             this->scalar = node;
+            this->scalar_int = node;
             this->first_node = false;
         }
         this->setValue("int[" + node->toString() + "}");
@@ -361,6 +372,7 @@ namespace PharmML
     void AstAnalyzer::visit(ScalarReal *node) {
         if (this->first_node) {
             this->scalar = node;
+            this->scalar_real = node;
             this->first_node = false;
         }
         this->setValue("real[" + node->toString() + "]");

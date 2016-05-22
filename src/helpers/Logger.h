@@ -33,9 +33,14 @@ namespace PharmML
             void warning(std::string message);
             void error(std::string message);
             void info(std::string message);
+            
             void error(std::string message, PharmMLSection *section);
             void warning(std::string message, PharmMLSection *section);
             void info(std::string message, PharmMLSection *section);
+            
+            void error(std::string format, PharmMLSection *section_a, PharmMLSection *section_b);
+            void warning(std::string format, PharmMLSection *section_a, PharmMLSection *section_b);
+            void info(std::string format, PharmMLSection *section_a, PharmMLSection *section_b);
 
         private:
             const int error_level = 20;
@@ -43,8 +48,11 @@ namespace PharmML
             const int info_level = 40;
             std::string tool_name;
             int currentPrintLevel = 100;
+            
             std::string lineText(PharmMLSection *section);
+            std::string inlineLineText(PharmMLSection *section);
             void logPrint(std::string message, int level);
+            std::string inlineFormatter(std::string format, PharmMLSection *section_a, PharmMLSection *section_b);
     };
 }
 

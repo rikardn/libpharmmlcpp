@@ -38,6 +38,7 @@ namespace PharmML
             ScalarInt(std::string s);
             ScalarInt(xml::Node xml_node);
             std::string toString();
+            int toInt();
             virtual void accept(AstNodeVisitor *visitor);
     };
 
@@ -51,6 +52,7 @@ namespace PharmML
             ScalarReal(std::string s);
             ScalarReal(xml::Node xml_node);
             std::string toString();
+            double toDouble();
             virtual void accept(AstNodeVisitor *visitor);
     };
 }

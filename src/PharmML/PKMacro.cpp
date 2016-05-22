@@ -39,9 +39,12 @@ namespace PharmML
             if (assign_node.exists()) {
                 xml::Node tree_node = assign_node.getChild();
                 value.second = this->context->factory.create(tree_node);
-            } else {
+            } else if (val_node.getChild().exists()) {
                 // SymbRef or Scalar
                 value.second = this->context->factory.create(val_node.getChild());
+            } else {
+                // TODO: Shouldn't this be schema illegal? Doesn't seem to stop me from crashing the code...
+                value.second = nullptr;
             }
             
             this->values.push_back(value);
@@ -58,8 +61,10 @@ namespace PharmML
     
     void PKMacro::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (MacroValue value : this->values) {
-            std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(value.second, symbolMap);
-            this->referencedSymbols.addSymbols(symbols);
+            if (value.second) { // TODO: See above comment
+                std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(value.second, symbolMap);
+                this->referencedSymbols.addSymbols(symbols);
+            }
         }
     }
     

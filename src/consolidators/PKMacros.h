@@ -21,9 +21,12 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
+#include <AST/AstNode.h>
 #include <PharmML/PKMacro.h>
 
+#include <visitors/AstAnalyzer.h>
 #include <helpers/Logger.h>
 
 namespace CPharmML
@@ -31,13 +34,16 @@ namespace CPharmML
     class PKMacros
     {
         public:
-            PKMacros(std::vector<PharmML::PKMacro *> pk_macros);
-            void validate(const std::shared_ptr<PharmML::Logger> &logger);
+            PKMacros(std::vector<PharmML::PKMacro *> pk_macros, std::shared_ptr<PharmML::Logger> logger);
+            void validate();
             
             std::vector<PharmML::PKMacro *> getMacros();
             PharmML::PKMacro *getCompartment(int cmt_num);
+            PharmML::PKMacro *getAdministration(int adm_num);
         
         private:
+            std::shared_ptr<PharmML::Logger> logger;
+            PharmML::AstAnalyzer ast_analyzer;
             std::vector<PharmML::PKMacro *> pk_macros;
     };
 }

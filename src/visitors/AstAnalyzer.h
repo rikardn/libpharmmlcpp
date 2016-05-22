@@ -45,6 +45,8 @@ namespace PharmML
             
             SymbRef *symbref;
             Scalar *scalar;
+            ScalarInt *scalar_int;
+            ScalarReal *scalar_real;
             FunctionCall *functioncall;
             Piecewise *piecewise;
             
@@ -61,6 +63,8 @@ namespace PharmML
             
             SymbRef *getPureSymbRef();
             Scalar *getPureScalar();
+            ScalarInt *getPureScalarInt();
+            ScalarReal *getPureScalarReal();
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
             

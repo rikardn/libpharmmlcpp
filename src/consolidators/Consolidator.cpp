@@ -278,8 +278,8 @@ namespace CPharmML
     
     void Consolidator::consolidatePKMacros(PharmML::Model *model) {
         std::vector<PharmML::PKMacro *> pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
-        this->pk_macros = new PKMacros(pk_macros);
-        this->pk_macros->validate(this->logger);
+        this->pk_macros = new CPharmML::PKMacros(pk_macros, this->logger);
+        this->pk_macros->validate();
     }
 
     void Consolidator::consolidateTrialDesign(PharmML::Model *model) {

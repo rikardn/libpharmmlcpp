@@ -33,7 +33,11 @@ namespace PharmML
 
     std::string ScalarInt::toString() {
         return std::to_string(value); 
-    } 
+    }
+    
+    int ScalarInt::toInt() {
+        return value; 
+    }
 
     void ScalarInt::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
@@ -45,6 +49,10 @@ namespace PharmML
 
     ScalarReal::ScalarReal(std::string s) {
         this->value = std::stod(s);
+    }
+    
+    double ScalarReal::toDouble() {
+        return value; 
     }
 
     ScalarReal::ScalarReal(xml::Node xml_node) {

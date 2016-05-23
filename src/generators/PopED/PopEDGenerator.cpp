@@ -147,6 +147,7 @@ namespace PharmML
         for (Symbol *symbol : derivs_set) {
             symbol->accept(&this->r_symb);
             form.add(this->r_symb.getValue());
+            this->derivs.push_back(symbol);
             name_list.push_back("d" + symbol->getSymbId());
         }
 
@@ -219,7 +220,15 @@ namespace PharmML
         form.indentAdd("with(as.list(parameters), {");
         
         // Init values
-        form.add("d_ini <- " + this->r_gen.consol.derivs.genInitVector());
+        TextFormatter dini_formatter;
+        dini_formatter.openVector("d_ini <- c()", 0, ", ");
+        for (Symbol *symbol : this->derivs) {
+            DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
+            derivative_variable->getInitialValue()->accept(&this->ast_gen);
+            dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+        }
+        dini_formatter.closeVector();
+        form.add(dini_formatter.createString());
 
         // Dose times
         form.add("times_xt <- drop(xt)");

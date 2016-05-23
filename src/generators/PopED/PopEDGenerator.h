@@ -48,6 +48,7 @@ namespace PharmML
             PopEDAstGenerator poped_astgen;
             RPharmMLGenerator r_gen;
             Model *model;
+            std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
 
             SymbolSet remaining_parameters;     // THETAs not connected to an IndividualVariable
 

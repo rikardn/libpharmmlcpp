@@ -55,6 +55,16 @@ namespace PharmML
         return this->name;
     }
     
+    // Check if macro has a certain attribute
+    bool PKMacro::hasAttribute(std::string attribute) {
+        for (MacroValue value : this->values) {
+            if (value.first == attribute) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     // Get pairs of all attributes and values
     std::vector<MacroValue> PKMacro::getValues() {
         return this->values;

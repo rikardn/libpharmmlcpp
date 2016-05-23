@@ -35,6 +35,7 @@ namespace PharmML
             PKMacro(PharmMLContext *context, xml::Node node);
             
             std::string getName();
+            bool hasAttribute(std::string attribute);
             std::vector<MacroValue> getValues();
             AstNode *getAssignment(std::string attribute);
             

@@ -509,119 +509,209 @@ namespace PharmML
             max_length = length > max_length ? length : max_length;
         }
         
-        // Add administrations first
-        std::vector<CPharmML::PKMacro *> adm = pk_macros->getAdministrations();
-        for (CPharmML::PKMacro *cmacro : adm) {
+        // Number compartments AND absorption processes/eliminations consecutively (MDL makes up numbers)
+        int mdl_cmt_iterator = 1;
+        std::unordered_map<CPharmML::PKMacro *, int> mdl_cmt;
+        std::vector<CPharmML::PKMacro *> adm_cmacros = pk_macros->getAdministrations();
+        std::vector<CPharmML::PKMacro *> cmt_cmacros = pk_macros->getCompartments();
+        std::vector<CPharmML::PKMacro *> trans_cmacros = pk_macros->getTransfers();
+        for (CPharmML::PKMacro *cmacro : adm_cmacros) {
+            std::string type = cmacro->getMacro()->getName();
+            if (type != "IV") {
+                // IV are called "direct" in MDL and gets no number
+                mdl_cmt[cmacro] = mdl_cmt_iterator++;
+            }
+        }
+        for (CPharmML::PKMacro *cmacro : cmt_cmacros) {
+            mdl_cmt[cmacro] = mdl_cmt_iterator++;
+        }
+        
+        // Output administrations first
+        for (CPharmML::PKMacro *cmacro : adm_cmacros) {
+            // Construct enclosure
             PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = cmacro->getName();
-            std::string pad = std::string(" ", max_length - name.length());
+            std::string pad = std::string(max_length - name.length(), ' ');
             std::string prefix = name + pad;
-            form.openVector(name + " : {}", 0, ", ");
+            form.openVector(prefix + " : {}", 0, ", ");
             
+            // Add differently if depot-ish absorption or direct (IV)
             std::string type = macro->getName();
             if (type == "Absorption" || type == "Oral" || type == "Depot") {
                 form.add("type is depot");
+                form.add("modelCmt=" + std::to_string(mdl_cmt[cmacro]));
                 
-                // MDL seems to prefer numbering absorptions as compartments
-                int model_cmt = 1;
-                cmacro->tryParseInt("adm", model_cmt, this->ast_analyzer);
-                while (pk_macros->getCompartment(model_cmt)) {
-                    model_cmt++;
-                }
-                form.add("modelCmt = " + std::to_string(model_cmt));
-                
-                // Get compartment target
-                int to_cmt;
-                AstNode *target = macro->getAssignment("target");
-                if ( cmacro->tryParseInt("cmt", to_cmt, this->ast_analyzer) ) {
-                    std::string to_name = pk_macros->getCompartment(to_cmt)->getName();
-                    form.add("to = " + to_name);
-                } else if ( target ) {
-                    // Depot should have 'target' instead of 'cmt'
-                    form.add("target = " + this->accept(target));
+                // Get compartment target (MDL prefers names when refering)
+                if ( cmacro->hasAttribute("cmt") ) {
+                    int cmt_attr;
+                    cmacro->tryParseInt("cmt", cmt_attr, this->ast_analyzer);
+                    std::string cmt_name = pk_macros->getCompartment(cmt_attr)->getName();
+                    form.add("to=" + cmt_name);
+                } else if ( cmacro->hasAttribute("target") ) {
+                    // PharmML Depot has 'target' instead of 'cmt' (likely because it's a depot FOR another cmt)
+                    int target_attr;
+                    cmacro->tryParseInt("target", target_attr, this->ast_analyzer);
+                    std::string target_name = pk_macros->getCompartment(target_attr)->getName();
+                    form.add("to=" + target_name);
                 }
                 
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
                 AstNode *tlag = macro->getAssignment("Tlag");
                 if (tlag) {
-                    form.add("tlag = " + this->accept(tlag));
+                    form.add("tlag=" + this->accept(tlag));
                 }
                 AstNode *p = macro->getAssignment("p");
                 if (p) {
-                    form.add("finput = " + this->accept(p));
+                    form.add("finput=" + this->accept(p));
                 }
                 AstNode *tk0 = macro->getAssignment("Tk0");
                 if (tk0) {
-                    form.add("tk0 = " + this->accept(tk0));
+                    form.add("tk0=" + this->accept(tk0));
                 }
                 AstNode *ka = macro->getAssignment("ka");
                 if (ka) {
-                    form.add("ka = " + this->accept(ka));
+                    form.add("ka=" + this->accept(ka));
                 }
                 AstNode *ktr = macro->getAssignment("Ktr");
                 if (ktr) {
-                    form.add("ktr = " + this->accept(ktr));
+                    form.add("ktr=" + this->accept(ktr));
                 }
                 AstNode *mtt = macro->getAssignment("Mtt");
                 if (mtt) {
-                    form.add("mtt = " + this->accept(mtt));
+                    form.add("mtt=" + this->accept(mtt));
                 }
             } else if (type == "IV") {
                 form.add("type is direct");
                 
                 // Get compartment target
-                int to_cmt;
-                if ( cmacro->tryParseInt("cmt", to_cmt, this->ast_analyzer) ) {
-                    std::string to_name = pk_macros->getCompartment(to_cmt)->getName();
-                    form.add("to = " + to_name);
+                if ( cmacro->hasAttribute("cmt") ) {
+                    int cmt_attr;
+                    cmacro->tryParseInt("cmt", cmt_attr, this->ast_analyzer);
+                    std::string cmt_name = pk_macros->getCompartment(cmt_attr)->getName();
+                    form.add("to=" + cmt_name);
                 }
                 
-                // Get parameterization (and assume validation makes sure no strange combinations are present)
+                // Get parameterization
                 AstNode *tlag = macro->getAssignment("Tlag");
                 if (tlag) {
-                    form.add("tlag = " + this->accept(tlag));
+                    form.add("tlag=" + this->accept(tlag));
                 }
                 AstNode *p = macro->getAssignment("p");
                 if (p) {
-                    form.add("finput = " + this->accept(p));
+                    form.add("finput=" + this->accept(p));
                 }
             }
             form.closeVector();
         }
         
-        // Add compartments
-        std::vector<CPharmML::PKMacro *> cmts = pk_macros->getCompartments();
-        for (CPharmML::PKMacro *cmacro : cmts) {
+        // Output compartments
+        for (CPharmML::PKMacro *cmacro : cmt_cmacros) {
+            // Construct enclosure
             PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = cmacro->getName();
-            std::string pad = std::string(" ", max_length - name.length());
+            std::string pad = std::string(max_length - name.length(), ' ');
             std::string prefix = name + pad;
-            form.openVector(name + " : {}", 0, ", ");
+            form.openVector(prefix + " : {}", 0, ", ");
             
+            // Treat Compartment and Peripheral the same (until I know better not to)
             std::string type = macro->getName();
             if (type == "Compartment") {
                 form.add("type is compartment");
-                
-                // Output a model compartment number for MDL
-                int model_cmt = 1;
-                cmacro->tryParseInt("cmt", model_cmt, this->ast_analyzer);
-                while (pk_macros->getCompartment(model_cmt) != cmacro) {
-                    model_cmt++;
-                }
-                form.add("modelCmt = " + std::to_string(model_cmt));
-                
-                // Get parameterization
-                AstNode *vol = macro->getAssignment("volume");
-                if (vol) {
-                    form.add("volume = " + this->accept(vol));
-                }
-                AstNode *conc = macro->getAssignment("concentration");
-                if (conc) {
-                    form.add("conc = " + this->accept(conc));
-                }
-            } else if (type == "Peripheral") {
-                
+            } else if (type ==  "Peripheral") {
+                form.add("type is peripheral");
             }
+            form.add("modelCmt=" + std::to_string(mdl_cmt[cmacro]));
+            
+            // Get parameterization
+            AstNode *vol = macro->getAssignment("volume");
+            if (vol) {
+                form.add("volume=" + this->accept(vol));
+            }
+            AstNode *conc = macro->getAssignment("concentration");
+            if (conc) {
+                form.add("conc=" + this->accept(conc));
+            }
+            // TODO: How should kij and k_i_j of Peripheral be treated!? What are even i and j here?
+
+            form.closeVector();
+        }
+        
+        // Output mass transfers
+        for (CPharmML::PKMacro *cmacro : trans_cmacros) {
+            // Construct enclosure
+            PharmML::PKMacro *macro = cmacro->getMacro();
+            std::string pad = std::string(max_length - 1, ' ');
+            std::string prefix = pad; // Mass transfers only have a colon as "name" in MDL
+            form.openVector(prefix + " :: {}", 0, ", ");
+            
+            // Treat Elimination and Transfer the same
+            std::string type = macro->getName();
+            if (type == "Elimination") {
+                form.add("type is elimination");
+            } else if (type ==  "Transfer") {
+                form.add("type is transfer");
+            }
+            
+            // This is tricky; In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from!
+            std::string model_cmt;
+            if ( cmacro->hasAttribute("cmt") ) {
+                // For Elimination's we call it 'cmt'
+                int cmt_attr;
+                cmacro->tryParseInt("cmt", cmt_attr, this->ast_analyzer);
+                CPharmML::PKMacro *cmt_cmacro = pk_macros->getCompartment(cmt_attr);
+                model_cmt = std::to_string(mdl_cmt[cmt_cmacro]);
+            } else if ( cmacro->hasAttribute("from") ) {
+                // For Transfer's we call it 'from'
+                int from_attr;
+                cmacro->tryParseInt("from", from_attr, this->ast_analyzer);
+                CPharmML::PKMacro *from_cmacro = pk_macros->getCompartment(from_attr);
+                model_cmt = std::to_string(mdl_cmt[from_cmacro]);
+            }
+            form.add("modelCmt=" + model_cmt);
+            
+            // Get (linear) elimination parameterization
+            AstNode *vol = macro->getAssignment("volume");
+            if (vol) {
+                form.add("volume=" + this->accept(vol));
+            }
+            AstNode *k = macro->getAssignment("k");
+            if (k) {
+                form.add("k=" + this->accept(k));
+            }
+            AstNode *cl = macro->getAssignment("CL");
+            if (cl) {
+                form.add("cl=" + this->accept(cl));
+            }
+            // FIXME: Why does this parameter even exist in UseCase4_1.xml? The spec is completely silent about it!
+            AstNode *v = macro->getAssignment("V");
+            if (v) {
+                form.add("v=" + this->accept(v));
+            }
+            
+            // Get (MM) elimination parameterization
+            AstNode *km = macro->getAssignment("Km");
+            if (km) {
+                form.add("km=" + this->accept(km));
+            }
+            AstNode *vm = macro->getAssignment("Vm");
+            if (vm) {
+                form.add("vm=" + this->accept(vm));
+            }
+            
+            // Get transfer parameterization
+            AstNode *from = macro->getAssignment("from");
+            if (from) {
+                form.add("from=" + this->accept(from));
+            }
+            AstNode *to = macro->getAssignment("to");
+            if (to) {
+                form.add("to=" + this->accept(to));
+            }
+            AstNode *kt = macro->getAssignment("kt");
+            if (kt) {
+                form.add("kt=" + this->accept(kt));
+            }
+
             form.closeVector();
         }
         

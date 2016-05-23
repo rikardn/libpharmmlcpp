@@ -48,6 +48,9 @@ namespace PharmML
             PopEDAstGenerator poped_astgen;
             RPharmMLGenerator r_gen;
             Model *model;
+
+            SymbolSet remaining_parameters;     // THETAs not connected to an IndividualVariable
+
             std::string value;
             void setValue(std::string str);
             std::string accept(AstNode *);

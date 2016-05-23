@@ -17,6 +17,7 @@
 
 #include "PopEDGenerator.h"
 #include <iostream>
+#include <algorithm>
 
 namespace PharmML
 {
@@ -70,10 +71,31 @@ namespace PharmML
         TextFormatter form;
         form.indentAdd("sfg <- function(x, a, bpop, b, bocc) {");
         form.openVector("parameters = c()", 1, ", ");
+        PopEDSymbols symbgen;
+        PopEDAstGenerator astgen(&symbgen);
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
-            // FIXME: Don't need accept here as we already know the type. Could as well put code here?
-            parameter->accept(this);
-            form.add(this->getValue());
+            std::string result;
+            if (!parameter->isStructured()) {
+                parameter->getAssignment()->accept(&astgen);
+                std::string assign = astgen.getValue();
+                result = parameter->getSymbId() + "=bpop[" + assign + "]";
+            }
+            form.add(result);
+        }
+
+        // Remaining THETAs. From all parameters remove those referenced from individual parmaters and random variables
+        for (PopulationParameter *parameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
+            remaining_parameters.addSymbol(parameter);
+        }
+        for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
+            remaining_parameters.remove(parameter->referencedSymbols);
+        }
+        for (RandomVariable *var : model->getModelDefinition()->getParameterModel()->getRandomVariables()) {
+            remaining_parameters.remove(var->referencedSymbols);
+        }
+        for (Symbol *symb : remaining_parameters) {
+            symb->accept(&symbgen);
+            form.add(symb->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
         }
 
         std::vector<std::string> time_names = genDoseTimeNames();
@@ -273,7 +295,7 @@ namespace PharmML
 
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
-        PopEDErrorAstGenerator error_ast_gen;
+        RAstGenerator error_ast_gen;
         om->getErrorModel()->accept(&error_ast_gen);
         form.add("w <- " + error_ast_gen.getValue());
 
@@ -301,30 +323,46 @@ namespace PharmML
         bpop.openVector("bpop = c()", 0, ", ");
         auto pop_params_obj = this->model->getConsolidator()->getPopulationParameters();
         /* Note: One more level in-between. Should make support of multiple parameter models easier and present a nice place (CPharmML::PopulationParameters)
-         * for convenience functions that can do more than only gett the consolidated objects. */
+         * for convenience functions that can do more than only get the consolidated objects. */
         auto pop_params = pop_params_obj->getPopulationParameters();
         for (auto pop_param : pop_params) {
             if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
                 std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?
                 bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
             }
+            PopulationParameter *symbol = pop_param->getPopulationParameter();
+            if (this->remaining_parameters.hasSymbol(symbol)) {
+                bpop.add(symbol->getSymbId() + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+            }
         }
         bpop.closeVector();
         bpop.noFinalNewline();
-        form.add(bpop.createString());     // FIXME: what does false mean?
+        form.add(bpop.createString());
 
         // Sigmas
-        TextFormatter sigma_formatter;
-        sigma_formatter.openVector("sigma = c()", 0, ", ");
+        TextFormatter sigma_init_formatter;
+        sigma_init_formatter.openVector("sigma = c()", 0, ", ");
+        TextFormatter sigma_fixed_formatter;
+        sigma_fixed_formatter.openVector("notfixed_sigma = c()", 0, ", ");
+
+        // FIXME: Find sigma. More than one sigma? Move into general method
+        SymbRef *error_ref = this->model->getModelDefinition()->getObservationModel()->getResidualError();
+        RandomVariable *rand_var = static_cast<RandomVariable *>(error_ref->getSymbol());       // FIXME: Getter should return with correct type 
+
         for (auto pop_param : pop_params) {
-            if (pop_param->isVariabilityParameter()) {
-                // FIXME: Check if sigma here
-                sigma_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
+            auto consolidatedRandom = pop_param->getRandomVariables();
+            bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
+            if (pop_param->isVariabilityParameter() && found) {
+                sigma_init_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                sigma_fixed_formatter.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
             }
         }
-        sigma_formatter.closeVector();
-        sigma_formatter.noFinalNewline();
-        form.add(sigma_formatter.createString());
+        sigma_init_formatter.closeVector();
+        sigma_init_formatter.noFinalNewline();
+        sigma_fixed_formatter.closeVector();
+        sigma_fixed_formatter.noFinalNewline();
+        form.add(sigma_init_formatter.createString());
+        form.add(sigma_fixed_formatter.createString());
 
         form.add("groupsize = 1");
 
@@ -366,13 +404,6 @@ namespace PharmML
     void PopEDGenerator::visit(PopulationParameter *node) {}
 
     void PopEDGenerator::visit(IndividualParameter *node) {
-        std::string result;
-        if (!node->isStructured()) {
-            node->getAssignment()->accept(&this->poped_astgen);
-            std::string assign = this->poped_astgen.getValue();
-            result = node->getSymbId() + "=bpop[" + assign + "]";
-        }
-        this->setValue(result);
     }
 
     void PopEDGenerator::visit(RandomVariable *node) {}

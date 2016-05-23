@@ -67,7 +67,7 @@ namespace PharmML
     void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (this->symbRef) {
             this->mappedSymbol = this->addSymbRef(this->symbRef, symbolMap);
-        } else {
+        } else if (this->assignment) {
             std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(this->assignment, symbolMap);
             this->mappedSymbol = *(symbols.begin()); // There shall only be one
         }

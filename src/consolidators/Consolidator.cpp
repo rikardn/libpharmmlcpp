@@ -37,8 +37,7 @@ namespace CPharmML
         this->consolidateVariabilityModels(model);
         this->consolidateFunctions(model);
         this->consolidatePKMacros(model);
-        
-        this->consolidateTrialDesign(model);
+        this->consolidateTrialDesign(model); // Dependent on PKMacros
     }
     
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
@@ -318,6 +317,12 @@ namespace CPharmML
                         return;
                     }
                 }
+            }
+            
+            // Consolidate external datasets
+            std::vector<PharmML::ExternalDataset *> ext_dss = td->getExternalDatasets();
+            for (PharmML::ExternalDataset *ext_ds : ext_dss) {
+                // TODO: Fill this because it is needed for MDL generation of data object (something must know about named CPharmML::PKMacro's)
             }
         }
     }

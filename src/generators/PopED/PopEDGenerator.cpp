@@ -347,7 +347,7 @@ namespace PharmML
 
         // FIXME: Find sigma. More than one sigma? Move into general method
         SymbRef *error_ref = this->model->getModelDefinition()->getObservationModel()->getResidualError();
-        RandomVariable *rand_var = static_cast<RandomVariable *>(error_ref->getSymbol());       // FIXME: Getter should return with correct type 
+        Symbol *rand_var = error_ref->getSymbol();
 
         for (auto pop_param : pop_params) {
             auto consolidatedRandom = pop_param->getRandomVariables();

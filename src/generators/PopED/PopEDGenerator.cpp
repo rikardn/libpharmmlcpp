@@ -116,7 +116,7 @@ namespace PharmML
     std::string PopEDGenerator::genODEFunc() {
         TextFormatter form;
         // Function header
-        form.indentAdd("ode_func <- function(Time, Stat, Pars) {");
+        form.indentAdd("ode_func <- function(Time, State, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
      
         // FIXME: Should be a method to do all this and not so ugly
@@ -286,6 +286,7 @@ namespace PharmML
         std::string output_name = om->getOutput()->toString();
 
         form.indentAdd("feps <- function(model_switch, xt, parameters, epsi, poped.db) {");
+        form.indentAdd("with(as.list(parameters), {");
         form.add("returnArgs <- do.call(poped.db$model$ff_pointer,list(model_switch,xt,parameters,poped.db))");
         form.add(result_name +" <- returnArgs[[1]]");
         form.add("poped.db <- returnArgs[[2]]");
@@ -306,8 +307,9 @@ namespace PharmML
         // Return list
         form.emptyLine();
         form.add("return(list(y=" + result_name + ",poped.db=poped.db))");
+        form.outdentAdd("})");
         form.outdentAdd("}");
-        
+ 
         return form.createString();
     }
     

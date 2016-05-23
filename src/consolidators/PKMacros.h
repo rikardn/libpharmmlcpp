@@ -37,6 +37,7 @@ namespace CPharmML
             PKMacro(PharmML::PKMacro *macro);
             
             PharmML::PKMacro *getMacro();
+            bool hasAttribute(std::string attribute);
             std::string getName();
             void setName(std::string name);
             std::string generateName(PharmML::AstAnalyzer &ast_analyzer);
@@ -61,6 +62,7 @@ namespace CPharmML
             PKMacro *getCompartment(int cmt_num);
             std::vector<PKMacro *> getAdministrations();
             PKMacro *getAdministration(int adm_num);
+            std::vector<PKMacro *> getTransfers();
         
         private:
             std::shared_ptr<PharmML::Logger> logger;

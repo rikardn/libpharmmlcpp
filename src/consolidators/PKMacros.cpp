@@ -28,6 +28,10 @@ namespace CPharmML
         return this->macro;
     }
     
+    bool PKMacro::hasAttribute(std::string attribute) {
+        return this->macro->hasAttribute(attribute);
+    }
+    
     std::string PKMacro::getName() {
         return this->name;
     }
@@ -240,7 +244,7 @@ namespace CPharmML
             // Find compartment
             PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = macro->getName();
-            if (name == "Compartment" || name == "Peripheral") {
+            if (name == "Compartment" || name == "Peripheral" || name == "Effect") {
                 cmts.push_back(cmacro);
             }
         }
@@ -309,5 +313,19 @@ namespace CPharmML
             }
         }
         return nullptr;
+    }
+    
+    // Get all mass transfer type macro's
+    std::vector<PKMacro *> PKMacros::getTransfers() {
+        std::vector<PKMacro *> trans;
+        for (PKMacro *cmacro : this->cmacros) {
+            // Find mass transfers
+            PharmML::PKMacro *macro = cmacro->getMacro();
+            std::string name = macro->getName();
+            if (name == "Elimination" || name == "Transfer") {
+                trans.push_back(cmacro);
+            }
+        }
+        return trans;
     }
 }

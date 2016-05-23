@@ -18,6 +18,7 @@
 #ifndef PHARMML_COLUMNMAPPING_H_
 #define PHARMML_COLUMNMAPPING_H_
 
+#include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
@@ -25,25 +26,52 @@
 
 namespace PharmML
 {
+    struct MapType {
+        std::string dataSymbol;
+        std::string modelSymbol;
+        std::string admNumber;
+    };
+        
+    // TODO: Move elsewhere (Dataset.h?)
+    class TargetMapping
+    {
+        public:
+            TargetMapping(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            
+            std::string getBlkIdRef();
+            std::vector<MapType> getMaps();
+            
+            void accept(PharmMLVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            std::string blkIdRef;
+            std::vector<MapType> maps;
+    };
+    
     class ColumnMapping : public Referer
     {
-        PharmML::PharmMLContext *context;
-        std::string columnIdRef;
-        AstNode *assignment = nullptr;
-        SymbRef *symbRef = nullptr;
-        Symbol *mappedSymbol = nullptr;
-
         public:
-        ColumnMapping(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        xml::Node xml();
-        AstNode *getAssignment();
-        std::string getColumnIdRef();
+            ColumnMapping(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            xml::Node xml();
+            AstNode *getAssignment();
+            std::string getColumnIdRef();
+            
+            Symbol *getMappedSymbol();
+            
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
         
-        Symbol *getMappedSymbol();
-        
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
+        private:
+            PharmML::PharmMLContext *context;
+            
+            std::string columnIdRef;
+            AstNode *assignment = nullptr;
+            SymbRef *symbRef = nullptr;
+            Symbol *mappedSymbol = nullptr;
+            std::vector<TargetMapping *> target_mappings;
     };
 }
 

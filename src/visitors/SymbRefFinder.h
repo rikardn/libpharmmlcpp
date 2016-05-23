@@ -54,7 +54,6 @@ namespace PharmML
             virtual void visit(SymbRef *node);
             virtual void visit(SteadyStateParameter *node);
             virtual void visit(ColumnRef *node);
-            virtual void visit(TargetMapping *node);
             
             virtual void visit(UniopLog *node);
             virtual void visit(UniopLog2 *node);

@@ -47,9 +47,6 @@ namespace PharmML
     void SymbRefFinder::visit(ColumnRef *node) {
     }
 
-    void SymbRefFinder::visit(TargetMapping *node) {
-    }
-
     void SymbRefFinder::visit(UniopLog *node) {
         node->getChild()->accept(this);
     }

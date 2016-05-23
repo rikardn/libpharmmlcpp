@@ -986,6 +986,9 @@ namespace PharmML
     // Class Dataset
     void MDLGenerator::visit(Dataset *node) { }
     
+    // Class TargetMapping
+    void MDLGenerator::visit(TargetMapping *node) { }
+    
     // Class ExternalDataset
     void MDLGenerator::visit(ExternalDataset *node) {
         TextFormatter form;

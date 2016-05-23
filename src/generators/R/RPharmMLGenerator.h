@@ -79,6 +79,7 @@ namespace PharmML
             void visit(ExternalFile *node) override;
             void visit(DataColumn *node) override;
             void visit(Dataset *node) override;
+            void visit(TargetMapping *node) override;
             
             void visit(ExternalDataset *node) override;
             

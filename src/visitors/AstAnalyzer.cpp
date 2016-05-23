@@ -102,10 +102,6 @@ namespace PharmML
         this->first_node = false;
     }
 
-    void AstAnalyzer::visit(TargetMapping *node) {
-        this->first_node = false;
-    }
-
     void AstAnalyzer::visit(UniopLog *node) {
         this->first_node = false;
         node->getChild()->accept(this);

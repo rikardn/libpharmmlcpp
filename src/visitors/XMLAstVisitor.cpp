@@ -97,9 +97,6 @@ namespace PharmML
         this->setValue(ref);
     }
 
-    void XMLAstVisitor::visit(TargetMapping *node) {
-    }
-
     void XMLAstVisitor::visit(UniopLog *node) {
         this->createUniop(node, "log");
     }

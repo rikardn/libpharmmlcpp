@@ -39,6 +39,7 @@ namespace PharmML
     class ExternalFile;
     class DataColumn;
     class Dataset;
+    class TargetMapping;
     
     class ExternalDataset;
     
@@ -86,6 +87,7 @@ namespace PharmML
             virtual void visit(ExternalFile *node) = 0;
             virtual void visit(DataColumn *node) = 0;
             virtual void visit(Dataset *node) = 0;
+            virtual void visit(TargetMapping *node) = 0;
             
             virtual void visit(ExternalDataset *node) = 0;
             

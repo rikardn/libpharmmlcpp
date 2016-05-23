@@ -265,6 +265,9 @@ namespace PharmML
         setValue(s + "\n");
     }
     
+    // Class TargetMapping
+    void RPharmMLGenerator::visit(TargetMapping *node) { }
+    
     // Class ExternalDataset
     void RPharmMLGenerator::visit(ExternalDataset *node) {
         std::string s;
@@ -294,7 +297,12 @@ namespace PharmML
         std::string s = node->getOid() + " <- list(";
         
         s += "type = \"" + node->getType() + "\"";
-        s += ", target = " + this->accept(node->getTarget());
+        s += "target_type = \"" + node->getTargetType() + "\"";
+        if (node->getTargetSymbRef()) {
+            s += ", target = " + this->accept(node->getTargetSymbRef());
+        } else {
+            // TODO: TargetMapping
+        }
         if (node->getTimes()) {
             s += ", times = " + this->accept(node->getTimes());
         }

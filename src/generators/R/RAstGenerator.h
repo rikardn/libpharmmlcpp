@@ -54,7 +54,6 @@ namespace PharmML
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;
             void visit(ColumnRef *node) override;
-            void visit(TargetMapping *node) override;
             
             void visit(UniopLog *node) override;
             void visit(UniopLog2 *node) override;

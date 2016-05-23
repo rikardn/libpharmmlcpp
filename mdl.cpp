@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
     const char *filename;
     if (argc < 2) {
-        filename = "test/testfiles/UseCase2.xml";
+        filename = "test/testfiles/UseCase4_1.xml";
     } else {
         filename = argv[1];
     }

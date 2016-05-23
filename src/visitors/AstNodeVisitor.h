@@ -95,7 +95,6 @@ namespace PharmML
     class SymbRef;
     class SteadyStateParameter;
     class ColumnRef;
-    class TargetMapping;
     
     class LogicFalse;
     class LogicTrue;
@@ -190,7 +189,6 @@ namespace PharmML
             virtual void visit(SymbRef *node) {};
             virtual void visit(SteadyStateParameter *node) {};
             virtual void visit(ColumnRef *node) {};
-            virtual void visit(TargetMapping *node) {};
             
             virtual void visit(LogicFalse *node) {};
             virtual void visit(LogicTrue *node) {};

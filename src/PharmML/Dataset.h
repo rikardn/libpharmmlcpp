@@ -23,7 +23,7 @@
 #include <PharmML/PharmMLSection.h>
 #include <AST/AstNode.h>
 #include <visitors/AstNodeVisitor.h>
-#include <PharmML/ExternalDataset.h>
+#include <visitors/XMLAstVisitor.h>
 #include <AST/Scalar.h>
 
 namespace PharmML

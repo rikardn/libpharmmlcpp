@@ -30,6 +30,8 @@
 #include <visitors/ObjectVisitor.h>
 #include <PharmML/PharmMLSection.h>
 
+#include <PharmML/ColumnMapping.h> // TODO: Consider (for TargetMapping class; separate src file?)
+
 namespace PharmML
 {
     // TODO: Maybe move this somewhere?
@@ -49,32 +51,14 @@ namespace PharmML
         void accept(AstNodeVisitor *visitor);
     };
     
-    // TODO: Move elsewhere (Dataset.h when implemented)
-    // TODO: Subclass for MapType? Subclass for SymbRef? Container? It's a bit
-    // weird to piggyback on AstNode instead of dedicated reference class
-    // and it would need to be resolved
-    class TargetMapping : public AstNode
-    {
-        PharmML::PharmMLContext *context;
-        std::string type;
-        std::string blkIdRef;
-        std::string ref;
-        
-        public:
-        TargetMapping(PharmMLContext *context, std::string type, xml::Node node);
-        std::string getType();
-        std::string getBlkIdRef();
-        std::string getRef();
-        void accept(AstNodeVisitor *visitor);
-    };
-    
-    
     class Administration : public Object, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
         std::string type;
+        std::string target_type;
         AstNode *amount = nullptr;
-        AstNode *target = nullptr; // Should probably be parent class of TargetMapping
+        PharmML::SymbRef *target_symbref = nullptr;
+        PharmML::TargetMapping *target_mapping = nullptr;
         AstNode *times = nullptr;
         AstNode *steady = nullptr;
         AstNode *duration = nullptr;
@@ -86,7 +70,9 @@ namespace PharmML
         void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
         xml::Node xml();
         std::string getType();
-        AstNode *getTarget();
+        std::string getTargetType();
+        PharmML::TargetMapping *getTargetMapping();
+        PharmML::SymbRef *getTargetSymbRef();
         AstNode *getTimes();
         AstNode *getSteady();
         AstNode *getDuration();

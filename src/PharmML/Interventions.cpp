@@ -50,42 +50,6 @@ namespace PharmML
         visitor->visit(this);
     }
     
-    // TODO: Move elsewhere (Dataset.h when implemented)
-    // TODO: Subclass for MapType? Subclass for SymbRef (see usage in Administration)?
-    TargetMapping::TargetMapping(PharmMLContext *context, std::string type, xml::Node node) {
-        this->context = context;
-        this->type = type;
-        this->blkIdRef = node.getAttribute("blkIdRef").getValue();
-        xml::Node map = this->context->getSingleElement(node, ".//ds:Map");
-        // Not sure type differentiates attribute used in MapType (only empirical observation)
-        if (type == "parameter") {
-            // Not seen example of but in schema
-        } else if (type == "derivativeVaribel") {
-            this->ref = map.getAttribute("modelSymbol").getValue();
-        } else if (type == "variable") {
-            // Not seen example of but in schema
-        } else if (type == "admType") {
-            this->ref = map.getAttribute("admNumber").getValue();
-        }
-        // Not sure when used in MapType
-        //~ this->ref = map.getAttribute("dataSymbol").getValue();
-    }
-    
-    std::string TargetMapping::getType() {
-        return this->type;
-    }
-    
-    std::string TargetMapping::getBlkIdRef() {
-        return this->blkIdRef;
-    }
-    std::string TargetMapping::getRef() {
-        return this->ref;
-    }
-    
-    void TargetMapping::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-    
     // Administration class
     Administration::Administration(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
@@ -98,29 +62,29 @@ namespace PharmML
         xml::Node dose = node.getChild();
         this->type = dose.getName();
 
-        // Get dose amount
-        xml::Node amount = this->context->getSingleElement(dose, ".//design:DoseAmount");
-        xml::Node assign = this->context->getSingleElement(dose, ".//design:DoseAmount/ct:Assign");
+        // Get dose amount (pure Assign)
+        xml::Node amount = this->context->getSingleElement(dose, "./design:DoseAmount");
+        xml::Node assign = this->context->getSingleElement(dose, "./design:DoseAmount/ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
             this->amount = this->context->factory.create(tree);
         }
 
-        // Get dose target ('target' should probably be of parent class of SymbRef/TargetMapping).
-        std::string targetType = amount.getAttribute("inputTarget").getValue();
-        xml::Node symbref = this->context->getSingleElement(dose, ".//design:DoseAmount/ct:SymbRef");
-        xml::Node mapping = this->context->getSingleElement(dose, ".//design:DoseAmount/design:TargetMapping");
+        // Get dose target (TargetMapping or SymbRef)
+        this->target_type = amount.getAttribute("inputTarget").getValue(); // Can be "parameter", "derivativeVariable", "variable" and "admType"
+        xml::Node symbref = this->context->getSingleElement(dose, "./design:DoseAmount/ct:SymbRef");
+        xml::Node mapping = this->context->getSingleElement(dose, "./design:DoseAmount/design:TargetMapping");
         if (symbref.exists()) {
-            this->target = new SymbRef(symbref);
+            this->target_symbref = new PharmML::SymbRef(symbref);
         } else if (mapping.exists()) {
-            this->target = new TargetMapping(this->context, targetType, mapping);
+            this->target_mapping = new PharmML::TargetMapping(this->context, mapping);
         }
 
         // Get dose times/steady state
-        xml::Node times = this->context->getSingleElement(dose, ".//design:DosingTimes");
-        xml::Node steady = this->context->getSingleElement(dose, ".//design:SteadyState");
+        xml::Node times = this->context->getSingleElement(dose, "./design:DosingTimes");
+        xml::Node steady = this->context->getSingleElement(dose, "./design:SteadyState");
         if (times.exists()) {
-            xml::Node assign = this->context->getSingleElement(times, ".//ct:Assign");
+            xml::Node assign = this->context->getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
             this->times = this->context->factory.create(tree);
         } else if (steady.exists()) {
@@ -129,8 +93,8 @@ namespace PharmML
         
         // Get duration/rate for infusion type
         if (this->type == "Infusion") {
-            xml::Node duration = this->context->getSingleElement(dose, ".//design:duration");
-            xml::Node rate = this->context->getSingleElement(dose, ".//design:rate");
+            xml::Node duration = this->context->getSingleElement(dose, "./design:duration");
+            xml::Node rate = this->context->getSingleElement(dose, "./design:rate");
             if (duration.exists()) {
                 // TODO: Support <Duration>
                 this->duration = nullptr;
@@ -145,21 +109,38 @@ namespace PharmML
         xml::Node adm("Administration");
         adm.setAttribute("oid", this->oid);
         xml::Node type = adm.createChild(this->type);
-        if (this->target) {
-            xml::Node da = type.createChild("DoseAmount"); 
+        xml::Node da = type.createChild("DoseAmount"); 
+        da.setAttribute("inputTarget", this->target_type);
+        if (this->target_mapping) {
+            // TODO: Support TargetMapping
+        }
+        if (this->target_symbref) {
             XMLAstVisitor xml;
-            this->target->accept(&xml);
+            this->target_symbref->accept(&xml);
+            da.addChild(xml.getValue());
+        }
+        if (this->amount) {
+            XMLAstVisitor xml;
+            this->amount->accept(&xml);
             da.addChild(xml.getValue());
         }
         return adm;
     }
-
+    
     std::string Administration::getType() {
         return this->type;
     }
     
-    AstNode *Administration::getTarget() {
-        return this->target;
+    std::string Administration::getTargetType() {
+        return this->target_type;
+    }
+    
+    TargetMapping *Administration::getTargetMapping() {
+        return this->target_mapping;
+    }
+    
+    SymbRef *Administration::getTargetSymbRef() {
+        return this->target_symbref;
     }
     
     AstNode *Administration::getTimes() {

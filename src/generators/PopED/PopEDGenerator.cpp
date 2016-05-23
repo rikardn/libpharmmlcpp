@@ -200,7 +200,7 @@ namespace PharmML
     std::string PopEDGenerator::getDoseVariable() {
         // FIXME: Assumes a specific structure
         Administration *adm = this->model->getTrialDesign()->getInterventions()->getAdministrations()[0];
-        adm->getTarget()->accept(&this->ast_gen);
+        adm->getTargetSymbRef()->accept(&this->ast_gen);
         return this->ast_gen.getValue();
     }
 
@@ -431,6 +431,7 @@ namespace PharmML
     void PopEDGenerator::visit(ExternalFile *node) {}
     void PopEDGenerator::visit(DataColumn *node) {}
     void PopEDGenerator::visit(Dataset *node) {}
+    void PopEDGenerator::visit(TargetMapping *node) {}
 
     void PopEDGenerator::visit(ExternalDataset *node) {}
 

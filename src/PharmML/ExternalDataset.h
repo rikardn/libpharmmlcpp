@@ -21,6 +21,7 @@
 #include "PharmMLContext.h"
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/ColumnMapping.h>
+#include <PharmML/Dataset.h>
 #include <symbols/Symbol.h>
 
 namespace PharmML

@@ -82,13 +82,6 @@ namespace PharmML
         this->setValue(node->toString());
     }
 
-    void RAstGenerator::visit(TargetMapping *node) {
-        std::string type = "type=\"" + node->getType() + "\"";
-        std::string blkIdRef = "blkIdRef=\"" + node->getBlkIdRef() + "\"";
-        std::string ref = "ref=\"" + node->getRef() + "\"";
-        this->setValue("list(" + type + ", " + blkIdRef + ", " + ref + ")");
-    }
-
     void RAstGenerator::visit(UniopLog *node) {
         this->setValue("log(" + this->acceptChild(node) + ")");
     }

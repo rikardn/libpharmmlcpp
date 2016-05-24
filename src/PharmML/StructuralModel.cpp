@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -83,11 +83,11 @@ namespace PharmML
 
         return derivs;
     }
-    
+
     std::vector<PharmML::PKMacro *> StructuralModel::getPKMacros() {
         return this->pk_macros;
     }
-    
+
     void StructuralModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (PKMacro *pk_macro : this->pk_macros) {
             pk_macro->gatherSymbRefs(symbolMap);
@@ -100,7 +100,7 @@ namespace PharmML
         std::unordered_map<std::string, CommonVariable *> variables_map;
         for (CommonVariable *var : this->variables) {
             variables_map[var->getSymbId()] = var;
-        } 
+        }
 
         // Set of all added symbIds
         std::unordered_set<std::string> added_symbols;
@@ -144,7 +144,7 @@ namespace PharmML
                     if (std::find(list.begin(), list.end(), var) == list.end() &&
                             std::find(found.begin(), found.end(), var) == found.end() &&
                             symbol == listed_var->getSymbId()) {
-                        found.push_back(var);                        
+                        found.push_back(var);
                     }
                 }
             }

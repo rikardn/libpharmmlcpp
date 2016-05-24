@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,17 +37,17 @@ namespace PharmML
         for (xml::Node n : function_nodes) {
             this->FunctionDefinitions.push_back(new PharmML::FunctionDefinition(this->context, n));
         }
-        
+
         xml::Node design_node = this->context->getSingleElement(node, "/x:PharmML/design:TrialDesign");
         if (design_node.exists()) {
             this->TrialDesign = new PharmML::TrialDesign(this->context, design_node);
         }
-        
+
         xml::Node msteps_node = this->context->getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
         if (msteps_node.exists()) {
             this->ModellingSteps = new PharmML::ModellingSteps(this->context, msteps_node);
         }
-        
+
         // Build consolidator object
         this->consolidator = new CPharmML::Consolidator(this->context, this);
     }
@@ -77,19 +77,19 @@ namespace PharmML
     PharmML::ModelDefinition *Model::getModelDefinition() {
         return this->ModelDefinition;
     }
-    
+
     PharmML::TrialDesign *Model::getTrialDesign() {
         return this->TrialDesign;
     }
-    
+
     PharmML::ModellingSteps *Model::getModellingSteps() {
         return this->ModellingSteps;
     }
-    
+
     CPharmML::Consolidator *Model::getConsolidator() {
         return this->consolidator;
     }
-    
+
     void Model::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         this->ModellingSteps->gatherSymbRefs(symbolMap);
         this->ModelDefinition->gatherSymbRefs(symbolMap);

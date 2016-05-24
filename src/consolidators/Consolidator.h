@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -51,7 +51,7 @@ namespace CPharmML
         private:
             std::shared_ptr<PharmML::Logger> logger;
             PharmML::PharmMLContext *context;
-            
+
             PharmML::SymbolSet allSymbols;
             std::unordered_set<PharmML::Object *> allObjects;
 
@@ -60,17 +60,17 @@ namespace CPharmML
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
             CPharmML::PKMacros *pk_macros;
-            
+
             void consolidateSymbols(PharmML::Model *model);
             void consolidateObjects(PharmML::Model *model);
-            
+
             void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
             void consolidatePKMacros(PharmML::Model *model);
             void consolidateTrialDesign(PharmML::Model *model);
-            
+
             void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }

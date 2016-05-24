@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,7 +33,7 @@ namespace PharmML
     std::string RPharmMLGenerator::getValue() {
         return this->value;
     }
-    
+
     // General R generators
     std::vector<std::string> RPharmMLGenerator::genFunctionDefinitions(Model *model) {
         // Generate R code for each function definition in model
@@ -44,11 +44,11 @@ namespace PharmML
         }
         return result;
     }
-    
+
     // General R visitors
     void RPharmMLGenerator::visit(FunctionDefinition *node) {
         TextFormatter form;
-        
+
         std::string head = node->getSymbId() + " <- ";
         std::vector<std::string> argument_names;
         for (FunctionArgumentDefinition *argument : node->getArguments()) {
@@ -56,13 +56,13 @@ namespace PharmML
             argument_names.push_back(this->getValue());
         }
         form.indentAdd(head + TextFormatter::createInlineVector(argument_names, "function()", ", ") + " {");
-        
+
         form.add("return " + this->accept(node->getDefinition()));
         form.outdentAdd("}");
-        
+
         this->setValue(form.createString());
     }
-    
+
     void RPharmMLGenerator::visit(FunctionArgumentDefinition *node) {
         std::string arg_name = node->getSymbId();
         this->setValue(arg_name);
@@ -113,10 +113,10 @@ namespace PharmML
         } else if (node->isExplicit()) {
             result = node->getSymbId() + " <- " + this->accept(node->getAssignment());
         }
-        
+
         this->setValue(result);
     }
-    
+
     void RPharmMLGenerator::visit(VariabilityLevel *node) {
         TextFormatter form;
 
@@ -125,26 +125,26 @@ namespace PharmML
         } else {
             form.add("# Level: (Not reference level)");
         }
-        
+
         this->setValue(form.createString());
     }
-    
+
     void RPharmMLGenerator::visit(Correlation *node) {}
-    
+
     void RPharmMLGenerator::visit(RandomVariable *node) {
         TextFormatter form;
         form.openVector(node->getSymbId() + " <- list()", 0, ", ");
-        
+
         std::vector<PharmML::VariabilityReference *> var_refs = node->getVariabilityReferences();
         form.openVector("variability_references=c()", 0, ", ");
         for (PharmML::VariabilityReference *var_ref : var_refs) {
             form.add("'" + this->accept(var_ref->getLevelReference()) + "'");
         }
         form.closeVector();
-        
+
         node->getDistribution()->accept(this);
         form.add(this->getValue());
-        
+
         form.closeVector();
         this->setValue(form.createString());
     }
@@ -156,7 +156,7 @@ namespace PharmML
     void RPharmMLGenerator::visit(Variable *node) {
         // Consolidate for more powerful output
         if (node->getAssignment()) {
-            this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment())); 
+            this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment()));
 
             // General (non-mandatory) output
             if (node->getAssignment()) {
@@ -166,14 +166,14 @@ namespace PharmML
             }
         }
     }
-    
+
     void RPharmMLGenerator::visit(DerivativeVariable *node) {
         // Consolidate for more powerful output
         this->consol.derivs.addDerivative(node->getSymbId(),
                 this->accept(node->getAssignment()),
                 this->accept(node->getInitialValue()),
-                this->accept(node->getInitialTime())); 
-        
+                this->accept(node->getInitialTime()));
+
         // General (non-mandatory) output
         std::string expr;
         if (node->getAssignment()) {
@@ -210,7 +210,7 @@ namespace PharmML
         }
         this->setValue(id + " -> " + name);
     }
-    
+
     // Class ExternalFile
     void RPharmMLGenerator::visit(ExternalFile *node) {
         std::string s = "READ_EXT_RESOURCE_" + node->getOid() + " <- function() {\n";
@@ -226,7 +226,7 @@ namespace PharmML
         s += "}";
         setValue(s);
     }
-    
+
     // Class DataColumn
     void RPharmMLGenerator::visit(DataColumn *node) {
         std::string s = node->getDefinition()->getId() + " = ";
@@ -238,7 +238,7 @@ namespace PharmML
         s += TextFormatter::createInlineVector(list, "c()", ", ");
         setValue(s);
     }
-    
+
     // Class Dataset
     void RPharmMLGenerator::visit(Dataset *node) {
         std::string name = node->getName();
@@ -258,20 +258,20 @@ namespace PharmML
             ExternalFile *extFile = node->getExternal();
             extFile->accept(this);
             s += this->getValue() + "\n";
-            
+
             // Then output call to reading function (yes, it's not perfect)
             s += name + " = READ_EXT_RESOURCE_" + extFile->getOid() + "()";
         }
         setValue(s + "\n");
     }
-    
+
     // Class TargetMapping
     void RPharmMLGenerator::visit(TargetMapping *node) { }
-    
+
     // Class ExternalDataset
     void RPharmMLGenerator::visit(ExternalDataset *node) {
         std::string s;
-        
+
         std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
         if (!col_maps.empty()) {
             s += "# Data column mappings\n";
@@ -280,7 +280,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
             }
         }
-        
+
         Dataset *ds = node->getDataset();
         if (ds) {
             s += "# Dataset\n";
@@ -288,14 +288,14 @@ namespace PharmML
             ds->accept(this);
             s += this->getValue() + "\n";
         }
-        
+
         this->setValue(s + "\n");
     }
-    
+
     // Class Interventions and all its content
     void RPharmMLGenerator::visit(Administration *node) {
         std::string s = node->getOid() + " <- list(";
-        
+
         s += "type = \"" + node->getType() + "\"";
         s += "target_type = \"" + node->getTargetType() + "\"";
         if (node->getTargetSymbRef()) {
@@ -318,16 +318,16 @@ namespace PharmML
 
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(IndividualAdministration *node) {
         std::string s = " = list(";
         std::vector<std::string> list;
-        
+
         if (node->getOidRef()->getOidRef() != "") {
             std::string s = "intervention_ref = '" + node->getOidRef()->getOidRef() + "', ";
             std::vector<std::string> list;
         }
-        
+
         // See IndividualObservations visitor for confusion of formatting
         s += "mappings = ";
         std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
@@ -336,15 +336,15 @@ namespace PharmML
             list.push_back("'" + this->getValue() + "'");
         }
         s += TextFormatter::createInlineVector(list, "c()", ", ") + ", ";
-        
+
         s += "dataset = " + node->getDataset()->getName();
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(Interventions *node) {
         std::string s;
-        
+
         // <Administration>'s
         std::vector<Administration *> adms = node->getAdministrations();
         if (!adms.empty()) {
@@ -357,7 +357,7 @@ namespace PharmML
             }
             s += "administration_oids <- " + TextFormatter::createInlineVector(adm_oids, "c()", ", ") + "\n";
         }
-        
+
         // <IndividualAdministration>'s
         std::vector<IndividualAdministration *> ind_adms = node->getIndividualAdministrations();
         if (!ind_adms.empty()) {
@@ -379,11 +379,11 @@ namespace PharmML
 
         this->setValue(s);
     }
-    
+
     // Class Observations and all its content
     void RPharmMLGenerator::visit(Observation *node) {
         std::string s = node->getOid() + " <- list(";
-        
+
         s += "times = " + this->accept(node->getTimes());
         if (node->getOidRef()->getOidRef() != "") {
             s += ", oidRef = \"" + node->getOidRef()->getOidRef() + "\"";
@@ -417,17 +417,17 @@ namespace PharmML
             }
             s += ")";
         }
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(IndividualObservations *node) {
         // Still don't really know how to output ColumnMapping objects in any context. bquote and .()
         // might be worth checking out in the future to evaluate expressions at run-time (e.g. symbols
         // to column's they are mapped to).
         std::string s = node->getOid() + " <- list(";
         std::vector<std::string> list;
-        
+
         std::vector<ColumnMapping *> column_mappings = node->getColumnMappings();
         s += "mappings = ";
         for (ColumnMapping *map : column_mappings) {
@@ -435,26 +435,26 @@ namespace PharmML
             list.push_back("'" + this->getValue() + "'");
         }
         s += TextFormatter::createInlineVector(list, "c()", ", ") + ", ";
-        
+
         s += "dataset = " + node->getDataset()->getName();
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(ObservationCombination *node) {
         std::string s = node->getOid() + " <- list(";
-        
+
         s += "refs = " + TextFormatter::createInlineVector(node->getOidRefs(), "c()", ", ");
         if (node->getRelative()) {
             s += ", relative = " + this->accept(node->getRelative());
         }
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(Observations *node) {
         std::string s;
-        
+
         std::vector<Variable *> variables = node->getDesignParameters();
         if (!variables.empty()) {
             s += "# Design parameters\n";
@@ -463,7 +463,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
             }
         }
-        
+
         std::vector<Observation *> observations = node->getObservations();
         if (!observations.empty()) {
             s += "# Simulation observations\n";
@@ -475,7 +475,7 @@ namespace PharmML
             }
             s += "simulation_obs_oids = " + TextFormatter::createInlineVector(obs_oids, "c()", ", ") + "\n";
         }
-        
+
         std::vector<IndividualObservations *> ind_observations = node->getIndividualObservations();
         if (!ind_observations.empty()) {
             s += "# Dataset observations\n";
@@ -493,7 +493,7 @@ namespace PharmML
             }
             s += "dataset_obs_oids = " + TextFormatter::createInlineVector(obs_oids, "c()", ", ") + "\n";
         }
-        
+
         std::vector<ObservationCombination *> combinations = node->getObservationCombinations();
         if (!combinations.empty()) {
             s += "# Observation combinations\n";
@@ -505,14 +505,14 @@ namespace PharmML
             }
             s += "combination_oids <- " + TextFormatter::createInlineVector(comb_oids, "c()", ", ") + "\n";
         }
-        
+
         this->setValue(s);
     }
-    
+
     // Class Arms and all its contents
     void RPharmMLGenerator::visit(InterventionSequence *node) {
         std::string s = "list(";
-        
+
         std::vector<std::string> refs;
         for (ObjectRef *ref : node->getOidRefs()) {
             refs.push_back("'" + ref->getOidRef() + "'");
@@ -521,13 +521,13 @@ namespace PharmML
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(ObservationSequence *node) {
         std::string s = "list(";
-        
+
         std::vector<std::string> refs;
         for (ObjectRef *ref : node->getOidRefs()) {
             refs.push_back("'" + ref->getOidRef() + "'");
@@ -536,18 +536,18 @@ namespace PharmML
         if (node->getStart()) {
             s += ", start = " + this->accept(node->getStart());
         }
-        
+
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(OccasionSequence *node) {
         this->setValue("[WIP]"); // Not implemented
     }
-    
+
     void RPharmMLGenerator::visit(Arm *node) {
         std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
-        
+
         if (node->getOidRef() != "") {
             list.push_back("oidRef = '" + node->getOidRef() + "'");
         }
@@ -592,14 +592,14 @@ namespace PharmML
             list.push_back(s);
         }
         // TODO: Implement output of node->getOccasionSequences
-        
+
         s += TextFormatter::createInlineVector(list, "list()", ", ");
         this->setValue(s + ")");
     }
-    
+
     void RPharmMLGenerator::visit(Arms *node) {
         std::string s;
-        
+
         // Top-level settings that may or may not exist
         std::vector<std::string> top;
         // <ArmSize>
@@ -637,7 +637,7 @@ namespace PharmML
         if (!top.empty()) {
             s += "arms = " + TextFormatter::createInlineVector(top, "list()", ", ") + "\n";
         }
-        
+
         // <DesignParameter>'s
         std::vector<Variable *> variables = node->getDesignParameters();
         if (!variables.empty()) {
@@ -647,7 +647,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
             }
         }
-        
+
         // <Arm>'s
         std::vector<Arm *> arms = node->getArms();
         if (!arms.empty()) {
@@ -665,49 +665,49 @@ namespace PharmML
                     first = false;
                 } else {
                     s += ", ";
-                } 
+                }
                 s += "'" + oid + "'";
             }
         }
-        
+
         this->setValue(s + ")" + "\n");
     }
-    
+
     // Class DesignSpaces and all its content
     void RPharmMLGenerator::visit(DesignSpace *node) {
         std::string s = node->getOid() + " <- ";
         std::vector<std::string> list;
-        
+
         std::vector<std::string> int_refs;
         for (ObjectRef *ref : node->getInterventionRefs()) {
             int_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("intervention_refs = " + TextFormatter::createInlineVector(int_refs, "c()", ", "));
-        
+
         std::vector<std::string> obs_refs;
         for (ObjectRef *ref : node->getObservationRefs()) {
             obs_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("observation_refs = " + TextFormatter::createInlineVector(obs_refs, "c()", ", "));
-        
+
         std::vector<std::string> arm_refs;
         for (ObjectRef *ref : node->getArmRefs()) {
             arm_refs.push_back("'" + ref->getOidRef() + "'");
         }
         list.push_back("arm_refs = " + TextFormatter::createInlineVector(arm_refs, "c()", ", "));
-        
+
         AstNode *dosing_times = node->getDosingTimes();
         if (dosing_times) {
             list.push_back("dosing_times=" + this->accept(dosing_times));
         }
-        
+
         s += TextFormatter::createInlineVector(list, "list()", ", ");
         this->setValue(s);
     }
-    
+
     void RPharmMLGenerator::visit(DesignSpaces *node) {
         std::string s;
-        
+
         std::vector<Variable *> variables = node->getDesignParameters();
         if (!variables.empty()) {
             s += "# Design parameters\n";
@@ -716,7 +716,7 @@ namespace PharmML
                 s += this->getValue() + "\n";
             }
         }
-        
+
         std::vector<DesignSpace *> designSpaces = node->getDesignSpaces();
         if (!designSpaces.empty()) {
             s += "# Design spaces\n";
@@ -728,11 +728,11 @@ namespace PharmML
                 i++;
             }
         }
-        
+
         this->setValue(s + "\n");
     }
-    
+
     void RPharmMLGenerator::visit(ParameterEstimation *node) { }
-    
+
     void RPharmMLGenerator::visit(PKMacro *node) { }
 }

@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -211,7 +211,7 @@ namespace PharmML
                 deps->addDependency(symbref);
             }
             instance = symbref;
-        } else if (name == "ColumnRef") { 
+        } else if (name == "ColumnRef") {
             std::string symbol = node.getAttribute("columnIdRef").getValue();
             instance = new ColumnRef(symbol);
             if (deps) {
@@ -253,7 +253,7 @@ namespace PharmML
                     std::vector<xml::Node> children = cell.getChildren();
                     int cellIndex = std::stoi(children[0].getText());
                     AstNode *cellContent = AstNodeFactory::create(children[1], deps);
-                    
+
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
                 }
@@ -296,13 +296,13 @@ namespace PharmML
             instance = fcall;
         } else if (name == "Interval") {
             instance = new Interval(node);
-        } 
-        
+        }
+
         // The following might and might not be a good idea
         if (instance) {
             instance->setXMLNode(node);
         }
-        
+
         return instance;
     }
 }

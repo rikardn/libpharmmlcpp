@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,15 +23,15 @@ namespace PharmML
     void MDLGenerator::setValue(std::string str) {
         this->value = str;
     }
-    
+
     void MDLGenerator::setValue(std::vector<std::string> strs) {
         this->values = strs;
     }
-    
+
     void MDLGenerator::setValue(stringpair pair) {
         this->hvalue = pair;
     }
-    
+
     void MDLGenerator::setValue(stringmap hash) {
         this->hvalues = hash;
     }
@@ -44,38 +44,38 @@ namespace PharmML
     // public
     MDLGenerator::MDLGenerator() {
         this->logger = std::make_shared<Logger>("MDL");
-        
+
         std::unique_ptr<MDLAstGenerator> ast_gen(new MDLAstGenerator(this->logger));
         this->ast_gen = std::move(ast_gen);
         std::unique_ptr<MDLSymbols> symb_gen(new MDLSymbols(this->logger));
         this->symb_gen = std::move(symb_gen);
     }
-    
+
     std::string MDLGenerator::getValue() {
         return this->value;
     }
-    
+
     std::vector<std::string> MDLGenerator::getValues() {
         return this->values;
     }
-    
+
     stringpair MDLGenerator::getPairValue() {
         return this->hvalue;
     }
-    
+
     stringmap MDLGenerator::getHashValue() {
         return this->hvalues;
     }
-    
+
     // Generators
     std::string MDLGenerator::generateModel(Model *model) {
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
-        
+
         // Store generated objects here
         MDLObjects objects;
 
         std::string name;
-        
+
         // Generate the MDL data object(s)
         std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
         for (ExternalDataset *ext_ds : ext_dss) {
@@ -84,7 +84,7 @@ namespace PharmML
             object.code = this->genDataObj(ext_ds);
             objects.data.push_back(object);
         }
-        
+
         // Generate the MDL parameter object(s)
         // TODO: Implement support for multiple parameter models as per schema
         //~ std::vector<ParameterModel *> par_models = model->getModelDefinition()->getParameterModels();
@@ -98,57 +98,57 @@ namespace PharmML
         object.code = this->genParObj(populationParameters);
         objects.parameter.push_back(object);
         //~ }
-        
-        
+
+
         // Generate the MDL model object(s)
         object.name = "mdl_object";
         object.code = this->genMdlObj(model);
         objects.model.push_back(object);
-        
+
         // Generate the MDL task object(s)
         object.name = "task_object";
         object.code = this->genTaskObj();
         objects.task.push_back(object);
-        
+
         // Generate the MDL mog object(s)
         object.name = "mog_obj";
         object.code = this->genMogObj(objects);
         objects.mog.push_back(object);
-        
+
         // Output collection of MDL object(s)
         return this->genCompleteMDL(objects);
     }
-    
+
     std::string MDLGenerator::genDataObj(ExternalDataset* ext_ds) {
         TextFormatter form;
-        
+
         form.indentAdd("dataObj {");
-        
+
         ext_ds->accept(this);
         form.addMany(this->getValue());
-        
+
         form.outdentAdd("}");
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
         // TODO: Consolidator here
         // TODO: idv only implicit if indpendent variable is T I believe
         stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
         if (node->isExternal()) {
             TextFormatter form;
-            
+
             // Output one row for each column definition
             int num_cols = node->getDefinition()->getNumColumns();
             for (int num = 1; num <= num_cols; ++num) {
                 // Get column id
                 ColumnDefinition *col_def = node->getDefinition()->getColumnDefinition(num);
                 std::string id = col_def->getId();
-                
+
                 // Open vector with column id as header
                 form.openVector(id + " : {}", 0, ", ");
-                
+
                 // Set type as MDL expects
                 std::string type = col_def->getType();
                 if (type == "undefined") {
@@ -159,7 +159,7 @@ namespace PharmML
                     type = "amt";
                 }
                 form.add("use is " + type);
-                
+
                 // Prune column map for caller
                 if (type == "covariate" && id == column_mappings[id]) {
                     // Trim column_mappings to not contain implicit (same-name) covariate mappings
@@ -176,7 +176,7 @@ namespace PharmML
                         }
                     }
                 }
-                
+
                 // Add type value to caller map
                 if (type == "amt") {
                     column_mappings[id] = column_mappings[id] + "::dosingTarget";
@@ -184,22 +184,22 @@ namespace PharmML
                     // FIXME: Consolidate the map with the targets (to determine type)
                     column_mappings[id] = column_mappings[id] + "::continuousObs";
                 }
-                
+
                 form.closeVector();
             }
-            
+
             return form.createString();
         } else {
             // Yes, what else?
             return "";
         }
     }
-    
+
     std::string MDLGenerator::genParObj(CPharmML::PopulationParameters *populationParameters) {
         TextFormatter form;
-        
+
         form.indentAdd("parObj {");
-        
+
         std::vector<CPharmML::PopulationParameter *> cpop_params = populationParameters->getPopulationParameters();
         // Split into structural and variability parameters
         std::vector<CPharmML::PopulationParameter *> structuralParameters;
@@ -218,7 +218,7 @@ namespace PharmML
                 structuralParameters.push_back(cpop_param);
             }
         }
-        
+
         // Fill DECLARED_VARIABLES with correlated variable names
         if (!correlatedVariables.empty()) {
             form.openVector("DECLARED_VARIABLES {}", 0, " ");
@@ -228,46 +228,46 @@ namespace PharmML
             form.closeVector();
             form.emptyLine();
         }
-        
+
         // Generate STRUCTURAL and VARIABILITY block
         form.addMany(this->genStructuralBlock(structuralParameters));
         form.emptyLine();
         form.addMany(this->genVariabilityBlock(variabilityParameters));
-                
+
         form.outdentAdd("}");
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters) {
         // Generate MDL STRUCTURAL block
         TextFormatter form;
         form.indentAdd("STRUCTURAL {");
-        
+
         for (CPharmML::PopulationParameter *structuralParameter : structuralParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             structuralParameter->getPopulationParameter()->accept(this);
             std::string name = this->getValue();
             this->structuralParameterNames.push_back(name);
-            
+
             // Add the init attributes
             structuralParameter->getParameterEstimation()->accept(this);
             std::vector<std::string> init_attr = this->getValues();
             form.openVector(name + " : {}", 0, ", ");
             form.addMany(init_attr);
-            
+
             form.closeVector();
         }
-        
+
         form.outdentAdd("}");
-        return form.createString(); 
+        return form.createString();
     }
-    
+
     std::string MDLGenerator::genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters) {
         // Generate MDL VARIABILITY block
         TextFormatter form;
         form.indentAdd("VARIABILITY {");
-        
+
         for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
             // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
             if (variabilityParameter->isCorrelation()) {
@@ -288,13 +288,13 @@ namespace PharmML
                 variabilityParameter->getPopulationParameter()->accept(this);
                 std::string name = this->getValue();
                 this->variabilityParameterNames.push_back(name);
-                
+
                 // Add the init attributes
                 variabilityParameter->getParameterEstimation()->accept(this);
                 std::vector<std::string> init_attr = this->getValues();
                 form.openVector(name + " : {}", 0, ", ");
                 form.addMany(init_attr);
-                
+
                 // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
                 std::string dist_name = variabilityParameter->getDistributionName();
                 std::string dist_param = variabilityParameter->getDistributionParameterType();
@@ -320,19 +320,19 @@ namespace PharmML
         }
 
         form.outdentAdd("}");
-        return form.createString(); 
+        return form.createString();
     }
-    
+
     std::string MDLGenerator::genMdlObj(PharmML::Model *model) {
         TextFormatter form;
-        
+
         form.indentAdd("mdlObj {");
-        
+
         // Generate IDV block
         model->getIndependentVariable()->accept(this);
         form.add("IDV {" + this->getValue() + "}");
         form.emptyLine();
-        
+
         // Generate COVARIATES block
         form.openVector("COVARIATES {}", 1, "");
         std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
@@ -346,7 +346,7 @@ namespace PharmML
         }
         form.closeVector();
         form.emptyLine();
-        
+
         // Generate VARIABILITY_LEVELS block
         form.openVector("VARIABILITY_LEVELS {}", 1, "");
         std::vector<PharmML::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
@@ -368,19 +368,19 @@ namespace PharmML
         }
         form.closeVector();
         form.emptyLine();
-        
+
         // Generate STRUCTURAL_PARAMETERS block
         form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");
         form.addMany(this->structuralParameterNames);
         form.closeVector();
         form.emptyLine();
-        
+
         // Generate VARIABILITY_PARAMETERS block
         form.openVector("VARIABILITY_PARAMETERS {}", 1, "");
         form.addMany(this->variabilityParameterNames);
         form.closeVector();
         form.emptyLine();
-        
+
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for parameter variability)
         for (auto it = par_levels.rbegin(); it != par_levels.rend(); ++it) {
             std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
@@ -390,17 +390,17 @@ namespace PharmML
             form.addMany(block);
             form.emptyLine();
         }
-        
+
         // Generate INDIVIDUAL_VARIABLES block
         std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         form.addMany(this->genIndividualVariablesBlock(indiv_params));
         form.emptyLine();
-        
+
         // Generate MODEL_PREDICTION
         std::string model_pred = this->genModelPredictionBlock(model->getModelDefinition()->getStructuralModel(), model->getConsolidator()->getPKMacros());
         form.addMany(model_pred);
         form.emptyLine();
-        
+
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
         for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
             std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
@@ -410,35 +410,35 @@ namespace PharmML
             form.addMany(block);
             form.emptyLine();
         }
-        
+
         // Generate OBSERVATION block
         std::string obs_block = this->genObservationBlock(model->getModelDefinition()->getObservationModel(), model->getConsolidator()->getFunctions());
         form.addMany(obs_block);
         form.emptyLine();
-        
+
         form.closeVector();
         form.outdentAdd("}");
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs) {
         TextFormatter form;
         this->visit(level);
         std::string name = getValue();
         form.openVector("RANDOM_VARIABLE_DEFINITION(level=" + name + ") {}", 1, "");
-        
+
         for (PharmML::RandomVariable *random_var : random_vars) {
             this->visit(random_var);
             form.add(this->getValue());
         }
         for (CPharmML::PopulationParameter *cpop_corr : cpop_corrs) {
             std::string name = cpop_corr->getName();
-            
+
             PharmML::Correlation *corr = cpop_corr->getCorrelation();
             if (corr->isPairwise()) {
                 form.openVector(":: {}", 0, ", ");
-                
+
                 std::vector<SymbRef *> symbRefs = corr->getPairwiseSymbRefs();
                 form.add("rv1 = " + this->accept(symbRefs[0]) + ", rv2 = " + this->accept(symbRefs[1]));
                 std::string type = corr->getPairwiseType();
@@ -448,40 +448,40 @@ namespace PharmML
                     form.add("type is covariance");
                 }
                 form.add("value = " + name);
-                
+
                 form.closeVector();
             } else {
                 form.add("# " + name + " correlation of unsupported matrix type");
             }
         }
-        
+
         form.closeVector();
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters) {
         TextFormatter form;
-        
+
         form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
         for (PharmML::IndividualParameter *ind_par : individualParameters) {
             this->visit(ind_par);
             form.add(this->getValue());
         }
         form.closeVector();
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genModelPredictionBlock(PharmML::StructuralModel *structuralModel, CPharmML::PKMacros *pk_macros) {
         // TODO: Consolidator for CommonVariable (Variable and DerivativeVariable)!
         TextFormatter form;
         form.openVector("MODEL_PREDICTION {}", 1, "");
-        
+
         // Generate MDL COMPARTMENT block (if there's PKMacro's)
         if (pk_macros->exists()) {
             form.addMany(this->genCompartmentBlock(pk_macros));
         }
-        
+
         // Get CommonVariable's (Variable's and Derivative's), sort and generate
         std::vector<CommonVariable *> vars = structuralModel->getVariables();
         SymbolSet var_set(std::unordered_set<Symbol *>(vars.begin(), vars.end()));
@@ -489,26 +489,26 @@ namespace PharmML
             var->accept(this->symb_gen.get());
             form.addMany(symb_gen->getValue());
         }
-        
-        
-        
+
+
+
         form.closeVector();
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genCompartmentBlock(CPharmML::PKMacros *pk_macros) {
         TextFormatter form;
-        
+
         // Get PKMacro's, sort and generate
         form.openVector("COMPARTMENT {}", 1, "");
-        
+
         // Figure out max length to copy MDL spacing standard
         int max_length = 0;
         for (CPharmML::PKMacro *macro : pk_macros->getMacros()) {
             int length = macro->getName().length();
             max_length = length > max_length ? length : max_length;
         }
-        
+
         // Number absorption processes consecutively (depreceated MDL 'modelCmt' argument)
         int mdl_cmt_iterator = 1;
         std::unordered_map<CPharmML::PKMacro *, int> mdl_cmt;
@@ -544,7 +544,7 @@ namespace PharmML
                 }
             }
         }
-        
+
         // Output administrations before all else
         for (CPharmML::PKMacro *cmacro : adm_cmacros) {
             // Construct enclosure
@@ -552,7 +552,7 @@ namespace PharmML
             std::string pad = std::string(max_length - name.length(), ' ');
             std::string prefix = name + pad;
             form.openVector(prefix + " : {}", 0, ", ");
-            
+
             // Get target of absorption process (MDL uses the names when refering)
             int to_attr;
             if ( cmacro->hasAttribute("cmt") ) {
@@ -561,19 +561,21 @@ namespace PharmML
                 cmacro->tryParseInt("target", to_attr, this->ast_analyzer);
             }
             std::string to_name = pk_macros->getCompartment(to_attr)->getName();
-            
+
             // Get type of absorption process
             PharmML::PKMacro *macro = cmacro->getMacro();
+
+            // Add differently if depot-ish absorption or direct (IV)
             std::string type = macro->getName();
             
             // Add differently if depot-ish absorption or direct (IV)
             if (type == "Absorption" || type == "Oral" || type == "Depot") {
                 form.add("type is depot");
                 form.add("modelCmt=" + std::to_string(mdl_cmt[cmacro]));
-                
+
                 // Output compartment target 
                 form.add("to=" + to_name);
-                
+
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
                 AstNode *tlag = macro->getAssignment("Tlag");
                 AstNode *p = macro->getAssignment("p");
@@ -601,10 +603,10 @@ namespace PharmML
                 }
             } else if (type == "IV") {
                 form.add("type is direct");
-                
+
                 // Output compartment target
                 form.add("to=" + to_name);
-                
+
                 // Get parameterization
                 AstNode *tlag = macro->getAssignment("Tlag");
                 AstNode *p = macro->getAssignment("p");
@@ -623,7 +625,7 @@ namespace PharmML
             // Get type of macro
             PharmML::PKMacro *macro = cmacro->getMacro();
             std::string type = macro->getName();
-            
+
             if (type == "Compartment" || type == "Peripheral" || type == "Effect") { // Treat all compartments similarly
                 // Construct enclosure
                 PharmML::PKMacro *macro = cmacro->getMacro();
@@ -631,7 +633,7 @@ namespace PharmML
                 std::string pad = std::string(max_length - name.length(), ' ');
                 std::string prefix = name + pad;
                 form.openVector(prefix + " : {}", 0, ", ");
-                
+
                 // Output type and compartment number
                 std::string type = macro->getName();
                 if (type == "Compartment") {
@@ -642,7 +644,7 @@ namespace PharmML
                     form.add("type is effect");
                 }
                 form.add("modelCmt=" + std::to_string(mdl_cmt[cmacro]));
-                
+
                 // Get parameterization
                 AstNode *vol = macro->getAssignment("volume");
                 AstNode *conc = macro->getAssignment("concentration");
@@ -665,7 +667,7 @@ namespace PharmML
                 std::string pad = std::string(max_length - 1, ' ');
                 std::string prefix = pad;
                 form.openVector(prefix + " :: {}", 0, ", ");
-                
+
                 // Treat elimination and transfer the same
                 std::string type = macro->getName();
                 if (type == "Elimination") {
@@ -673,7 +675,7 @@ namespace PharmML
                 } else if (type ==  "Transfer") {
                     form.add("type is transfer");
                 }
-                
+
                 // In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from
                 int from_attr;
                 if ( cmacro->hasAttribute("cmt") ) { // For eliminations we call it 'cmt'
@@ -683,11 +685,11 @@ namespace PharmML
                 }
                 CPharmML::PKMacro *from_cmacro = pk_macros->getCompartment(from_attr);
                 form.add("modelCmt=" + std::to_string(mdl_cmt[from_cmacro]));
-                
+
                 // Output source compartment
                 std::string from_name = pk_macros->getCompartment(from_attr)->getName();
                 form.add("from=" + from_name);
-                
+
                 // Output target compartment (for transfers only)
                 if ( cmacro->hasAttribute("to") ) {
                     int to_attr;
@@ -695,7 +697,7 @@ namespace PharmML
                     std::string to_name = pk_macros->getCompartment(to_attr)->getName();
                     form.add("to=" + to_name);
                 }
-                
+
                 // Get (linear) elimination parameterization
                 AstNode *vol = macro->getAssignment("volume");
                 AstNode *k = macro->getAssignment("k");
@@ -713,7 +715,7 @@ namespace PharmML
                 if (v) {
                     form.add("v=" + this->accept(v));
                 }
-                
+
                 // Get (MM) elimination parameterization
                 AstNode *km = macro->getAssignment("Km");
                 AstNode *vm = macro->getAssignment("Vm");
@@ -723,7 +725,7 @@ namespace PharmML
                 if (vm) {
                     form.add("vm=" + this->accept(vm));
                 }
-                
+
                 // Get transfer parameterization
                 AstNode *from = macro->getAssignment("from");
                 AstNode *to = macro->getAssignment("to");
@@ -741,15 +743,15 @@ namespace PharmML
                 form.closeVector();
             }
         }
-        
+
         form.closeVector();
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions) {
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
-        
+
         std::string obs_name = observationModel->getSymbId();
         if (observationModel->hasStandardErrorModel()) {
             // Determine if error model is a pure function call
@@ -760,19 +762,19 @@ namespace PharmML
             if (function_call) {
                 // Resolve the call
                 FunctionDefinition *function_def = functions->resolveFunctionCall(function_call);
-                
+
                 // Get the caller arguments
                 std::vector<FunctionArgument *> call_args = function_call->getFunctionArguments();
                 std::unordered_map<std::string, FunctionArgument *> call_arg_map;
                 for (FunctionArgument *call_arg : call_args) {
                     call_arg_map[call_arg->getSymbId()] = call_arg;
                 }
-                
+
                 // Determine if function is known to MDL (tricky stuff)
                 if (functions->isStandardFunction(function_def)) {
                     form.openVector(obs_name + " : {}", 0, ", ");
                     form.add("type is " + functions->getStandardFunctionName(function_def));
-                    
+
                     // Get transformation is available (don't know MDL syntax definitely)
                     std::string trans = observationModel->getTransformation();
                     if (trans == "log") {
@@ -780,17 +782,17 @@ namespace PharmML
                     } else if (trans != "") {
                         form.add("trans is " + trans);
                     }
-                    
+
                     // Get structural model output and make a list of arguments referencing it
                     SymbRef *output = observationModel->getOutput();
                     std::vector<std::string> output_arg_names;
-                    
+
                     // Output the mapped arguments
                     std::unordered_map<std::string, FunctionArgumentDefinition *> def_arg_map = functions->getStandardArgumentMap(function_def);
                     for (auto def_arg : def_arg_map) {
                         std::string standard_arg_name = def_arg.first;
                         std::string actual_arg_name = def_arg.second->getSymbId();
-                        
+
                         // Check if it's a prediction argument and output the argument in standardized form
                         FunctionArgument *call_arg = call_arg_map[actual_arg_name];
                         if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
@@ -798,11 +800,11 @@ namespace PharmML
                         }
                         form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
                     }
-                    
+
                     // Add the residual error
                     form.add("eps = " + this->accept(observationModel->getResidualError()));
                     form.closeVector();
-                    
+
                     // Warn if unexpected structure with regards to the output symbol
                     if (output_arg_names.empty()) {
                         this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
@@ -828,31 +830,31 @@ namespace PharmML
             AstNode *assignment = observationModel->getAssignment();
             form.add(obs_name + " = " + this->accept(assignment));
         }
-        
+
         form.closeVector();
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genTaskObj() {
         TextFormatter form;
-        
+
         form.indentAdd("taskObj {");
-        
+
         form.openVector("ESTIMATE {}", 1, "");
         form.add("set algo is saem");
         form.closeVector();
-        
+
         form.outdentAdd("}");
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genMogObj(MDLObjects &objects) {
         TextFormatter form;
-        
+
         form.indentAdd("mogObj {");
         form.openVector("OBJECTS {}", 1, "");
-        
+
         // Object selection
         std::vector<std::pair<std::string, std::vector<MDLObject>>> typed_objects({
             {"dataObj", objects.data},
@@ -875,16 +877,16 @@ namespace PharmML
                 }
             }
         }
-        
+
         form.closeVector();
         form.outdentAdd("}");
-        
+
         return form.createString();
     }
-    
+
     std::string MDLGenerator::genCompleteMDL(MDLObjects &objects) {
         TextFormatter form;
-        
+
         // Output all objects
         std::vector<std::pair<std::string, std::vector<MDLObject>>> typed_objects({
             {"dataObj", objects.data},
@@ -901,22 +903,22 @@ namespace PharmML
                 form.emptyLine();
             }
         }
-        
+
         return form.createString();
     }
-    
+
     // MDL visitors
     void MDLGenerator::visit(FunctionDefinition *node) {
         TextFormatter form;
-        
+
         std::string name = node->getSymbId();
         form.openVector("FUNCTION(" + name + "){}", 1, "");
         form.addMany(this->accept(node->getDefinition()));
         form.closeVector();
-        
+
         this->setValue(form.createString());
     }
-    
+
     void MDLGenerator::visit(FunctionArgumentDefinition *node) { }
 
     void MDLGenerator::visit(Covariate *node) { }
@@ -924,23 +926,23 @@ namespace PharmML
     void MDLGenerator::visit(PopulationParameter *node) {
         setValue(node->getSymbId());
     }
-    
+
     void MDLGenerator::visit(IndividualParameter *node) {
         TextFormatter form;
-        
+
         // Get name
         std::string name = node->getSymbId();
-            
+
         if (node->isStructured()) {
             form.openVector(name + " : {}", 0, ", ");
-            
+
             // Get type
             if (node->isLinear()) {
                 form.add("type is linear");
             } else if (node->isGeneral()) {
                 form.add("type is general");
             }
-            
+
             // Get transformation (both sides)
             std::string trans = node->getTransformation();
             if (trans == "") {
@@ -949,12 +951,12 @@ namespace PharmML
             } else {
                 form.add("trans is " + trans);
             }
-           
+
             if (node->isLinear()) {
                  // Get population value (how is 'grp' with 'general' in MDL translated to PharmML?)
                 std::string pop = this->accept(node->getPopulationValue());
                 form.add("pop = " + pop);
-                
+
                 // Get covariates and fixed effects
                 std::vector<std::string> fix_effs;
                 for (SymbRef *covariate : node->getCovariates()) {
@@ -969,9 +971,9 @@ namespace PharmML
                         coeffs.push_back(coeff);
                     }
                     if (coeffs.size() == 1) {
-                        fix_effs.push_back("{coeff=" + coeffs[0] + ",cov=" + this->accept(covariate) + "}"); 
+                        fix_effs.push_back("{coeff=" + coeffs[0] + ",cov=" + this->accept(covariate) + "}");
                     } else if (coeffs.size() > 1) {
-                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",") + ",cov=" + this->accept(covariate) + "}"); 
+                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",") + ",cov=" + this->accept(covariate) + "}");
                     }
                 }
                 if (fix_effs.size() == 1) {
@@ -980,7 +982,7 @@ namespace PharmML
                     form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "[]", ", "));
                 }
             }
-            
+
             // Get random effects
             std::vector<std::string> rands;
             for (SymbRef * rand : node->getRandomEffects()) {
@@ -995,18 +997,18 @@ namespace PharmML
             std::string assign = this->accept(node->getAssignment());
             form.add(name + " = " + assign);
         }
-       
-        form.noFinalNewline(); 
+
+        form.noFinalNewline();
         this->setValue(form.createString());
     }
 
     void MDLGenerator::visit(RandomVariable *node) {
         TextFormatter form;
-        
+
         // Get name of random variable and associated distribution
         std::string name = node->getSymbId();
         PharmML::Distribution *dist = node->getDistribution();
-        
+
         // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
         std::string dist_name = dist->getName();
         std::vector<PharmML::DistributionParameter *> dist_params = dist->getDistributionParameters();
@@ -1033,25 +1035,25 @@ namespace PharmML
         } else {
             form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");
         }
-       
-        form.noFinalNewline(); 
+
+        form.noFinalNewline();
         this->setValue(form.createString());
     }
-    
+
     void MDLGenerator::visit(VariabilityLevel *node) {
         this->setValue(node->getSymbId());
     }
-    
+
     void MDLGenerator::visit(Correlation *node) {
         TextFormatter form;
-        
+
         std::vector<std::string> attr;
         if (node->isPairwise()) {
             attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
         } else {
             // TODO: Matrix support
         }
-        
+
         this->setValue(attr);
     }
 
@@ -1066,24 +1068,24 @@ namespace PharmML
             this->setValue(node->getSymbId());
         }
     }
-    
+
     void MDLGenerator::visit(DerivativeVariable *node) {
         TextFormatter form;
-        
+
         std::string name = node->getSymbId();
         form.openVector(name + " : {}", 0, ", ");
         form.add("deriv = " + this->accept(node->getAssignment()));
         form.add("init = " + this->accept(node->getInitialValue()));
         form.add("x0 = " + this->accept(node->getInitialTime()));
         form.closeVector();
-        
+
         this->setValue(form.createString());
     }
 
     void MDLGenerator::visit(ObservationModel *node) { }
 
     void MDLGenerator::visit(Distribution *node) { }
-    
+
     void MDLGenerator::visit(ColumnMapping *node) {
         std::string id = node->getColumnIdRef();
         std::string name = "UNDEF";
@@ -1093,24 +1095,24 @@ namespace PharmML
         stringpair pair = {id, name};
         this->setValue(pair);
     }
-    
+
     // Class ExternalFile (this class might be superfluous)
     void MDLGenerator::visit(ExternalFile *node) { }
-    
+
     // Class DataColumn
     void MDLGenerator::visit(DataColumn *node) { }
-    
+
     // Class Dataset
     void MDLGenerator::visit(Dataset *node) { }
-    
+
     // Class TargetMapping
     void MDLGenerator::visit(TargetMapping *node) { }
-    
+
     // Class ExternalDataset
     void MDLGenerator::visit(ExternalDataset *node) {
         TextFormatter form;
         std::string tool = node->getToolName();
-        
+
         if (tool == "NONMEM") {
             // Generate associative array of mapping targets (to be trimmed before output)
             stringmap mappings;
@@ -1120,7 +1122,7 @@ namespace PharmML
                 stringpair pair = this->getPairValue();
                 mappings.insert(pair);
             }
-            
+
             Dataset *dataset = node->getDataset();
             if (dataset->isExternal()) {
                 // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
@@ -1134,13 +1136,13 @@ namespace PharmML
                     form.closeVector();
                     form.add("");
                 }
-                
+
                 // Output DATA_INPUT_VARIABLES
                 form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
                 form.addMany(data_input_vars);
                 form.closeVector();
                 form.add("");
-                
+
                 // Generate SOURCE
                 form.openVector("SOURCE {}", 1, "");
                 ExternalFile *file = dataset->getExternal();
@@ -1161,42 +1163,42 @@ namespace PharmML
             form.add("# Unknown dataset encoding tool/style: \"" + tool + "\"!");
             form.add("# Current support is limited to NONMEM datasets");
         }
-        
+
         this->setValue(form.createString());
     }
-    
+
     // Class Interventions and all its content
     void MDLGenerator::visit(Administration *node) { }
-    
+
     void MDLGenerator::visit(IndividualAdministration *node) { }
-    
+
     void MDLGenerator::visit(Interventions *node) { }
-    
+
     // Class Observations and all its content
     void MDLGenerator::visit(Observation *node) { }
-    
+
     void MDLGenerator::visit(IndividualObservations *node) { }
-    
+
     void MDLGenerator::visit(ObservationCombination *node) { }
-    
+
     void MDLGenerator::visit(Observations *node) { }
-    
+
     // Class Arms and all its contents
     void MDLGenerator::visit(InterventionSequence *node) { }
-    
+
     void MDLGenerator::visit(ObservationSequence *node) { }
-    
+
     void MDLGenerator::visit(OccasionSequence *node) { }
-    
+
     void MDLGenerator::visit(Arm *node) { }
-    
+
     void MDLGenerator::visit(Arms *node) { }
-    
+
     // Class DesignSpaces and all its content
     void MDLGenerator::visit(DesignSpace *node) { }
-    
+
     void MDLGenerator::visit(DesignSpaces *node) { }
-    
+
     // Class ParameterEstimation
     void MDLGenerator::visit(ParameterEstimation *node) {
         std::vector<std::string> attr;
@@ -1214,7 +1216,7 @@ namespace PharmML
         }
         this->setValue(attr);
     }
-    
+
     // Class PKMacro
     void MDLGenerator::visit(PKMacro *node) { }
 }

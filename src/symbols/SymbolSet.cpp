@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,17 +22,17 @@
 namespace PharmML
 {
     SymbolSet::SymbolSet() {
-        
+
     }
-    
+
     SymbolSet::SymbolSet(Symbol *symbol) {
         this->addSymbol(symbol);
     }
-    
+
     SymbolSet::SymbolSet(std::unordered_set<Symbol *> symbol_set) {
         this->addSymbols(symbol_set);
     }
-    
+
     // Make the SymbolSet iterable
     std::unordered_set<Symbol *>::iterator SymbolSet::begin() {
         return this->symbols.begin();
@@ -45,7 +45,7 @@ namespace PharmML
     void SymbolSet::addSymbol(Symbol *symbol) {
         this->symbols.insert(symbol);
     }
-    
+
     void SymbolSet::addSymbols(std::unordered_set<Symbol *> symbol_set) {
         for (Symbol *symbol : symbol_set) {
             this->addSymbol(symbol);
@@ -53,9 +53,9 @@ namespace PharmML
     }
 
     bool SymbolSet::hasSymbol(Symbol *symbol) {
-       return (this->symbols.count(symbol) > 0); 
+       return (this->symbols.count(symbol) > 0);
     }
-    
+
     // For those moments when you want to traverse, hunt and gather a dependency
     bool SymbolSet::dependsOn(Symbol *symbol) {
         if (this->hasSymbol(symbol)) {
@@ -69,7 +69,7 @@ namespace PharmML
     }
 
     void SymbolSet::merge(SymbolSet& set) {
-        this->symbols.insert(set.symbols.begin(), set.symbols.end()); 
+        this->symbols.insert(set.symbols.begin(), set.symbols.end());
     }
 
     void SymbolSet::remove(SymbolSet& set) {
@@ -98,7 +98,7 @@ namespace PharmML
 
         dependencies.remove(*this);  // Remove the symbols we started with
 
-        return dependencies; 
+        return dependencies;
     }
 
     // Get all dependencies of a set of symbols. Excluding the symbols themselves AND NOT passing through or adding the nopass set
@@ -125,7 +125,7 @@ namespace PharmML
 
         dependencies.remove(*this);  // Remove the symbols we started with
 
-        return dependencies; 
+        return dependencies;
     }
 
     // Order the symbols in this SymbolSet

@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,13 +21,13 @@
 namespace PharmML
 {
     Logger::Logger() {
-        
+
     }
-    
+
     Logger::Logger(std::string name) {
         this->setToolName(name);
     }
-    
+
     void Logger::setToolName(std::string name) {
         tool_name = name + " ";
     }
@@ -40,7 +40,7 @@ namespace PharmML
     void Logger::error(std::string message) {
         logPrint(message, error_level);
     }
-    
+
     void Logger::info(std::string message) {
         logPrint(message, info_level);
     }
@@ -49,7 +49,7 @@ namespace PharmML
     void Logger::warning(std::string message, PharmMLSection *section) {
         logPrint(message + lineText(section), warning_level);
     }
-     
+
     void Logger::error(std::string message, PharmMLSection *section) {
         logPrint(message + lineText(section), error_level);
     }
@@ -57,7 +57,7 @@ namespace PharmML
     void Logger::info(std::string message, PharmMLSection *section) {
         logPrint(message + lineText(section), info_level);
     }
-    
+
     /* Warning, error and info as above but with (up to two) in-line line-numberings.
      * E.g. "" */
     void Logger::warning(std::string format, PharmMLSection *section_a, PharmMLSection *section_b) {

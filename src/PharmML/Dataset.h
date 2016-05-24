@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -38,13 +38,13 @@ namespace PharmML
             void addHeaderRow(xml::Node node);
             std::string getName();
             int getRowNumber();
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::string name;
             int rowNumber;
     };
-    
+
     // Class ColumnDefinition (single column specification of dataset)
     class ColumnDefinition
     {
@@ -57,7 +57,7 @@ namespace PharmML
             std::string getLevel();
             std::string getValueType();
             int getNum();
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::string id;
@@ -66,7 +66,7 @@ namespace PharmML
             std::string valueType;
             int num;
     };
-    
+
     // Class DatasetDefinition (header/column specifications of dataset)
     class DatasetDefinition
     {
@@ -77,7 +77,7 @@ namespace PharmML
             ColumnDefinition *getColumnDefinition(int colNum);
             std::vector<ColumnDefinition *> getColumnDefinitions();
             int getNumColumns();
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::vector<HeaderDefinition *> headers;
@@ -85,7 +85,7 @@ namespace PharmML
             AstNode *ignoreCondition = nullptr;
             std::string ignoreSymbols; // 1 to 5 non-whitespace characters
     };
-    
+
     // class ExternalFile (data is stored externally)
     class ExternalFile
     {
@@ -97,7 +97,7 @@ namespace PharmML
             std::string getFormat();
             std::string getDelimiter();
             void accept(PharmMLVisitor *visitor);
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::string oid;
@@ -106,7 +106,7 @@ namespace PharmML
             std::string delimiter;
             // TODO: Support MissingDataMapType
     };
-    
+
     // Class DataColumn (single column with its definition)
     class DataColumn
     {
@@ -118,14 +118,14 @@ namespace PharmML
             AstNode *getElement(int row);
             int getNumRows();
             void accept(PharmMLVisitor *visitor);
-        
+
         private:
             PharmML::PharmMLContext *context;
             ColumnDefinition *definition;
             std::vector<AstNode *> column;
             int numRows;
     };
-    
+
     // Class Dataset (top-level of above)
     class Dataset : public PharmMLSection
     {
@@ -143,7 +143,7 @@ namespace PharmML
             void setName(std::string name);
             std::string getName();
             void accept(PharmMLVisitor *visitor);
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::string oid;

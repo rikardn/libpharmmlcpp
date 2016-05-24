@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -32,12 +32,12 @@ namespace CPharmML
             else if (variabilityModel->onResidualError()) {
                 this->residualErrorLevels.insert(level);
             }
-            
+
             // Reference levels
             if (level->isReferenceLevel()) {
                 this->referenceLevels.insert(level);
             }
-            
+
             // Split children (associative array children->parent) and orphans (top-level parents)
             if (level->getParentReference()) {
                 PharmML::Symbol *parent = level->getParentReference()->getSymbol();
@@ -47,7 +47,7 @@ namespace CPharmML
             }
         }
     }
-    
+
     // Add a RandomVariable
     void VariabilityModels::addRandomVariable(PharmML::RandomVariable *randomVariable) {
         std::vector<PharmML::VariabilityReference *> var_refs = randomVariable->getVariabilityReferences();
@@ -60,7 +60,7 @@ namespace CPharmML
             this->randomVariablesOnLevel[level].push_back(randomVariable);
         }
     }
-    
+
     // Add a Correlation
     void VariabilityModels::addCorrelation(PharmML::Correlation *correlation) {
         PharmML::VariabilityReference *var_ref = correlation->getVariabilityReference();
@@ -71,23 +71,23 @@ namespace CPharmML
         }
         this->correlationsOnLevel[level].push_back(correlation);
 }
-    
+
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::getParameterLevelChain() {
         return this->buildDependencyChain(this->parameterLevels);
     }
-    
+
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::getResidualErrorLevelChain() {
         return this->buildDependencyChain(this->residualErrorLevels);
     }
-    
+
     std::vector<PharmML::RandomVariable *> VariabilityModels::getRandomVariablesOnLevel(PharmML::Symbol *level) {
         return this->randomVariablesOnLevel[level];
     }
-    
+
     std::vector<PharmML::Correlation *> VariabilityModels::getCorrelationsOnLevel(PharmML::Symbol *level) {
         return this->correlationsOnLevel[level];
     }
-    
+
     std::vector<PharmML::VariabilityLevel *> VariabilityModels::buildDependencyChain(std::unordered_set<PharmML::VariabilityLevel *> levelSet) {
         std::vector<PharmML::VariabilityLevel *> chain;
         std::unordered_map<PharmML::Symbol *, bool> added;

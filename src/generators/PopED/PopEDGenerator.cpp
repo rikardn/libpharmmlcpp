@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -35,7 +35,7 @@ namespace PharmML
     std::string PopEDGenerator::getValue() {
         return this->value;
     }
-    
+
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
         this->logger.setToolName("PopED");
@@ -43,7 +43,7 @@ namespace PharmML
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
         this->model = model;
         TextFormatter form(2, ' ');
-       
+
         this->collectTrialDesignInformation();
 
         // Preamble
@@ -56,16 +56,16 @@ namespace PharmML
             form.addMany(function_def);
         }
         form.emptyLine();
-        
+
         // Generate the three PopED functions
         form.addMany(this->genParameterModel());
         form.addMany(this->genStructuralModel());
         form.addMany(this->genErrorFunction());
         form.add("");
-        
+
         // Generate PopED database call (initial design and space)
         form.addMany(this->genDatabaseCall());
-        
+
         return form.createString();
     }
 
@@ -75,9 +75,9 @@ namespace PharmML
         if (td) {
             Arms *arms = td->getArms();
             this->nArms = arms->getArms().size();
-           
+
             // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
-            // This might change in future versions of PharmML 
+            // This might change in future versions of PharmML
             Interventions *interventions = td->getInterventions();
             if (interventions) {
                 std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
@@ -144,7 +144,7 @@ namespace PharmML
         // Function header
         form.indentAdd("ode_func <- function(Time, State, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
-     
+
         // FIXME: Should be a method to do all this and not so ugly
         auto derivs = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
         SymbolSet derivs_set;
@@ -183,10 +183,10 @@ namespace PharmML
         form.outdentAdd("}");
         form.emptyLine();
 
-        return form.createString(); 
+        return form.createString();
     }
 
-    // Get the name of the dose variable. 
+    // Get the name of the dose variable.
     std::string PopEDGenerator::getDoseVariable() {
         // FIXME: Assumes a specific structure
         Administration *adm = this->model->getTrialDesign()->getInterventions()->getAdministrations()[0];
@@ -205,14 +205,14 @@ namespace PharmML
         }
 
         TextFormatter form;
- 
+
         // Generate separate ODE function
         form.addMany(this->genODEFunc());
 
         // Function header
         form.indentAdd("ff <- function(model_switch, xt, parameters, poped.db) {");
         form.indentAdd("with(as.list(parameters), {");
-        
+
         // Init values
         TextFormatter dini_formatter;
         dini_formatter.openVector("d_ini <- c()", 0, ", ");
@@ -240,7 +240,7 @@ namespace PharmML
         // ODE call
         form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
         form.emptyLine();
-        
+
         // Y definition
 
         // FIXME: This code again!
@@ -256,7 +256,7 @@ namespace PharmML
         std::vector<Symbol *> post_ode_symbols = output_set.getOrderedDependenciesNoPass(derivs_set);
         post_ode_symbols.push_back(output->getSymbol());
 
-        // Need R symbol generator with non-default AST generator that use non-default symbol generator 
+        // Need R symbol generator with non-default AST generator that use non-default symbol generator
         PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();   // Symbol name generator
         PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);     // Ast generator taking the symbol name generator as argument
         RSymbols rsymb_past(astgen);                                    // Symbol expression generator with ast generator as argument
@@ -268,7 +268,7 @@ namespace PharmML
         form.add("y <- " + output->toString());
         form.add("y=y[match(times_xt, out[,'time'])]");
         form.add("y=cbind(y)");
-                
+
         // Return list
         form.add("return(list(y=y,poped.db=poped.db))");
         form.outdentAdd("})");
@@ -277,10 +277,10 @@ namespace PharmML
 
         return form.createString();
     }
-    
+
     std::string PopEDGenerator::genErrorFunction() {
         TextFormatter form;
-     
+
         ObservationModel *om = this->model->getModelDefinition()->getObservationModel();
         std::string result_name = om->getSymbId();
         std::string output_name = om->getOutput()->toString();
@@ -303,19 +303,19 @@ namespace PharmML
         // Increase y by error fraction (weight * epsilon)
         // TODO: Figure out how to resolve this with multiple EPS
         form.add(result_name + " = " + result_name + " + w*epsi[,1]");
-        
+
         // Return list
         form.emptyLine();
         form.add("return(list(y=" + result_name + ",poped.db=poped.db))");
         form.outdentAdd("})");
         form.outdentAdd("}");
- 
+
         return form.createString();
     }
-    
+
     std::string PopEDGenerator::genDatabaseCall() {
         TextFormatter form;
-        
+
         form.openVector("poped.db <- create.poped.database()", 1, ", ");
         form.add("ff_fun = 'ff'");
         form.add("fg_fun = 'sfg'");
@@ -380,12 +380,12 @@ namespace PharmML
 
         return form.createString();
     }
-    
+
     // Visitors
     void PopEDGenerator::visit(FunctionDefinition *node) {}
-    
+
     void PopEDGenerator::visit(FunctionArgumentDefinition *node) {}
-    
+
     void PopEDGenerator::visit(PopulationParameter *node) {}
 
     void PopEDGenerator::visit(IndividualParameter *node) {
@@ -426,8 +426,8 @@ namespace PharmML
 
     void PopEDGenerator::visit(DesignSpaces *node) {}
     void PopEDGenerator::visit(DesignSpace *node) {}
-    
+
     void PopEDGenerator::visit(ParameterEstimation *node) {}
-    
+
     void PopEDGenerator::visit(PKMacro *node) {}
 }

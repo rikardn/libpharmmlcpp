@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,47 +33,47 @@ namespace PharmML
         // Get target tool name
         xml::Node name_node = this->context->getSingleElement(node, "./msteps:TargetToolName");
         this->name = name_node.getText();
-        
+
         // Get column mappings
         std::vector<xml::Node> col_maps = this->context->getElements(node, "./ds:ColumnMapping");
         for (xml::Node col_map : col_maps) {
             PharmML::ColumnMapping *col = new PharmML::ColumnMapping(this->context, col_map);
             this->columnMappings.push_back(col);
         }
-        
+
         // Get target tool data
         std::vector<xml::Node> tool_data_nodes = this->context->getElements(node, "./ds:TargetToolData");
         //for (xml::Node tool_data_node : tool_data_nodes) {
             // TODO: Support this
         //}
-        
+
         // TODO: Support CodeInjection
     }
-    
+
     VariableAssignment::VariableAssignment(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
-    
+
     void VariableAssignment::parse(xml::Node node) {
         // Get SymbRef
         xml::Node ref_node = this->context->getSingleElement(node, "./ct:SymbRef");
         this->symbRef = new SymbRef(ref_node);
-        
+
         // Get the assignment of that SymbRef
         xml::Node assign = this->context->getSingleElement(node, "./ct:Assign");
         xml::Node tree = assign.getChild();
         this->assignment = this->context->factory.create(tree);
     }
-    
+
     SymbRef *VariableAssignment::getSymbRef() {
         return this->symbRef;
     }
-    
+
     AstNode *VariableAssignment::getAssignment() {
         return this->assignment;
     }
-    
+
     CommonStepType::CommonStepType(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
@@ -88,26 +88,26 @@ namespace PharmML
             PharmML::ExternalFile *ext_file = new ExternalFile(this->context, ext_file_node);
             this->softwareSettings.push_back(ext_file);
         }
-        
+
         // Get output files
         std::vector<xml::Node> out_nodes = this->context->getElements(node, "./ds:OutputFiles");
         for (xml::Node out_node : out_nodes) {
             PharmML::ExternalFile *ext_file = new ExternalFile(this->context, out_node);
             this->outputFiles.push_back(ext_file);
         }
-        
+
         // Get target tool reference
         xml::Node tool_ref_node = this->context->getSingleElement(node, "./msteps:TargetToolReference");
         if (tool_ref_node.exists()) {
             this->targetToolRef = tool_ref_node.getChild().getAttribute("oidRef").getValue();
         }
-        
+
         // Get external dataset reference
         xml::Node ds_ref_node = this->context->getSingleElement(node, "./msteps:ExternalDataSetReference/ct:OidRef");
         if (ds_ref_node.exists()) {
             this->extDatasetRef = ds_ref_node.getAttribute("oidRef").getValue();
         }
-        
+
         // Get interventions reference
         xml::Node int_ref_node = this->context->getSingleElement(node, "./msteps:InterventionReference");
         if (int_ref_node.exists()) {
@@ -117,7 +117,7 @@ namespace PharmML
                 this->interventionsRefs.push_back(ref);
             }
         }
-        
+
         // Get observations reference
         xml::Node obs_ref_node = this->context->getSingleElement(node, "./msteps:ObservationsReference");
         if (obs_ref_node.exists()) {
@@ -127,7 +127,7 @@ namespace PharmML
                 this->observationsRefs.push_back(ref);
             }
         }
-        
+
         // Get variable assignments
         std::vector<xml::Node> assign_nodes = this->context->getElements(node, "./ct:VariableAssignment");
         for (xml::Node assign_node : assign_nodes) {
@@ -135,49 +135,49 @@ namespace PharmML
             this->varAssignments.push_back(var_assign);
         }
     }
-    
+
     std::string CommonStepType::getOid() {
         return this->oid;
     }
-    
+
     std::vector<PharmML::ExternalFile *> CommonStepType::getSoftwareSettingsFiles() {
         return this->softwareSettings;
     }
-    
+
     std::vector<PharmML::ExternalFile *> CommonStepType::getOutputFiles() {
         return this->outputFiles;
     }
-    
+
     std::string CommonStepType::getTargetToolRef() {
         return this->targetToolRef;
     }
-    
+
     std::string CommonStepType::getExternalDatasetRef() {
         return this->extDatasetRef;
     }
-    
+
     std::vector<std::string> CommonStepType::getInterventionsRefs() {
         return this->interventionsRefs;
     }
-    
+
     std::vector<std::string> CommonStepType::getObservationsRefs() {
         return this->observationsRefs;
     }
-    
+
     std::vector<PharmML::VariableAssignment *> CommonStepType::getVariableAssignments() {
         return this->varAssignments;
     }
-    
+
     ParameterEstimation::ParameterEstimation(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
-    
+
     void ParameterEstimation::parse(xml::Node node) {
         // Get SymbRef (parameter to estimate)
         xml::Node ref_node = this->context->getSingleElement(node, "./ct:SymbRef");
         this->symbRef = new SymbRef(ref_node);
-        
+
         // Get initial estimate
         xml::Node init_node = this->context->getSingleElement(node, "./msteps:InitialEstimate");
         if (init_node.exists()) {
@@ -185,14 +185,14 @@ namespace PharmML
             xml::Node tree = init_node.getChild();
             this->init = this->context->factory.create(tree);
         }
-        
+
         // Get lower bound
         xml::Node lbnd_node = this->context->getSingleElement(node, "./msteps:LowerBound");
         if (lbnd_node.exists()) {
             xml::Node tree = lbnd_node.getChild();
             this->loBound = this->context->factory.create(tree);
         }
-        
+
         // Get upper bound
         xml::Node ubnd_node = this->context->getSingleElement(node, "./msteps:UpperBound");
         if (ubnd_node.exists()) {
@@ -200,43 +200,43 @@ namespace PharmML
             this->hiBound = this->context->factory.create(tree);
         }
     }
-    
+
     SymbRef *ParameterEstimation::getSymbRef() {
         return this->symbRef;
     }
-    
+
     bool ParameterEstimation::isFixed() {
         return this->fixed;
     }
-    
+
     bool ParameterEstimation::hasInitValue() {
         return (this->init != nullptr);
     }
-    
+
     bool ParameterEstimation::hasLoBound() {
         return (this->loBound != nullptr);
     }
-    
+
     bool ParameterEstimation::hasHiBound() {
         return (this->hiBound != nullptr);
     }
-    
+
     AstNode *ParameterEstimation::getInitValue() {
         return this->init;
     }
-    
+
     AstNode *ParameterEstimation::getLoBound() {
         return this->loBound;
     }
-    
+
     AstNode *ParameterEstimation::getHiBound() {
         return this->hiBound;
     }
-    
+
     void ParameterEstimation::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
-    
+
     EstimationStep::EstimationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;
         this->parse(node);
@@ -249,23 +249,23 @@ namespace PharmML
             ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
             this->parameterEstimations.push_back(param);
         }
-        
+
         // TODO: Add Operation support! SAEM etc. Forgot that one.
     }
-    
+
     std::vector<ParameterEstimation *> EstimationStep::getParameters() {
         return this->parameterEstimations;
     }
-    
+
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;
         this->parse(node);
     }
 
     void SimulationStep::parse(xml::Node node) {
-        
-    } 
-    
+
+    }
+
     OptimiseOn::OptimiseOn(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
@@ -297,16 +297,16 @@ namespace PharmML
         if (this->context->getSingleElement(node, "./msteps:ObservationTimes").exists()) {
             observationTimes = true;
         }
-        
+
         // Get symbol references
         std::vector<xml::Node> symb_nodes = this->context->getElements(node, "./ct:SymbRef");
         for (xml::Node symb_node : symb_nodes) {
             PharmML::SymbRef *symbRef = new PharmML::SymbRef(symb_node);
             this->symbols.push_back(symbRef);
         }
-        
+
     }
-    
+
     OptimalDesignStep::OptimalDesignStep(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
@@ -319,7 +319,7 @@ namespace PharmML
         if (opt_on_node.exists()) {
             this->optOn = new OptimiseOn(this->context, opt_on_node);
         }
-    
+
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./msteps:ParametersToEstimate/msteps:ParameterEstimation");
         for (xml::Node param_node : param_nodes) {
             ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
@@ -327,7 +327,7 @@ namespace PharmML
         }
 
         // TODO: Get more stuff here
-    } 
+    }
 
     std::vector<ParameterEstimation *> OptimalDesignStep::getParameters() {
         return this->parameterEstimations;
@@ -388,15 +388,15 @@ namespace PharmML
             // TODO: Fill OptimalDesignStep
         //}
     }
-    
+
     std::vector<EstimationStep *> ModellingSteps::getEstimationSteps() {
         return this->estSteps;
     }
-    
+
     std::vector<SimulationStep *> ModellingSteps::getSimulationSteps() {
         return this->simSteps;
     }
-    
+
     std::vector<OptimalDesignStep *> ModellingSteps::getOptimalDesignSteps() {
         return this->optSteps;
     }
@@ -404,7 +404,7 @@ namespace PharmML
     void ModellingSteps::update() {
         xml::Node ms("ModellingSteps");
         ms.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/ModellingSteps");
-        
+
         this->xml_node.replaceNode(ms);
     }
 }

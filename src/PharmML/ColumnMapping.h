@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,25 +31,25 @@ namespace PharmML
         std::string modelSymbol;
         std::string admNumber;
     };
-        
+
     // TODO: Move elsewhere (Dataset.h?)
     class TargetMapping
     {
         public:
             TargetMapping(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            
+
             std::string getBlkIdRef();
             std::vector<MapType> getMaps();
-            
+
             void accept(PharmMLVisitor *visitor);
-        
+
         private:
             PharmML::PharmMLContext *context;
             std::string blkIdRef;
             std::vector<MapType> maps;
     };
-    
+
     class ColumnMapping : public Referer
     {
         public:
@@ -58,15 +58,15 @@ namespace PharmML
             xml::Node xml();
             AstNode *getAssignment();
             std::string getColumnIdRef();
-            
+
             Symbol *getMappedSymbol();
-            
+
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
-        
+
         private:
             PharmML::PharmMLContext *context;
-            
+
             std::string columnIdRef;
             AstNode *assignment = nullptr;
             SymbRef *symbRef = nullptr;

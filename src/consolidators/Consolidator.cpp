@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,13 +24,13 @@ namespace CPharmML
     Consolidator::Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model) {
         this->context = context;
         this->logger = std::make_shared<PharmML::Logger>("Post");
-        
+
         // First, consolidate all symbols (other consolidators might require it)
         this->consolidateSymbols(model);
 
         // Consolidate all objects (elements having the "oid" attribute)
         this->consolidateObjects(model);
-        
+
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
         this->consolidateCovariates(model);
@@ -39,8 +39,8 @@ namespace CPharmML
         this->consolidatePKMacros(model);
         this->consolidateTrialDesign(model); // Dependent on PKMacros
     }
-    
-    // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
+
+    // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols
     void Consolidator::consolidateSymbols(PharmML::Model *model) {
         std::vector<PharmML::Parameter *> params = model->getModelDefinition()->getParameterModel()->getParameters();
         for (PharmML::Parameter *param : params) {
@@ -66,7 +66,7 @@ namespace CPharmML
         for (PharmML::CommonVariable *cv : cvs) {
             this->allSymbols.addSymbol(cv);
         }
-        
+
         std::vector<PharmML::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();
         for (PharmML::VariabilityModel *vmod : vmods) {
             std::vector<PharmML::VariabilityLevel *> vlevels = vmod->getVariabilityLevels();
@@ -74,7 +74,7 @@ namespace CPharmML
                 this->allSymbols.addSymbol(vlevel);
             }
         }
-        
+
         PharmML::CovariateModel *cm = model->getModelDefinition()->getCovariateModel();
         if (cm) {
             std::vector<PharmML::Covariate *> covs = cm->getCovariates();
@@ -86,12 +86,12 @@ namespace CPharmML
                 }
             }
         }
-        
+
         PharmML::ObservationModel *om = model->getModelDefinition()->getObservationModel();
         if (om) {
             this->allSymbols.addSymbol(om);
         }
-        
+
         std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
         for (PharmML::FunctionDefinition *fun : funs) {
             this->allSymbols.addSymbol(fun);
@@ -112,11 +112,11 @@ namespace CPharmML
         for (PharmML::Symbol *symbol : this->allSymbols) {
             symbol->gatherSymbRefs(symbIdMap);
         }
-        
+
         // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
         model->gatherSymbRefs(symbIdMap);
     }
-   
+
     void Consolidator::consolidateObjects(PharmML::Model *model) {
         std::unordered_set<std::string> allOids;
 
@@ -199,7 +199,7 @@ namespace CPharmML
 
         std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
         CPharmML::PopulationParameters *cpop_params = new PopulationParameters(pop_params, corrs);
-        
+
         // Merge in information from PharmML RandomVariable's, IndividualParameter's and EstimationStep's
         std::vector<PharmML::RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
         std::vector<PharmML::IndividualParameter *> ind_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
@@ -213,11 +213,11 @@ namespace CPharmML
         if (od_steps.size() > 0) {
             cpop_params->addOptimalDesignStep(od_steps[0]);
         }
-        
+
         // TODO: Add plurality support for multiple parameter models
         this->populationParameters.push_back(cpop_params);
     }
-    
+
     void Consolidator::consolidateCovariates(PharmML::Model *model) {
         // Get ExternalDataset's (holding both ColumnMapping's and ColumnDefinition's)
         std::vector<PharmML::ColumnMapping *> col_maps;
@@ -228,12 +228,12 @@ namespace CPharmML
             // FIXME: This is a common pattern. Pluralness MUST be handled everywhere!
             // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
             first_ext_dataset = ext_datasets[0];
-            
+
             // Get all ColumnMapping's and ColumnDefinition's (for first dataset)
             col_maps = first_ext_dataset->getColumnMappings();
             col_defs = first_ext_dataset->getDataset()->getDefinition()->getColumnDefinitions();
         }
-        
+
         // Consolidate PharmML Covariate's (e.g. for collected output as in MDL)
         PharmML::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
         if (cov_model) {
@@ -245,7 +245,7 @@ namespace CPharmML
                 for (PharmML::Covariate *cov : covs) {
                     // Create new consolidated covariate
                     CPharmML::Covariate *ccov = new Covariate(cov);
-                    
+
                     // Find ColumnMapping's refering this Covariate
                     for (PharmML::ColumnMapping *col_map : col_maps) {
                         PharmML::Symbol *cov_symbol = ccov->getCovariate();
@@ -253,7 +253,7 @@ namespace CPharmML
                             ccov->addColumnMapping(col_map);
                         }
                     }
-                    
+
                     // Find ColumnDefinition's refering earlier added ColumnMapping
                     for (PharmML::ColumnDefinition *col_def : col_defs) {
                         std::string id = ccov->getColumnId();
@@ -261,14 +261,14 @@ namespace CPharmML
                             ccov->addColumnDefinition(col_def);
                         }
                     }
-                    
+
                     // Add the finished consolidated Covariate object
                     this->covariates.push_back(ccov);
                 }
             }
         }
     }
-    
+
     void Consolidator::consolidateVariabilityModels(PharmML::Model *model) {
         this->variabilityModels = new VariabilityModels();
         // VariabilityModels assumes a maximum of one model of each type (parameter/residual error)
@@ -287,7 +287,7 @@ namespace CPharmML
             this->variabilityModels->addCorrelation(corr);
         }
     }
-    
+
     void Consolidator::consolidateFunctions(PharmML::Model *model) {
         this->functions = new Functions();
         std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
@@ -295,7 +295,7 @@ namespace CPharmML
             this->functions->addFunctionDefinition(fun);
         }
     }
-    
+
     void Consolidator::consolidatePKMacros(PharmML::Model *model) {
         std::vector<PharmML::PKMacro *> pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
         this->pk_macros = new CPharmML::PKMacros(pk_macros, this->logger);
@@ -339,7 +339,7 @@ namespace CPharmML
                     }
                 }
             }
-            
+
             // Consolidate external datasets
             std::vector<PharmML::ExternalDataset *> ext_dss = td->getExternalDatasets();
             //for (PharmML::ExternalDataset *ext_ds : ext_dss) {
@@ -347,24 +347,24 @@ namespace CPharmML
             //}
         }
     }
- 
+
     CPharmML::PopulationParameters *Consolidator::getPopulationParameters() {
         // TODO: Plurality support for different parameter models
         return this->populationParameters[0];
     }
-    
+
     std::vector<CPharmML::Covariate *> Consolidator::getCovariates() {
         return this->covariates;
     }
-    
+
     CPharmML::VariabilityModels *Consolidator::getVariabilityModels() {
         return this->variabilityModels;
     }
-    
+
     CPharmML::Functions *Consolidator::getFunctions() {
         return this->functions;
     }
-    
+
     CPharmML::PKMacros *Consolidator::getPKMacros() {
         return this->pk_macros;
     }

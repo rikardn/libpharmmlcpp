@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -42,7 +42,7 @@ namespace PharmML
     {
         private:
             bool first_node;
-            
+
             SymbRef *symbref;
             Scalar *scalar;
             ScalarInt *scalar_int;
@@ -50,23 +50,23 @@ namespace PharmML
             FunctionCall *functioncall;
             Piecewise *piecewise;
             Vector *vector;
-            
+
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);
-            std::string infix(Binop *binop, std::string op); 
+            std::string infix(Binop *binop, std::string op);
             std::string acceptChild(Uniop *uniop);
             std::string accept(AstNode *node);
             std::string getLogicLiteral(bool value);
 
             int length = 1;     // The length of the result from the AST. 1 for scalar and n for vector
-            /* Currently support vector and default for scalar. 
+            /* Currently support vector and default for scalar.
                FIXME: Need more sofistication here, but documentation on what operators do to vectors is needed.
                also a return type of the whole AST would be nice (real, int, vector<int> etc), but more PharmML info is needed
                 */
         public:
             AstAnalyzer();
             void reset();
-            
+
             SymbRef *getPureSymbRef();
             Scalar *getPureScalar();
             ScalarInt *getPureScalarInt();
@@ -75,11 +75,11 @@ namespace PharmML
             Piecewise *getPurePiecewise();
             Vector *getPureVector();
             int getLength();
-            
+
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;
             void visit(ColumnRef *node) override;
-            
+
             void visit(UniopLog *node) override;
             void visit(UniopLog2 *node) override;
             void visit(UniopLog10 *node) override;
@@ -123,10 +123,10 @@ namespace PharmML
             void visit(UniopSign *node) override;
             void visit(UniopFloor *node) override;
             void visit(UniopCeiling *node) override;
-            
+
             void visit(ScalarInt *node) override;
             void visit(ScalarReal *node) override;
-            
+
             void visit(BinopPlus *node) override;
             void visit(BinopMinus *node) override;
             void visit(BinopDivide *node) override;
@@ -138,16 +138,16 @@ namespace PharmML
             void visit(BinopMax *node) override;
             void visit(BinopRem *node) override;
             void visit(BinopAtan2 *node) override;
-            
+
             void visit(LogicFalse *node) override;
             void visit(LogicTrue *node) override;
             void visit(Pi *node) override;
             void visit(Exponentiale *node) override;
             void visit(NullValue *node) override;
-            
+
             void visit(LogicUniopIsdefined *node) override;
             void visit(LogicUniopNot *node) override;
-            
+
             void visit(LogicBinopLt *node) override;
             void visit(LogicBinopLeq *node) override;
             void visit(LogicBinopGt *node) override;
@@ -157,12 +157,12 @@ namespace PharmML
             void visit(LogicBinopAnd *node) override;
             void visit(LogicBinopOr *node) override;
             void visit(LogicBinopXor *node) override;
-            
+
             void visit(Vector *node) override;
-            
+
             void visit(Piecewise *node) override;
             void visit(Piece *node) override;
-            
+
             void visit(FunctionCall *node) override;
             void visit(FunctionArgument *node) override;
             void visit(Interval *node) override;

@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -57,12 +57,12 @@ namespace PharmML
             Consolidator consol;
 
             std::string getValue();
-            
+
             std::vector<std::string> genFunctionDefinitions(Model *model);
-            
+
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
-            
+
             void visit(PopulationParameter *node) override;
             void visit(IndividualParameter *node) override;
             void visit(RandomVariable *node) override;
@@ -75,34 +75,34 @@ namespace PharmML
             void visit(ObservationModel *node) override;
             void visit(Distribution *node) override;
             void visit(ColumnMapping *node) override;
-            
+
             void visit(ExternalFile *node) override;
             void visit(DataColumn *node) override;
             void visit(Dataset *node) override;
             void visit(TargetMapping *node) override;
-            
+
             void visit(ExternalDataset *node) override;
-            
+
             void visit(Interventions *node) override;
             void visit(Administration *node) override;
             void visit(IndividualAdministration *node) override;
-            
+
             void visit(Observations *node) override;
             void visit(Observation *node) override;
             void visit(IndividualObservations *node) override;
             void visit(ObservationCombination *node) override;
-            
+
             void visit(Arms *node) override;
             void visit(Arm *node) override;
             void visit(InterventionSequence *node) override;
             void visit(ObservationSequence *node) override;
             void visit(OccasionSequence *node) override;
-            
+
             void visit(DesignSpaces *node) override;
             void visit(DesignSpace *node) override;
-            
+
             void visit(ParameterEstimation *node) override;
-            
+
             void visit(PKMacro *node) override;
     };
 }

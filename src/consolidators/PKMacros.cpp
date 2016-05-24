@@ -1,16 +1,16 @@
 /* libpharmmlcpp - Library to handle PharmML
  * Copyright (C) 2016 Rikard Nordgren and Gunnar Yngman
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,23 +23,23 @@ namespace CPharmML
     PKMacro::PKMacro(PharmML::PKMacro *macro) {
         this->macro = macro;
     }
-    
+
     PharmML::PKMacro *PKMacro::getMacro() {
         return this->macro;
     }
-    
+
     bool PKMacro::hasAttribute(std::string attribute) {
         return this->macro->hasAttribute(attribute);
     }
-    
+
     std::string PKMacro::getName() {
         return this->name;
     }
-    
+
     void PKMacro::setName(std::string name) {
         this->name = name;
     }
-    
+
     // Generate a name for this macro via using the symbol attributes
     std::string PKMacro::generateName(PharmML::AstAnalyzer &ast_analyzer) {
         std::string n = macro->getName();
@@ -126,11 +126,11 @@ namespace CPharmML
                 }
             }
         }
-        
+
         // We failed
         return("NAMELESS");
     }
-    
+
     // Convenience function; try to parse an attribute into int
     // FIXME: Depreceate somehow or put (general for AstNode's) into src/helpers (or AstAnalyzer)
     bool PKMacro::tryParseInt(std::string attribute, int &result, PharmML::AstAnalyzer &ast_analyzer) {
@@ -147,17 +147,17 @@ namespace CPharmML
         result = sint_adm->toInt();
         return true;
     }
-    
+
     // Construct with PKMacro's as base
     PKMacros::PKMacros(std::vector<PharmML::PKMacro *> macros, std::shared_ptr<PharmML::Logger> logger) {
         this->logger = logger;
-        
+
         // Collect CPharmML wrapping objects
         this->cmacros.reserve(macros.size());
         std::unordered_set<std::string> picked_names;
         for (PharmML::PKMacro *macro : macros) {
             PKMacro *cmacro = new PKMacro(macro);
-            
+
             // Auto-generate a fitting name
             std::string name = cmacro->generateName(this->ast_analyzer);
             std::string uniq_name = name;
@@ -169,12 +169,12 @@ namespace CPharmML
             }
             cmacro->setName(uniq_name);
             picked_names.insert(uniq_name);
-            
+
             // Store the new wrapping object
             this->cmacros.push_back(cmacro);
         }
     }
-    
+
     // Validate the internals
     void PKMacros::validate() {
         // Map from name of attribute to (referable) integer codes (and the referables)
@@ -182,19 +182,19 @@ namespace CPharmML
             { "cmt", std::unordered_map<int, PKMacro *>() },
             { "adm", std::unordered_map<int, PKMacro *>() },
         };
-        
+
         // Check all macros
         for (PKMacro *cmacro : this->cmacros) {
             // Get name of macro ("Absorption", "Compartment", etc.)
             PharmML::PKMacro *macro = cmacro->getMacro();
             std::string name = macro->getName();
-            
+
             // Check all values in macro
             for (PharmML::MacroValue value : macro->getValues()) {
                 // Get attribute name and assignment ("cmt" and 1, etc.)
                 std::string attribute = value.first;
                 PharmML::AstNode *assignment = value.second;
-                
+
                 if (!assignment) {
                     // TODO: See comment in PKMacros.cpp; Schema doesn't seem to block this!
                     this->logger->error("PK macro '" + name + "' (%a) contains a broken value: No content found", macro, nullptr);
@@ -218,7 +218,7 @@ namespace CPharmML
                             this->logger->error("PK macro '" + name + "' (%a) shares identifier '"
                                 + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getName() + "' (%b)", macro, dup_macro);
                         }
-                        
+
                         // Link attribute, code and cmacro for above check
                         int_codes[attribute][num] = cmacro;
                     }
@@ -226,17 +226,17 @@ namespace CPharmML
             }
         }
     }
-    
+
     // Check if this model has PK macros
     bool PKMacros::exists() {
         return !this->cmacros.empty();
     }
-    
+
     // Get wrapping objects (CPharmML::PKMacro*)
     std::vector<PKMacro *> PKMacros::getMacros() {
         return this->cmacros;
     }
-    
+
     // Get all compartment type macro's
     std::vector<PKMacro *> PKMacros::getCompartments() {
         std::vector<PKMacro *> cmts;
@@ -250,7 +250,7 @@ namespace CPharmML
         }
         return cmts;
     }
-    
+
     // Find and return a compartment from compartment number
     PKMacro *PKMacros::getCompartment(int cmt_num) {
         for (PKMacro *cmacro : this->getCompartments()) {
@@ -272,7 +272,7 @@ namespace CPharmML
         }
         return nullptr;
     }
-    
+
     // Get all administration/absorption type macro's
     std::vector<PKMacro *> PKMacros::getAdministrations() {
         std::vector<PKMacro *> adms;
@@ -286,7 +286,7 @@ namespace CPharmML
         }
         return adms;
     }
-    
+
     // Find and return an administration/absorption from administration number
     PKMacro *PKMacros::getAdministration(int adm_num) {
         for (PKMacro *cmacro : this->getAdministrations()) {
@@ -308,7 +308,7 @@ namespace CPharmML
         }
         return nullptr;
     }
-    
+
     // Get all mass transfer type macro's
     std::vector<PKMacro *> PKMacros::getTransfers() {
         std::vector<PKMacro *> trans;

@@ -29,18 +29,19 @@ namespace PharmML
 {
     class RandomVariable : public Symbol
     {
-        PharmMLContext *context;
-        std::vector<VariabilityReference *> variabilityReferences;
-        PharmML::Distribution *Distribution;
-
         public:
-        RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::vector<VariabilityReference *> getVariabilityReferences();
-        PharmML::Distribution *getDistribution();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<VariabilityReference *> getVariabilityReferences();
+            PharmML::Distribution *getDistribution();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+        
+        private:
+            PharmMLContext *context;
+            std::vector<VariabilityReference *> variabilityReferences;
+            PharmML::Distribution *Distribution;
     };
 }
 

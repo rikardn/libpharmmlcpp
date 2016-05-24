@@ -25,14 +25,15 @@ namespace PharmML
 {
     class IndependentVariable : public Symbol
     {
-        PharmMLContext *context;
-
         public:
-        IndependentVariable(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            IndependentVariable(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+
+        private:
+            PharmMLContext *context;
     };
 }
 

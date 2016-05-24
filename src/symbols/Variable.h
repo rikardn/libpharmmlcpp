@@ -45,10 +45,10 @@ namespace PharmML
     class Variable : public CommonVariable
     {
         public:
-        Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
     };
 }
 

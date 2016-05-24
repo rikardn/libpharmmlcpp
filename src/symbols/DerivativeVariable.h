@@ -26,19 +26,20 @@ namespace PharmML
 {
     class DerivativeVariable : public CommonVariable
     {
-        AstNode *independent_variable;
-        AstNode *initial_value;
-        AstNode *initial_time;
-
         public:
-        DerivativeVariable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = true; this->parse(node); };
-        AstNode *getIndependentVariable();
-        AstNode *getInitialValue();
-        AstNode *getInitialTime();
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            DerivativeVariable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = true; this->parse(node); };
+            AstNode *getIndependentVariable();
+            AstNode *getInitialValue();
+            AstNode *getInitialTime();
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+        
+        private:
+            AstNode *independent_variable;
+            AstNode *initial_value;
+            AstNode *initial_time;
     };
 }
 

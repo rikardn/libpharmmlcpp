@@ -27,35 +27,37 @@ namespace PharmML
 {
     class VariabilityLevel : public Symbol
     {
-        PharmML::PharmMLContext *context;
-        std::string name;
-        bool referenceLevel;
-        SymbRef *parentLevelRef = nullptr;
-
         public:
-        VariabilityLevel(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getName();
-        bool isReferenceLevel();
-        SymbRef *getParentReference();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            VariabilityLevel(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            bool isReferenceLevel();
+            SymbRef *getParentReference();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            bool referenceLevel;
+            SymbRef *parentLevelRef = nullptr;
     };
 
     class VariabilityReference : public Referer
     {
-        PharmML::PharmMLContext *context;
-        SymbRef *levelReference;
-        AstNode *randomEffectsMapping = nullptr;
-
         public:
-        VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        SymbRef *getLevelReference();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        AstNode *getRandomEffectsMapping();
-        //~ void accept(AstNodeVisitor *visitor);
+            VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            SymbRef *getLevelReference();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            AstNode *getRandomEffectsMapping();
+            //~ void accept(AstNodeVisitor *visitor);
+        
+        private:
+            PharmML::PharmMLContext *context;
+            SymbRef *levelReference;
+            AstNode *randomEffectsMapping = nullptr;
     };
 }
 

@@ -27,14 +27,15 @@ namespace PharmML
 {
     class PopulationParameter : public Symbol
     {
-        PharmMLContext *context;
-
         public:
-        PopulationParameter(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
-        void accept(PharmMLVisitor *visitor);
-        void accept(SymbolVisitor *visitor);
+            PopulationParameter(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+            void accept(PharmMLVisitor *visitor);
+            void accept(SymbolVisitor *visitor);
+
+        private:
+            PharmMLContext *context;
     };
 
     // FIXME: Inheritance should be other way around

@@ -26,27 +26,27 @@ namespace PharmML
 {
     class DerivativesConsolidator
     {
+        public:
+            void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
+            std::vector<std::string> getSymbols();
+            std::vector<std::string> getAssigns();
+
         private:
             std::vector<std::string> x0;
             std::vector<std::string> y0;
             std::vector<std::string> y;
             std::vector<std::string> x;
-
-        public:
-            void addDerivative(std::string y, std::string x, std::string y0, std::string x0);
-            std::vector<std::string> getSymbols();
-            std::vector<std::string> getAssigns();
             std::string genInitVector();
     };
 
     class VariablesConsolidator
     {
+        public:
+            void addVariable(std::string symbol, std::string assign);
+
         private:
             std::vector<std::string> symbols;
             std::vector<std::string> assigns;
-
-        public:
-            void addVariable(std::string symbol, std::string assign);
             std::string genStatements();
     };
 

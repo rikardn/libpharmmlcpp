@@ -40,11 +40,6 @@ namespace PharmML
 
     class PopEDSymbols : public SymbolVisitor, public StringVisitor
     {
-        private:
-            int next_popparm = 1;
-            int next_randvar = 1;
-            std::unordered_map<Symbol *, int> symbol_numbermap;
-
         public:
             void visit(ObservationModel *node) override;
             void visit(PopulationParameter *node) override;
@@ -58,6 +53,11 @@ namespace PharmML
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
+        
+        private:
+            int next_popparm = 1;
+            int next_randvar = 1;
+            std::unordered_map<Symbol *, int> symbol_numbermap;
     };
 }
 

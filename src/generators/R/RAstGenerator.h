@@ -38,16 +38,6 @@ namespace PharmML
 {
     class RAstGenerator : public AstNodeVisitor
     {
-        protected:
-            std::string value;
-            void setValue(std::string str);
-            std::string acceptLeft(Binop *binop);
-            std::string acceptRight(Binop *binop);
-            std::string infix(Binop *binop, std::string op);
-            std::string acceptChild(Uniop *uniop);
-            std::string accept(AstNode *node);
-            std::string getLogicLiteral(bool value);
-
         public:
             std::string getValue();
 
@@ -141,6 +131,16 @@ namespace PharmML
             void visit(FunctionCall *node) override;
             void visit(FunctionArgument *node) override;
             void visit(Interval *node) override;
+
+        protected:
+            std::string value;
+            void setValue(std::string str);
+            std::string acceptLeft(Binop *binop);
+            std::string acceptRight(Binop *binop);
+            std::string infix(Binop *binop, std::string op);
+            std::string acceptChild(Uniop *uniop);
+            std::string accept(AstNode *node);
+            std::string getLogicLiteral(bool value);
     };
 }
 

@@ -45,10 +45,6 @@ namespace PharmML
 
     class MDLSymbols : public SymbolVisitor, public StringVisitor
     {
-        private:
-            std::shared_ptr<Logger> logger;
-            std::unique_ptr<MDLAstGenerator> ast_gen;
-
         public:
             MDLSymbols(std::shared_ptr<Logger> logger);
 
@@ -64,6 +60,10 @@ namespace PharmML
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
+        
+        private:
+            std::shared_ptr<Logger> logger;
+            std::unique_ptr<MDLAstGenerator> ast_gen;
     };
 }
 

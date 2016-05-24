@@ -68,29 +68,6 @@ namespace PharmML
 
     class MDLGenerator : public PharmMLVisitor
     {
-        private:
-            std::unique_ptr<MDLAstGenerator> ast_gen;
-            std::unique_ptr<MDLSymbols> symb_gen;
-            AstAnalyzer ast_analyzer;
-            std::shared_ptr<Logger> logger;
-
-            std::vector<std::string> structuralParameterNames;
-            std::vector<std::string> variabilityParameterNames;
-
-            std::string value;
-            void setValue(std::string str);
-
-            std::vector<std::string> values;
-            void setValue(std::vector<std::string> str);
-
-            stringpair hvalue;
-            void setValue(stringpair pair);
-
-            stringmap hvalues;
-            void setValue(stringmap hash);
-
-            std::string accept(AstNode *);
-
         public:
             MDLGenerator();
             std::string getValue();
@@ -161,6 +138,29 @@ namespace PharmML
             void visit(ParameterEstimation *node) override;
 
             void visit(PKMacro *node) override;
+
+        private:
+            std::unique_ptr<MDLAstGenerator> ast_gen;
+            std::unique_ptr<MDLSymbols> symb_gen;
+            AstAnalyzer ast_analyzer;
+            std::shared_ptr<Logger> logger;
+
+            std::vector<std::string> structuralParameterNames;
+            std::vector<std::string> variabilityParameterNames;
+
+            std::string value;
+            void setValue(std::string str);
+
+            std::vector<std::string> values;
+            void setValue(std::vector<std::string> str);
+
+            stringpair hvalue;
+            void setValue(stringpair pair);
+
+            stringmap hvalues;
+            void setValue(stringmap hash);
+
+            std::string accept(AstNode *);
     };
 }
 

@@ -47,12 +47,6 @@ namespace PharmML
 {
     class RPharmMLGenerator : public PharmMLVisitor
     {
-        private:
-            RAstGenerator ast_gen;
-            std::string value;
-            void setValue(std::string str);
-            std::string accept(AstNode *);
-
         public:
             Consolidator consol;
 
@@ -104,6 +98,12 @@ namespace PharmML
             void visit(ParameterEstimation *node) override;
 
             void visit(PKMacro *node) override;
+
+        private:
+            RAstGenerator ast_gen;
+            std::string value;
+            void setValue(std::string str);
+            std::string accept(AstNode *);
     };
 }
 

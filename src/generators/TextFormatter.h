@@ -28,25 +28,6 @@ namespace PharmML
 
     class TextFormatter
     {
-        private:
-            int indentLevel = 0;
-            int indentSize;
-            char indentSymbol;
-            bool final_newline = true;
-            std::vector<std::string> rows;
-
-            struct VectorLevel {
-                bool empty = true;
-                int indentLevel = 0;
-                char endSymbol;
-                bool multiline;
-                std::string separator;
-            };
-            std::vector<struct VectorLevel> vectorLevels;
-
-            std::string genIndentation();
-            void addCSV(std::string str);
-
         public:
             TextFormatter(int size = 4, char symbol = ' ');
             void add(std::string str, bool ignore_separator = false);
@@ -68,6 +49,25 @@ namespace PharmML
             void noFinalNewline();
             static std::string createCommaSeparatedList(std::vector<std::string> list);
             void emptyLine();
+
+        private:
+            int indentLevel = 0;
+            int indentSize;
+            char indentSymbol;
+            bool final_newline = true;
+            std::vector<std::string> rows;
+
+            struct VectorLevel {
+                bool empty = true;
+                int indentLevel = 0;
+                char endSymbol;
+                bool multiline;
+                std::string separator;
+            };
+            std::vector<struct VectorLevel> vectorLevels;
+
+            std::string genIndentation();
+            void addCSV(std::string str);
     };
 }
 

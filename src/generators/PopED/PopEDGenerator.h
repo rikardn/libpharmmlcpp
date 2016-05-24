@@ -41,31 +41,6 @@ namespace PharmML
 {
     class PopEDGenerator : public PharmMLVisitor
     {
-        private:
-            Logger logger;
-            RAstGenerator ast_gen;
-            RSymbols r_symb;
-            PopEDAstGenerator poped_astgen;
-            RPharmMLGenerator r_gen;
-            PopEDObjects td_visitor;
-            int nArms;          // Number of arms
-
-            Model *model;
-            std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
-
-            SymbolSet remaining_parameters;     // THETAs not connected to an IndividualVariable
-
-            std::string value;
-            void setValue(std::string str);
-            std::string accept(AstNode *);
-            std::string genParameterModel();
-            std::string genODEFunc();
-            std::string genStructuralModel();
-            std::string genErrorFunction();
-            std::string genDatabaseCall();
-            std::string getDoseVariable();
-            void collectTrialDesignInformation();
-
         public:
             std::string getValue();
             std::string generateModel(Model *model);
@@ -114,6 +89,31 @@ namespace PharmML
             void visit(ParameterEstimation *node) override;
 
             void visit(PKMacro *node) override;
+
+        private:
+            Logger logger;
+            RAstGenerator ast_gen;
+            RSymbols r_symb;
+            PopEDAstGenerator poped_astgen;
+            RPharmMLGenerator r_gen;
+            PopEDObjects td_visitor;
+            int nArms;          // Number of arms
+
+            Model *model;
+            std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
+
+            SymbolSet remaining_parameters;     // THETAs not connected to an IndividualVariable
+
+            std::string value;
+            void setValue(std::string str);
+            std::string accept(AstNode *);
+            std::string genParameterModel();
+            std::string genODEFunc();
+            std::string genStructuralModel();
+            std::string genErrorFunction();
+            std::string genDatabaseCall();
+            std::string getDoseVariable();
+            void collectTrialDesignInformation();
     };
 }
 

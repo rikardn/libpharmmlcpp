@@ -29,17 +29,6 @@ namespace PharmML
 {
     class PopEDObjects : public ObjectVisitor, public StringVisitor
     {
-        private:
-            RAstGenerator rast;
-
-            TextFormatter xt_formatter;
-            TextFormatter a_formatter;
-            std::vector<std::string> doseNames;
-            std::vector<std::string> timeNames;
-            std::vector<IndividualAdministration *> individualAdministrations;
-            std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
-            std::string generateAdministration(Administration *administration);
-
         public:
             PopEDObjects();
             TextFormatter& getDatabaseXT();
@@ -52,6 +41,17 @@ namespace PharmML
             void visit(Administration *object) override;
             void visit(Observation *object) override;
             void visit(IndividualObservations *object) override;
+
+        private:
+            RAstGenerator rast;
+
+            TextFormatter xt_formatter;
+            TextFormatter a_formatter;
+            std::vector<std::string> doseNames;
+            std::vector<std::string> timeNames;
+            std::vector<IndividualAdministration *> individualAdministrations;
+            std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
+            std::string generateAdministration(Administration *administration);
     };
 }
 

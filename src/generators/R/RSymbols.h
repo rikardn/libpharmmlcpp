@@ -41,9 +41,6 @@ namespace PharmML
 
     class RSymbols : public SymbolVisitor, public StringVisitor
     {
-        private:
-            RAstGenerator *astgen;
-
         public:
             RSymbols();
             RSymbols(RAstGenerator *astgen);
@@ -60,6 +57,9 @@ namespace PharmML
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
+    
+        private:
+            RAstGenerator *astgen;
     };
 }
 

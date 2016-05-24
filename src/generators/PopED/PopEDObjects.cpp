@@ -131,6 +131,10 @@ namespace PharmML
         }
     }
 
+    void PopEDObjects::visit(Observation *object) {
+
+    }
+
     // Visit IndividualObservations to generate a vector from the Dataset
     void PopEDObjects::visit(IndividualObservations *object) {
         Dataset *ds = object->getDataset();

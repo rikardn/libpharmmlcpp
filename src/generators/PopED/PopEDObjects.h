@@ -49,7 +49,7 @@ namespace PharmML
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
-            //void visit(Observation *object) override;
+            void visit(Observation *object) override;
             void visit(IndividualObservations *object) override;
     };
 }

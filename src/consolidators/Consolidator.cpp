@@ -131,6 +131,13 @@ namespace CPharmML
             }
             PharmML::Observations *observations = td->getObservations();
             if (observations) {
+                for (PharmML::Observation *observation : observations->getObservations()) {
+                    if (allOids.count(observation->getOid()) == 1) {
+                        this->duplicateOidError(observation->getOid(), observation);
+                    }
+                    allOids.insert(observation->getOid());
+                    this->allObjects.insert(observation);
+                }
                 for (PharmML::IndividualObservations *observation : observations->getIndividualObservations()) {
                     if (allOids.count(observation->getOid()) == 1) {
                         this->duplicateOidError(observation->getOid(), observation);

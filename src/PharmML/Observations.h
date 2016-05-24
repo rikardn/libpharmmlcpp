@@ -32,10 +32,10 @@
 
 namespace PharmML
 {
-    class Observation : public Object
+    class Observation : public Object, public PharmMLSection
     {
         PharmML::PharmMLContext *context;
-        ObjectRef *oidRef;
+        ObjectRef *oidRef = nullptr;
         AstNode *number = nullptr;
         AstNode *times = nullptr;
         std::vector<PharmML::SymbRef *> continuousVariables;

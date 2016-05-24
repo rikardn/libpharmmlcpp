@@ -21,6 +21,7 @@ namespace PharmML
 {
     // Observation class
     Observation::Observation(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -70,7 +71,9 @@ namespace PharmML
     }
 
     void Observation::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
-        this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+        if (this->oidRef) {
+            this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+        }
     }
 
     ObjectRef* Observation::getOidRef() {

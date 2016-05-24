@@ -195,7 +195,9 @@ namespace PharmML
     }
    
     void IndividualAdministration::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
-        this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+        if (this->oidRef) {
+            this->oidRef->setObject(oidMap[this->oidRef->getOidRef()]);
+        }
     }
 
     xml::Node IndividualAdministration::xml() {

@@ -69,11 +69,10 @@ namespace PharmML
     }
 
     std::string PopEDObjects::generateAdministration(Administration *administration) {
-        // FIXME: Gets visited multiple times...
         AstNode *amount = administration->getAmount();
         AstNode *times = administration->getTimes();
 
-        if (this->doseNames.size() == 0) {
+        if (this->doseNames.size() == 0) {      // First visit will get dose names
             AstAnalyzer analyzer;
             amount->accept(&analyzer);
             for (int i = 1; i <= analyzer.getLength(); i++) {
@@ -88,6 +87,7 @@ namespace PharmML
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
         if (vec) {
+            // FIXME: No vecs for now
         } else {
             amount->accept(&this->rast);
             formatter.add(this->doseNames[0] + "=" + this->rast.getValue());
@@ -165,7 +165,21 @@ namespace PharmML
     }
 
     void PopEDObjects::visit(Observation *object) {
-
+        AstNode *times = object->getTimes();
+        AstAnalyzer analyzer;
+        times->accept(&analyzer);
+        Vector *vector = analyzer.getPureVector();
+        TextFormatter formatter;
+        formatter.openVector("c()", 0, ", ");
+        if (vector) {
+            for (AstNode *element : vector->getElements()) {
+                element->accept(&this->rast);
+                formatter.add(this->rast.getValue());
+            }
+        }
+        formatter.closeVector();
+        formatter.noFinalNewline();
+        this->setValue(formatter.createString());
     }
 
     // Visit IndividualObservations to generate a vector from the Dataset

@@ -253,22 +253,19 @@ namespace CPharmML
     
     // Find and return a compartment from compartment number
     PKMacro *PKMacros::getCompartment(int cmt_num) {
-        for (PKMacro *cmacro : this->cmacros) {
-            // Find compartment
+        for (PKMacro *cmacro : this->getCompartments()) {
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
-            if (name == "Compartment") {
-                // Find 'cmt' attribute
-                for (PharmML::MacroValue value : macro->getValues()) {
-                    if (value.first == "cmt") {
-                        // Get 'cmt' code and resolve it
-                        this->ast_analyzer.reset();
-                        PharmML::AstNode *assignment = value.second;
-                        assignment->accept(&ast_analyzer);
-                        PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-                        if (scalar_int->toInt() == cmt_num) {
-                            return cmacro;
-                        }
+            // Find 'cmt' attribute
+            for (PharmML::MacroValue value : macro->getValues()) {
+                if (value.first == "cmt") {
+                    // Get 'cmt' code and resolve it
+                    this->ast_analyzer.reset();
+                    PharmML::AstNode *assignment = value.second;
+                    assignment->accept(&ast_analyzer);
+                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    // Compare and return
+                    if (scalar_int->toInt() == cmt_num) {
+                        return cmacro;
                     }
                 }
             }
@@ -276,7 +273,7 @@ namespace CPharmML
         return nullptr;
     }
     
-    // Get all administration type macro's
+    // Get all administration/absorption type macro's
     std::vector<PKMacro *> PKMacros::getAdministrations() {
         std::vector<PKMacro *> adms;
         for (PKMacro *cmacro : this->cmacros) {
@@ -290,24 +287,21 @@ namespace CPharmML
         return adms;
     }
     
-    // Find and return an administration process from administration number
+    // Find and return an administration/absorption from administration number
     PKMacro *PKMacros::getAdministration(int adm_num) {
-        for (PKMacro *cmacro : this->cmacros) {
-            // Find administration
+        for (PKMacro *cmacro : this->getAdministrations()) {
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
-            if (name == "Absorption" || name == "IV" || name == "Depot" || name == "Oral") {
-                // Find 'adm' attribute
-                for (PharmML::MacroValue value : macro->getValues()) {
-                    if (value.first == "adm") {
-                        // Get 'adm' code and resolve it
-                        this->ast_analyzer.reset();
-                        PharmML::AstNode *assignment = value.second;
-                        assignment->accept(&ast_analyzer);
-                        PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-                        if (scalar_int->toInt() == adm_num) {
-                            return cmacro;
-                        }
+            // Find 'adm' attribute
+            for (PharmML::MacroValue value : macro->getValues()) {
+                if (value.first == "adm") {
+                    // Get 'adm' code and resolve it
+                    this->ast_analyzer.reset();
+                    PharmML::AstNode *assignment = value.second;
+                    assignment->accept(&ast_analyzer);
+                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    // Compare and return
+                    if (scalar_int->toInt() == adm_num) {
+                        return cmacro;
                     }
                 }
             }

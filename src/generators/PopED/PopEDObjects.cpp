@@ -20,6 +20,7 @@
 #include <PharmML/Arms.h>
 #include <PharmML/Observations.h>
 #include <iostream>
+#include <visitors/AstAnalyzer.h>
 
 namespace PharmML
 {
@@ -42,6 +43,7 @@ namespace PharmML
         this->individualAdministrations = individualAdministrations;
     }
 
+    // Generates doseNames, timeNames and code from IndividualAdministration
     std::string PopEDObjects::generateIndividualAdministration(IndividualAdministration *individualAdministration) {
         Dataset *ds = individualAdministration->getDataset();
         DataColumn *idv_col = ds->getIdvColumn();
@@ -53,8 +55,8 @@ namespace PharmML
         formatter.openVector("c()", 0, ", ");
         for (std::vector<AstNode *>::size_type i = 0; i != idv_data.size(); i++) {
             dose_data[i]->accept(&this->rast);
-            std::string dose_name = "DOSE_" + std::to_string(i) + "_AMT";
-            std::string time_name = "DOSE_" + std::to_string(i) + "_TIME";
+            std::string dose_name = "DOSE_" + std::to_string(i + 1) + "_AMT";
+            std::string time_name = "DOSE_" + std::to_string(i + 1) + "_TIME";
             this->doseNames.push_back(dose_name);      // Needed for the placebo arm and elsewhere
             this->timeNames.push_back(time_name);
             formatter.add(dose_name + "=" + this->rast.getValue());
@@ -66,6 +68,37 @@ namespace PharmML
         return formatter.createString();
     }
 
+    std::string PopEDObjects::generateAdministration(Administration *administration) {
+        // FIXME: Gets visited multiple times...
+        AstNode *amount = administration->getAmount();
+        AstNode *times = administration->getTimes();
+
+        if (this->doseNames.size() == 0) {
+            AstAnalyzer analyzer;
+            amount->accept(&analyzer);
+            for (int i = 1; i <= analyzer.getLength(); i++) {
+                this->doseNames.push_back("DOSE_" + std::to_string(i) + "_AMT");
+                this->timeNames.push_back("DOSE_" + std::to_string(i) + "_TIME");
+            }
+        }
+
+        AstAnalyzer vector_analyzer;
+        amount->accept(&vector_analyzer);
+        Vector *vec = vector_analyzer.getPureVector();
+        TextFormatter formatter;
+        formatter.openVector("c()", 0, ", ");
+        if (vec) {
+        } else {
+            amount->accept(&this->rast);
+            formatter.add(this->doseNames[0] + "=" + this->rast.getValue());
+            times->accept(&this->rast);
+            formatter.add(this->timeNames[0] + "=" + this->rast.getValue());
+        }
+        formatter.closeVector();
+        formatter.noFinalNewline();
+
+        return formatter.createString();
+    }
 
     std::vector<std::string> PopEDObjects::getDoseNames() {
         return this->doseNames;
@@ -127,7 +160,7 @@ namespace PharmML
         if (found_ia) {
             setValue(this->generateIndividualAdministration(found_ia));
         } else {
-            setValue("");
+            setValue(this->generateAdministration(object));
         }
     }
 

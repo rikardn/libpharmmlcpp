@@ -53,6 +53,7 @@ namespace PharmML
         this->scalar_real = nullptr;
         this->functioncall = nullptr;
         this->piecewise = nullptr;
+        this->vector = nullptr;
     }
     
     // Methods to get a single object (if complex, return a nullptr)
@@ -80,6 +81,10 @@ namespace PharmML
         return this->piecewise;
     }
     
+    Vector *AstAnalyzer::getPureVector() {
+        return this->vector;
+    }
+
     int AstAnalyzer::getLength() {
         return this->length;
     }
@@ -493,7 +498,10 @@ namespace PharmML
     }
     
     void AstAnalyzer::visit(Vector *node) {
-        this->first_node = false;
+        if (first_node) {
+            this->vector = node;
+            this->first_node = false;
+        }
         std::string s;
         bool first = true;
         for (AstNode *cnode : node->getElements()) {

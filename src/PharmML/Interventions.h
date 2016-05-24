@@ -71,6 +71,7 @@ namespace PharmML
         xml::Node xml();
         std::string getType();
         std::string getTargetType();
+        AstNode *getAmount();
         PharmML::TargetMapping *getTargetMapping();
         PharmML::SymbRef *getTargetSymbRef();
         AstNode *getTimes();

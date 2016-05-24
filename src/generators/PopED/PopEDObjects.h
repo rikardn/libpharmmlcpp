@@ -38,6 +38,7 @@ namespace PharmML
             std::vector<std::string> timeNames;
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
+            std::string generateAdministration(Administration *administration);
 
         public:
             PopEDObjects();

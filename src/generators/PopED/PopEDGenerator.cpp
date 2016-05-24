@@ -44,6 +44,8 @@ namespace PharmML
         this->model = model;
         TextFormatter form(2, ' ');
        
+        this->collectTrialDesignInformation();
+
         // Preamble
         form.add("library(PopED)");
         form.add("library(deSolve)");
@@ -65,6 +67,29 @@ namespace PharmML
         form.addMany(this->genDatabaseCall());
         
         return form.createString();
+    }
+
+    void PopEDGenerator::collectTrialDesignInformation() {
+        // Generate trial design information
+        TrialDesign *td = this->model->getTrialDesign();
+        if (td) {
+            Arms *arms = td->getArms();
+            this->nArms = arms->getArms().size();
+           
+            // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
+            // This might change in future versions of PharmML 
+            Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
+                this->td_visitor.setIndividualAdministrations(ia);
+            }
+
+            if (arms) {
+                for (Arm *arm : arms->getArms()) {
+                    arm->accept(&this->td_visitor);
+                }
+            }
+        }
     }
 
     std::string PopEDGenerator::genParameterModel() {
@@ -98,8 +123,8 @@ namespace PharmML
             form.add(symb->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
         }
 
-        std::vector<std::string> time_names = genDoseTimeNames();
-        std::vector<std::string> amount_names = genDoseAmountNames();
+        std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+        std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
         for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
             form.add(amount_names[i] + " = a[" + std::to_string(2*i + 1) + "]");
@@ -160,42 +185,6 @@ namespace PharmML
         return form.createString(); 
     }
 
-    // Generate a vector of dose time names
-    std::vector<std::string> PopEDGenerator::genDoseTimeNames() {
-        // FIXME: Must check invariant at construction time. Need TrialDesign etc for PopED to convert to something useful
-        // FIXME: Need information from Arms here. Assume a lot for now. 
-        IndividualAdministration *ia = this->model->getTrialDesign()->getInterventions()->getIndividualAdministrations()[0];
-        Dataset *ds = ia->getDataset();
-        int numrows = ds->getColumns()[0]->getNumRows();
-
-        std::vector<std::string> result;
-
-        for (int i = 1; i <= numrows; i++) {
-            result.push_back("DOSE_" + std::to_string(i) + "_TIME");
-        }
-
-        return result;
-    }
-
-    // Generate a vector of dose time amount names
-    std::vector<std::string> PopEDGenerator::genDoseAmountNames() {
-        // FIXME: Combine with genDoseTimeNames
-        // FIXME: Must check invariant at construction time. Need TrialDesign etc for PopED to convert to something useful
-        // FIXME: Need information from Arms here. Assume a lot for now. 
-        IndividualAdministration *ia = this->model->getTrialDesign()->getInterventions()->getIndividualAdministrations()[0];
-        Dataset *ds = ia->getDataset();
-        int numrows = ds->getColumns()[0]->getNumRows();
-
-        std::vector<std::string> result;
-
-        for (int i = 1; i <= numrows; i++) {
-            result.push_back("DOSE_" + std::to_string(i) + "_AMT");
-        }
-
-        return result;
-    }
-
-
     // Get the name of the dose variable. 
     std::string PopEDGenerator::getDoseVariable() {
         // FIXME: Assumes a specific structure
@@ -232,17 +221,14 @@ namespace PharmML
 
         // Dose times
         form.add("times_xt <- drop(xt)");
-        // TODO: Consolidate dosing times (from TrialDesign) and use actual information (not a sequence!)
-        std::vector<std::string> dose_time_names = this->genDoseTimeNames();
-        form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(dose_time_names) + ")");
+        form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
         form.add("integration_start_time <- 0");
 
         // Event data
         // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
         form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
         form.add("time = dose_times,");
-        std::vector<std::string> dose_amount_names = this->genDoseAmountNames();
-        form.add("value = c(" + TextFormatter::createCommaSeparatedList(dose_amount_names) + "), method = c('add'))");
+        form.add("value = c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + "), method = c('add'))");
         form.closeIndent();
         form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
@@ -377,30 +363,9 @@ namespace PharmML
 
         form.add("groupsize = 1");
 
-        // Generate trial design information
-        PopEDObjects td_visitor;
-
-        TrialDesign *td = this->model->getTrialDesign();
-        if (td) {
-            Arms *arms = td->getArms();
-            form.add("m = " + std::to_string(arms->getArms().size()));
-           
-            // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
-            // This might change in future versions of PharmML 
-            Interventions *interventions = td->getInterventions();
-            if (interventions) {
-                std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
-                td_visitor.setIndividualAdministrations(ia);
-            }
-
-            if (arms) {
-                for (Arm *arm : arms->getArms()) {
-                    arm->accept(&td_visitor);
-                }
-            }
-        }
-        form.addMany(td_visitor.getDatabaseXT());
-        form.addMany(td_visitor.getDatabaseA());
+        form.add("m = " + std::to_string(this->nArms));
+        form.addMany(this->td_visitor.getDatabaseXT());
+        form.addMany(this->td_visitor.getDatabaseA());
 
         form.closeVector();
 

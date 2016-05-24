@@ -55,7 +55,7 @@ namespace PharmML
             dose_data[i]->accept(&this->rast);
             std::string dose_name = "DOSE_" + std::to_string(i) + "_AMT";
             std::string time_name = "DOSE_" + std::to_string(i) + "_TIME";
-            this->doseNames.push_back(dose_name);      // Needed for the placebo arm
+            this->doseNames.push_back(dose_name);      // Needed for the placebo arm and elsewhere
             this->timeNames.push_back(time_name);
             formatter.add(dose_name + "=" + this->rast.getValue());
             idv_data[i]->accept(&this->rast);
@@ -64,6 +64,15 @@ namespace PharmML
         formatter.closeVector();
         formatter.noFinalNewline();
         return formatter.createString();
+    }
+
+
+    std::vector<std::string> PopEDObjects::getDoseNames() {
+        return this->doseNames;
+    }
+
+    std::vector<std::string> PopEDObjects::getTimeNames() {
+        return this->timeNames;
     }
 
     void PopEDObjects::visit(Arm *object) {

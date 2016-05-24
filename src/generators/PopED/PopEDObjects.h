@@ -44,6 +44,8 @@ namespace PharmML
             TextFormatter& getDatabaseXT();
             TextFormatter& getDatabaseA();
             void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
+            std::vector<std::string> getDoseNames();
+            std::vector<std::string> getTimeNames();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;

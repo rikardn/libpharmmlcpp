@@ -47,6 +47,9 @@ namespace PharmML
             RSymbols r_symb;
             PopEDAstGenerator poped_astgen;
             RPharmMLGenerator r_gen;
+            PopEDObjects td_visitor;
+            int nArms;          // Number of arms
+
             Model *model;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
 
@@ -60,9 +63,8 @@ namespace PharmML
             std::string genStructuralModel();
             std::string genErrorFunction();
             std::string genDatabaseCall();
-            std::vector<std::string> genDoseTimeNames();
-            std::vector<std::string> genDoseAmountNames();
             std::string getDoseVariable();
+            void collectTrialDesignInformation();
 
         public:
             std::string getValue();

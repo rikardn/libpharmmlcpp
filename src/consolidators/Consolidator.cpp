@@ -321,9 +321,9 @@ namespace CPharmML
             
             // Consolidate external datasets
             std::vector<PharmML::ExternalDataset *> ext_dss = td->getExternalDatasets();
-            for (PharmML::ExternalDataset *ext_ds : ext_dss) {
+            //for (PharmML::ExternalDataset *ext_ds : ext_dss) {
                 // TODO: Fill this because it is needed for MDL generation of data object (something must know about named CPharmML::PKMacro's)
-            }
+            //}
         }
     }
  

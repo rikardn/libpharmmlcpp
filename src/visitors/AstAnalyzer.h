@@ -49,6 +49,7 @@ namespace PharmML
             ScalarReal *scalar_real;
             FunctionCall *functioncall;
             Piecewise *piecewise;
+            Vector *vector;
             
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);
@@ -72,6 +73,7 @@ namespace PharmML
             ScalarReal *getPureScalarReal();
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
+            Vector *getPureVector();
             int getLength();
             
             void visit(SymbRef *node) override;

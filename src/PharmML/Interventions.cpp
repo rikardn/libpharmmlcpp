@@ -134,7 +134,11 @@ namespace PharmML
     std::string Administration::getTargetType() {
         return this->target_type;
     }
-    
+   
+    AstNode *Administration::getAmount() {
+        return this->amount;
+    }
+
     TargetMapping *Administration::getTargetMapping() {
         return this->target_mapping;
     }

@@ -355,14 +355,35 @@ namespace PharmML
         SymbRef *error_ref = this->model->getModelDefinition()->getObservationModel()->getResidualError();
         Symbol *rand_var = error_ref->getSymbol();
 
-        for (auto pop_param : pop_params) {
-            auto consolidatedRandom = pop_param->getRandomVariables();
-            bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
-            if (pop_param->isVariabilityParameter() && found) {
-                sigma_init_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
-                sigma_fixed_formatter.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
+        // If RandomVariable has constant parameters then it cannot be found in consolidator
+        // FIXME: Can we assume RandomVariable type of ResidualError?
+        // Initial value of RandomVariable with constant parameters is the variance parameter
+        RandomVariable *random = static_cast<RandomVariable*>(rand_var);
+        AstAnalyzer analyzer;
+        bool scalar = false;
+        for (DistributionParameter *dist_par : random->getDistribution()->getDistributionParameters()) {
+            if (dist_par->getName() == "var") {
+                dist_par->getAssignment()->accept(&analyzer);
+                if (analyzer.getPureScalar()) {
+                    scalar = true;
+                    sigma_init_formatter.add(this->accept(dist_par->getAssignment()));
+                    sigma_fixed_formatter.add("0");
+                }
+            }
+        } 
+
+        if (!scalar) {
+            for (auto pop_param : pop_params) {
+                auto consolidatedRandom = pop_param->getRandomVariables();
+                bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
+                if (pop_param->isVariabilityParameter() && found) {
+                    sigma_init_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                    sigma_fixed_formatter.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
+                    break;
+                }
             }
         }
+
         sigma_init_formatter.closeVector();
         sigma_init_formatter.noFinalNewline();
         sigma_fixed_formatter.closeVector();

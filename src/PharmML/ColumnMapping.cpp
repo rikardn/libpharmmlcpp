@@ -106,6 +106,14 @@ namespace PharmML
     Symbol *ColumnMapping::getMappedSymbol() {
         return this->mappedSymbol;
     }
+
+    bool ColumnMapping::hasTargetMappings() {
+        return !this->target_mappings.empty();
+    }
+
+    std::vector<TargetMapping *> ColumnMapping::getTargetMappings() {
+        return this->target_mappings;
+    }
     
     void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (this->symbRef) {

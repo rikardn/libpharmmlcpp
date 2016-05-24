@@ -56,10 +56,13 @@ namespace PharmML
             ColumnMapping(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
+            
             AstNode *getAssignment();
             std::string getColumnIdRef();
-            
             Symbol *getMappedSymbol();
+            
+            bool hasTargetMappings();
+            std::vector<TargetMapping *> getTargetMappings();
             
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);

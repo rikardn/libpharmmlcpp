@@ -62,6 +62,7 @@ namespace PharmML
             macro_nodes.insert(macro_nodes.end(), per.begin(), per.end());
             macro_nodes.insert(macro_nodes.end(), tra.begin(), tra.end());
             for (xml::Node macro_node : macro_nodes) {
+                this->pk_macros_section = new PharmMLSection(macros_node);
                 PharmML::PKMacro *macro = new PharmML::PKMacro(this->context, macro_node);
                 this->pk_macros.push_back(macro);
             }
@@ -87,7 +88,11 @@ namespace PharmML
     std::vector<PharmML::PKMacro *> StructuralModel::getPKMacros() {
         return this->pk_macros;
     }
-    
+
+    PharmMLSection *StructuralModel::getPKMacrosSection() {
+        return this->pk_macros_section;
+    }
+
     void StructuralModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (PKMacro *pk_macro : this->pk_macros) {
             pk_macro->gatherSymbRefs(symbolMap);

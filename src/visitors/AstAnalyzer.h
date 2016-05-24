@@ -18,6 +18,8 @@
 #ifndef PHARMML_ASTANALYZER_H_
 #define PHARMML_ASTANALYZER_H_
 
+#include <stdexcept>
+
 #include <string>
 #include <unordered_set>
 #include <visitors/AstNodeVisitor.h>
@@ -74,7 +76,11 @@ namespace PharmML
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
             Vector *getPureVector();
+            
             int getLength();
+
+            static bool tryParseInt(std::string str, int &result);
+            bool tryParsePureInt(AstNode *node, int &result);
             
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;

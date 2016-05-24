@@ -30,6 +30,8 @@ namespace PharmML
         protected:
 
         public:
+            PharmMLSection();
+            PharmMLSection(xml::Node node);
             xml::Node getXMLNode();
             void setXMLNode(xml::Node node);
     };

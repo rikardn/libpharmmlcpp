@@ -89,6 +89,29 @@ namespace PharmML
         return this->length;
     }
 
+    bool AstAnalyzer::tryParseInt(std::string str, int &result) {
+        int base = 10;
+        try {
+            result = std::stoi(str, nullptr, base);
+        } catch (...) {
+            return false;
+        }
+        return true;
+    }
+
+    bool AstAnalyzer::tryParsePureInt(AstNode *node, int &result) {
+        this->reset();
+        if (!node) {
+            return false;
+        }
+        node->accept(this);
+        PharmML::ScalarInt *scint = this->getPureScalarInt();
+        if (!scint) {
+            return false;
+        }
+        return (this->tryParseInt(scint->toString(), result));
+    }
+
     // visitor methods
     void AstAnalyzer::visit(SymbRef *node) {
         if (first_node) {

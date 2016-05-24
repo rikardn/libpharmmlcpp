@@ -36,6 +36,7 @@ namespace PharmML
         std::string blkId;
         std::vector<PharmML::CommonVariable *> variables;
         std::vector<PharmML::PKMacro *> pk_macros;
+        PharmML::PharmMLSection *pk_macros_section = nullptr; // Experiment
 
         public:
         StructuralModel(PharmMLContext *context, xml::Node node);
@@ -43,6 +44,7 @@ namespace PharmML
         std::vector<PharmML::CommonVariable *> getVariables();
         std::vector<PharmML::CommonVariable *> getDerivatives();
         std::vector<PharmML::PKMacro *> getPKMacros();
+        PharmMLSection *getPKMacrosSection();
         void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
         std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
         std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);

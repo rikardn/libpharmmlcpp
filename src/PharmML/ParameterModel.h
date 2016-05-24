@@ -31,12 +31,14 @@ namespace PharmML
     {
         PharmML::PharmMLContext *context;
         std::string blkId;
+        std::vector<Parameter *> parameters;
         std::vector<PopulationParameter *> populationParameters;
         std::vector<IndividualParameter *> individualParameters;
         std::vector<RandomVariable *> randomVariables;
         std::vector<Correlation *> correlations;
         
         public:
+        std::vector<Parameter *> getParameters();
         std::vector<PopulationParameter *> getPopulationParameters();
         std::vector<IndividualParameter *> getIndividualParameters();
         std::vector<RandomVariable *> getRandomVariables();

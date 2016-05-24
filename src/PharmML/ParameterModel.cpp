@@ -26,6 +26,12 @@ namespace PharmML
 
     void ParameterModel::parse(xml::Node node) {
         this->blkId = node.getAttribute("blkId").getValue();
+        std::vector<xml::Node> param_nodes = this->context->getElements(node, "./mdef:Parameter");
+        for (xml::Node n : param_nodes) {
+            PharmML::Parameter *param = new PharmML::Parameter(this->context, n);
+            this->parameters.push_back(param);
+        }
+
         std::vector<xml::Node> pop_nodes = this->context->getElements(node, "./mdef:PopulationParameter");
         for (xml::Node n : pop_nodes) {
             PharmML::PopulationParameter *pop = new PharmML::PopulationParameter(this->context, n);
@@ -67,6 +73,10 @@ namespace PharmML
                 // TODO: Matrix support
             }
         }
+    }
+
+    std::vector<Parameter *> ParameterModel::getParameters() {
+        return this->parameters;
     }
 
     std::vector<PopulationParameter *> ParameterModel::getPopulationParameters() {

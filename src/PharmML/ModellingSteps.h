@@ -144,15 +144,16 @@ namespace PharmML
     
     class OptimalDesignStep
     {
-        PharmML::PharmMLContext *context;
-        std::string oid;
-        OptimiseOn *optOn = nullptr;
-        std::vector<ParameterEstimation *> parameterEstimations;
-        
         public:
-        OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::vector<ParameterEstimation *> getParameters();
+            OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<ParameterEstimation *> getParameters();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string oid;
+            OptimiseOn *optOn = nullptr;
+            std::vector<ParameterEstimation *> parameterEstimations;
     };
     
     class ModellingSteps

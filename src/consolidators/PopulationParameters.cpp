@@ -206,12 +206,11 @@ namespace CPharmML
         }
     }
 
-    void PopulationParameters::addEstimationStep(PharmML::EstimationStep *estimationStep) {
+    void PopulationParameters::addParameterEstimation(std::vector<PharmML::ParameterEstimation *> params_est) {
         for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
             PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
             // Find ParameterEstimation for this PopulationParameter
-            std::vector<PharmML::ParameterEstimation *> est_params = estimationStep->getParameters();
-            for (PharmML::ParameterEstimation *est_param : est_params) {
+            for (PharmML::ParameterEstimation *est_param : params_est) {
                 bool depends_on_pop = est_param->refersIndirectlyTo(pop_param);
                 if (depends_on_pop) {
                     cpop_param->addParameterEstimation(est_param);
@@ -219,6 +218,14 @@ namespace CPharmML
                 }
             }
         }
+    }
+
+    void PopulationParameters::addOptimalDesignStep(PharmML::OptimalDesignStep *optimalDesignStep) {
+        this->addParameterEstimation(optimalDesignStep->getParameters());
+    }
+
+    void PopulationParameters::addEstimationStep(PharmML::EstimationStep *estimationStep) {
+        this->addParameterEstimation(estimationStep->getParameters());
     }
     
     // Get all consolidated population parameter objects

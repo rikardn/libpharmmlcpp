@@ -42,8 +42,13 @@ namespace CPharmML
     
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols 
     void Consolidator::consolidateSymbols(PharmML::Model *model) {
-        std::vector<PharmML::PopulationParameter *> params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
-        for (PharmML::PopulationParameter *param : params) {
+        std::vector<PharmML::Parameter *> params = model->getModelDefinition()->getParameterModel()->getParameters();
+        for (PharmML::Parameter *param : params) {
+            this->allSymbols.addSymbol(param);
+        }
+
+        std::vector<PharmML::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        for (PharmML::PopulationParameter *param : pop_params) {
             this->allSymbols.addSymbol(param);
         }
 
@@ -187,6 +192,11 @@ namespace CPharmML
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
         // Consolidate PharmML PopulationParameter's and Correlation's into a wrapping object (with convenience functions)
         std::vector<PharmML::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        // FIXME: This will soon be cleaned
+        for (auto param : model->getModelDefinition()->getParameterModel()->getParameters()) {
+            pop_params.push_back(param);
+        }
+
         std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
         CPharmML::PopulationParameters *cpop_params = new PopulationParameters(pop_params, corrs);
         
@@ -194,10 +204,14 @@ namespace CPharmML
         std::vector<PharmML::RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
         std::vector<PharmML::IndividualParameter *> ind_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         std::vector<PharmML::EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
+        std::vector<PharmML::OptimalDesignStep *> od_steps = model->getModellingSteps()->getOptimalDesignSteps();
         cpop_params->addRandomVariables(rand_vars);
         cpop_params->addIndividualParameters(ind_params);
         if (est_steps.size() > 0) {     // No estimation steps
             cpop_params->addEstimationStep(est_steps[0]); // TODO: Plurality support!
+        }
+        if (od_steps.size() > 0) {
+            cpop_params->addOptimalDesignStep(od_steps[0]);
         }
         
         // TODO: Add plurality support for multiple parameter models

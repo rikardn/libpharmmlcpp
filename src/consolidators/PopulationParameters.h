@@ -83,12 +83,14 @@ namespace CPharmML
             void addRandomVariables(std::vector<PharmML::RandomVariable *> randomVariables);
             void addIndividualParameters(std::vector<PharmML::IndividualParameter *> individualParameters);
             void addEstimationStep(PharmML::EstimationStep *estimationStep);
+            void addOptimalDesignStep(PharmML::OptimalDesignStep *optimalDesignStep);
             
             std::vector<PopulationParameter *> getPopulationParameters();
             std::vector<PopulationParameter *> getPopulationParameters(std::vector<PharmML::Correlation *> correlations);
         
         private:
             std::vector<PopulationParameter *> populationParameters;
+            void addParameterEstimation(std::vector<PharmML::ParameterEstimation *> params_est);
     };
 }
 

@@ -329,6 +329,10 @@ namespace PharmML
         // TODO: Get more stuff here
     } 
 
+    std::vector<ParameterEstimation *> OptimalDesignStep::getParameters() {
+        return this->parameterEstimations;
+    }
+
     ModellingSteps::ModellingSteps(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->xml_node = node;

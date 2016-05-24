@@ -36,6 +36,13 @@ namespace PharmML
         void accept(PharmMLVisitor *visitor);
         void accept(SymbolVisitor *visitor);
     };
+
+    // FIXME: Inheritance should be other way around
+    class Parameter : public PopulationParameter
+    {
+        public:
+            Parameter(PharmMLContext *context, xml::Node node) : PopulationParameter(context, node) {};
+    };
 }
 
 #endif

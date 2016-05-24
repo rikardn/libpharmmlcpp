@@ -189,8 +189,12 @@ namespace PharmML
     std::string PopEDGenerator::getDoseVariable() {
         // FIXME: Assumes a specific structure
         Administration *adm = this->model->getTrialDesign()->getInterventions()->getAdministrations()[0];
-        adm->getTargetSymbRef()->accept(&this->ast_gen);
-        return this->ast_gen.getValue();
+        if (adm->getTargetSymbRef()) {
+            adm->getTargetSymbRef()->accept(&this->ast_gen);
+            return this->ast_gen.getValue();
+        } else {
+            return "";      // FIXME: To check TargetMapping here
+        }
     }
 
     std::string PopEDGenerator::genStructuralModel() {
@@ -325,7 +329,11 @@ namespace PharmML
         for (auto pop_param : pop_params) {
             if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
                 std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?
-                bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                if (pop_param->getParameterEstimation()) {
+                    bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                } else {
+                    bpop.add(indiv_name + "=0");
+                }
             }
             PopulationParameter *symbol = pop_param->getPopulationParameter();
             if (this->remaining_parameters.hasSymbol(symbol)) {

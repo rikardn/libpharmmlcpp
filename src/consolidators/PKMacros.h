@@ -38,8 +38,10 @@ namespace CPharmML
 
             PharmML::PKMacro *getMacro();
             bool hasAttribute(std::string attribute);
+            PharmML::AstNode *getAttribute(std::string attribute);
             std::string getName();
             void setName(std::string name);
+            
             std::string generateName(PharmML::AstAnalyzer &ast_analyzer);
 
             // Convenience function; try to parse an attribute into int

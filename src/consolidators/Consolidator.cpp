@@ -342,9 +342,23 @@ namespace CPharmML
 
             // Consolidate external datasets
             std::vector<PharmML::ExternalDataset *> ext_dss = td->getExternalDatasets();
-            //for (PharmML::ExternalDataset *ext_ds : ext_dss) {
-                // TODO: Fill this because it is needed for MDL generation of data object (something must know about named CPharmML::PKMacro's)
-            //}
+            for (PharmML::ExternalDataset *ext_ds : ext_dss) {
+                CPharmML::ExternalDataset *cext_ds = new CPharmML::ExternalDataset(ext_ds);
+                if (cext_ds->hasTargetMappings()) {
+                    std::vector<int> adm_numbers = cext_ds->getMappedAdmNumbers();
+                    for (int adm_number : adm_numbers) {
+                        // TODO: Consider that there might be multiple structural models (blkId)!
+                        CPharmML::PKMacro *cmacro = this->pk_macros->getAdministration(adm_number);
+                        if (cmacro) {
+                            cext_ds->addConsolidatedPKMacro(cmacro);
+                        } else {
+                            // FIXME: Decide if it's a good idea to save the containing node as a PharmMLSection (getPKMacrosSection below) for pretty logging!
+                            this->logger->error("Administration number " + std::to_string(adm_number)
+                                + " in external dataset (%a) matches no defined administration macro (%b)", ext_ds, model->getModelDefinition()->getStructuralModel()->getPKMacrosSection());
+                        }
+                    }
+                }
+            }
         }
     }
 

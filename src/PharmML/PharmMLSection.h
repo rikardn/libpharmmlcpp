@@ -28,6 +28,8 @@ namespace PharmML
             xml::Node xml_node;
 
         public:
+            PharmMLSection();
+            PharmMLSection(xml::Node node);
             xml::Node getXMLNode();
             void setXMLNode(xml::Node node);
     };

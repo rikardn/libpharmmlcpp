@@ -22,6 +22,7 @@ namespace CPharmML
     // Wrapping class for PharmML::PKMacro's (mostly because PharmML is terribly non-namey here)
     PKMacro::PKMacro(PharmML::PKMacro *macro) {
         this->macro = macro;
+        //~ for (macro->hasAttribute(
     }
 
     PharmML::PKMacro *PKMacro::getMacro() {
@@ -30,6 +31,10 @@ namespace CPharmML
 
     bool PKMacro::hasAttribute(std::string attribute) {
         return this->macro->hasAttribute(attribute);
+    }
+
+    PharmML::AstNode *PKMacro::getAttribute(std::string attribute) {
+        return this->macro->getAssignment(attribute);
     }
 
     std::string PKMacro::getName() {

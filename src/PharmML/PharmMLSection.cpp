@@ -19,6 +19,14 @@
 
 namespace PharmML
 {
+    PharmMLSection::PharmMLSection() {
+
+    }
+
+    PharmMLSection::PharmMLSection(xml::Node node) {
+        this->xml_node = node;
+    }
+
     xml::Node PharmMLSection::getXMLNode() {
         return this->xml_node;
     }

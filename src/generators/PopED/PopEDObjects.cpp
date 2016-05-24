@@ -42,6 +42,7 @@ namespace PharmML
         this->individualAdministrations = individualAdministrations;
     }
 
+    // Generates doseNames, timeNames and code from IndividualAdministration
     std::string PopEDObjects::generateIndividualAdministration(IndividualAdministration *individualAdministration) {
         Dataset *ds = individualAdministration->getDataset();
         DataColumn *idv_col = ds->getIdvColumn();
@@ -66,6 +67,10 @@ namespace PharmML
         return formatter.createString();
     }
 
+    std::string PopEDObjects::generateAdministration(Administration *administration) {
+    
+        return "";
+    }
 
     std::vector<std::string> PopEDObjects::getDoseNames() {
         return this->doseNames;
@@ -127,7 +132,7 @@ namespace PharmML
         if (found_ia) {
             setValue(this->generateIndividualAdministration(found_ia));
         } else {
-            setValue("");
+            setValue(this->generateAdministration(object));
         }
     }
 

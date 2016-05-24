@@ -109,6 +109,7 @@ namespace PharmML
         }
 
         // Remaining THETAs. From all parameters remove those referenced from individual parmaters and random variables
+        // FIXME: refactor using Consolidator
         for (PopulationParameter *parameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
             remaining_parameters.addSymbol(parameter);
         }

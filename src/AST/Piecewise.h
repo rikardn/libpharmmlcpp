@@ -27,30 +27,32 @@ namespace PharmML
 {
     class Piece : public AstNode
     {
-        AstNode *expression;
-        AstNode *condition;
-        bool otherwise = false;
-
         public:
-        Piece();
-        void setExpression(AstNode *expression);
-        void setCondition(AstNode *condition);
-        void setOtherwise();
-        AstNode *getExpression();
-        AstNode *getCondition();
-        bool isOtherwise();
-        void accept(AstNodeVisitor *visitor);
+            Piece();
+            void setExpression(AstNode *expression);
+            void setCondition(AstNode *condition);
+            void setOtherwise();
+            AstNode *getExpression();
+            AstNode *getCondition();
+            bool isOtherwise();
+            void accept(AstNodeVisitor *visitor);
+        
+        private:
+            AstNode *expression;
+            AstNode *condition;
+            bool otherwise = false;
     };
 
     class Piecewise : public AstNode
     {
-        std::vector<Piece *> pieces;
-
         public:
-        Piecewise();
-        void addPiece(Piece *piece);
-        std::vector<Piece *> getPieces();
-        void accept(AstNodeVisitor *visitor);
+            Piecewise();
+            void addPiece(Piece *piece);
+            std::vector<Piece *> getPieces();
+            void accept(AstNodeVisitor *visitor);
+
+        private:
+            std::vector<Piece *> pieces;
     };
 }
 

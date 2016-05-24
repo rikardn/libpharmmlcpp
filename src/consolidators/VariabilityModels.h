@@ -44,6 +44,7 @@ namespace CPharmML
             std::vector<PharmML::VariabilityLevel *> getResidualErrorLevelChain();
             std::vector<PharmML::RandomVariable *> getRandomVariablesOnLevel(PharmML::Symbol *level);
             std::vector<PharmML::Correlation *> getCorrelationsOnLevel(PharmML::Symbol *level);
+
         private:
             // PharmML objects used to consolidate
             std::vector<PharmML::VariabilityModel *> variabilityModels;

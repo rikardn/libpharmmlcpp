@@ -41,6 +41,7 @@ namespace CPharmML
             bool isStandardFunction(PharmML::FunctionDefinition *functionDefinition);
             std::string getStandardFunctionName(PharmML::FunctionDefinition *functionDefinition);
             std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> getStandardArgumentMap(PharmML::FunctionDefinition *functionDefinition);
+
         private:
             // PharmML objects used to consolidate
             std::vector<PharmML::FunctionDefinition *> functionDefinitions;

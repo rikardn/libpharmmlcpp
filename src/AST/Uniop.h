@@ -26,11 +26,12 @@ namespace PharmML
 {
     class Uniop : public AstNode
     {
-        AstNode *child = nullptr;
-
         public:
-        AstNode *getChild();
-        void setChild(AstNode *node);
+            AstNode *getChild();
+            void setChild(AstNode *node);
+        
+        private:
+            AstNode *child = nullptr;
     };
 
     // Ordinary uniops

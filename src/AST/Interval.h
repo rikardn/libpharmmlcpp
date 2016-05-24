@@ -26,22 +26,23 @@ namespace PharmML
 {
     class Interval : public AstNode
     {
-        AstNode *LeftEndpoint = nullptr;
-        AstNode *RightEndpoint = nullptr;
-        bool openLeftEndpoint = false;
-        bool openRightEndpoint = false;
-
         public:
-        Interval(xml::Node node);
-        AstNode *getLeftEndpoint();
-        AstNode *getRightEndpoint();
-        void setLeftEndpoint(AstNode *node);
-        void setRightEndpoint(AstNode *node);
-        bool isLeftEndpointOpen();
-        bool isRightEndpointOpen();
-        void setLeftEndpointOpen(bool open);
-        void setRightEndpointOpen(bool open);
-        void accept(AstNodeVisitor *visitor);
+            Interval(xml::Node node);
+            AstNode *getLeftEndpoint();
+            AstNode *getRightEndpoint();
+            void setLeftEndpoint(AstNode *node);
+            void setRightEndpoint(AstNode *node);
+            bool isLeftEndpointOpen();
+            bool isRightEndpointOpen();
+            void setLeftEndpointOpen(bool open);
+            void setRightEndpointOpen(bool open);
+            void accept(AstNodeVisitor *visitor);
+
+        private:
+            AstNode *LeftEndpoint = nullptr;
+            AstNode *RightEndpoint = nullptr;
+            bool openLeftEndpoint = false;
+            bool openRightEndpoint = false;
     };
 }
 

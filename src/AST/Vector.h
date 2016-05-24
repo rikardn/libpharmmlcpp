@@ -26,29 +26,29 @@ namespace PharmML
 {
     class VectorCell
     {
-        private:
-        int index;
-        AstNode *content;
-
         public:
-        VectorCell(int index, AstNode *content);
-        int getIndex();
-        AstNode *getContent();
+            VectorCell(int index, AstNode *content);
+            int getIndex();
+            AstNode *getContent();
+        
+        private:
+            int index;
+            AstNode *content;
     };
 
     class Vector : public AstNode
     {
-        private:
-        int length; // To infer length when implicitly built
-        ScalarReal *defaultContent; // To infer value of implicit elements
-        std::vector<AstNode *> elements;
-
         public:
-        Vector(std::string length, std::string defaultValue);
-        void addElement(AstNode *element);
-        void populateCell(VectorCell *cell);
-        std::vector<AstNode *> getElements();
-        virtual void accept(AstNodeVisitor *visitor);
+            Vector(std::string length, std::string defaultValue);
+            void addElement(AstNode *element);
+            void populateCell(VectorCell *cell);
+            std::vector<AstNode *> getElements();
+            virtual void accept(AstNodeVisitor *visitor);
+        
+        private:
+            int length; // To infer length when implicitly built
+            ScalarReal *defaultContent; // To infer value of implicit elements
+            std::vector<AstNode *> elements;
     };
 }
 

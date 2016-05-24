@@ -27,29 +27,31 @@ namespace PharmML
 {
     class SymbRef : public AstNode
     {
-        std::string blkIdRef;
-        std::string symbIdRef;
-        Symbol *symbol;
-
         public:
-        SymbRef(std::string ref);
-        SymbRef(xml::Node node);
-        virtual void accept(AstNodeVisitor *visitor);
-        std::string toString();
-        std::string getBlkId();
-        void setSymbol(Symbol *symbol);
-        Symbol *getSymbol();
+            SymbRef(std::string ref);
+            SymbRef(xml::Node node);
+            virtual void accept(AstNodeVisitor *visitor);
+            std::string toString();
+            std::string getBlkId();
+            void setSymbol(Symbol *symbol);
+            Symbol *getSymbol();
+
+        private:
+            std::string blkIdRef;
+            std::string symbIdRef;
+            Symbol *symbol;
     };
 
     class ColumnRef : public AstNode
     {
-        std::string columnIdRef;
-
         public:
-        ColumnRef(std::string ref);
-        ColumnRef(xml::Node node);
-        virtual void accept(AstNodeVisitor *visitor);
-        std::string toString();
+            ColumnRef(std::string ref);
+            ColumnRef(xml::Node node);
+            virtual void accept(AstNodeVisitor *visitor);
+            std::string toString();
+        
+        private:
+            std::string columnIdRef;
     };
 }
 

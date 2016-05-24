@@ -30,9 +30,6 @@ namespace PharmML
 
     class ScalarInt : public Scalar
     {
-        private:
-            int value;
-
         public:
             ScalarInt(int value);
             ScalarInt(std::string s);
@@ -40,13 +37,13 @@ namespace PharmML
             std::string toString();
             int toInt();
             virtual void accept(AstNodeVisitor *visitor);
+        
+        private:
+            int value;
     };
 
     class ScalarReal : public Scalar
     {
-        private:
-            double value;
-
         public:
             ScalarReal(double value);
             ScalarReal(std::string s);
@@ -54,6 +51,9 @@ namespace PharmML
             std::string toString();
             double toDouble();
             virtual void accept(AstNodeVisitor *visitor);
+        
+        private:
+            double value;
     };
 }
 

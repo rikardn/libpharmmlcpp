@@ -25,14 +25,15 @@ namespace PharmML
 {
     class Binop : public AstNode
     {
-        AstNode *left;
-        AstNode *right;
-
         public:
-        void setLeft(AstNode *child);
-        AstNode *getLeft();
-        void setRight(AstNode *child);
-        AstNode *getRight();
+            void setLeft(AstNode *child);
+            AstNode *getLeft();
+            void setRight(AstNode *child);
+            AstNode *getRight();
+
+        private:
+            AstNode *left;
+            AstNode *right;
     };
 
     // Ordinary binops

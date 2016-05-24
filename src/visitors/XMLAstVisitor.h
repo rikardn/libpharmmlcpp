@@ -38,18 +38,6 @@ namespace PharmML
 {
     class XMLAstVisitor : public AstNodeVisitor
     {
-        private:
-            xml::Node value;
-            void setValue(xml::Node node);
-            xml::Node acceptLeft(Binop *binop);
-            xml::Node acceptRight(Binop *binop);
-            xml::Node acceptChild(Uniop *uniop);
-            xml::Node accept(AstNode *node);
-            void createUniop(Uniop *node, std::string op);
-            void createLogicUniop(LogicUniop *node, std::string op);
-            void createBinop(Binop *node, std::string op);
-            void createLogicBinop(Binop *node, std::string op);
-
         public:
             xml::Node getValue();
 
@@ -143,6 +131,18 @@ namespace PharmML
             virtual void visit(FunctionCall *node);
             virtual void visit(FunctionArgument *node);
             virtual void visit(Interval *node);
+
+        private:
+            xml::Node value;
+            void setValue(xml::Node node);
+            xml::Node acceptLeft(Binop *binop);
+            xml::Node acceptRight(Binop *binop);
+            xml::Node acceptChild(Uniop *uniop);
+            xml::Node accept(AstNode *node);
+            void createUniop(Uniop *node, std::string op);
+            void createLogicUniop(LogicUniop *node, std::string op);
+            void createBinop(Binop *node, std::string op);
+            void createLogicBinop(Binop *node, std::string op);
     };
 }
 

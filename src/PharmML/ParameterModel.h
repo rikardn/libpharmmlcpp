@@ -29,24 +29,25 @@ namespace PharmML
 {
     class ParameterModel
     {
-        PharmML::PharmMLContext *context;
-        std::string blkId;
-        std::vector<Parameter *> parameters;
-        std::vector<PopulationParameter *> populationParameters;
-        std::vector<IndividualParameter *> individualParameters;
-        std::vector<RandomVariable *> randomVariables;
-        std::vector<Correlation *> correlations;
-
         public:
-        std::vector<Parameter *> getParameters();
-        std::vector<PopulationParameter *> getPopulationParameters();
-        std::vector<IndividualParameter *> getIndividualParameters();
-        std::vector<RandomVariable *> getRandomVariables();
-        std::vector<Correlation *> getCorrelations();
-        ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        std::string getBlkId();
+            std::vector<Parameter *> getParameters();
+            std::vector<PopulationParameter *> getPopulationParameters();
+            std::vector<IndividualParameter *> getIndividualParameters();
+            std::vector<RandomVariable *> getRandomVariables();
+            std::vector<Correlation *> getCorrelations();
+            ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            std::string getBlkId();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string blkId;
+            std::vector<Parameter *> parameters;
+            std::vector<PopulationParameter *> populationParameters;
+            std::vector<IndividualParameter *> individualParameters;
+            std::vector<RandomVariable *> randomVariables;
+            std::vector<Correlation *> correlations;
     };
 }
 

@@ -41,10 +41,6 @@ namespace PharmML
 {
     class SymbRefFinder : public AstNodeVisitor
     {
-        private:
-            std::unordered_set<SymbRef *> symbRefs;
-            std::unordered_map<std::string, Symbol *> *symbolMap = nullptr;
-
         public:
             SymbRefFinder();
             SymbRefFinder(std::unordered_map<std::string, Symbol *> *symbolMap);
@@ -141,6 +137,10 @@ namespace PharmML
             virtual void visit(FunctionCall *node);
             virtual void visit(FunctionArgument *node);
             virtual void visit(Interval *node);
+
+        private:
+            std::unordered_set<SymbRef *> symbRefs;
+            std::unordered_map<std::string, Symbol *> *symbolMap = nullptr;
     };
 }
 

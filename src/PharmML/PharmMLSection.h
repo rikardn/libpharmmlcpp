@@ -27,8 +27,6 @@ namespace PharmML
         private:
             xml::Node xml_node;
 
-        protected:
-
         public:
             xml::Node getXMLNode();
             void setXMLNode(xml::Node node);

@@ -28,38 +28,41 @@ namespace PharmML
 {
     class DesignSpace
     {
-        PharmML::PharmMLContext *context;
-        std::string oid;
-        std::vector<ObjectRef *> interventionRefs;
-        std::vector<ObjectRef *> observationRefs;
-        std::vector<ObjectRef *> armRefs;
-        AstNode *dosingTimes = nullptr;
-
         public:
-        DesignSpace(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        xml::Node xml();
-        std::string getOid();
-        std::vector<ObjectRef *> getInterventionRefs();
-        std::vector<ObjectRef *> getObservationRefs();
-        std::vector<ObjectRef *> getArmRefs();
-        AstNode *getDosingTimes();
-        void accept(PharmMLVisitor *visitor);
+            DesignSpace(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            xml::Node xml();
+            std::string getOid();
+            std::vector<ObjectRef *> getInterventionRefs();
+            std::vector<ObjectRef *> getObservationRefs();
+            std::vector<ObjectRef *> getArmRefs();
+            AstNode *getDosingTimes();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string oid;
+            std::vector<ObjectRef *> interventionRefs;
+            std::vector<ObjectRef *> observationRefs;
+            std::vector<ObjectRef *> armRefs;
+            AstNode *dosingTimes = nullptr;
     };
 
     class DesignSpaces
     {
-        PharmML::PharmMLContext *context;
-        std::vector<PharmML::Variable *> designParameters;
-        std::vector<PharmML::DesignSpace *> designSpaces;
-
         public:
-        DesignSpaces(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        xml::Node xml();
-        std::vector<PharmML::Variable *> getDesignParameters();
-        std::vector<PharmML::DesignSpace *> getDesignSpaces();
-        void accept(PharmMLVisitor *visitor);
+            DesignSpaces(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            xml::Node xml();
+            std::vector<PharmML::Variable *> getDesignParameters();
+            std::vector<PharmML::DesignSpace *> getDesignSpaces();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<PharmML::Variable *> designParameters;
+            std::vector<PharmML::DesignSpace *> designSpaces;
+
     };
 }
 

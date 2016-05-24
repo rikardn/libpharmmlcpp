@@ -31,14 +31,6 @@ namespace PharmML
 {
     class Correlation : public Referer, public PharmMLSection
     {
-        private:
-            PharmML::PharmMLContext *context;
-            PharmML::VariabilityReference *variabilityReference;
-            std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
-            std::string pairwiseType;
-            PharmML::AstNode *pairwiseAssignment = nullptr;
-            std::string matrixType;
-
         public:
             Correlation(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
@@ -54,6 +46,14 @@ namespace PharmML
             PharmML::SymbolSet correlatedSymbols;
 
             void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            PharmML::VariabilityReference *variabilityReference;
+            std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
+            std::string pairwiseType;
+            PharmML::AstNode *pairwiseAssignment = nullptr;
+            std::string matrixType;
     };
 }
 

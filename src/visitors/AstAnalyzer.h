@@ -40,29 +40,6 @@ namespace PharmML
 {
     class AstAnalyzer : public AstNodeVisitor, public StringVisitor
     {
-        private:
-            bool first_node;
-
-            SymbRef *symbref;
-            Scalar *scalar;
-            ScalarInt *scalar_int;
-            ScalarReal *scalar_real;
-            FunctionCall *functioncall;
-            Piecewise *piecewise;
-            Vector *vector;
-
-            std::string acceptLeft(Binop *binop);
-            std::string acceptRight(Binop *binop);
-            std::string infix(Binop *binop, std::string op);
-            std::string acceptChild(Uniop *uniop);
-            std::string accept(AstNode *node);
-            std::string getLogicLiteral(bool value);
-
-            int length = 1;     // The length of the result from the AST. 1 for scalar and n for vector
-            /* Currently support vector and default for scalar.
-               FIXME: Need more sofistication here, but documentation on what operators do to vectors is needed.
-               also a return type of the whole AST would be nice (real, int, vector<int> etc), but more PharmML info is needed
-                */
         public:
             AstAnalyzer();
             void reset();
@@ -166,6 +143,30 @@ namespace PharmML
             void visit(FunctionCall *node) override;
             void visit(FunctionArgument *node) override;
             void visit(Interval *node) override;
+
+        private:
+            bool first_node;
+
+            SymbRef *symbref;
+            Scalar *scalar;
+            ScalarInt *scalar_int;
+            ScalarReal *scalar_real;
+            FunctionCall *functioncall;
+            Piecewise *piecewise;
+            Vector *vector;
+
+            std::string acceptLeft(Binop *binop);
+            std::string acceptRight(Binop *binop);
+            std::string infix(Binop *binop, std::string op);
+            std::string acceptChild(Uniop *uniop);
+            std::string accept(AstNode *node);
+            std::string getLogicLiteral(bool value);
+
+            int length = 1;     // The length of the result from the AST. 1 for scalar and n for vector
+            /* Currently support vector and default for scalar.
+               FIXME: Need more sofistication here, but documentation on what operators do to vectors is needed.
+               also a return type of the whole AST would be nice (real, int, vector<int> etc), but more PharmML info is needed
+                */
     };
 }
 

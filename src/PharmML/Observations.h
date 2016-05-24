@@ -34,80 +34,84 @@ namespace PharmML
 {
     class Observation : public Object, public PharmMLSection
     {
-        PharmML::PharmMLContext *context;
-        ObjectRef *oidRef = nullptr;
-        AstNode *number = nullptr;
-        AstNode *times = nullptr;
-        std::vector<PharmML::SymbRef *> continuousVariables;
-        std::vector<PharmML::SymbRef *> discreteVariables;
-
         public:
-        Observation(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
-        ObjectRef* getOidRef();
-        AstNode *getNumber();
-        AstNode *getTimes();
-        std::vector<PharmML::SymbRef *> getContinuousVariables();
-        std::vector<PharmML::SymbRef *> getDiscreteVariables();
-        void accept(PharmMLVisitor *visitor);
-        void accept(ObjectVisitor *visitor);
+            Observation(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
+            ObjectRef* getOidRef();
+            AstNode *getNumber();
+            AstNode *getTimes();
+            std::vector<PharmML::SymbRef *> getContinuousVariables();
+            std::vector<PharmML::SymbRef *> getDiscreteVariables();
+            void accept(PharmMLVisitor *visitor);
+            void accept(ObjectVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            ObjectRef *oidRef = nullptr;
+            AstNode *number = nullptr;
+            AstNode *times = nullptr;
+            std::vector<PharmML::SymbRef *> continuousVariables;
+            std::vector<PharmML::SymbRef *> discreteVariables;
     };
 
     // IndividualObservations class
     class IndividualObservations : public Object, public PharmMLSection
     {
-        PharmML::PharmMLContext *context;
-        std::vector<PharmML::ColumnMapping *> columnMappings;
-        Dataset *dataset;
-
         public:
-        IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
-        xml::Node xml();
-        std::vector<PharmML::ColumnMapping *> getColumnMappings();
-        Dataset *getDataset();
-        void accept(PharmMLVisitor *visitor);
-        void accept(ObjectVisitor *visitor);
+            IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
+            xml::Node xml();
+            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            Dataset *getDataset();
+            void accept(PharmMLVisitor *visitor);
+            void accept(ObjectVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<PharmML::ColumnMapping *> columnMappings;
+            Dataset *dataset;
     };
 
     // ObservationCombination class
     class ObservationCombination
     {
-        PharmML::PharmMLContext *context;
-        std::string oid;
-        std::vector<std::string> oidRefs;
-        AstNode *relative = nullptr;
-
         public:
-        ObservationCombination(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getOid();
-        std::vector<std::string> getOidRefs();
-        AstNode *getRelative();
-        void accept(PharmMLVisitor *visitor);
+            ObservationCombination(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getOid();
+            std::vector<std::string> getOidRefs();
+            AstNode *getRelative();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string oid;
+            std::vector<std::string> oidRefs;
+            AstNode *relative = nullptr;
     };
 
     // Observations class (contains objects of classes above)
     class Observations
     {
-        PharmML::PharmMLContext *context;
-        std::vector<Variable *> designParameters;
-        std::vector<Observation *> simulationObservations;
-        std::vector<IndividualObservations *> datasetObservations;
-        // TODO: Implement support for LookupTable according to schema
-        std::vector<ObservationCombination *> observationCombinations;
-
         public:
-        Observations(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        xml::Node xml();
-        std::vector<Variable *> getDesignParameters();
-        std::vector<Observation *> getObservations(); // Or getSimulationObservations()?
-        std::vector<IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?
-        std::vector<ObservationCombination *> getObservationCombinations();
-        void accept(PharmMLVisitor *visitor);
+            Observations(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            xml::Node xml();
+            std::vector<Variable *> getDesignParameters();
+            std::vector<Observation *> getObservations(); // Or getSimulationObservations()?
+            std::vector<IndividualObservations *> getIndividualObservations(); // Or getDatasetObservations()?
+            std::vector<ObservationCombination *> getObservationCombinations();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<Variable *> designParameters;
+            std::vector<Observation *> simulationObservations;
+            std::vector<IndividualObservations *> datasetObservations;
+            // TODO: Implement support for LookupTable according to schema
+            std::vector<ObservationCombination *> observationCombinations;
     };
 }
 

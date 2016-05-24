@@ -37,82 +37,87 @@ namespace PharmML
     // TODO: Maybe move this somewhere?
     class SteadyStateParameter : public AstNode
     {
-        AstNode *assignment = nullptr;
-        SymbRef *symbRef = nullptr;
+        public:
+            SteadyStateParameter(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            AstNode *getAssignment();
+            AstNode *getSymbRef();
+            void accept(AstNodeVisitor *visitor);
 
         protected:
-        PharmML::PharmMLContext *context;
+            PharmML::PharmMLContext *context;
 
-        public:
-        SteadyStateParameter(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        AstNode *getAssignment();
-        AstNode *getSymbRef();
-        void accept(AstNodeVisitor *visitor);
+        private:
+            AstNode *assignment = nullptr;
+            SymbRef *symbRef = nullptr;
     };
 
     class Administration : public Object, public PharmMLSection
     {
-        PharmML::PharmMLContext *context;
-        std::string type;
-        std::string target_type;
-        AstNode *amount = nullptr;
-        PharmML::SymbRef *target_symbref = nullptr;
-        PharmML::TargetMapping *target_mapping = nullptr;
-        AstNode *times = nullptr;
-        AstNode *steady = nullptr;
-        AstNode *duration = nullptr;
-        AstNode *rate = nullptr;
-
         public:
-        Administration(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
-        xml::Node xml();
-        std::string getType();
-        std::string getTargetType();
-        AstNode *getAmount();
-        PharmML::TargetMapping *getTargetMapping();
-        PharmML::SymbRef *getTargetSymbRef();
-        AstNode *getTimes();
-        AstNode *getSteady();
-        AstNode *getDuration();
-        AstNode *getRate();
-        void accept(PharmMLVisitor *visitor);
-        void accept(ObjectVisitor *visitor);
+            Administration(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
+            xml::Node xml();
+            std::string getType();
+            std::string getTargetType();
+            AstNode *getAmount();
+            PharmML::TargetMapping *getTargetMapping();
+            PharmML::SymbRef *getTargetSymbRef();
+            AstNode *getTimes();
+            AstNode *getSteady();
+            AstNode *getDuration();
+            AstNode *getRate();
+            void accept(PharmMLVisitor *visitor);
+            void accept(ObjectVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string type;
+            std::string target_type;
+            AstNode *amount = nullptr;
+            PharmML::SymbRef *target_symbref = nullptr;
+            PharmML::TargetMapping *target_mapping = nullptr;
+            AstNode *times = nullptr;
+            AstNode *steady = nullptr;
+            AstNode *duration = nullptr;
+            AstNode *rate = nullptr;
     };
 
     class IndividualAdministration : public ObjectReferer, public PharmMLSection
     {
-        PharmML::PharmMLContext *context;
-        ObjectRef *oidRef;
-        std::vector<PharmML::ColumnMapping *> columnMappings;
-        Dataset *dataset;
-
         public:
-        IndividualAdministration(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
-        xml::Node xml();
-        ObjectRef *getOidRef();
-        std::vector<PharmML::ColumnMapping *> getColumnMappings();
-        Dataset *getDataset();
-        void accept(PharmMLVisitor *visitor);
+            IndividualAdministration(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
+            xml::Node xml();
+            ObjectRef *getOidRef();
+            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            Dataset *getDataset();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            ObjectRef *oidRef;
+            std::vector<PharmML::ColumnMapping *> columnMappings;
+            Dataset *dataset;
     };
 
     class Interventions
     {
-        PharmML::PharmMLContext *context;
-        std::vector<PharmML::Administration *> administrations;
-        std::vector<PharmML::IndividualAdministration *> individualAdministrations;
-
         public:
-        Interventions(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        xml::Node xml();
-        std::vector<Administration *> getAdministrations();
-        std::vector<IndividualAdministration *> getIndividualAdministrations();
-        void accept(PharmMLVisitor *visitor);
+            Interventions(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            xml::Node xml();
+            std::vector<Administration *> getAdministrations();
+            std::vector<IndividualAdministration *> getIndividualAdministrations();
+            void accept(PharmMLVisitor *visitor);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<PharmML::Administration *> administrations;
+            std::vector<PharmML::IndividualAdministration *> individualAdministrations;
+
     };
 }
 

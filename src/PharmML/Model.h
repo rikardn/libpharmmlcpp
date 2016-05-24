@@ -33,28 +33,28 @@ namespace PharmML
 {
     class Model
     {
-        PharmMLContext *context;
-        PharmML::IndependentVariable *IndependentVariable;
-        std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
-        PharmML::ModelDefinition *ModelDefinition;
-        PharmML::TrialDesign *TrialDesign;
-        PharmML::ModellingSteps *ModellingSteps = nullptr;
-        CPharmML::Consolidator *consolidator;
+        public:
+            Model(const char *filename);
+            ~Model();
+            void write(const char *filename);
+            PharmML::IndependentVariable *getIndependentVariable();
+            std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
+            PharmML::ModelDefinition *getModelDefinition();
+            PharmML::TrialDesign *getTrialDesign();
+            PharmML::ModellingSteps *getModellingSteps();
+            CPharmML::Consolidator *getConsolidator();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
 
         private:
-        void parse(xml::Node node);
+            PharmMLContext *context;
+            PharmML::IndependentVariable *IndependentVariable;
+            std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
+            PharmML::ModelDefinition *ModelDefinition;
+            PharmML::TrialDesign *TrialDesign;
+            PharmML::ModellingSteps *ModellingSteps = nullptr;
+            CPharmML::Consolidator *consolidator;
+            void parse(xml::Node node);
 
-        public:
-        Model(const char *filename);
-        ~Model();
-        void write(const char *filename);
-        PharmML::IndependentVariable *getIndependentVariable();
-        std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
-        PharmML::ModelDefinition *getModelDefinition();
-        PharmML::TrialDesign *getTrialDesign();
-        PharmML::ModellingSteps *getModellingSteps();
-        CPharmML::Consolidator *getConsolidator();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
     };
 }
 

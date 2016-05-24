@@ -35,28 +35,29 @@ namespace PharmML
     class Model;
     class PharmMLContext
     {
-        Model *model;
-        xmlDoc *doc;
-        xmlXPathContext *xpath_context;
-
-        std::string buildNamespace(std::string name, std::string namespace_version);
-        std::string getNamespaceVersion();
-
         public:
-        std::unordered_map<std::string, Symbol *> symbols;
-        std::vector<SymbRef *> symbRefs;
-        Symbol *resolveSymbref(SymbRef *symbRef);
-        AstNodeFactory factory;
-        xmlDoc *getDocument();
-        void validateDocument();
-        xml::Node getRoot();
-        xml::Node getSingleElement(xml::Node, const char *xpath);
-        std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
+            std::unordered_map<std::string, Symbol *> symbols;
+            std::vector<SymbRef *> symbRefs;
+            Symbol *resolveSymbref(SymbRef *symbRef);
+            AstNodeFactory factory;
+            xmlDoc *getDocument();
+            void validateDocument();
+            xml::Node getRoot();
+            xml::Node getSingleElement(xml::Node, const char *xpath);
+            std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
-        PharmMLContext(const char *filename, Model *model);
-        ~PharmMLContext();
-        void write(const char *filename);
-        void fillSymbRefs();
+            PharmMLContext(const char *filename, Model *model);
+            ~PharmMLContext();
+            void write(const char *filename);
+            void fillSymbRefs();
+
+        private:
+            Model *model;
+            xmlDoc *doc;
+            xmlXPathContext *xpath_context;
+
+            std::string buildNamespace(std::string name, std::string namespace_version);
+            std::string getNamespaceVersion();
     };
 }
 

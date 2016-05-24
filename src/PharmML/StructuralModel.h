@@ -32,20 +32,21 @@ namespace PharmML
 {
     class StructuralModel
     {
-        PharmML::PharmMLContext *context;
-        std::string blkId;
-        std::vector<PharmML::CommonVariable *> variables;
-        std::vector<PharmML::PKMacro *> pk_macros;
-
         public:
-        StructuralModel(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::vector<PharmML::CommonVariable *> getVariables();
-        std::vector<PharmML::CommonVariable *> getDerivatives();
-        std::vector<PharmML::PKMacro *> getPKMacros();
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
-        std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
-        std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);
+            StructuralModel(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<PharmML::CommonVariable *> getVariables();
+            std::vector<PharmML::CommonVariable *> getDerivatives();
+            std::vector<PharmML::PKMacro *> getPKMacros();
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
+            std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string blkId;
+            std::vector<PharmML::CommonVariable *> variables;
+            std::vector<PharmML::PKMacro *> pk_macros;
     };
 }
 

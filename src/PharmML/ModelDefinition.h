@@ -33,23 +33,25 @@ namespace PharmML
 {
     class ModelDefinition
     {
-        PharmML::PharmMLContext *context;
-        std::vector<PharmML::VariabilityModel *> VariabilityModels;
-        // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
-        PharmML::CovariateModel *CovariateModel = nullptr;
-        PharmML::ParameterModel *ParameterModel = nullptr;
-        PharmML::StructuralModel *StructuralModel = nullptr;
-        PharmML::ObservationModel *ObservationModel = nullptr;
-
         public:
-        std::vector<PharmML::VariabilityModel *> getVariabilityModels();
-        PharmML::CovariateModel *getCovariateModel();
-        PharmML::ParameterModel *getParameterModel();
-        PharmML::StructuralModel *getStructuralModel();
-        PharmML::ObservationModel *getObservationModel();
-        ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            std::vector<PharmML::VariabilityModel *> getVariabilityModels();
+            PharmML::CovariateModel *getCovariateModel();
+            PharmML::ParameterModel *getParameterModel();
+            PharmML::StructuralModel *getStructuralModel();
+            PharmML::ObservationModel *getObservationModel();
+            ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<PharmML::VariabilityModel *> VariabilityModels;
+            // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
+            PharmML::CovariateModel *CovariateModel = nullptr;
+            PharmML::ParameterModel *ParameterModel = nullptr;
+            PharmML::StructuralModel *StructuralModel = nullptr;
+            PharmML::ObservationModel *ObservationModel = nullptr;
+
     };
 }
 

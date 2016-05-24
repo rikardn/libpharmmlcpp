@@ -26,18 +26,19 @@ namespace PharmML
 {
     class DistributionParameter : public Referer
     {
-        PharmMLContext *context;
-        std::string name;
-        AstNode *assignment;
-
         public:
-        DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
-        DistributionParameter(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getName();
-        void setName(std::string name);
-        AstNode *getAssignment();
-        void setAssignment(AstNode *assignment);
+            DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
+            DistributionParameter(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            void setName(std::string name);
+            AstNode *getAssignment();
+            void setAssignment(AstNode *assignment);
+        
+        private:
+            PharmMLContext *context;
+            std::string name;
+            AstNode *assignment;
     };
 }
 

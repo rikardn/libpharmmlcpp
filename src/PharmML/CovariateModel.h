@@ -29,13 +29,14 @@ namespace PharmML
 {
     class CovariateModel
     {
-        PharmML::PharmMLContext *context;
-        std::vector<PharmML::Covariate *> covariates;
-
         public:
-        CovariateModel(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::vector<PharmML::Covariate *> getCovariates();
+            CovariateModel(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<PharmML::Covariate *> getCovariates();
+        
+        private:
+            PharmML::PharmMLContext *context;
+            std::vector<PharmML::Covariate *> covariates;
     };
 }
 

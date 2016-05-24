@@ -29,20 +29,21 @@ namespace PharmML
 {
     class VariabilityModel
     {
-        PharmML::PharmMLContext *context;
-        std::string name;
-        std::string blkId;
-        std::string type;
-        std::vector<PharmML::VariabilityLevel *> variabilityLevels;
-
         public:
-        VariabilityModel(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getName();
-        std::string getBlkId();
-        bool onResidualError();
-        bool onParameter();
-        std::vector<PharmML::VariabilityLevel *> getVariabilityLevels();
+            VariabilityModel(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            std::string getBlkId();
+            bool onResidualError();
+            bool onParameter();
+            std::vector<PharmML::VariabilityLevel *> getVariabilityLevels();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            std::string blkId;
+            std::string type;
+            std::vector<PharmML::VariabilityLevel *> variabilityLevels;
     };
 }
 

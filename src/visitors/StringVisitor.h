@@ -24,11 +24,12 @@ namespace PharmML
 {
     class StringVisitor
     {
+        public:
+            std::string getValue();
+        
         protected:
             std::string value;
             void setValue(std::string value);
-        public:
-            std::string getValue();
     };
 }
 

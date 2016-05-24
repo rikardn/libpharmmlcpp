@@ -29,16 +29,17 @@ namespace PharmML
 {
     class Distribution
     {
-        PharmMLContext *context;
-        std::string name;
-        std::vector<PharmML::DistributionParameter *> parameters;
-
         public:
-        Distribution(PharmMLContext *context, xml::Node node);
-        void parse(xml::Node node);
-        std::string getName();
-        std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-        void accept(PharmML::PharmMLVisitor *visitor);
+            Distribution(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            std::vector<PharmML::DistributionParameter *> getDistributionParameters();
+            void accept(PharmML::PharmMLVisitor *visitor);
+
+        private:
+            PharmMLContext *context;
+            std::string name;
+            std::vector<PharmML::DistributionParameter *> parameters;
     };
 }
 

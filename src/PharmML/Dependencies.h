@@ -25,17 +25,18 @@ namespace PharmML
 {
     class Dependencies
     {
-        std::unordered_set<PharmML::SymbRef *> symbRefs;
-        std::unordered_set<std::string> dependencies;
-
         public:
-        void addDependency(PharmML::SymbRef *symbRef);
-        void addDependency(std::string symbol);
-        bool hasDependency(PharmML::SymbRef *symbRef);
-        bool hasDependency(std::string symbol);
-        std::unordered_set<std::string> getDependencySet();
-        int numDependencies();
-        std::unordered_set<PharmML::SymbRef *> getSymbRefs();
+            void addDependency(PharmML::SymbRef *symbRef);
+            void addDependency(std::string symbol);
+            bool hasDependency(PharmML::SymbRef *symbRef);
+            bool hasDependency(std::string symbol);
+            std::unordered_set<std::string> getDependencySet();
+            int numDependencies();
+            std::unordered_set<PharmML::SymbRef *> getSymbRefs();
+        
+        private:
+            std::unordered_set<PharmML::SymbRef *> symbRefs;
+            std::unordered_set<std::string> dependencies;
     };
 }
 

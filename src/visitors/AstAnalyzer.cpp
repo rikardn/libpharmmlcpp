@@ -80,6 +80,10 @@ namespace PharmML
         return this->piecewise;
     }
     
+    int AstAnalyzer::getLength() {
+        return this->length;
+    }
+
     // visitor methods
     void AstAnalyzer::visit(SymbRef *node) {
         if (first_node) {
@@ -500,6 +504,7 @@ namespace PharmML
                 s += ";" + this->accept(cnode);
             }
         }
+        this->length = node->getElements().size();  // Length of the vector
         this->setValue("vector[" + s + "]");
     }
     

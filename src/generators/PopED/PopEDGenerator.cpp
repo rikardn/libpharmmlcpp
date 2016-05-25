@@ -194,7 +194,8 @@ namespace PharmML
             adm->getTargetSymbRef()->accept(&this->ast_gen);
             return this->ast_gen.getValue();
         } else {
-            return "";      // FIXME: To check TargetMapping here
+            TargetMapping *target = adm->getTargetMapping();
+            return target->getMaps()[0].modelSymbol;  // FIXME: What should really be the constraints here? 
         }
     }
 

@@ -16,6 +16,7 @@
  */
 
 #include "Observations.h"
+#include <AST/AstTransformation.h>
 
 namespace PharmML
 {
@@ -86,6 +87,10 @@ namespace PharmML
 
     AstNode *Observation::getTimes() {
         return this->times;
+    }
+
+    std::vector<AstNode *> Observation::getTimesAsVector() {
+        return AstTransformation::toVector(this->times);
     }
 
     std::vector<PharmML::SymbRef *> Observation::getContinuousVariables() {

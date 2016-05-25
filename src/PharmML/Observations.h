@@ -41,6 +41,7 @@ namespace PharmML
             ObjectRef* getOidRef();
             AstNode *getNumber();
             AstNode *getTimes();
+            std::vector<AstNode *> getTimesAsVector();
             std::vector<PharmML::SymbRef *> getContinuousVariables();
             std::vector<PharmML::SymbRef *> getDiscreteVariables();
             void accept(PharmMLVisitor *visitor);

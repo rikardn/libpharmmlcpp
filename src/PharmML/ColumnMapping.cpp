@@ -76,11 +76,12 @@ namespace PharmML
             this->assignment = this->context->factory.create(piecewise_node);
         }
 
-        // Get target maps (e.g. to PK macros)
-        std::vector<xml::Node> target_nodes = this->context->getElements(node, "./ds:TargetMapping");
-        for (xml::Node target_node : target_nodes) {
+        // Get target map (e.g. to PK macros)
+        // FIXME: Assume just one target mapping until we know definitely what unlimited maps means
+        xml::Node target_node = this->context->getSingleElement(node, "./ds:TargetMapping");
+        if (target_node.exists()) {
             TargetMapping *map = new TargetMapping(this->context, target_node);
-            this->target_mappings.push_back(map);
+            this->target_map = map;
         }
     }
 
@@ -107,12 +108,27 @@ namespace PharmML
         return this->mappedSymbol;
     }
 
-    bool ColumnMapping::hasTargetMappings() {
-        return !this->target_mappings.empty();
+    TargetMapping *ColumnMapping::getTargetMapping() {
+        return this->target_map;
     }
 
-    std::vector<TargetMapping *> ColumnMapping::getTargetMappings() {
-        return this->target_mappings;
+    // Convenience method to scan and get all administration->data symbol maps
+    std::unordered_map<int, std::string> ColumnMapping::getAdministrationMap() {
+        std::unordered_map<int, std::string> adm_map;
+        if (!this->target_map) {
+            return adm_map;
+        }
+        std::vector<PharmML::MapType> maps = target_map->getMaps();
+        for (PharmML::MapType map : maps) {
+            // Presence of both dataSymbol and admNumber indicates a map to (macro) administration
+            if (map.dataSymbol != "" && map.admNumber != "") {
+                int adm_number;
+                if (PharmML::AstAnalyzer::tryParseInt(map.admNumber, adm_number)) {
+                    adm_map[adm_number] = map.dataSymbol;
+                }
+            }
+        }
+        return adm_map;
     }
 
     void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

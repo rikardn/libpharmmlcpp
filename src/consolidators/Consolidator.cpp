@@ -346,14 +346,14 @@ namespace CPharmML
                 CPharmML::ExternalDataset *cext_ds = new CPharmML::ExternalDataset(ext_ds);
                 if (cext_ds->hasTargetMappings()) {
                     std::vector<int> adm_numbers = cext_ds->getMappedAdmNumbers();
-                    for (int adm_number : adm_numbers) {
+                    for (int adm : adm_numbers) {
                         // TODO: Consider that there might be multiple structural models (blkId)!
-                        CPharmML::PKMacro *cmacro = this->pk_macros->getAdministration(adm_number);
+                        CPharmML::PKMacro *cmacro = this->pk_macros->getAdministration(adm);
                         if (cmacro) {
                             cext_ds->addConsolidatedPKMacro(cmacro);
                         } else {
                             // FIXME: Decide if it's a good idea to save the containing node as a PharmMLSection (getPKMacrosSection below) for pretty logging!
-                            this->logger->error("Administration number " + std::to_string(adm_number)
+                            this->logger->error("Administration number " + std::to_string(adm)
                                 + " in external dataset (%a) matches no defined administration macro (%b)", ext_ds, model->getModelDefinition()->getStructuralModel()->getPKMacrosSection());
                         }
                     }

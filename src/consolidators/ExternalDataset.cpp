@@ -23,30 +23,36 @@ namespace CPharmML
     ExternalDataset::ExternalDataset(PharmML::ExternalDataset *ext_ds) {
         this->ext_ds = ext_ds;
 
-        // Scan column mappings after macro mappings
+        // Split column mappings into symbol and target mapping ones
         std::vector<PharmML::ColumnMapping *> column_mappings = ext_ds->getColumnMappings();
         for (PharmML::ColumnMapping *column_map : column_mappings) {
-            if (column_map->hasTargetMappings()) {
-                this->target_mapping_column_maps.push_back(column_map);
+            if (column_map->getTargetMapping()) {
+                this->target_column_maps.push_back(column_map);
+                
+                // TODO: Support multiple maps (and decide what that would mean)
+                std::unordered_map<int, std::string> adm_map = column_map->getAdministrationMap();
+
+                // Add mapped administrations for easy access
+                this->mapped_adm.emplace(column_map, std::unordered_set<int>());
+                for (auto adm_pair : adm_map) {
+                    this->mapped_adm[column_map].insert(adm_pair.first);
+                }
             } else {
-                this->symbol_mapping_column_maps.push_back(column_map);
+                this->symbol_column_maps.push_back(column_map);
             }
         }
     }
 
-    // Add objects for consolidation with ExternalDataset
+    // Add macro for consolidation with this ExternalDataset
     void ExternalDataset::addConsolidatedPKMacro(CPharmML::PKMacro *cmacro) {
-        for (PharmML::ColumnMapping *column_map : this->target_mapping_column_maps) {
-            for (PharmML::TargetMapping *target_map : column_map->getTargetMappings()) {
-                std::vector<PharmML::MapType> maps = target_map->getMaps();
-                for (PharmML::MapType map : maps) {
-                    if (cmacro->hasAttribute("adm") && map.admNumber != "") {
-                        int map_adm, adm_attr;
-                        this->ast_analyzer.tryParseInt(map.admNumber, map_adm);
-                        this->ast_analyzer.tryParsePureInt(cmacro->getAttribute("adm"), adm_attr);
-                        if (map_adm == adm_attr) {
-                            this->column_map_cmacros[column_map].insert(cmacro);
-                        }
+        if (cmacro->hasAttribute("adm")) { // Only consider administration macro's
+            // Consider target mapping column maps for mapping this cmacro
+            for (PharmML::ColumnMapping *column_map : this->target_column_maps) {
+                // Add cmacro if and only if external dataset maps it
+                int adm_attr;
+                if (this->ast_analyzer.tryParsePureInt(cmacro->getAttribute("adm"), adm_attr)) {
+                    if (mapped_adm[column_map].count(adm_attr) > 1) {
+                        this->mapped_cmacros[column_map].insert(cmacro);
                     }
                 }
             }
@@ -64,24 +70,16 @@ namespace CPharmML
 
     // Get attributes
     bool ExternalDataset::hasTargetMappings() {
-        return !this->target_mapping_column_maps.empty();
+        return !this->target_column_maps.empty();
     }
 
     std::vector<int> ExternalDataset::getMappedAdmNumbers() {
-        std::vector<int> result;
-        for (PharmML::ColumnMapping *column_mapping : this->target_mapping_column_maps) {
-            std::vector<PharmML::TargetMapping *> target_mappings = column_mapping->getTargetMappings();
-            for (PharmML::TargetMapping *target_mapping : target_mappings) {
-                // TODO: Be careful with blkIdRef here (multiple structural models -- a possibility!)
-                std::vector<PharmML::MapType> maps = target_mapping->getMaps();
-                for (PharmML::MapType map : maps) {
-                    if (map.admNumber != "") {
-                        // TODO: What if someone put something which isn't an integer herein?
-                        result.push_back(std::stoi(map.admNumber));
-                    }
-                }
+        std::vector<int> numbers;
+        for (PharmML::ColumnMapping *column_map : this->target_column_maps) {
+            for (int adm : this->mapped_adm[column_map]) {
+                numbers.push_back(adm);
             }
         }
-        return result;
+        return numbers;
     }
 }

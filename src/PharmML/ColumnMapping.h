@@ -18,10 +18,12 @@
 #ifndef PHARMML_COLUMNMAPPING_H_
 #define PHARMML_COLUMNMAPPING_H_
 
+#include <unordered_map>
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
+#include <visitors/AstAnalyzer.h>
 #include <symbols/Symbol.h>
 
 namespace PharmML
@@ -61,9 +63,9 @@ namespace PharmML
             std::string getColumnIdRef();
 
             Symbol *getMappedSymbol();
-            
-            bool hasTargetMappings();
-            std::vector<TargetMapping *> getTargetMappings();
+
+            TargetMapping *getTargetMapping();
+            std::unordered_map<int, std::string> getAdministrationMap();
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
@@ -75,7 +77,7 @@ namespace PharmML
             AstNode *assignment = nullptr;
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
-            std::vector<TargetMapping *> target_mappings;
+            TargetMapping *target_map = nullptr;
     };
 }
 

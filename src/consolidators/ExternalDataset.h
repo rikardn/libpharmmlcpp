@@ -52,9 +52,10 @@ namespace CPharmML
             PharmML::ExternalDataset *ext_ds = nullptr;
             std::vector<CPharmML::PKMacro *> macros;
 
-            std::vector<PharmML::ColumnMapping *> target_mapping_column_maps;
-            std::vector<PharmML::ColumnMapping *> symbol_mapping_column_maps;
-            std::unordered_map<PharmML::ColumnMapping *, std::unordered_set<CPharmML::PKMacro *>> column_map_cmacros;
+            std::vector<PharmML::ColumnMapping *> target_column_maps;
+            std::vector<PharmML::ColumnMapping *> symbol_column_maps;
+            std::unordered_map<PharmML::ColumnMapping *, std::unordered_set<int>> mapped_adm;
+            std::unordered_map<PharmML::ColumnMapping *, std::unordered_set<CPharmML::PKMacro *>> mapped_cmacros;
     };
 }
 

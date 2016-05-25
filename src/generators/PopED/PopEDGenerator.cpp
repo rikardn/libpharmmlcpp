@@ -325,6 +325,8 @@ namespace PharmML
 
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");
+        TextFormatter notfixed_bpop;
+        notfixed_bpop.openVector("notfixed_bpop = c()", 0, ", ");
         auto pop_params_obj = this->model->getConsolidator()->getPopulationParameters();
         /* Note: One more level in-between. Should make support of multiple parameter models easier and present a nice place (CPharmML::PopulationParameters)
          * for convenience functions that can do more than only get the consolidated objects. */
@@ -334,8 +336,10 @@ namespace PharmML
                 std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?
                 if (pop_param->getParameterEstimation()) {
                     bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                    notfixed_bpop.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
                 } else {
                     bpop.add(indiv_name + "=0");
+                    notfixed_bpop.add("1");
                 }
             }
             PopulationParameter *symbol = pop_param->getPopulationParameter();
@@ -345,7 +349,10 @@ namespace PharmML
         }
         bpop.closeVector();
         bpop.noFinalNewline();
+        notfixed_bpop.closeVector();
+        notfixed_bpop.noFinalNewline();
         form.add(bpop.createString());
+        form.add(notfixed_bpop.createString());
 
         // Sigmas
         TextFormatter sigma_init_formatter;

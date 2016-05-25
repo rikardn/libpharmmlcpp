@@ -8,7 +8,7 @@ ifeq ($(TARGET), UNIX)
   OUTPUT = main
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -Wall -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -Wall -O3 -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = main.exe
 endif
 

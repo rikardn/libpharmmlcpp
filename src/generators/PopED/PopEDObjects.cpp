@@ -69,39 +69,26 @@ namespace PharmML
     }
 
     std::string PopEDObjects::generateAdministration(Administration *administration) {
-        AstNode *amount = administration->getAmount();
-        AstNode *times = administration->getTimes();
+        std::vector<AstNode *> amounts = administration->getAmountAsVector();
+        std::vector<AstNode *> times = administration->getTimesAsVector();
 
         if (this->doseNames.size() == 0) {      // First visit will get dose names
-            AstAnalyzer analyzer;
-            amount->accept(&analyzer);
-            for (int i = 1; i <= analyzer.getLength(); i++) {
+            for (std::vector<AstNode *>::size_type i = 1; i <= amounts.size(); i++) {
                 this->doseNames.push_back("DOSE_" + std::to_string(i) + "_AMT");
                 this->timeNames.push_back("DOSE_" + std::to_string(i) + "_TIME");
             }
         }
 
-        AstAnalyzer vector_analyzer;
-        amount->accept(&vector_analyzer);
-        Vector *vec = vector_analyzer.getPureVector();
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
-        if (vec) {
-            // FIXME: No vecs for now
-        } else {
-            amount->accept(&this->rast);
-            formatter.add(this->doseNames[0] + "=" + this->rast.getValue());
-            // FIXME: Times can be vector of one here. Add method to get a vector in all cases
-            vector_analyzer.reset();
-            times->accept(&vector_analyzer);
-            Vector *reset_vec = vector_analyzer.getPureVector();
-            if (reset_vec) {
-                reset_vec->getElements()[0]->accept(&this->rast);
-            } else {
-                times->accept(&this->rast);
-            }
-            formatter.add(this->timeNames[0] + "=" + this->rast.getValue());
+
+        for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
+            amounts[i]->accept(&this->rast);
+            formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
+            times[i]->accept(&this->rast);
+            formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
         }
+
         formatter.closeVector();
         formatter.noFinalNewline();
 

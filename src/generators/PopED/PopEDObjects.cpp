@@ -91,7 +91,15 @@ namespace PharmML
         } else {
             amount->accept(&this->rast);
             formatter.add(this->doseNames[0] + "=" + this->rast.getValue());
-            times->accept(&this->rast);
+            // FIXME: Times can be vector of one here. Add method to get a vector in all cases
+            vector_analyzer.reset();
+            times->accept(&vector_analyzer);
+            Vector *reset_vec = vector_analyzer.getPureVector();
+            if (reset_vec) {
+                reset_vec->getElements()[0]->accept(&this->rast);
+            } else {
+                times->accept(&this->rast);
+            }
             formatter.add(this->timeNames[0] + "=" + this->rast.getValue());
         }
         formatter.closeVector();

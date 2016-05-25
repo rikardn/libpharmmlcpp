@@ -113,6 +113,9 @@ namespace PharmML
         for (PopulationParameter *parameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
             remaining_parameters.addSymbol(parameter);
         }
+        for (Parameter *parameter : model->getModelDefinition()->getParameterModel()->getParameters()) {
+            remaining_parameters.addSymbol(parameter);
+        }
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
             remaining_parameters.remove(parameter->referencedSymbols);
         }
@@ -345,6 +348,7 @@ namespace PharmML
             PopulationParameter *symbol = pop_param->getPopulationParameter();
             if (this->remaining_parameters.hasSymbol(symbol)) {
                 bpop.add(symbol->getSymbId() + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                notfixed_bpop.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
             }
         }
         bpop.closeVector();

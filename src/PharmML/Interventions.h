@@ -62,9 +62,11 @@ namespace PharmML
             std::string getType();
             std::string getTargetType();
             AstNode *getAmount();
+            std::vector<AstNode *> getAmountAsVector();
             PharmML::TargetMapping *getTargetMapping();
             PharmML::SymbRef *getTargetSymbRef();
             AstNode *getTimes();
+            std::vector<AstNode *> getTimesAsVector();
             AstNode *getSteady();
             AstNode *getDuration();
             AstNode *getRate();

@@ -17,6 +17,7 @@
 
 #include "Interventions.h"
 #include <iostream>
+#include <AST/AstTransformation.h>
 
 namespace PharmML
 {
@@ -137,6 +138,14 @@ namespace PharmML
 
     AstNode *Administration::getAmount() {
         return this->amount;
+    }
+
+    std::vector<AstNode *> Administration::getAmountAsVector() {
+        return AstTransformation::toVector(this->amount);
+    }
+
+    std::vector<AstNode *> Administration::getTimesAsVector() {
+        return AstTransformation::toVector(this->times);
     }
 
     TargetMapping *Administration::getTargetMapping() {

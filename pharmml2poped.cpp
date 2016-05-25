@@ -29,8 +29,8 @@ int main(int argc, char **argv)
 {
     const char *filename;
     if (argc < 2) {
-        filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
+        std::cout << "No PharmML file specified" << std::endl;
+        return 5;
     } else {
         filename = argv[1];
     }

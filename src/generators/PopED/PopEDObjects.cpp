@@ -173,18 +173,14 @@ namespace PharmML
     }
 
     void PopEDObjects::visit(Observation *object) {
-        AstNode *times = object->getTimes();
-        AstAnalyzer analyzer;
-        times->accept(&analyzer);
-        Vector *vector = analyzer.getPureVector();
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
-        if (vector) {
-            for (AstNode *element : vector->getElements()) {
-                element->accept(&this->rast);
-                formatter.add(this->rast.getValue());
-            }
+
+        for (AstNode *time_point : object->getTimesAsVector()) {
+            time_point->accept(&this->rast);
+            formatter.add(this->rast.getValue());
         }
+
         formatter.closeVector();
         formatter.noFinalNewline();
         this->setValue(formatter.createString());

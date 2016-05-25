@@ -384,9 +384,13 @@ namespace PharmML
         //for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
             // TODO: Fill SimulationSteps
         //}
-        //for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
-            // TODO: Fill OptimalDesignStep
-        //}
+        for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
+            std::vector<ParameterEstimation *> opt_params = opt_step->getParameters();
+            for (PharmML::ParameterEstimation *opt_param : opt_params) {
+                Symbol *found_symbol = symbolMap[opt_param->getSymbRef()->toString()];
+                opt_param->addReference(found_symbol);
+            }
+        }
     }
 
     std::vector<EstimationStep *> ModellingSteps::getEstimationSteps() {

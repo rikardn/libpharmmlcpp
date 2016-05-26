@@ -391,7 +391,8 @@ namespace PharmML
                 bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
                 if (pop_param->isVariabilityParameter() && found) {
                     sigma_init_formatter.add(this->accept(pop_param->getParameterEstimation()->getInitValue()));
-                    sigma_fixed_formatter.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
+                    bool sigma_fix = pop_param->getParameterEstimation()->isFixed();
+                    sigma_fixed_formatter.add(sigma_fix ? "0" : "1");
                     break;
                 }
             }
@@ -409,6 +410,10 @@ namespace PharmML
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
         form.addMany(this->td_visitor.getDatabaseA());
+
+        if (scalar) {
+            form.add("iFIMCalculationType = 0");
+        }
 
         form.closeVector();
 

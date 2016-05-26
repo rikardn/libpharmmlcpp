@@ -203,15 +203,20 @@ namespace PharmML
     }
 
     std::string PopEDGenerator::genStructuralModel() {
+        // FIXME: Can probably be safely removed now
         // Visit all CommonVariable's to build consolidating objects
         for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {
             var->accept(&this->r_gen);
         }
 
+        bool has_derivatives = this->model->getModelDefinition()->getStructuralModel()->hasDerivatives();
+
         TextFormatter form;
 
         // Generate separate ODE function
-        form.addMany(this->genODEFunc());
+        if (has_derivatives) {
+            form.addMany(this->genODEFunc());
+        }
 
         // Function header
         form.indentAdd("ff <- function(model_switch, xt, parameters, poped.db) {");

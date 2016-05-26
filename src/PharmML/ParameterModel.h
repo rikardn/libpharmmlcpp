@@ -35,6 +35,7 @@ namespace PharmML
             std::vector<IndividualParameter *> getIndividualParameters();
             std::vector<RandomVariable *> getRandomVariables();
             std::vector<Correlation *> getCorrelations();
+            SymbolSet getAllParameters();
             ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);

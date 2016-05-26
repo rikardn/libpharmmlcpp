@@ -68,7 +68,7 @@ namespace PharmML
         return false;
     }
 
-    void SymbolSet::merge(SymbolSet& set) {
+    void SymbolSet::merge(const SymbolSet& set) {
         this->symbols.insert(set.symbols.begin(), set.symbols.end());
     }
 

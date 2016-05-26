@@ -5,18 +5,18 @@ LIBS = -lxml2
 ifeq ($(TARGET), UNIX)
   CC = g++
   CFLAGS = -Wall -std=c++11 -g -Isrc `xml2-config --cflags`
-  OUTPUT = main
+  OUTPUT = pharmml2poped
 else
   CC = x86_64-w64-mingw32-g++
   CFLAGS = -Wall -O3 -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
-  OUTPUT = main.exe
+  OUTPUT = pharmml2poped.exe
 endif
 
 #main: main.cpp libpharmmlc.a
 #	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 pharmml2poped: pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.h src/generators/PopED/PopEDSymbols.h src/generators/PopED/PopEDObjects.cpp src/generators/PopED/PopEDObjects.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
-	$(CC) pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)
+	$(CC) pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
 	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)

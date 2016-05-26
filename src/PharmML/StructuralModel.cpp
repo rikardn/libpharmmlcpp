@@ -73,6 +73,10 @@ namespace PharmML
         return this->variables;
     }
 
+    bool StructuralModel::hasDerivatives() {
+        return this->getDerivatives().size() > 0;
+    }
+
     // Return all derivative variables
     std::vector<PharmML::CommonVariable *> StructuralModel::getDerivatives() {
         std::vector<PharmML::CommonVariable *> derivs;

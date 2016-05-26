@@ -74,17 +74,17 @@ namespace PharmML
         TrialDesign *td = this->model->getTrialDesign();
         if (td) {
             Arms *arms = td->getArms();
-            this->nArms = arms->getArms().size();
-
-            // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
-            // This might change in future versions of PharmML
-            Interventions *interventions = td->getInterventions();
-            if (interventions) {
-                std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
-                this->td_visitor.setIndividualAdministrations(ia);
-            }
-
             if (arms) {
+                this->nArms = arms->getArms().size();
+
+                // Need to get all IndividualAdministrations separately as these cannot be Objects and referenced.
+                // This might change in future versions of PharmML
+                Interventions *interventions = td->getInterventions();
+                if (interventions) {
+                    std::vector<IndividualAdministration *> ia = interventions->getIndividualAdministrations();
+                    this->td_visitor.setIndividualAdministrations(ia);
+                }
+
                 for (Arm *arm : arms->getArms()) {
                     arm->accept(&this->td_visitor);
                 }
@@ -249,11 +249,15 @@ namespace PharmML
         // Y definition
 
         // FIXME: This code again!
+        // Don't want to have derivatives or pass through dependencies of derivatives
         std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
         SymbolSet derivs_set;
         for (auto deriv : derivatives) {
             derivs_set.addSymbol(deriv);
         }
+        
+        // Don't want to pass thorugh ordinary parameters
+        derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());
 
         SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
         SymbolSet output_set;

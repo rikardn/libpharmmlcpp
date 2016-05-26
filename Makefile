@@ -12,8 +12,8 @@ else
   OUTPUT = main.exe
 endif
 
-main: main.cpp libpharmmlc.a
-	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
+#main: main.cpp libpharmmlc.a
+#	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 pharmml2poped: pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.h src/generators/PopED/PopEDSymbols.h src/generators/PopED/PopEDObjects.cpp src/generators/PopED/PopEDObjects.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
 	$(CC) pharmml2poped.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp -opharmml2poped -lpharmmlc $(CFLAGS) -L. $(LIBS)

@@ -246,18 +246,19 @@ namespace PharmML
         form.add("times_xt <- drop(xt)");
         form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
         form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
-        form.add("integration_start_time <- 0");
 
-        // Event data
-        // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-        form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
-        form.add("time = dose_times,");
-        form.add("value = dose_amt, method = c('add'))");
-        form.closeIndent();
-        form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
-
-        // ODE call
         if (has_derivatives) {
+            form.add("integration_start_time <- 0");
+
+            // Event data
+            // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
+            form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
+            form.add("time = dose_times,");
+            form.add("value = dose_amt, method = c('add'))");
+            form.closeIndent();
+            form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
+
+            // ODE call
             form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
         }
         form.emptyLine();

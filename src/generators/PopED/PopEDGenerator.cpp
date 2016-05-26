@@ -48,7 +48,9 @@ namespace PharmML
 
         // Preamble
         form.add("library(PopED)");
-        form.add("library(deSolve)");
+        if (this->model->getModelDefinition()->getStructuralModel()->hasDerivatives()) {
+            form.add("library(deSolve)");
+        }
         form.emptyLine();
 
         // Output function definitions (e.g. MDL proportionalError function)
@@ -223,16 +225,17 @@ namespace PharmML
         form.indentAdd("with(as.list(parameters), {");
 
         // Init values
-        TextFormatter dini_formatter;
-        dini_formatter.openVector("d_ini <- c()", 0, ", ");
-        for (Symbol *symbol : this->derivs) {
-            DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
-            derivative_variable->getInitialValue()->accept(&this->ast_gen);
-            dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+        if (has_derivatives) {
+            TextFormatter dini_formatter;
+            dini_formatter.openVector("d_ini <- c()", 0, ", ");
+            for (Symbol *symbol : this->derivs) {
+                DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
+                derivative_variable->getInitialValue()->accept(&this->ast_gen);
+                dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+            }
+            dini_formatter.closeVector();
+            form.add(dini_formatter.createString());
         }
-        dini_formatter.closeVector();
-        form.add(dini_formatter.createString());
-
         // Dose times
         form.add("times_xt <- drop(xt)");
         form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
@@ -248,7 +251,9 @@ namespace PharmML
         form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
         // ODE call
-        form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+        if (has_derivatives) {
+            form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+        }
         form.emptyLine();
 
         // Y definition

@@ -102,7 +102,13 @@ namespace PharmML
         PopEDAstGenerator astgen(&symbgen);
         for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
             std::string result;
-            if (!parameter->isStructured()) {
+            if (parameter->isStructured()) {
+                parameter->getPopulationValue()->accept(&astgen);
+                std::string pop_name = astgen.getValue();
+                parameter->getRandomEffects()[0]->accept(&astgen);      // FIXME: More random effects?
+                std::string rand_name = astgen.getValue();
+                result = parameter->getSymbId() + "=bpop[" + pop_name + "] * exp(b[" + rand_name + "])";
+            } else {
                 parameter->getAssignment()->accept(&astgen);
                 std::string assign = astgen.getValue();
                 result = parameter->getSymbId() + "=bpop[" + assign + "]";

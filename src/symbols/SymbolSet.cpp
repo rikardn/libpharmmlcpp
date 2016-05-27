@@ -52,6 +52,10 @@ namespace PharmML
         }
     }
 
+    void SymbolSet::removeSymbol(Symbol *symbol) {
+        this->symbols.erase(symbol);
+    }
+
     bool SymbolSet::hasSymbol(Symbol *symbol) {
        return (this->symbols.count(symbol) > 0);
     }

@@ -18,6 +18,7 @@
 #include "PopEDGenerator.h"
 #include <iostream>
 #include <algorithm>
+#include <visitors/SymbolNameVisitor.h>
 
 namespace PharmML
 {
@@ -241,13 +242,12 @@ namespace PharmML
             }
             dini_formatter.closeVector();
             form.add(dini_formatter.createString());
-        }
-        // Dose times
-        form.add("times_xt <- drop(xt)");
-        form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-        form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
 
-        if (has_derivatives) {
+            // Dose times
+            form.add("times_xt <- drop(xt)");
+            form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+            form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+
             form.add("integration_start_time <- 0");
 
             // Event data
@@ -260,10 +260,18 @@ namespace PharmML
 
             // ODE call
             form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+            form.emptyLine();
         }
-        form.emptyLine();
 
         // Y definition
+
+        if (!has_derivatives) {
+            form.indentAdd("mod <- function(xt) {");
+            SymbolNameVisitor symbname;
+            model->getIndependentVariable()->accept(&symbname);
+            form.add(symbname.getValue() + " <- xt");
+        }
+
 
         // FIXME: This code again!
         // Don't want to have derivatives or pass through dependencies of derivatives
@@ -273,7 +281,7 @@ namespace PharmML
             derivs_set.addSymbol(deriv);
         }
         
-        // Don't want to pass thorugh ordinary parameters
+        // Don't want to pass through ordinary parameters
         derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());
 
         SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
@@ -292,11 +300,20 @@ namespace PharmML
         }
 
         form.add("y <- " + output->toString());
-        form.add("y=y[match(times_xt, out[,'time'])]");
-        form.add("y=cbind(y)");
+
+        if (!has_derivatives) {
+            form.outdentAdd("}");
+            form.emptyLine();
+            form.add("y <- sapply(xt, mod)");
+        }
+
+        if (has_derivatives) {
+            form.add("y=y[match(times_xt, out[,'time'])]");
+            form.add("y=cbind(y)");
+        }
 
         // Return list
-        form.add("return(list(y=y,poped.db=poped.db))");
+        form.add("return(list(y=y, poped.db=poped.db))");
         form.outdentAdd("})");
         form.outdentAdd("}");
         form.emptyLine();

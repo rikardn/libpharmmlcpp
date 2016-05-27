@@ -48,6 +48,8 @@ namespace PharmML
     }
 
     void RSymbols::visit(IndividualParameter *node) {
+        node->asExplicit()->accept(this->astgen);
+        this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
     }
 
     void RSymbols::visit(RandomVariable *node) {

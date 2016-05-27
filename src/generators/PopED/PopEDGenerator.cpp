@@ -64,7 +64,7 @@ namespace PharmML
         form.addMany(this->genParameterModel());
         form.addMany(this->genStructuralModel());
         form.addMany(this->genErrorFunction());
-        form.add("");
+        form.emptyLine();
 
         // Generate PopED database call (initial design and space)
         form.addMany(this->genDatabaseCall());
@@ -448,6 +448,25 @@ namespace PharmML
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
         form.addMany(this->td_visitor.getDatabaseA());
+
+
+        // Handle the first DesignSpace. FIXME: Generalization needed. Should use oid
+        TrialDesign *td = model->getTrialDesign();
+        if (td) {
+            DesignSpaces *ds = td->getDesignSpaces();
+            if (ds) {
+                DesignSpace *designSpace = ds->getDesignSpaces()[0];
+                AstAnalyzer intervalAnalyzer;
+                designSpace->getDosingTimes()->accept(&intervalAnalyzer);
+                Interval *interval = intervalAnalyzer.getPureInterval();
+                if (interval) {
+                    interval->getLeftEndpoint()->accept(&this->ast_gen);
+                    form.add("minxt=" + this->ast_gen.getValue());
+                    interval->getRightEndpoint()->accept(&this->ast_gen);
+                    form.add("maxxt=" + this->ast_gen.getValue());
+                }
+            }
+        }
 
         if (scalar) {
             form.add("iFIMCalculationType = 0");

@@ -40,6 +40,7 @@ namespace PharmML
     }
 
     void PopEDPastDerivativesSymbols::visit(RandomVariable *node) {
+        this->setValue(node->getSymbId());
     }
 
     void PopEDPastDerivativesSymbols::visit(VariabilityLevel *node) {

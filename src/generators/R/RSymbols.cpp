@@ -25,6 +25,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/FunctionDefinition.h>
 #include <generators/R/RSymbols.h>
+#include <iostream>
 
 namespace PharmML
 {
@@ -59,6 +60,7 @@ namespace PharmML
     }
 
     void RSymbols::visit(IndependentVariable *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(Variable *node) {
@@ -66,7 +68,7 @@ namespace PharmML
             node->getAssignment()->accept(this->astgen);
             this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
         } else {
-            this->setValue(std::string());
+            this->setValue("");
         }
     }
 
@@ -76,8 +78,8 @@ namespace PharmML
     }
 
     void RSymbols::visit(Covariate *node) {
-        node->getAssignment()->accept(this->astgen);
-        this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
+        //node->getAssignment()->accept(this->astgen);
+        this->setValue(node->getSymbId()); // + " <- " + this->astgen->getValue());
     }
 
     void RSymbols::visit(FunctionDefinition *node) {

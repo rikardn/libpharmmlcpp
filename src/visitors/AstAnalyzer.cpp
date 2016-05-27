@@ -54,6 +54,7 @@ namespace PharmML
         this->functioncall = nullptr;
         this->piecewise = nullptr;
         this->vector = nullptr;
+        this->interval = nullptr;
     }
 
     // Methods to get a single object (if complex, return a nullptr)
@@ -83,6 +84,10 @@ namespace PharmML
 
     Vector *AstAnalyzer::getPureVector() {
         return this->vector;
+    }
+
+    Interval *AstAnalyzer::getPureInterval() {
+        return this->interval;
     }
 
     int AstAnalyzer::getLength() {
@@ -619,6 +624,9 @@ namespace PharmML
     }
 
     void AstAnalyzer::visit(Interval *node) {
-        this->first_node = false;
+        if (first_node) {
+            this->interval = node;
+            this->first_node = false;
+        }
     }
 }

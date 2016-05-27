@@ -31,9 +31,9 @@
 #include <AST/Constant.h>
 #include <AST/Vector.h>
 #include <AST/Piecewise.h>
-#include <symbols/DerivativeVariable.h>
-#include <AST/FunctionCall.h>
 #include <AST/Interval.h>
+#include <AST/FunctionCall.h>
+#include <symbols/DerivativeVariable.h>
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
@@ -53,6 +53,7 @@ namespace PharmML
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
             Vector *getPureVector();
+            Interval *getPureInterval();
             
             int getLength();
 
@@ -160,6 +161,7 @@ namespace PharmML
             FunctionCall *functioncall;
             Piecewise *piecewise;
             Vector *vector;
+            Interval *interval;
 
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);

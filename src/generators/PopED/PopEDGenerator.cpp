@@ -19,6 +19,7 @@
 #include <iostream>
 #include <algorithm>
 #include <visitors/SymbolNameVisitor.h>
+#include <visitors/SymbRefFinder.h>
 
 namespace PharmML
 {
@@ -101,39 +102,23 @@ namespace PharmML
         form.openVector("parameters = c()", 1, ", ");
         PopEDSymbols symbgen;
         PopEDAstGenerator astgen(&symbgen);
-        for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
-            std::string result;
-            if (parameter->isStructured()) {
-                parameter->getPopulationValue()->accept(&astgen);
-                std::string pop_name = astgen.getValue();
-                parameter->getRandomEffects()[0]->accept(&astgen);      // FIXME: More random effects?
-                std::string rand_name = astgen.getValue();
-                result = parameter->getSymbId() + "=bpop[" + pop_name + "] * exp(b[" + rand_name + "])";
-            } else {
-                parameter->getAssignment()->accept(&astgen);
-                std::string assign = astgen.getValue();
-                result = parameter->getSymbId() + "=bpop[" + assign + "]";
+ 
+        // Declare population parameters except variability parameters
+        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+            if (!param->isVariabilityParameter()) {
+                param->getPopulationParameter()->accept(&symbgen);
+                form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
             }
-            form.add(result);
         }
 
-        // Remaining THETAs. From all parameters remove those referenced from individual parmaters and random variables
-        // FIXME: refactor using Consolidator
-        for (PopulationParameter *parameter : model->getModelDefinition()->getParameterModel()->getPopulationParameters()) {
-            remaining_parameters.addSymbol(parameter);
-        }
-        for (Parameter *parameter : model->getModelDefinition()->getParameterModel()->getParameters()) {
-            remaining_parameters.addSymbol(parameter);
-        }
-        for (IndividualParameter *parameter : model->getModelDefinition()->getParameterModel()->getIndividualParameters()) {
-            remaining_parameters.remove(parameter->referencedSymbols);
-        }
-        for (RandomVariable *var : model->getModelDefinition()->getParameterModel()->getRandomVariables()) {
-            remaining_parameters.remove(var->referencedSymbols);
-        }
-        for (Symbol *symb : remaining_parameters) {
-            symb->accept(&symbgen);
-            form.add(symb->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+        // Declare ETAs
+        // FIXME: Must remove SIGMAs
+        Symbol *sigma = this->findSigmaSymbol();
+        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+            if (param->isVariabilityParameter() and param->getPopulationParameter() != sigma) {
+                param->getPopulationParameter()->accept(&symbgen);
+                form.add(param->getPopulationParameter()->getSymbId() + "=b[" + symbgen.getValue() + "]");
+            }
         }
 
         std::vector<std::string> time_names = this->td_visitor.getTimeNames();
@@ -164,14 +149,22 @@ namespace PharmML
             derivs_set.addSymbol(deriv);
         }
 
-        // FIXME: for same reason as above
-        auto indivs = this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        SymbolSet indiv_set;
-        for (auto indiv : indivs) {
-            indiv_set.addSymbol(indiv);
+        // FIXME: for same reason as above. Need method to get Sets of needed types
+        auto params = this->model->getModelDefinition()->getParameterModel()->getParameters();
+        SymbolSet nopass;
+        for (auto param : params) {
+            nopass.addSymbol(param);
+        }
+        auto pop_params = this->model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        for (auto pop_param : pop_params) {
+            nopass.addSymbol(pop_param);
+        }
+        auto random_vars = this->model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (auto random_var : random_vars) {
+            nopass.addSymbol(random_var);
         }
 
-        auto deriv_deps = derivs_set.getOrderedDependenciesNoPass(indiv_set);
+        auto deriv_deps = derivs_set.getOrderedDependenciesNoPass(nopass);
         for (Symbol *symbol : deriv_deps) {
             symbol->accept(&this->r_symb);
             form.add(this->r_symb.getValue());
@@ -237,9 +230,18 @@ namespace PharmML
             dini_formatter.openVector("d_ini <- c()", 0, ", ");
             for (Symbol *symbol : this->derivs) {
                 DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
-                derivative_variable->getInitialValue()->accept(&this->ast_gen);
+                AstNode *init = derivative_variable->getInitialValue();
+                init->accept(&this->ast_gen);
                 dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+                SymbRefFinder finder;     // Needed to find SymbRefs in the initial value
+                init->accept(&finder);
+                for (SymbRef *symbref : finder.getSymbRefs()) {
+                    Symbol *symbol = symbref->getSymbol();
+                    symbol->accept(&this->r_symb);
+                    form.add(this->r_symb.getValue());
+                }
             }
+
             dini_formatter.closeVector();
             form.add(dini_formatter.createString());
 
@@ -281,8 +283,12 @@ namespace PharmML
             derivs_set.addSymbol(deriv);
         }
         
-        // Don't want to pass through ordinary parameters
+        // Don't want to pass through ordinary parameters except IndividualParameters
         derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());
+        std::vector<IndividualParameter *> indiv_params =this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        for (auto indiv : indiv_params) {
+            derivs_set.removeSymbol(indiv);
+        }
 
         SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
         SymbolSet output_set;
@@ -373,20 +379,15 @@ namespace PharmML
          * for convenience functions that can do more than only get the consolidated objects. */
         auto pop_params = pop_params_obj->getPopulationParameters();
         for (auto pop_param : pop_params) {
-            if (pop_param->getIndividualParameters().size() != 0) {     // Check if individual parameter is connected
-                std::string indiv_name = pop_param->getIndividualParameters()[0]->getSymbId();  // FIXME: When will there be more than one?
+            if (!pop_param->isVariabilityParameter()) {
+                std::string parameter_name = pop_param->getPopulationParameter()->getSymbId();
                 if (pop_param->getParameterEstimation()) {
-                    bpop.add(indiv_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
+                    bpop.add(parameter_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue())); 
                     notfixed_bpop.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
                 } else {
-                    bpop.add(indiv_name + "=0");
-                    notfixed_bpop.add("1");
+                    bpop.add(parameter_name + "=0");
+                    notfixed_bpop.add(parameter_name + "=1");
                 }
-            }
-            PopulationParameter *symbol = pop_param->getPopulationParameter();
-            if (this->remaining_parameters.hasSymbol(symbol)) {
-                bpop.add(symbol->getSymbId() + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue()));
-                notfixed_bpop.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
             }
         }
         bpop.closeVector();
@@ -475,6 +476,23 @@ namespace PharmML
         form.closeVector();
 
         return form.createString();
+    }
+
+    Symbol *PopEDGenerator::findSigmaSymbol() {
+        SymbRef *error_ref = this->model->getModelDefinition()->getObservationModel()->getResidualError();
+        Symbol *rand_var = error_ref->getSymbol();
+
+        auto pop_params = this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters();
+
+        for (auto pop_param : pop_params) {
+            auto consolidatedRandom = pop_param->getRandomVariables();
+            bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
+            if (pop_param->isVariabilityParameter() && found) {
+                return pop_param->getPopulationParameter();
+            }
+        }
+
+        return nullptr;
     }
 
     // Visitors

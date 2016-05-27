@@ -102,8 +102,6 @@ namespace PharmML
             Model *model;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
 
-            SymbolSet remaining_parameters;     // THETAs not connected to an IndividualVariable
-
             std::string value;
             void setValue(std::string str);
             std::string accept(AstNode *);
@@ -114,6 +112,7 @@ namespace PharmML
             std::string genDatabaseCall();
             std::string getDoseVariable();
             void collectTrialDesignInformation();
+            Symbol *findSigmaSymbol();
     };
 }
 

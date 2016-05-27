@@ -72,6 +72,8 @@ namespace PharmML
 
             PharmML::AstNode *getAssignment();
 
+            AstNode *asExplicit();
+
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

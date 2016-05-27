@@ -17,6 +17,9 @@
 
 #include "IndividualParameter.h"
 #include <iostream>
+#include <AST/Uniop.h>
+#include <AST/Binop.h>
+#include <AST/AstBuilder.h>
 
 namespace PharmML
 {
@@ -229,6 +232,44 @@ namespace PharmML
             return this->explicitAssignment;
         }
         return nullptr;
+    }
+
+    // Convert any structure of parameter into general form
+    // FIXME: Currently support only explicit and structured and only log transform
+    AstNode *IndividualParameter::asExplicit() {
+        AstNode *result;
+        if (this->isExplicit()) {
+            result = this->getAssignment();
+        } else {
+            // trans^-1(  trans(pop) + fixedeff1*fixedeff2*covariate + ... + randomeffect1 + randomeffect2)
+            if (this->transformation == "log") {
+                // FIXME: Smart pointers. Need to copy nodes?
+                std::vector<AstNode *> addition_nodes;
+
+                UniopLog *log_node = new UniopLog();
+                log_node->setChild(this->getPopulationValue());
+                addition_nodes.push_back(log_node);
+
+                for (SymbRef *covariate : this->getCovariates()) {
+                    std::vector<AstNode *> product_nodes;
+                    for (FixedEffect *fe : this->getFixedEffects(covariate)) {
+                        product_nodes.push_back(fe->getReference());
+                    }
+                    product_nodes.push_back(covariate);
+                    addition_nodes.push_back(AstBuilder::multiplyMany(product_nodes));
+                }
+
+                for (SymbRef *random_effect : this->getRandomEffects()) {
+                    addition_nodes.push_back(random_effect);
+                }
+
+                UniopExp *exp_node = new UniopExp();
+                exp_node->setChild(AstBuilder::addMany(addition_nodes));
+                result = exp_node;
+            }
+        }
+
+        return result;
     }
 
     void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

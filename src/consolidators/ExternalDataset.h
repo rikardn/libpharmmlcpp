@@ -42,7 +42,9 @@ namespace CPharmML
             // Get attributes
             bool mapsMultiple();
             std::unordered_set<std::string> getSymbolStrings();
+            std::unordered_map<std::string, PharmML::Symbol*> getDataSymbolMap();
             std::unordered_set<int> getAdmNumbers();
+            std::unordered_map<std::string, CPharmML::PKMacro *> getDataAdministrationMap();
             std::unordered_set<int> getDanglingAdmNumbers();
 
         private:
@@ -53,8 +55,9 @@ namespace CPharmML
 
             // Mapping structures
             PharmML::Symbol *mapped_symbol = nullptr;
-            std::unordered_map<std::string, std::string> data_to_symbol;
+            std::unordered_map<std::string, std::string> symbol_to_data;
             std::unordered_map<int, std::string> adm_to_data;
+            std::unordered_map<std::string, PharmML::Symbol *> data_to_symbol_ptr;
             std::unordered_map<std::string, CPharmML::PKMacro *> data_to_adm_cmacro;
 
             // Attributes

@@ -51,6 +51,17 @@ namespace PharmML
         return this->maps;
     }
 
+    void TargetMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        // TODO: Is this right? How else should these strings be resolved to real symbols?
+        for (MapType map : this->maps) {
+            if (map.modelSymbol != "") {
+                PharmML::Symbol *symbol = symbolMap[map.modelSymbol];
+                map.modelSymbol_ptr = symbol;
+                this->addReference(symbol);
+            }
+        }
+    }
+
     void TargetMapping::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

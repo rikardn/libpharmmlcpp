@@ -353,7 +353,8 @@ namespace CPharmML
                 }
                 this->ext_dss.push_back(cext_ds);
 
-                // Search for dangling consolidated column mappings
+                // Search for dangling administration references within consolidated column mappings, to report via logger
+                // (Note that dangling model symbol references can and will be reported by class itself)
                 for (CPharmML::ColumnMapping *ccol_map : cext_ds->getColumnMappings()) {
                     for (int dangling_adm : ccol_map->getDanglingAdmNumbers()) {
                         // FIXME: Decide if it's a good idea to save the containing node as a PharmMLSection (getPKMacrosSection below) for pretty logging!

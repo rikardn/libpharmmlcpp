@@ -39,14 +39,19 @@ namespace CPharmML
             // Create associative arrays of (data) symbols to model (symbols and administrations)
             for (PharmML::MapType map : target_map->getMaps()) {
                 if (map.modelSymbol != "") {
-                    this->data_to_symbol[map.dataSymbol] = map.modelSymbol;
+                    this->symbol_to_data[map.modelSymbol] = map.dataSymbol;
+                    if (map.modelSymbol_ptr) {
+                        this->data_to_symbol_ptr[map.dataSymbol] = map.modelSymbol_ptr;
+                    } else {
+                        this->logger->error("TargetMapping element contains non-resolvable 'modelSymbol': " + map.modelSymbol, target_map);
+                    }
                     this->num_maps++;
                 } else if (map.admNumber != "") {
                     int adm;
                     if (PharmML::AstAnalyzer::tryParseInt(map.admNumber, adm)) {
                         this->adm_to_data[adm] = map.dataSymbol;
                     } else {
-                        this->logger->error("TargetMapping element contains non-integer 'admNumber'", target_map);
+                        this->logger->error("TargetMapping element contains non-integer 'admNumber': " + map.admNumber, target_map);
                     }
                     this->num_maps++;
                 } else {
@@ -56,18 +61,26 @@ namespace CPharmML
         }
     }
 
+    // True if this column mapping maps multiple symbols/administrations
     bool ColumnMapping::mapsMultiple() {
         return (this->num_maps > 1);
     }
 
+    // Get the set of all (TargetMapping) symbol strings contained within this column mapping
     std::unordered_set<std::string> ColumnMapping::getSymbolStrings() {
         std::unordered_set<std::string> symb_strs;
-        for (std::pair<std::string, std::string> pair : this->data_to_symbol) {
-            symb_strs.insert(pair.second);
+        for (std::pair<std::string, std::string> pair : this->symbol_to_data) {
+            symb_strs.insert(pair.first);
         }
         return symb_strs;
     }
 
+    // Get the (resolved) complete (TargetMapping) map from data symbol strings to the PharmML::Symbol pointers
+    std::unordered_map<std::string, PharmML::Symbol *> ColumnMapping::getDataSymbolMap() {
+        return data_to_symbol_ptr;
+    }
+
+    // Get the set of all (TargetMapping) administration numbers contained within this column mapping
     std::unordered_set<int> ColumnMapping::getAdmNumbers() {
         std::unordered_set<int> adm_nums;
         for (std::pair<int, std::string> pair : this->adm_to_data) {
@@ -76,11 +89,18 @@ namespace CPharmML
         return adm_nums;
     }
 
+    // Get the (resolved) complete (TargetMapping) map from data symbol strings to the CPharmML::PKMacro pointers
+    std::unordered_map<std::string, CPharmML::PKMacro *> ColumnMapping::getDataAdministrationMap() {
+        return data_to_adm_cmacro;
+    }
+
+    // Add an administration macro which this column mapping refers to (TargetMapping via admNumber)
     void ColumnMapping::addAdministrationMacro(int adm_num, CPharmML::PKMacro *cmacro) {
         std::string data_symbol = this->adm_to_data[adm_num];
         this->data_to_adm_cmacro[data_symbol] = cmacro;
     }
 
+    // Get the administration numbers which haven't been linked to an administration macro
     std::unordered_set<int> ColumnMapping::getDanglingAdmNumbers() {
         std::unordered_set<int> adm_nums;
         for (std::pair<int, std::string> pair : this->adm_to_data) {

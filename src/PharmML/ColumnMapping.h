@@ -33,10 +33,11 @@ namespace PharmML
         std::string dataSymbol;
         std::string modelSymbol;
         std::string admNumber;
+        Symbol *modelSymbol_ptr;
     };
 
     // TODO: Move elsewhere (Dataset.h?)
-    class TargetMapping : public PharmMLSection
+    class TargetMapping : public PharmMLSection, public Referer
     {
         public:
             TargetMapping(PharmMLContext *context, xml::Node node);
@@ -45,6 +46,7 @@ namespace PharmML
             std::string getBlkIdRef();
             std::vector<MapType> getMaps();
 
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
 
         private:

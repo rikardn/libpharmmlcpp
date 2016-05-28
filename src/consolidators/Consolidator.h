@@ -62,7 +62,6 @@ namespace CPharmML
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
             CPharmML::PKMacros *pk_macros;
-
             std::vector<CPharmML::ExternalDataset *> ext_dss;
 
             void consolidateSymbols(PharmML::Model *model);

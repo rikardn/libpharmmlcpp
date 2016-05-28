@@ -21,6 +21,7 @@ namespace PharmML
 {
     // TODO: Move elsewhere (Dataset.h?)
     TargetMapping::TargetMapping(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }

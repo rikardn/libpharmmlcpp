@@ -269,11 +269,8 @@ namespace PharmML
 
         if (!has_derivatives) {
             form.indentAdd("mod <- function(xt) {");
-            SymbolNameVisitor symbname;
-            model->getIndependentVariable()->accept(&symbname);
-            form.add(symbname.getValue() + " <- xt");
+            form.add(model->getIndependentVariable()->getSymbId() + " <- xt");
         }
-
 
         // FIXME: This code again!
         // Don't want to have derivatives or pass through dependencies of derivatives
@@ -282,7 +279,7 @@ namespace PharmML
         for (auto deriv : derivatives) {
             derivs_set.addSymbol(deriv);
         }
-        
+
         // Don't want to pass through ordinary parameters except IndividualParameters
         derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());
         std::vector<IndividualParameter *> indiv_params =this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();

@@ -19,42 +19,116 @@
 
 namespace CPharmML
 {
+    // Construct with ColumnMapping as base
+    ColumnMapping::ColumnMapping(PharmML::ColumnMapping *col_map, std::shared_ptr<PharmML::Logger> logger) {
+        this->logger = logger;
+        this->col_map = col_map;
+
+        // Deal with mapped symbols
+        PharmML::Symbol *mapped_symbol = col_map->getMappedSymbol();
+        if (mapped_symbol) {
+            this->mapped_symbol = mapped_symbol;
+            this->num_maps++;
+        }
+
+        // TODO: Deal with categorical covariate mapping
+
+        // Deal with target maps
+        PharmML::TargetMapping *target_map = col_map->getTargetMapping();
+        if (target_map) {
+            // Create associative arrays of (data) symbols to model (symbols and administrations)
+            for (PharmML::MapType map : target_map->getMaps()) {
+                if (map.modelSymbol != "") {
+                    this->data_to_symbol[map.dataSymbol] = map.modelSymbol;
+                    this->num_maps++;
+                } else if (map.admNumber != "") {
+                    int adm;
+                    if (PharmML::AstAnalyzer::tryParseInt(map.admNumber, adm)) {
+                        this->adm_to_data[adm] = map.dataSymbol;
+                    } else {
+                        this->logger->error("TargetMapping element contains non-integer 'admNumber'", target_map);
+                    }
+                    this->num_maps++;
+                } else {
+                    this->logger->error("TargetMapping element doesn't map symbol nor administration macro", target_map);
+                }
+            }
+        }
+    }
+
+    bool ColumnMapping::mapsMultiple() {
+        return (this->num_maps > 1);
+    }
+
+    std::unordered_set<std::string> ColumnMapping::getSymbolStrings() {
+        std::unordered_set<std::string> symb_strs;
+        for (std::pair<std::string, std::string> pair : this->data_to_symbol) {
+            symb_strs.insert(pair.second);
+        }
+        return symb_strs;
+    }
+
+    std::unordered_set<int> ColumnMapping::getAdmNumbers() {
+        std::unordered_set<int> adm_nums;
+        for (std::pair<int, std::string> pair : this->adm_to_data) {
+            adm_nums.insert(pair.first);
+        }
+        return adm_nums;
+    }
+
+    void ColumnMapping::addAdministrationMacro(int adm_num, CPharmML::PKMacro *cmacro) {
+        std::string data_symbol = this->adm_to_data[adm_num];
+        this->data_to_adm_cmacro[data_symbol] = cmacro;
+    }
+
+    std::unordered_set<int> ColumnMapping::getDanglingAdmNumbers() {
+        std::unordered_set<int> adm_nums;
+        for (std::pair<int, std::string> pair : this->adm_to_data) {
+            auto got = this->data_to_adm_cmacro.find(pair.second);
+            if (got == this->data_to_adm_cmacro.end()) {
+                adm_nums.insert(pair.first);
+            }
+        }
+        return adm_nums;
+    }
+
     // Construct with ExternalDataset as base
-    ExternalDataset::ExternalDataset(PharmML::ExternalDataset *ext_ds) {
+    ExternalDataset::ExternalDataset(PharmML::ExternalDataset *ext_ds, std::shared_ptr<PharmML::Logger> logger) {
+        this->logger = logger;
         this->ext_ds = ext_ds;
 
-        // Split column mappings into symbol and target mapping ones
-        std::vector<PharmML::ColumnMapping *> column_mappings = ext_ds->getColumnMappings();
-        for (PharmML::ColumnMapping *column_map : column_mappings) {
-            if (column_map->getTargetMapping()) {
-                this->target_column_maps.push_back(column_map);
-                
-                // TODO: Support multiple maps (and decide what that would mean)
-                std::unordered_map<int, std::string> adm_map = column_map->getAdministrationMap();
-
-                // Add mapped administrations for easy access
-                this->mapped_adm.emplace(column_map, std::unordered_set<int>());
-                for (auto adm_pair : adm_map) {
-                    this->mapped_adm[column_map].insert(adm_pair.first);
-                }
-            } else {
-                this->symbol_column_maps.push_back(column_map);
-            }
+        // Create consolidated column mappings
+        std::vector<PharmML::ColumnMapping *> col_maps = ext_ds->getColumnMappings();
+        for (PharmML::ColumnMapping *col_map : col_maps) {
+            ColumnMapping *ccol_map = new ColumnMapping(col_map, this->logger);
+            this->ccol_maps.push_back(ccol_map);
         }
     }
 
     // Add macro for consolidation with this ExternalDataset
     void ExternalDataset::addConsolidatedPKMacro(CPharmML::PKMacro *cmacro) {
-        if (cmacro->hasAttribute("adm")) { // Only consider administration macro's
-            // Consider target mapping column maps for mapping this cmacro
-            for (PharmML::ColumnMapping *column_map : this->target_column_maps) {
-                // Add cmacro if and only if external dataset maps it
-                int adm_attr;
-                if (this->ast_analyzer.tryParsePureInt(cmacro->getAttribute("adm"), adm_attr)) {
-                    if (mapped_adm[column_map].count(adm_attr) > 1) {
-                        this->mapped_cmacros[column_map].insert(cmacro);
+        // Only consider administration macros as potential targets
+        if (cmacro->hasAttribute("adm")) {
+            int adm_attr;
+            if (this->ast_analyzer.tryParsePureInt(cmacro->getAttribute("adm"), adm_attr)) {
+                int mapping_ccol_maps = 0;
+                for (ColumnMapping *ccol_map : this->ccol_maps) {
+                    // Add cmacro to target mapping if it maps
+                    std::unordered_set<int> adm_nums = ccol_map->getAdmNumbers();
+                    if (adm_nums.count(adm_attr) > 0) {
+                        ccol_map->addAdministrationMacro(adm_attr, cmacro);
+                        mapping_ccol_maps++;
                     }
                 }
+                if (mapping_ccol_maps == 0) {
+                    PharmML::PKMacro *macro = cmacro->getMacro();
+                    std::string name = macro->getName();
+                    this->logger->warning("PK macro '" + name + "' (%a) is not mapped by any column in external dataset (%b)", macro, this->ext_ds);
+                }
+            } else {
+                PharmML::PKMacro *macro = cmacro->getMacro();
+                std::string name = macro->getName();
+                this->logger->error("PK macro '" + name + "' (%a) contains attribute 'adm' but value is not an integer", macro, nullptr);
             }
         }
     }
@@ -63,23 +137,10 @@ namespace CPharmML
     PharmML::ExternalDataset *ExternalDataset::getExternalDataset() {
         return this->ext_ds;
     }
-    
-    std::vector<CPharmML::PKMacro *> ExternalDataset::getPKMacros() {
-        return this->macros;
+
+    std::vector<CPharmML::ColumnMapping *> ExternalDataset::getColumnMappings() {
+        return this->ccol_maps;
     }
 
     // Get attributes
-    bool ExternalDataset::hasTargetMappings() {
-        return !this->target_column_maps.empty();
-    }
-
-    std::vector<int> ExternalDataset::getMappedAdmNumbers() {
-        std::vector<int> numbers;
-        for (PharmML::ColumnMapping *column_map : this->target_column_maps) {
-            for (int adm : this->mapped_adm[column_map]) {
-                numbers.push_back(adm);
-            }
-        }
-        return numbers;
-    }
 }

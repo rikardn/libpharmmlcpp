@@ -20,6 +20,7 @@
 
 #include <unordered_map>
 #include <xml/xml.h>
+#include <PharmML/PharmMLSection.h>
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
@@ -35,7 +36,7 @@ namespace PharmML
     };
 
     // TODO: Move elsewhere (Dataset.h?)
-    class TargetMapping
+    class TargetMapping : public PharmMLSection
     {
         public:
             TargetMapping(PharmMLContext *context, xml::Node node);

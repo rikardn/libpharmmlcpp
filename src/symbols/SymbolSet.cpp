@@ -17,12 +17,12 @@
 
 #include "SymbolSet.h"
 #include <symbols/Symbol.h>
+#include <visitors/SymbolSortVisitor.h>
 #include <iostream>
 
 namespace PharmML
 {
     SymbolSet::SymbolSet() {
-
     }
 
     SymbolSet::SymbolSet(Symbol *symbol) {
@@ -163,5 +163,14 @@ namespace PharmML
 
     std::vector<Symbol *> SymbolSet::getOrderedDependenciesNoPass(SymbolSet &nopass) {
         return this->getDependenciesNoPass(nopass).getOrdered();
+    }
+
+    // Return the set of all derivatives contained in this set
+    SymbolSet SymbolSet::getDerivatives() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        return sorter.getDerivatives();
     }
 }

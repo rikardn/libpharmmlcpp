@@ -42,6 +42,7 @@ namespace PharmML
             std::vector<Symbol *> getOrdered();
             std::vector<Symbol *> getOrderedDependencies();
             std::vector<Symbol *> getOrderedDependenciesNoPass(SymbolSet &nopass);
+            SymbolSet getDerivatives();
             std::unordered_set<Symbol *>::iterator begin();
             std::unordered_set<Symbol *>::iterator end();
 

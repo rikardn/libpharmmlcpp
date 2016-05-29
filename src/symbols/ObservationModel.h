@@ -60,6 +60,9 @@ namespace PharmML
             // Distributional error model
             std::vector<PharmML::VariabilityReference *> getVariabilityReferences();
 
+            // Convenience methods
+            SymbolSet getNeededDerivatives();
+
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

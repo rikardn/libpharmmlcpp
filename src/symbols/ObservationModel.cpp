@@ -196,6 +196,12 @@ namespace PharmML
         return this->variabilityReferences;
     }
 
+    SymbolSet ObservationModel::getNeededDerivatives() {
+        SymbolSet y_refs = this->referencedSymbols.getDependencies();
+        y_refs.merge(this->referencedSymbols);
+        return y_refs.getDerivatives();
+    }
+
     void ObservationModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         // FIXME: Fill this!
         if (this->standardErrorModel) {

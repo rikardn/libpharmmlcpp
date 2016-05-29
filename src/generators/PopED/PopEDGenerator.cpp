@@ -211,7 +211,7 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
 
-        bool has_derivatives = this->model->getModelDefinition()->getStructuralModel()->hasDerivatives();
+        bool has_derivatives = this->model->getModelDefinition()->getStructuralModel()->hasDerivatives();       // FIXME: Not correct
 
         TextFormatter form;
 
@@ -272,13 +272,8 @@ namespace PharmML
             form.add(model->getIndependentVariable()->getSymbId() + " <- xt");
         }
 
-        // FIXME: This code again!
         // Don't want to have derivatives or pass through dependencies of derivatives
-        std::vector<CommonVariable *> derivatives = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
-        SymbolSet derivs_set;
-        for (auto deriv : derivatives) {
-            derivs_set.addSymbol(deriv);
-        }
+        SymbolSet derivs_set = this->model->getModelDefinition()->getObservationModel()->getNeededDerivatives();
 
         // Don't want to pass through ordinary parameters except IndividualParameters
         derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());

@@ -60,6 +60,10 @@ namespace PharmML
        return (this->symbols.count(symbol) > 0);
     }
 
+    bool SymbolSet::isEmpty() {
+        return this->symbols.size() == 0;
+    }
+
     // For those moments when you want to traverse, hunt and gather a dependency
     bool SymbolSet::dependsOn(Symbol *symbol) {
         if (this->hasSymbol(symbol)) {
@@ -172,5 +176,21 @@ namespace PharmML
             symbol->accept(&sorter);
         }
         return sorter.getDerivatives();
+    }
+
+    SymbolSet SymbolSet::getRandomVariables() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        return sorter.getRandomVariables();
+    }
+            
+    SymbolSet SymbolSet::getPopulationParameters() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        return sorter.getPopulationParameters();
     }
 }

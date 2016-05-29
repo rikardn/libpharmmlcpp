@@ -33,16 +33,26 @@ namespace PharmML {
         return this->derivatives;
     }
 
+    SymbolSet SymbolSortVisitor::getRandomVariables() {
+        return this->randomVariables;
+    }
+
+    SymbolSet SymbolSortVisitor::getPopulationParameters() {
+        return this->populationParameters;
+    }
+
     void SymbolSortVisitor::visit(ObservationModel *node) { 
     }
 
     void SymbolSortVisitor::visit(PopulationParameter *node) {
+        this->populationParameters.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(IndividualParameter *node) {
     }
 
     void SymbolSortVisitor::visit(RandomVariable *node) {
+        this->randomVariables.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(VariabilityLevel *node) {

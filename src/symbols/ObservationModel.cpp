@@ -202,6 +202,23 @@ namespace PharmML
         return y_refs.getDerivatives();
     }
 
+    bool ObservationModel::needDerivatives() {
+        SymbolSet neededDerivatives = this->getNeededDerivatives();
+        return !neededDerivatives.isEmpty();
+    }
+
+    SymbolSet ObservationModel::getNeededRandomVariables() {
+        SymbolSet y_refs = this->referencedSymbols.getDependencies();
+        y_refs.merge(this->referencedSymbols);
+        return y_refs.getRandomVariables();
+    }
+
+    SymbolSet ObservationModel::getNeededPopulationParameters() {
+        SymbolSet y_refs = this->referencedSymbols.getDependencies();
+        y_refs.merge(this->referencedSymbols);
+        return y_refs.getPopulationParameters();
+    }
+
     void ObservationModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         // FIXME: Fill this!
         if (this->standardErrorModel) {

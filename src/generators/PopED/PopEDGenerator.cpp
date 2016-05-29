@@ -142,27 +142,19 @@ namespace PharmML
         form.indentAdd("ode_func <- function(Time, State, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
 
-        // FIXME: Should be a method to do all this and not so ugly
-        auto derivs = this->model->getModelDefinition()->getStructuralModel()->getDerivatives();
-        SymbolSet derivs_set;
-        for (auto deriv : derivs) {
-            derivs_set.addSymbol(deriv);
-        }
+        ObservationModel *observationModel = this->model->getModelDefinition()->getObservationModel();
 
-        // FIXME: for same reason as above. Need method to get Sets of needed types
+        SymbolSet derivs_set = observationModel->getNeededDerivatives();
+
+        // FIXME: Should be a method to do all this and not so ugly
         auto params = this->model->getModelDefinition()->getParameterModel()->getParameters();
         SymbolSet nopass;
         for (auto param : params) {
             nopass.addSymbol(param);
         }
-        auto pop_params = this->model->getModelDefinition()->getParameterModel()->getPopulationParameters();
-        for (auto pop_param : pop_params) {
-            nopass.addSymbol(pop_param);
-        }
-        auto random_vars = this->model->getModelDefinition()->getParameterModel()->getRandomVariables();
-        for (auto random_var : random_vars) {
-            nopass.addSymbol(random_var);
-        }
+
+        nopass.merge(observationModel->getNeededPopulationParameters());
+        nopass.merge(observationModel->getNeededRandomVariables());
 
         auto deriv_deps = derivs_set.getOrderedDependenciesNoPass(nopass);
         for (Symbol *symbol : deriv_deps) {
@@ -211,7 +203,7 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
 
-        bool has_derivatives = this->model->getModelDefinition()->getStructuralModel()->hasDerivatives();       // FIXME: Not correct
+        bool has_derivatives = this->model->getModelDefinition()->getObservationModel()->needDerivatives();
 
         TextFormatter form;
 
@@ -494,8 +486,7 @@ namespace PharmML
 
     void PopEDGenerator::visit(PopulationParameter *node) {}
 
-    void PopEDGenerator::visit(IndividualParameter *node) {
-    }
+    void PopEDGenerator::visit(IndividualParameter *node) {}
 
     void PopEDGenerator::visit(RandomVariable *node) {}
     void PopEDGenerator::visit(VariabilityLevel *node) {}

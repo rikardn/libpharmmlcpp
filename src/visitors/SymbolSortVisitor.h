@@ -40,6 +40,8 @@ namespace PharmML
     {
         public:
             SymbolSet getDerivatives();
+            SymbolSet getRandomVariables();
+            SymbolSet getPopulationParameters();
 
             void visit(ObservationModel *node) override;
             void visit(PopulationParameter *node) override;
@@ -55,6 +57,8 @@ namespace PharmML
 
         private:
             SymbolSet derivatives;
+            SymbolSet randomVariables;
+            SymbolSet populationParameters;
     };
 }
 

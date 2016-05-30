@@ -49,6 +49,7 @@ namespace PharmML
             MDLSymbols(std::shared_ptr<Logger> logger);
 
             void visit(ObservationModel *node) override;
+            void visit(Parameter *node) override;
             void visit(PopulationParameter *node) override;
             void visit(IndividualParameter *node) override;
             void visit(RandomVariable *node) override;

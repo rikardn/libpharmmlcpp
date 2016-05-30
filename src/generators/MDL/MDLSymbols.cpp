@@ -41,6 +41,9 @@ namespace PharmML
         this->setValue(node->getSymbId());
     }
 
+    void MDLSymbols::visit(Parameter *node) {
+    }
+
     void MDLSymbols::visit(PopulationParameter *node) {
         this->setValue(node->getSymbId());
     }

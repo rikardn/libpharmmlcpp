@@ -124,9 +124,21 @@ namespace PharmML
         std::vector<std::string> time_names = this->td_visitor.getTimeNames();
         std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
+        int index = 1;
         for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-            form.add(amount_names[i] + " = a[" + std::to_string(2*i + 1) + "]");
-            form.add(time_names[i] + " = a[" + std::to_string(2*i + 2) + "]");
+            form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+            form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+            index += 2;
+        }
+
+        // Declare covariates
+        SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
+        SymbolSet covariates = needed_symbols.getCovariates();
+        for (Symbol *symbol : covariates) {
+            Covariate *cov = static_cast<Covariate *>(symbol);
+            if (!cov->isTransformed()) {
+                form.add(symbol->getSymbId() + "=a[" + std::to_string(index++) + "]");
+            }
         }
 
         form.closeVector();

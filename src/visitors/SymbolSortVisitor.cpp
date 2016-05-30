@@ -49,6 +49,10 @@ namespace PharmML {
         return this->covariates;
     }
 
+    SymbolSet SymbolSortVisitor::getIndividualParameters() {
+        return this->individualParameters;
+    }
+
     void SymbolSortVisitor::visit(ObservationModel *node) { 
     }
 
@@ -61,6 +65,7 @@ namespace PharmML {
     }
 
     void SymbolSortVisitor::visit(IndividualParameter *node) {
+        this->individualParameters.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(RandomVariable *node) {
@@ -81,6 +86,7 @@ namespace PharmML {
     }
 
     void SymbolSortVisitor::visit(Covariate *node) {
+        this->covariates.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(FunctionDefinition *node) {

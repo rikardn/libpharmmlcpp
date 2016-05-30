@@ -103,6 +103,8 @@ namespace PharmML
         PopEDSymbols symbgen;
         PopEDAstGenerator astgen(&symbgen);
  
+        SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
+
         // Declare population parameters except variability parameters
         for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
             if (!param->isVariabilityParameter()) {
@@ -112,15 +114,24 @@ namespace PharmML
         }
 
         // Declare ETAs
-        // FIXME: Must remove SIGMAs
-        Symbol *sigma = this->findSigmaSymbol();
-        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+        SymbolSet random_vars = needed_symbols.getRandomVariables();
+        Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
+        random_vars.removeSymbol(error);
+
+        //random_vars.removeSymbol(sigma);
+        for (Symbol *symbol : random_vars) {
+            symbol->accept(&symbgen);
+            form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
+        }
+
+        /*for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
             if (param->isVariabilityParameter() and param->getPopulationParameter() != sigma) {
                 param->getPopulationParameter()->accept(&symbgen);
                 form.add(param->getPopulationParameter()->getSymbId() + "=b[" + symbgen.getValue() + "]");
             }
-        }
+        }*/
 
+        // Declare dose/time
         std::vector<std::string> time_names = this->td_visitor.getTimeNames();
         std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
@@ -132,7 +143,6 @@ namespace PharmML
         }
 
         // Declare covariates
-        SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
         SymbolSet covariates = needed_symbols.getCovariates();
         for (Symbol *symbol : covariates) {
             Covariate *cov = static_cast<Covariate *>(symbol);

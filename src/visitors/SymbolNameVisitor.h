@@ -40,6 +40,7 @@ namespace PharmML
     {
         public:
             void visit(ObservationModel *node) override;
+            void visit(Parameter *node) override;
             void visit(PopulationParameter *node) override;
             void visit(IndividualParameter *node) override;
             void visit(RandomVariable *node) override;

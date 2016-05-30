@@ -43,6 +43,7 @@ namespace PharmML
     {
         public:
             Parameter(PharmMLContext *context, xml::Node node) : PopulationParameter(context, node) {};
+            //void accept(SymbolVisitor *visitor);
     };
 }
 

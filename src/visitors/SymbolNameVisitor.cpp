@@ -33,6 +33,10 @@ namespace PharmML {
         this->setValue(node->getSymbId());
     }
 
+    void SymbolNameVisitor::visit(Parameter *node) {
+        this->setValue(node->getSymbId());
+    }
+
     void SymbolNameVisitor::visit(PopulationParameter *node) {
         this->setValue(node->getSymbId());
     }

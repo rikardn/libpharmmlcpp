@@ -45,6 +45,9 @@ namespace PharmML
     void RSymbols::visit(ObservationModel *node) {
     }
 
+    void RSymbols::visit(Parameter *node) {
+    }
+
     void RSymbols::visit(PopulationParameter *node) {
     }
 

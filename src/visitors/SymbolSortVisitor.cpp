@@ -41,7 +41,15 @@ namespace PharmML {
         return this->populationParameters;
     }
 
+    SymbolSet SymbolSortVisitor::getParameters() {
+        return this->parameters;
+    }
+
     void SymbolSortVisitor::visit(ObservationModel *node) { 
+    }
+
+    void SymbolSortVisitor::visit(Parameter *node) {
+        this->parameters.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(PopulationParameter *node) {

@@ -32,6 +32,9 @@ namespace PharmML
         this->setValue(node->getSymbId());
     }
 
+    void PopEDSymbols::visit(Parameter *node) {
+    }
+
     void PopEDSymbols::visit(PopulationParameter *node) {
         if (this->symbol_numbermap.count(node) == 0) {
             this->symbol_numbermap[node] = next_popparm++;

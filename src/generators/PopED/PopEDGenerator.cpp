@@ -146,17 +146,12 @@ namespace PharmML
 
         SymbolSet derivs_set = observationModel->getNeededDerivatives();
 
-        // FIXME: Should be a method to do all this and not so ugly
-        auto params = this->model->getModelDefinition()->getParameterModel()->getParameters();
         SymbolSet nopass;
-        for (auto param : params) {
-            nopass.addSymbol(param);
-        }
-
+        nopass.merge(observationModel->getNeededParameters());
         nopass.merge(observationModel->getNeededPopulationParameters());
         nopass.merge(observationModel->getNeededRandomVariables());
 
-        auto deriv_deps = derivs_set.getOrderedDependenciesNoPass(nopass);
+        std::vector<Symbol *> deriv_deps = derivs_set.getOrderedDependenciesNoPass(nopass);
         for (Symbol *symbol : deriv_deps) {
             symbol->accept(&this->r_symb);
             form.add(this->r_symb.getValue());

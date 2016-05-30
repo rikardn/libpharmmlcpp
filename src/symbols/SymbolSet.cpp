@@ -193,4 +193,12 @@ namespace PharmML
         }
         return sorter.getPopulationParameters();
     }
+
+    SymbolSet SymbolSet::getParameters() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        return sorter.getParameters();
+    }
 }

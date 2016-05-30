@@ -65,6 +65,7 @@ namespace PharmML
             bool needDerivatives();
             SymbolSet getNeededRandomVariables();
             SymbolSet getNeededPopulationParameters();
+            SymbolSet getNeededParameters();
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);

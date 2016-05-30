@@ -273,7 +273,19 @@ namespace PharmML
         SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
         SymbolSet output_set;
         output_set.addSymbol(output->getSymbol());
-        std::vector<Symbol *> post_ode_symbols = output_set.getOrderedDependenciesNoPass(derivs_set);
+
+        SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
+
+        // Remove non-transformed covariates
+        SymbolSet covariates = post_ode_symbol_set.getCovariates();
+        for (Symbol *symbol : covariates) {
+            Covariate *cov = static_cast<Covariate *>(symbol);
+            if (!cov->isTransformed()) {
+                post_ode_symbol_set.removeSymbol(symbol);
+            }
+        }
+
+        std::vector<Symbol *> post_ode_symbols = post_ode_symbol_set.getOrdered();
         post_ode_symbols.push_back(output->getSymbol());
 
         // Need R symbol generator with non-default AST generator that use non-default symbol generator

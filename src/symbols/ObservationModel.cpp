@@ -196,33 +196,10 @@ namespace PharmML
         return this->variabilityReferences;
     }
 
-    SymbolSet ObservationModel::getNeededDerivatives() {
+    SymbolSet ObservationModel::getNeededSymbols() {
         SymbolSet y_refs = this->referencedSymbols.getDependencies();
         y_refs.merge(this->referencedSymbols);
-        return y_refs.getDerivatives();
-    }
-
-    bool ObservationModel::needDerivatives() {
-        SymbolSet neededDerivatives = this->getNeededDerivatives();
-        return !neededDerivatives.isEmpty();
-    }
-
-    SymbolSet ObservationModel::getNeededRandomVariables() {
-        SymbolSet y_refs = this->referencedSymbols.getDependencies();
-        y_refs.merge(this->referencedSymbols);
-        return y_refs.getRandomVariables();
-    }
-
-    SymbolSet ObservationModel::getNeededPopulationParameters() {
-        SymbolSet y_refs = this->referencedSymbols.getDependencies();
-        y_refs.merge(this->referencedSymbols);
-        return y_refs.getPopulationParameters();
-    }
-
-    SymbolSet ObservationModel::getNeededParameters() {
-        SymbolSet y_refs = this->referencedSymbols.getDependencies();
-        y_refs.merge(this->referencedSymbols);
-        return y_refs.getParameters();
+        return y_refs;
     }
 
     void ObservationModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

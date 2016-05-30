@@ -178,6 +178,10 @@ namespace PharmML
         return sorter.getDerivatives();
     }
 
+    bool SymbolSet::hasDerivatives() {
+        return !this->getDerivatives().isEmpty();
+    }
+
     SymbolSet SymbolSet::getRandomVariables() {
         SymbolSortVisitor sorter;
         for (Symbol *symbol : this->symbols) {

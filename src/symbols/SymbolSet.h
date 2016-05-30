@@ -47,6 +47,7 @@ namespace PharmML
             SymbolSet getRandomVariables();
             SymbolSet getPopulationParameters();
             SymbolSet getParameters();
+            bool hasDerivatives();
             std::unordered_set<Symbol *>::iterator begin();
             std::unordered_set<Symbol *>::iterator end();
 

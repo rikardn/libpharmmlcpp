@@ -61,11 +61,7 @@ namespace PharmML
             std::vector<PharmML::VariabilityReference *> getVariabilityReferences();
 
             // Convenience methods
-            SymbolSet getNeededDerivatives();
-            bool needDerivatives();
-            SymbolSet getNeededRandomVariables();
-            SymbolSet getNeededPopulationParameters();
-            SymbolSet getNeededParameters();
+            SymbolSet getNeededSymbols();
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);

@@ -144,12 +144,14 @@ namespace PharmML
 
         ObservationModel *observationModel = this->model->getModelDefinition()->getObservationModel();
 
-        SymbolSet derivs_set = observationModel->getNeededDerivatives();
+        SymbolSet needed_symbols = observationModel->getNeededSymbols();
+
+        SymbolSet derivs_set = needed_symbols.getDerivatives();
 
         SymbolSet nopass;
-        nopass.merge(observationModel->getNeededParameters());
-        nopass.merge(observationModel->getNeededPopulationParameters());
-        nopass.merge(observationModel->getNeededRandomVariables());
+        nopass.merge(needed_symbols.getParameters());
+        nopass.merge(needed_symbols.getPopulationParameters());
+        nopass.merge(needed_symbols.getRandomVariables());
 
         std::vector<Symbol *> deriv_deps = derivs_set.getOrderedDependenciesNoPass(nopass);
         for (Symbol *symbol : deriv_deps) {
@@ -198,7 +200,7 @@ namespace PharmML
             var->accept(&this->r_gen);
         }
 
-        bool has_derivatives = this->model->getModelDefinition()->getObservationModel()->needDerivatives();
+        bool has_derivatives = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().hasDerivatives();
 
         TextFormatter form;
 
@@ -260,10 +262,10 @@ namespace PharmML
         }
 
         // Don't want to have derivatives or pass through dependencies of derivatives
-        SymbolSet derivs_set = this->model->getModelDefinition()->getObservationModel()->getNeededDerivatives();
+        SymbolSet derivs_set = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().getDerivatives();
 
         // Don't want to pass through ordinary parameters except IndividualParameters
-        derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());
+        derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());   // FIXME: Do in new way
         std::vector<IndividualParameter *> indiv_params =this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         for (auto indiv : indiv_params) {
             derivs_set.removeSymbol(indiv);

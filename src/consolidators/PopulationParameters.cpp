@@ -27,10 +27,15 @@ namespace CPharmML
     PopulationParameter::PopulationParameter(PharmML::Correlation *correlation) {
         // Construct name for the (normally unnamed) correlation parameter
         this->correlation = correlation;
-        this->correlationType = true;
+        this->name = "";
     }
 
     // Add PharmML objects for consolidation with PopulationParameter
+    void PopulationParameter::addCorrelation(PharmML::Correlation *corr) {
+        this->correlation = corr;
+        this->name = this->populationParameter->getSymbId();
+    }
+
     void PopulationParameter::addRandomVariable(PharmML::RandomVariable *randomVariable) {
         this->randomVariables.push_back(randomVariable);
         this->variabilityParameter = true; // Are we sure? What if used as 'mean' in 'Normal1' for example?
@@ -88,7 +93,7 @@ namespace CPharmML
     }
 
     bool PopulationParameter::isCorrelation() {
-        return (this->correlationType);
+        return (this->correlation != nullptr);
     }
 
     std::string PopulationParameter::getDistributionName() {
@@ -117,7 +122,7 @@ namespace CPharmML
         }
     }
 
-    // Wrapper class containing all CPHarmML::PopulationParameter for a parameter model
+    // Wrapper class containing all CPharmML::PopulationParameter for a parameter model
     PopulationParameters::PopulationParameters(std::vector<PharmML::PopulationParameter *> populationParameters, std::vector<PharmML::Correlation *> correlations) {
          // Consolidate PharmML PopulationParameter's (e.g. for init statement generation)
         for (PharmML::PopulationParameter *pop_param : populationParameters) {
@@ -126,11 +131,25 @@ namespace CPharmML
             this->populationParameters.push_back(cpop_param);
         }
 
-        // Consolidate PharmML Correlation's (no associated PopulationParameter however)
+        // Consolidate PharmML Correlation's (not always an associated PopulationParameter)
         for (PharmML::Correlation *corr : correlations) {
-            // Create new consolidated (nameless) population parameter
-            CPharmML::PopulationParameter *cpop_param = new PopulationParameter(corr);
-            this->populationParameters.push_back(cpop_param);
+            bool nameless = true;
+            if (corr->isPairwise() && corr->hasPureSymbRefAssigment()) {
+                // Correlation refers purely to PopulationParameter for its assignment, i.e. it's not nameless
+                for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
+                    PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+                    bool depends_on_pop = corr->referencedSymbols.hasSymbol(pop_param);
+                    if (depends_on_pop) {
+                        cpop_param->addCorrelation(corr);
+                        nameless = false;
+                    }
+                }
+            }
+            if (nameless) {
+                // Create new consolidated (nameless) population parameter
+                CPharmML::PopulationParameter *cpop_param = new PopulationParameter(corr);
+                this->populationParameters.push_back(cpop_param);
+            }
         }
     }
 
@@ -158,7 +177,7 @@ namespace CPharmML
                         }
                     }
                 }
-            } else {
+            } else if (cpop_param->getName() == "") { // If nameless correlation, give it a name
                 PharmML::Correlation *corr = cpop_param->getCorrelation();
                 // Find RandomVariable's referenced by this Correlation
                 std::vector<std::string> names;

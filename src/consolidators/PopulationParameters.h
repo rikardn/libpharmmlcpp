@@ -37,6 +37,7 @@ namespace CPharmML
             PopulationParameter(PharmML::Correlation *correlation);
 
             // Add PharmML objects for consolidation with PopulationParameter
+            void addCorrelation(PharmML::Correlation *corr);
             void addRandomVariable(PharmML::RandomVariable *randomVariable);
             void addIndividualParameter(PharmML::IndividualParameter *individualParameter);
             void addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation);
@@ -70,7 +71,6 @@ namespace CPharmML
             PharmML::ParameterEstimation *parameterEstimation = nullptr;
 
             bool variabilityParameter = false;
-            bool correlationType = false;
             std::unordered_set<std::string> distNames;
             std::unordered_set<std::string> distParTypes;
             std::string name; // For Correlations lacking PharmML naming

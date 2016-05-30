@@ -56,6 +56,11 @@ namespace PharmML
             // Get the assignment (coefficient/covariance) itself
             xml::Node assign = this->context->getSingleElement(pairwise_node, ".//ct:Assign");
             xml::Node tree = assign.getChild();
+            if (tree.getName() == "SymbRef") {
+                this->pure_symbref_assignment = true;
+            } else {
+                this->pure_symbref_assignment = false;
+            }
             this->pairwiseAssignment = this->context->factory.create(tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
@@ -81,6 +86,25 @@ namespace PharmML
 
     PharmML::AstNode *Correlation::getPairwiseAssignment() {
         return this->pairwiseAssignment;
+    }
+
+    // True if pairwise assignment is a pure SymbRef (i.e. correlation is "named" via population parameter)
+    bool Correlation::hasPureSymbRefAssigment() {
+        return this->pure_symbref_assignment;
+    }
+
+    void Correlation::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+        this->variabilityReference->gatherSymbRefs(symbolMap);
+        if (this->pairwiseAssignment) {
+            std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(this->pairwiseAssignment, symbolMap);
+            this->addReferences(symbols);
+            for (PharmML::SymbRef *symbRef : this->pairwiseSymbRefs) {
+                // Separation of correlated random variables seem like a good idea
+                this->correlatedSymbols.addSymbol( this->addSymbRef(symbRef, symbolMap) );
+            }
+        } else {
+            // TODO: Matrix support
+        }
     }
 
     void Correlation::accept(PharmMLVisitor *visitor) {

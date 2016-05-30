@@ -40,11 +40,13 @@ namespace PharmML
             std::vector<PharmML::SymbRef *> getPairwiseSymbRefs();
             std::string getPairwiseType();
             PharmML::AstNode *getPairwiseAssignment();
+            bool hasPureSymbRefAssigment();
 
             /* Referer base class (referencedSymbols) contains all symbols while correlatedSymbols
              * below only those that refer to the correlated random variables (to not mix them up): */
             PharmML::SymbolSet correlatedSymbols;
 
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
 
         private:
@@ -53,6 +55,7 @@ namespace PharmML
             std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
             std::string pairwiseType;
             PharmML::AstNode *pairwiseAssignment = nullptr;
+            bool pure_symbref_assignment;
             std::string matrixType;
     };
 }

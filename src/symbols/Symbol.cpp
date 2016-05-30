@@ -43,6 +43,7 @@ namespace PharmML
         return this->referencedSymbols.dependsOn(symbol);
     }
 
+    // FIXME: Isn't this misnamed? This seems to check shallowly!
     bool Referer::refersIndirectlyTo(Symbol *symbol) {
         return this->referencedSymbols.hasSymbol(symbol);
     }

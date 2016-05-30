@@ -389,7 +389,7 @@ namespace PharmML
                 std::string parameter_name = pop_param->getPopulationParameter()->getSymbId();
                 if (pop_param->getParameterEstimation()) {
                     bpop.add(parameter_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue())); 
-                    notfixed_bpop.add(pop_param->getParameterEstimation()->isFixed() ? "0" : "1");
+                    notfixed_bpop.add(parameter_name + "=" + (pop_param->getParameterEstimation()->isFixed() ? "0" : "1"));
                 } else {
                     bpop.add(parameter_name + "=0");
                     notfixed_bpop.add(parameter_name + "=1");

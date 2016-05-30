@@ -45,6 +45,10 @@ namespace PharmML {
         return this->parameters;
     }
 
+    SymbolSet SymbolSortVisitor::getCovariates() {
+        return this->covariates;
+    }
+
     void SymbolSortVisitor::visit(ObservationModel *node) { 
     }
 

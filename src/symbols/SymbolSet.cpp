@@ -205,4 +205,12 @@ namespace PharmML
         }
         return sorter.getParameters();
     }
+
+    SymbolSet SymbolSet::getCovariates() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        return sorter.getCovariates();
+    }
 }

@@ -43,6 +43,7 @@ namespace PharmML
             SymbolSet getRandomVariables();
             SymbolSet getParameters();
             SymbolSet getPopulationParameters();
+            SymbolSet getCovariates();
 
             void visit(ObservationModel *node) override;
             void visit(Parameter *node) override;
@@ -62,6 +63,7 @@ namespace PharmML
             SymbolSet randomVariables;
             SymbolSet parameters;
             SymbolSet populationParameters;
+            SymbolSet covariates;
     };
 }
 

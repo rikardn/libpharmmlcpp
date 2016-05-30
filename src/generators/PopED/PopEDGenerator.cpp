@@ -107,7 +107,7 @@ namespace PharmML
 
         // Declare population parameters except variability parameters
         for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
-            if (!param->isVariabilityParameter()) {
+            if (!param->isVariabilityParameter() and !param->isCorrelation()) {
                 param->getPopulationParameter()->accept(&symbgen);
                 form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
             }
@@ -118,18 +118,10 @@ namespace PharmML
         Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
         random_vars.removeSymbol(error);
 
-        //random_vars.removeSymbol(sigma);
         for (Symbol *symbol : random_vars) {
             symbol->accept(&symbgen);
             form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
         }
-
-        /*for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
-            if (param->isVariabilityParameter() and param->getPopulationParameter() != sigma) {
-                param->getPopulationParameter()->accept(&symbgen);
-                form.add(param->getPopulationParameter()->getSymbId() + "=b[" + symbgen.getValue() + "]");
-            }
-        }*/
 
         // Declare dose/time
         std::vector<std::string> time_names = this->td_visitor.getTimeNames();

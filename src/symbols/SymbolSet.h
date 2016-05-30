@@ -49,6 +49,7 @@ namespace PharmML
             SymbolSet getParameters();
             SymbolSet getCovariates();
             SymbolSet getIndividualParameters();
+            SymbolSet getAllParameters();       // Parameters, PopulationParameters, IndividualParameters and RandomVariables
             bool hasDerivatives();
             std::unordered_set<Symbol *>::iterator begin();
             std::unordered_set<Symbol *>::iterator end();

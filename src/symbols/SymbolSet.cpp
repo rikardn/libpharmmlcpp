@@ -221,4 +221,17 @@ namespace PharmML
         }
         return sorter.getIndividualParameters();
     }
+
+    SymbolSet SymbolSet::getAllParameters() {
+        SymbolSortVisitor sorter;
+        for (Symbol *symbol : this->symbols) {
+            symbol->accept(&sorter);
+        }
+        SymbolSet result;
+        result.merge(sorter.getIndividualParameters());
+        result.merge(sorter.getParameters());
+        result.merge(sorter.getPopulationParameters());
+        result.merge(sorter.getRandomVariables());
+        return result;
+    }
 }

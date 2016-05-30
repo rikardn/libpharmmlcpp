@@ -262,14 +262,13 @@ namespace PharmML
         }
 
         // Don't want to have derivatives or pass through dependencies of derivatives
-        SymbolSet derivs_set = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().getDerivatives();
+        SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
+        SymbolSet derivs_set = needed_symbols.getDerivatives();
+        SymbolSet indiv_params = needed_symbols.getIndividualParameters();
 
         // Don't want to pass through ordinary parameters except IndividualParameters
-        derivs_set.merge(this->model->getModelDefinition()->getParameterModel()->getAllParameters());   // FIXME: Do in new way
-        std::vector<IndividualParameter *> indiv_params =this->model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        for (auto indiv : indiv_params) {
-            derivs_set.removeSymbol(indiv);
-        }
+        derivs_set.merge(needed_symbols.getAllParameters());
+        derivs_set.remove(indiv_params);
 
         SymbRef *output = this->model->getModelDefinition()->getObservationModel()->getOutput();
         SymbolSet output_set;

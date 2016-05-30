@@ -95,25 +95,6 @@ namespace PharmML
         return this->correlations;
     }
 
-    SymbolSet ParameterModel::getAllParameters() {
-        SymbolSet set;
-        
-        for (Parameter *param : this->parameters) {
-            set.addSymbol(param);
-        }
-        for (PopulationParameter *pop_param : this->populationParameters) {
-            set.addSymbol(pop_param);
-        }
-        for (IndividualParameter *indiv_param : this->individualParameters) {
-            set.addSymbol(indiv_param);
-        }
-        for (RandomVariable *rand_var : this->randomVariables) {
-            set.addSymbol(rand_var);
-        }
-
-        return set;
-    }
-
     std::string ParameterModel::getBlkId() {
         return this->blkId;
     }

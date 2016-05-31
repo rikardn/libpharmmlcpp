@@ -121,6 +121,7 @@ namespace PharmML
         for (Symbol *symbol : random_vars) {
             symbol->accept(&symbgen);
             form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
+            this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
         }
 
         // Declare dose/time
@@ -450,6 +451,39 @@ namespace PharmML
         form.add(sigma_init_formatter.createString());
         form.add(sigma_fixed_formatter.createString());
 
+        // Values for ETAs
+        // FIXME: This code is a bit experimental. Ideas exist to make this more reusable, but these ideas are to involved to fit in this comment.
+        if (this->etas.size() > 0) {
+            TextFormatter d_formatter;
+            d_formatter.openVector("d = c()", 0, ", ");
+            for (RandomVariable *rand_var : this->etas) {
+                for (auto pop_param : pop_params) {
+                    auto consolidatedRandom = pop_param->getRandomVariables();
+                    bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
+
+                    AstNode *value;
+                    for (DistributionParameter *dist_par : rand_var->getDistribution()->getDistributionParameters()) {
+                        if (dist_par->getName() == "var") {
+                            value = pop_param->getParameterEstimation()->getInitValue();
+                        } else if (dist_par->getName() == "stdev") {
+                            BinopPower *power = new BinopPower();
+                            power->setLeft(pop_param->getParameterEstimation()->getInitValue());
+                            power->setRight(new ScalarInt(2));
+                            value = power;
+                        }
+                    } 
+                    if (found) {
+                        d_formatter.add(rand_var->getSymbId() + "=" + this->accept(value));
+                    }
+                }
+            }
+
+            d_formatter.closeVector();
+            d_formatter.noFinalNewline();
+            form.add(d_formatter.createString());
+        }
+
+        // TrialDesign
         form.add("groupsize = 1");
 
         form.add("m = " + std::to_string(this->nArms));

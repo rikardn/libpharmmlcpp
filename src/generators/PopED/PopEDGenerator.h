@@ -101,6 +101,7 @@ namespace PharmML
 
             Model *model;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
+            std::vector<RandomVariable *> etas;
 
             std::string value;
             void setValue(std::string str);

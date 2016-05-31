@@ -239,6 +239,7 @@ TextFormatter.o: src/generators/TextFormatter.cpp src/generators/TextFormatter.h
 clean:
 	rm -f *.o
 	rm -f pharmml2poped
+	rm -f pharmml2poped.exe
 	rm -f mdl
 	rm -f libpharmmlc.a
 	rm -f main
@@ -250,10 +251,9 @@ clean:
 .PHONY: release
 release:
 	mkdir -p release
-	cp main.exe release
+	cp pharmml2poped.exe release
 	cp windep/lib/*.dll release
 	cp -r pharmml_internalRelease_0_8_1 release
-	cp Executable_Simeoni_2004_oncology_TGI_trialdesign.xml release	
 
 
 .PHONY: windep

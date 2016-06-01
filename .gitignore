@@ -20,3 +20,4 @@ peripheral/
 test/testfiles/
 
 .gdb_history
+powermake

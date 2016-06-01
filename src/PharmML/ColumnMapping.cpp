@@ -135,7 +135,7 @@ namespace PharmML
             // Presence of both dataSymbol and admNumber indicates a map to (macro) administration
             if (map.dataSymbol != "" && map.admNumber != "") {
                 int adm_number;
-                if (PharmML::AstAnalyzer::tryParseInt(map.admNumber, adm_number)) {
+                if (StringTyper::isInt(map.admNumber, adm_number)) {
                     adm_map[adm_number] = map.dataSymbol;
                 }
             }

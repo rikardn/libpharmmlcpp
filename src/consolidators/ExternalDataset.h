@@ -22,6 +22,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <helpers/StringTyper.h>
 #include <symbols/Symbol.h>
 #include <visitors/AstAnalyzer.h>
 #include <consolidators/PKMacros.h>

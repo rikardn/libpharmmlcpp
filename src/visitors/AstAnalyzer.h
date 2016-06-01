@@ -22,6 +22,7 @@
 
 #include <string>
 #include <unordered_set>
+#include <helpers/StringTyper.h>
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/StringVisitor.h>
 #include <AST/symbols.h>
@@ -57,7 +58,6 @@ namespace PharmML
             
             int getLength();
 
-            static bool tryParseInt(std::string str, int &result);
             bool tryParsePureInt(AstNode *node, int &result);
 
             void visit(SymbRef *node) override;

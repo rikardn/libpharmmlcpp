@@ -23,6 +23,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
+#include <helpers/StringTyper.h>
 #include <AST/AstNode.h>
 #include <PharmML/PKMacro.h>
 

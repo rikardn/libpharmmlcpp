@@ -144,13 +144,19 @@ namespace CPharmML
         if (!node) {
             return false;
         }
+        
         node->accept(&ast_analyzer);
         PharmML::ScalarInt *sint_adm = ast_analyzer.getPureScalarInt();
         if (!sint_adm) {
             return false;
         }
+        
         result = sint_adm->toInt();
-        return true;
+        if (StringTyper::isInt(sint_adm->toString(), result)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Construct with PKMacro's as base

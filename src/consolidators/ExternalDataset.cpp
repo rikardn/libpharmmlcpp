@@ -48,7 +48,7 @@ namespace CPharmML
                     this->num_maps++;
                 } else if (map.admNumber != "") {
                     int adm;
-                    if (PharmML::AstAnalyzer::tryParseInt(map.admNumber, adm)) {
+                    if (StringTyper::isInt(map.admNumber, adm)) {
                         this->adm_to_data[adm] = map.dataSymbol;
                     } else {
                         this->logger->error("TargetMapping element contains non-integer 'admNumber': " + map.admNumber, target_map);

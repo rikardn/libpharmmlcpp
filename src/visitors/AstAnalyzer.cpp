@@ -94,16 +94,6 @@ namespace PharmML
         return this->length;
     }
 
-    bool AstAnalyzer::tryParseInt(std::string str, int &result) {
-        int base = 10;
-        try {
-            result = std::stoi(str, nullptr, base);
-        } catch (...) {
-            return false;
-        }
-        return true;
-    }
-
     bool AstAnalyzer::tryParsePureInt(AstNode *node, int &result) {
         this->reset();
         if (!node) {
@@ -114,7 +104,7 @@ namespace PharmML
         if (!scint) {
             return false;
         }
-        return (this->tryParseInt(scint->toString(), result));
+        return (StringTyper::isInt(scint->toString(), result));
     }
 
     // visitor methods

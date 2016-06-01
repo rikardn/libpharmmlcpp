@@ -379,6 +379,7 @@ namespace PharmML
             for (PharmML::ParameterEstimation *est_param : est_params) {
                 Symbol *found_symbol = symbolMap[est_param->getSymbRef()->toString()];
                 est_param->addReference(found_symbol);
+                est_param->getSymbRef()->setSymbol(found_symbol);
             }
         }
         //for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
@@ -389,6 +390,7 @@ namespace PharmML
             for (PharmML::ParameterEstimation *opt_param : opt_params) {
                 Symbol *found_symbol = symbolMap[opt_param->getSymbRef()->toString()];
                 opt_param->addReference(found_symbol);
+                opt_param->getSymbRef()->setSymbol(found_symbol);
             }
         }
     }

@@ -16,6 +16,7 @@
  */
 
 #include "RandomVariable.h"
+#include <visitors/AstAnalyzer.h>
 
 namespace PharmML
 {
@@ -63,5 +64,46 @@ namespace PharmML
 
     void RandomVariable::accept(SymbolVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    // get the initial value for the stdev.
+    // FIXME: Check which distribution
+    AstNode *RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
+        for (DistributionParameter *param : this->Distribution->getDistributionParameters()) {
+            if (param->getName() == "stdev") {
+                AstAnalyzer analyzer;
+                param->getAssignment()->accept(&analyzer);
+                if (analyzer.getPureScalar()) {
+                    return analyzer.getPureScalar();
+                } else if (analyzer.getPureSymbRef()) {
+                    Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
+                    for (ParameterEstimation *pe : parameterEstimations) {
+                        if (pe->getSymbRef()->getSymbol() == symbol) {
+                            return pe->getInitValue();
+                        }
+                    }
+                }
+                return new ScalarInt(0);
+            } else if (param->getName() == "var") {
+                AstAnalyzer analyzer;
+                param->getAssignment()->accept(&analyzer);
+                if (analyzer.getPureScalar()) {
+                    UniopSqrt *stdev = new UniopSqrt();
+                    stdev->setChild(analyzer.getPureScalar());
+                    return stdev;
+                } else if (analyzer.getPureSymbRef()) {
+                    Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
+                    for (ParameterEstimation *pe : parameterEstimations) {
+                        if (pe->getSymbRef()->getSymbol() == symbol) {
+                            UniopSqrt *stdev = new UniopSqrt();
+                            stdev->setChild(pe->getInitValue());
+                            return stdev;
+                        }
+                    }
+                }
+                return new ScalarInt(0);
+            }
+        }
+        return new ScalarInt(0);
     }
 }

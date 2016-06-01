@@ -24,6 +24,7 @@
 #include <visitors/PharmMLVisitor.h>
 #include "VariabilityLevel.h"
 #include <PharmML/Dependencies.h>
+#include <PharmML/ModellingSteps.h>
 
 namespace PharmML
 {
@@ -37,6 +38,8 @@ namespace PharmML
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
+
+            AstNode *initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
         
         private:
             PharmMLContext *context;

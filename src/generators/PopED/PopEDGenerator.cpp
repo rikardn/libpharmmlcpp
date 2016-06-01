@@ -508,20 +508,23 @@ namespace PharmML
         form.addMany(this->td_visitor.getDatabaseA());
 
 
-        // Handle the first DesignSpace. FIXME: Generalization needed. Should use oid
+        // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
         TrialDesign *td = model->getTrialDesign();
         if (td) {
             DesignSpaces *ds = td->getDesignSpaces();
             if (ds) {
                 DesignSpace *designSpace = ds->getDesignSpaces()[0];
                 AstAnalyzer intervalAnalyzer;
-                designSpace->getDosingTimes()->accept(&intervalAnalyzer);
-                Interval *interval = intervalAnalyzer.getPureInterval();
-                if (interval) {
-                    interval->getLeftEndpoint()->accept(&this->ast_gen);
-                    form.add("minxt=" + this->ast_gen.getValue());
-                    interval->getRightEndpoint()->accept(&this->ast_gen);
-                    form.add("maxxt=" + this->ast_gen.getValue());
+                AstNode *dosingTimes = designSpace->getDosingTimes();
+                if (dosingTimes) {
+                    designSpace->getDosingTimes()->accept(&intervalAnalyzer);
+                    Interval *interval = intervalAnalyzer.getPureInterval();
+                    if (interval) {
+                        interval->getLeftEndpoint()->accept(&this->ast_gen);
+                        form.add("minxt=" + this->ast_gen.getValue());
+                        interval->getRightEndpoint()->accept(&this->ast_gen);
+                        form.add("maxxt=" + this->ast_gen.getValue());
+                    }
                 }
             }
         }

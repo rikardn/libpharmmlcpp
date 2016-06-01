@@ -461,18 +461,18 @@ namespace PharmML
                     auto consolidatedRandom = pop_param->getRandomVariables();
                     bool found = std::find(std::begin(consolidatedRandom), std::end(consolidatedRandom), rand_var) != std::end(consolidatedRandom);
 
-                    AstNode *value;
-                    for (DistributionParameter *dist_par : rand_var->getDistribution()->getDistributionParameters()) {
-                        if (dist_par->getName() == "var") {
-                            value = pop_param->getParameterEstimation()->getInitValue();
-                        } else if (dist_par->getName() == "stdev") {
-                            BinopPower *power = new BinopPower();
-                            power->setLeft(pop_param->getParameterEstimation()->getInitValue());
-                            power->setRight(new ScalarInt(2));
-                            value = power;
-                        }
-                    } 
                     if (found) {
+                        AstNode *value;
+                        for (DistributionParameter *dist_par : rand_var->getDistribution()->getDistributionParameters()) {
+                            if (dist_par->getName() == "var") {
+                                value = pop_param->getParameterEstimation()->getInitValue();
+                            } else if (dist_par->getName() == "stdev") {
+                                BinopPower *power = new BinopPower();
+                                power->setLeft(pop_param->getParameterEstimation()->getInitValue());
+                                power->setRight(new ScalarInt(2));
+                                value = power;
+                            }
+                        } 
                         d_formatter.add(rand_var->getSymbId() + "=" + this->accept(value));
                     }
                 }
@@ -481,6 +481,23 @@ namespace PharmML
             d_formatter.closeVector();
             d_formatter.noFinalNewline();
             form.add(d_formatter.createString());
+
+            TextFormatter covd_formatter;
+            covd_formatter.openVector("covd = c()", 0, ", ");
+
+            ParameterModel *parameterModel = this->model->getModelDefinition()->getParameterModel();
+            std::vector<ParameterEstimation *> parameterEstimations = this->model->getModellingSteps()->getOptimalDesignSteps()[0]->getParameters();
+                
+            for (std::vector<RandomVariable *>::size_type col = 0; col < this->etas.size(); col++) {
+                for (std::vector<RandomVariable *>::size_type row = col + 1; row < this->etas.size(); row++) {
+                    AstNode *cov = parameterModel->initialCovariance(this->etas[col], this->etas[row], parameterEstimations);
+                    covd_formatter.add(this->accept(cov));
+                }
+            }
+
+            covd_formatter.closeVector();
+            covd_formatter.noFinalNewline();
+            form.add(covd_formatter.createString());
         }
 
         // TrialDesign

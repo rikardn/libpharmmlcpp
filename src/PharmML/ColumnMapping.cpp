@@ -69,6 +69,7 @@ namespace PharmML
     ColumnMapping::ColumnMapping(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
+        this->postParse();
     }
 
     void ColumnMapping::parse(xml::Node node) {
@@ -154,5 +155,109 @@ namespace PharmML
 
     void ColumnMapping::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    // POST PARSE/CONSOLIDATION
+    // Perform post-parse functions to enable higher-level abstraction/consolidation
+    void ColumnMapping::postParse() {
+        Logger logger("Post");
+
+        // Deal with mapped symbols
+        if (this->mappedSymbol) {
+            this->num_maps++;
+        }
+
+        // TODO: Deal with categorical covariate mapping
+
+        // Deal with target maps
+        if (this->target_map) {
+            // Create associative arrays of (data) symbols to model (symbols and administrations)
+            for (PharmML::MapType map : this->target_map->getMaps()) {
+                if (map.modelSymbol != "") {
+                    this->symbol_to_data[map.modelSymbol] = map.dataSymbol;
+                    if (map.modelSymbol_ptr) {
+                        this->data_to_symbol_ptr[map.dataSymbol] = map.modelSymbol_ptr;
+                    } else {
+                        logger.error("TargetMapping element contains non-resolvable 'modelSymbol': " + map.modelSymbol, target_map);
+                    }
+                    this->num_maps++;
+                } else if (map.admNumber != "") {
+                    int adm;
+                    if (StringTyper::isInt(map.admNumber, adm)) {
+                        this->adm_to_data[adm] = map.dataSymbol;
+                    } else {
+                        logger.error("TargetMapping element contains non-integer 'admNumber': " + map.admNumber, target_map);
+                    }
+                    this->num_maps++;
+                } else {
+                    logger.error("TargetMapping element doesn't 'modelSymbol' nor 'admNumber'", target_map);
+                }
+            }
+        }
+    }
+
+    // True if this column mapping maps multiple symbols/administrations
+    bool ColumnMapping::mapsMultiple() {
+        return (this->num_maps > 1);
+    }
+
+    // Get the set of all (TargetMapping) symbol strings contained within this column mapping
+    std::unordered_set<std::string> ColumnMapping::getSymbolStrings() {
+        std::unordered_set<std::string> symb_strs;
+        for (std::pair<std::string, std::string> pair : this->symbol_to_data) {
+            symb_strs.insert(pair.first);
+        }
+        return symb_strs;
+    }
+
+    // Get the set of all (TargetMapping) administration numbers contained within this column mapping
+    std::unordered_set<int> ColumnMapping::getAdmNumbers() {
+        std::unordered_set<int> adm_nums;
+        for (std::pair<int, std::string> pair : this->adm_to_data) {
+            adm_nums.insert(pair.first);
+        }
+        return adm_nums;
+    }
+
+    // Get a (resolved) complete (TargetMapping) map from data symbol strings to the PharmML::Symbol pointers
+    std::unordered_map<std::string, PharmML::Symbol *> ColumnMapping::getDataSymbolMap() {
+        return data_to_symbol_ptr;
+    }
+
+    // Get a (resolved) complete (TargetMapping) map from data symbol strings to PharmML::PKMacro pointers
+    std::unordered_map<std::string, PharmML::PKMacro *> ColumnMapping::getDataAdministrationMap(std::vector<PharmML::PKMacro *> macros,
+        PharmML::PharmMLSection *ext_ds_section = nullptr, PharmML::PharmMLSection *pk_macros_section = nullptr) {
+            
+        Logger logger("Post");
+        std::unordered_map<std::string, PharmML::PKMacro *> data_to_adm_macro;
+
+        for (PharmML::PKMacro *macro : macros) {
+            // Only consider administration macros as potential targets
+            AstNode *adm_assignment = macro->getAssignment("adm");
+            AstAnalyzer ast_analyzer;
+            adm_assignment->accept(&ast_analyzer);
+            ScalarInt *adm_scint = ast_analyzer.getPureScalarInt();
+            if (adm_scint) {
+                int adm_num;
+                if (StringTyper::isInt(adm_scint->toString(), adm_num)) { // FIXME: StringTyper::isInt and check should be done by ScalarInt constructor so it's valid everywhere!
+                    // Add matching macro to data->macro map
+                    auto got = this->adm_to_data.find(adm_num);
+                    if (got != adm_to_data.end()) {
+                        std::string data_symbol = (*got).second;
+                        data_to_adm_macro[data_symbol] = macro;
+                    } else if (ext_ds_section && pk_macros_section) {
+                        // FIXME: Does it really make sense to supply external dataset and pk macros section just to detect situation below? Consolidator was easier...
+                        // TODO: Decide if it's a good idea to save the pk_macros_node as a PharmMLSection for pretty logging
+                        logger.error("Administration " + std::to_string(adm_num) + " refered by external dataset (%a) matches no defined administration macro (%b)",
+                            ext_ds_section, pk_macros_section);
+                    }
+                } else {
+                    std::string name = macro->getName();
+                    logger.error("PK macro '" + name + "' (%a) contains attribute 'adm' but value is not an integer", macro, nullptr);
+                }
+            }
+        }
+
+        return data_to_adm_macro;
     }
 }

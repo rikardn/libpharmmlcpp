@@ -20,6 +20,7 @@
 
 #include <unordered_map>
 #include <helpers/StringTyper.h>
+#include <helpers/Logger.h>
 #include <xml/xml.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/PharmMLContext.h>
@@ -27,6 +28,7 @@
 #include <visitors/XMLAstVisitor.h>
 #include <visitors/AstAnalyzer.h>
 #include <symbols/Symbol.h>
+#include <PharmML/PKMacro.h>
 
 namespace PharmML
 {
@@ -74,6 +76,14 @@ namespace PharmML
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
 
+            // POST PARSE/CONSOLIDATION
+            bool mapsMultiple();
+            std::unordered_set<std::string> getSymbolStrings();
+            std::unordered_set<int> getAdmNumbers();
+            std::unordered_map<std::string, PharmML::Symbol*> getDataSymbolMap();
+            std::unordered_map<std::string, PharmML::PKMacro *> getDataAdministrationMap(std::vector<PharmML::PKMacro *> macros,
+                PharmML::PharmMLSection *ext_ds_section, PharmML::PharmMLSection *pk_macros_section);
+
         private:
             PharmML::PharmMLContext *context;
 
@@ -82,6 +92,13 @@ namespace PharmML
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
             TargetMapping *target_map = nullptr;
+
+            // POST PARSE/CONSOLIDATION
+            void postParse();
+            int num_maps = 0;
+            std::unordered_map<std::string, std::string> symbol_to_data;
+            std::unordered_map<int, std::string> adm_to_data;
+            std::unordered_map<std::string, PharmML::Symbol *> data_to_symbol_ptr;
     };
 }
 

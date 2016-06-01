@@ -68,4 +68,7 @@ namespace PharmML
     void ExternalDataset::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
+
+    // POST PARSE/CONSOLIDATION
+    
 }

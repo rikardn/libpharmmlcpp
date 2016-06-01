@@ -41,7 +41,11 @@ namespace PharmML
             std::string getToolName();
             void parse(xml::Node node);
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+
             void accept(PharmMLVisitor *visitor);
+
+            // POST PARSE/CONSOLIDATION
+            
 
         private:
             PharmML::PharmMLContext *context;
@@ -50,6 +54,8 @@ namespace PharmML
             Dataset *dataset;
             // Why don't we even have an accept for this?
             std::string toolName;
+
+            // POST PARSE/CONSOLIDATION
     };
 }
 

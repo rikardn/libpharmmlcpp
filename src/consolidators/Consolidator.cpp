@@ -339,30 +339,6 @@ namespace CPharmML
                     }
                 }
             }
-
-            // Consolidate external datasets
-            std::vector<PharmML::ExternalDataset *> ext_dss = td->getExternalDatasets();
-            for (PharmML::ExternalDataset *ext_ds : ext_dss) {
-                // Generate consolidated external dataset
-                CPharmML::ExternalDataset *cext_ds = new CPharmML::ExternalDataset(ext_ds, this->logger);
-
-                // Add all administration macros to consolidation
-                // TODO: Consider that there might be multiple structural models (blkId)!
-                for (CPharmML::PKMacro *adm_cmacro : this->pk_macros->getAdministrations()) {
-                    cext_ds->addConsolidatedPKMacro(adm_cmacro);
-                }
-                this->ext_dss.push_back(cext_ds);
-
-                // Search for dangling administration references within consolidated column mappings, to report via logger
-                // (Note that dangling model symbol references can and will be reported by class itself)
-                for (CPharmML::ColumnMapping *ccol_map : cext_ds->getColumnMappings()) {
-                    for (int dangling_adm : ccol_map->getDanglingAdmNumbers()) {
-                        // FIXME: Decide if it's a good idea to save the containing node as a PharmMLSection (getPKMacrosSection below) for pretty logging!
-                        this->logger->error("Administration " + std::to_string(dangling_adm) + " refered by external dataset (%a) matches no defined administration macro (%b)",
-                            ext_ds, model->getModelDefinition()->getStructuralModel()->getPKMacrosSection());
-                    }
-                }
-            }
         }
     }
 

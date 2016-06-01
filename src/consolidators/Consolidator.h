@@ -30,7 +30,6 @@
 #include <consolidators/VariabilityModels.h>
 #include <consolidators/Functions.h>
 #include <consolidators/PKMacros.h>
-#include <consolidators/ExternalDataset.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <objects/Object.h>
@@ -62,7 +61,6 @@ namespace CPharmML
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
             CPharmML::PKMacros *pk_macros;
-            std::vector<CPharmML::ExternalDataset *> ext_dss;
 
             void consolidateSymbols(PharmML::Model *model);
             void consolidateObjects(PharmML::Model *model);

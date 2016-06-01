@@ -16,6 +16,9 @@
  */
 
 #include "ParameterModel.h"
+#include <visitors/AstAnalyzer.h>
+#include <AST/AstBuilder.h>
+#include <iostream>
 
 namespace PharmML
 {
@@ -86,5 +89,62 @@ namespace PharmML
 
     std::string ParameterModel::getBlkId() {
         return this->blkId;
+    }
+
+    // Return the the initial covariance between var1 and var2 given a vector of parameterEstimations
+    // FIXME: How to now which correlations are applicable? Can correlations from other ParameterModel apply?
+    AstNode *ParameterModel::initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations) {
+        for (Correlation *correlation : this->correlations) {
+            if (correlation->isPairwise()) {
+                Symbol *symbol_1 = correlation->getPairwiseSymbRefs()[0]->getSymbol();
+                Symbol *symbol_2 = correlation->getPairwiseSymbRefs()[1]->getSymbol();
+                // Is this the correlation we are searching for?
+                if ((symbol_1 == var1 && symbol_2 == var2) || (symbol_2 == var1 && symbol_1 == var2)) {
+                    AstNode *assignment = correlation->getPairwiseAssignment();
+                    AstAnalyzer analyzer;
+                    assignment->accept(&analyzer);
+                    if (analyzer.getPureScalar() && correlation->getPairwiseType() == "Covariance") {
+                        // A scalar covariance
+                        return analyzer.getPureScalar();
+                    } else if (analyzer.getPureScalar() && correlation->getPairwiseType() == "CorrelationCoefficient") {
+                        // A scalar correlation coefficient
+                        // cov(X,Y) = cor(X,Y) * stdev(X) * stdev(Y)
+                        // Have method initialStdev on a RandomVariable with parameterEstimations as argument
+                        // Why not consolidator? Different possible parameterEstimations can be used. Don't know from consolidator which one to use?
+                        std::vector<AstNode *> multiplicands;
+                        multiplicands.push_back(analyzer.getPureScalar());
+                        multiplicands.push_back(var1->initialStdev(parameterEstimations));
+                        multiplicands.push_back(var2->initialStdev(parameterEstimations));
+                        AstNode *cov = AstBuilder::multiplyMany(multiplicands);
+                        return cov;
+                    } else if (analyzer.getPureSymbRef() && correlation->getPairwiseType() == "Covariance") {
+                        Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
+                        // FIXME: Better way of parameterEstimations lookup
+                        for (ParameterEstimation *pe : parameterEstimations) {
+                            if (pe->getSymbRef()->getSymbol() == symbol) {
+                                return pe->getInitValue();
+                            }
+                        }
+                        return new ScalarInt(0);    // FIXME: What to do when we cannot find initial value
+                    } else if (analyzer.getPureSymbRef() && correlation->getPairwiseType() == "CorrelationCoefficient") {
+                        Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
+                        for (ParameterEstimation *pe : parameterEstimations) {
+                            if (pe->getSymbRef()->getSymbol() == symbol) {
+                                std::vector<AstNode *> multiplicands;
+                                multiplicands.push_back(pe->getInitValue());
+                                multiplicands.push_back(var1->initialStdev(parameterEstimations));
+                                multiplicands.push_back(var2->initialStdev(parameterEstimations));
+                                return AstBuilder::multiplyMany(multiplicands);
+                            }
+                        }
+                        return new ScalarInt(0);    // FIXME: What to do when we cannot find initial value
+                    }
+                }
+            } else {
+                // TODO
+                return nullptr;
+            }
+        }
+        return new ScalarInt(0);        // No covariance 
     }
 }

@@ -24,6 +24,7 @@
 #include <PharmML/Correlation.h>
 #include <xml/xml.h>
 #include <symbols/Symbol.h>
+#include <PharmML/ModellingSteps.h>
 
 namespace PharmML
 {
@@ -39,6 +40,8 @@ namespace PharmML
             void parse(xml::Node node);
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             std::string getBlkId();
+
+            AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);
 
         private:
             PharmML::PharmMLContext *context;

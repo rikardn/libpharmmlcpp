@@ -128,6 +128,8 @@ namespace PharmML
             void parse(xml::Node node);
             std::vector<SingleIntervention *> getSingleInterventions();
             AstNode *getRelative();
+            void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
+            void accept(ObjectVisitor *visitor);
 
         private:
             PharmMLContext *context;
@@ -143,13 +145,14 @@ namespace PharmML
             xml::Node xml();
             std::vector<Administration *> getAdministrations();
             std::vector<IndividualAdministration *> getIndividualAdministrations();
+            std::vector<InterventionsCombination *> getInterventionsCombinations();
             void accept(PharmMLVisitor *visitor);
 
         private:
             PharmML::PharmMLContext *context;
             std::vector<PharmML::Administration *> administrations;
             std::vector<PharmML::IndividualAdministration *> individualAdministrations;
-
+            std::vector<InterventionsCombination *> interventionsCombinations;
     };
 }
 

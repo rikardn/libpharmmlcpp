@@ -24,12 +24,14 @@ namespace PharmML
     class Administration;
     class IndividualObservations;
     class Observation;
+    class InterventionsCombination;
 
     class ObjectVisitor
     {
         public:
             virtual void visit(Arm *object) {};
             virtual void visit(Administration *object) {};
+            virtual void visit(InterventionsCombination *object) {};
             virtual void visit(Observation *object) {};
             virtual void visit(IndividualObservations *object) {};
     };

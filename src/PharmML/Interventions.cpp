@@ -300,6 +300,18 @@ namespace PharmML
         return this->relative;
     }
 
+    void InterventionsCombination::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {
+        for (SingleIntervention *si : this->singleInterventions) {
+            for (ObjectRef *ref : si->getOidRefs()) {
+                ref->setObject(oidMap[ref->getOidRef()]);
+            }
+        }
+    }
+
+    void InterventionsCombination::accept(ObjectVisitor *visitor) {
+        visitor->visit(this);
+    }
+
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -320,6 +332,13 @@ namespace PharmML
             PharmML::IndividualAdministration *adm = new PharmML::IndividualAdministration(this->context, node);
             this->individualAdministrations.push_back(adm);
         }
+
+        // Get interventions combinations
+        std::vector<xml::Node> int_comb_nodes = this->context->getElements(node, "./design:InterventionsCombination");
+        for (xml::Node node : int_comb_nodes) {
+            InterventionsCombination *comb = new InterventionsCombination(this->context, node);
+            this->interventionsCombinations.push_back(comb);
+        }
     }
 
     xml::Node Interventions::xml() {
@@ -339,6 +358,10 @@ namespace PharmML
 
     std::vector <IndividualAdministration *> Interventions::getIndividualAdministrations() {
         return individualAdministrations;
+    }
+
+    std::vector<InterventionsCombination *> Interventions::getInterventionsCombinations() {
+        return this->interventionsCombinations;
     }
 
     void Interventions::accept(PharmMLVisitor *visitor) {

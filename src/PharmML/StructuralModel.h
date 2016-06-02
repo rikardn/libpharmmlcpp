@@ -38,8 +38,7 @@ namespace PharmML
             std::vector<PharmML::CommonVariable *> getVariables();
             bool hasDerivatives();
             std::vector<PharmML::CommonVariable *> getDerivatives();
-            std::vector<PharmML::PKMacro *> getPKMacros();
-            PharmMLSection *getPKMacrosSection();
+            PharmML::PKMacros *getPKMacros();
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             std::vector<PharmML::CommonVariable *> getPrerequisiteVariables(std::vector<PharmML::CommonVariable *> list);
             std::vector<PharmML::CommonVariable *> DependsOn(std::vector<PharmML::CommonVariable *> list);
@@ -48,8 +47,7 @@ namespace PharmML
             PharmML::PharmMLContext *context;
             std::string blkId;
             std::vector<PharmML::CommonVariable *> variables;
-            std::vector<PharmML::PKMacro *> pk_macros;
-            PharmML::PharmMLSection *pk_macros_section = nullptr; // Experiment
+            PharmML::PKMacros *pk_macros = nullptr;
     };
 }
 

@@ -222,8 +222,12 @@ namespace CPharmML
     }
 
     void Consolidator::consolidatePKMacros(PharmML::Model *model) {
-        std::vector<PharmML::PKMacro *> pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
-        this->pk_macros = new CPharmML::PKMacros(pk_macros, this->logger);
+        PharmML::PKMacros *pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
+        std::vector<PharmML::PKMacro *> macros;
+        if (pk_macros) {
+            macros = pk_macros->getAllMacros();
+        }
+        this->pk_macros = new CPharmML::PKMacros(macros, this->logger);
         this->pk_macros->validate();
     }
 

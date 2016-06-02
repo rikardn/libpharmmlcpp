@@ -49,6 +49,23 @@ namespace PharmML
             std::string name;
             std::vector<MacroValue> values;
     };
+
+    class PKMacros : public PharmMLSection
+    {
+        public:
+            PKMacros(PharmMLContext *context, xml::Node node);
+
+            std::vector<PKMacro *> getAllMacros();
+
+            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+
+        private:
+            PharmML::PharmMLContext *context;
+
+            std::vector<PKMacro *> macros;
+            
+            void parse(xml::Node node);
+    };
 }
 
 #endif

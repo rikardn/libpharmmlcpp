@@ -225,7 +225,7 @@ namespace CPharmML
         PharmML::PKMacros *pk_macros = model->getModelDefinition()->getStructuralModel()->getPKMacros();
         std::vector<PharmML::PKMacro *> macros;
         if (pk_macros) {
-            macros = pk_macros->getAllMacros();
+            macros = pk_macros->getMacros();
         }
         this->pk_macros = new CPharmML::PKMacros(macros, this->logger);
         this->pk_macros->validate();

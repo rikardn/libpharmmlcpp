@@ -195,7 +195,7 @@ namespace PharmML
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
-        this->postParse();
+        //~ this->postParse(); // FIXME: See comment in Model.cpp!!!
     }
 
     void PKMacros::parse(xml::Node node) {
@@ -230,7 +230,7 @@ namespace PharmML
         }
     }
 
-    std::vector<PKMacro *> PKMacros::getAllMacros() {
+    std::vector<PKMacro *> PKMacros::getMacros() {
         return this->macros;
     }
 
@@ -258,5 +258,141 @@ namespace PharmML
             macro->setName(uniq_name);
             picked_names.insert(uniq_name);
         }
+    }
+
+    // Validate the macros (where the schema won't help)
+    void PKMacros::validate() {
+        PharmML::AstAnalyzer ast_analyzer;
+        // Map from compartment/administration to (referable) integer codes (and the referees themselves)
+        std::unordered_map<std::string, std::unordered_map<int, PKMacro *>> int_codes = {
+            { "cmt", std::unordered_map<int, PKMacro *>() },
+            { "adm", std::unordered_map<int, PKMacro *>() },
+        };
+
+        // Check all macros
+        for (PKMacro *macro : this->macros) {
+            // Get type of macro ("Absorption", "Compartment", etc.)
+            std::string type = macro->getType();
+
+            // Check all attributes in macro
+            for (PharmML::MacroValue value : macro->getValues()) {
+                // Get attribute type and assignment ("cmt" and 1, etc.)
+                std::string attribute = value.first;
+                PharmML::AstNode *assignment = value.second;
+
+                if (!assignment) {
+                    // Attribute without assignment
+                    this->context->logger.error("PK macro '" + type + "' (%a) contains a broken value (no content found)", macro, nullptr);
+                } else if (attribute == "") {
+                    // Assigment without attribute (type)
+                    this->context->logger.warning("PK macro '" + type + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
+                } else if (attribute == "cmt" || attribute == "adm") {
+                    // Check "cmt" and "adm" attributes
+                    bool is_compartment = (type == "Compartment" || type == "Peripheral");
+                    bool is_administration = (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral");
+                    ast_analyzer.reset();
+                    assignment->accept(&ast_analyzer);
+                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    if (!scalar_int) {
+                        // No ScalarInt child on "cmt" or "adm" attribute
+                        this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
+                    } else if ( (attribute == "cmt" && is_compartment) || (attribute == "adm" && is_administration) ) {
+                        // Check if this integer is a duplicate of an earlier such integer found
+                        int num = scalar_int->toInt();
+                        auto got = int_codes[attribute].find(num);
+                        if (got != int_codes[attribute].end()) {
+                            PKMacro *dup_macro = int_codes[attribute][num];
+                            this->context->logger.error("PK macro '" + type + "' (%a) shares referable attribute '"
+                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getType() + "' (%b)", macro, dup_macro);
+                        }
+                        // Link attribute, integer and macro for above check
+                        int_codes[attribute][num] = macro;
+                    }
+                }
+            }
+        }
+    }
+
+    // Get all compartment type macro's
+    std::vector<PKMacro *> PKMacros::getCompartments() {
+        std::vector<PKMacro *> cmt_macros;
+        for (PKMacro *macro : this->macros) {
+            // Find compartment
+            std::string type = macro->getType();
+            if (type == "Compartment" || type == "Peripheral" || type == "Effect") {
+                cmt_macros.push_back(macro);
+            }
+        }
+        return cmt_macros;
+    }
+
+    // Get all administration/absorption type macro's
+    std::vector<PKMacro *> PKMacros::getAdministrations() {
+        std::vector<PKMacro *> adm_macros;
+        for (PKMacro *macro : this->macros) {
+            // Find administration
+            std::string type = macro->getType();
+            if (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral") {
+                adm_macros.push_back(macro);
+            }
+        }
+        return adm_macros;
+    }
+
+    // Get all mass transfer type macro's
+    std::vector<PKMacro *> PKMacros::getTransfers() {
+        std::vector<PKMacro *> trans_macros;
+        for (PKMacro *macro : this->macros) {
+            // Find mass transfers
+            std::string type = macro->getType();
+            if (type == "Elimination" || type == "Transfer") {
+                trans_macros.push_back(macro);
+            }
+        }
+        return trans_macros;
+    }
+
+    // Find and return an administration/absorption from administration number
+    PKMacro *PKMacros::getAdministration(int adm_num) {
+        PharmML::AstAnalyzer ast_analyzer;
+        for (PKMacro *macro : this->getAdministrations()) {
+            // Find 'adm' attribute
+            for (PharmML::MacroValue value : macro->getValues()) {
+                if (value.first == "adm") {
+                    // Get 'adm' code and resolve it
+                    ast_analyzer.reset();
+                    PharmML::AstNode *assignment = value.second;
+                    assignment->accept(&ast_analyzer);
+                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    // Compare and return
+                    if (scalar_int->toInt() == adm_num) {
+                        return macro;
+                    }
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    // Find and return a compartment from compartment number
+    PKMacro *PKMacros::getCompartment(int cmt_num) {
+        PharmML::AstAnalyzer ast_analyzer;
+        for (PKMacro *macro : this->getCompartments()) {
+            // Find 'cmt' attribute
+            for (PharmML::MacroValue value : macro->getValues()) {
+                if (value.first == "cmt") {
+                    // Get 'cmt' code and resolve it
+                    ast_analyzer.reset();
+                    PharmML::AstNode *assignment = value.second;
+                    assignment->accept(&ast_analyzer);
+                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    // Compare and return
+                    if (scalar_int->toInt() == cmt_num) {
+                        return macro;
+                    }
+                }
+            }
+        }
+        return nullptr;
     }
 }

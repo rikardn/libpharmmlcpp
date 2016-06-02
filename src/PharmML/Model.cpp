@@ -57,6 +57,15 @@ namespace PharmML
 
     void Model::postParse() {
         this->setupObjects();
+
+        /* FIXME: Dirty hack to avoid crash because PKMacros::postParse() invokes name-generation of macros
+         * which in turn uses names of refered Symbol's. Guess who sets SymbRef's? The consolidator, after XML
+         * read and object construction... I.e., postParse() CANNOT be called in constructor of PKMacros.
+         * This needs a good solution. Quickly. */
+        PharmML::PKMacros *pk_macros = this->ModelDefinition->getStructuralModel()->getPKMacros();
+        if (pk_macros) {
+            pk_macros->postParse();
+        }
     }
 
     Model::Model(const char *filename) {

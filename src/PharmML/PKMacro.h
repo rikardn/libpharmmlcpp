@@ -64,11 +64,17 @@ namespace PharmML
         public:
             PKMacros(PharmMLContext *context, xml::Node node);
 
-            std::vector<PKMacro *> getAllMacros();
+            std::vector<PKMacro *> getMacros();
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
 
             // POST PARSE/CONSOLIDATION
+            void postParse(); // FIXME: See comment in Model.cpp!!!
+            std::vector<PKMacro *> getAdministrations();
+            std::vector<PKMacro *> getCompartments();
+            std::vector<PKMacro *> getTransfers();
+            PKMacro *getAdministration(int adm_num);
+            PKMacro *getCompartment(int cmt_num);
 
         private:
             PharmML::PharmMLContext *context;
@@ -78,7 +84,8 @@ namespace PharmML
             void parse(xml::Node node);
             
             // POST PARSE/CONSOLIDATION
-            void postParse();
+            //~ void postParse(); // FIXME: See comment in Model.cpp!!!
+            void validate();
     };
 }
 

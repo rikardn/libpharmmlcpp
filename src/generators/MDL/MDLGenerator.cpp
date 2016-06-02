@@ -515,8 +515,7 @@ namespace PharmML
         std::unordered_map<PharmML::PKMacro *, int> mdl_cmt;
         std::vector<PharmML::PKMacro *> adm_macros = pk_macros->getAdministrations();
         for (PharmML::PKMacro *adm_macro : adm_macros) {
-            std::string type = adm_macro->getType();
-            if (type != "IV") {
+            if (adm_macro->getSubType() != MacroType::IV) {
                 // IV are called "direct" in MDL and gets no number
                 mdl_cmt[adm_macro] = mdl_cmt_iterator++;
             }
@@ -562,12 +561,9 @@ namespace PharmML
                 //~ macro->tryParseInt("target", to_attr, this->ast_analyzer);
             }
             std::string to_name = pk_macros->getCompartment(to_attr)->getName();
-
-            // Add differently if depot-ish absorption or direct (IV)
-            std::string type = macro->getType();
             
             // Add differently if depot-ish absorption or direct (IV)
-            if (type == "Absorption" || type == "Oral" || type == "Depot") {
+            if (macro->getSubType() != MacroType::IV) {
                 form.add("type is depot");
                 form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
 
@@ -599,7 +595,7 @@ namespace PharmML
                 if (mtt) {
                     form.add("mtt=" + this->accept(mtt));
                 }
-            } else if (type == "IV") {
+            } else if (macro->getSubType() == MacroType::IV) {
                 form.add("type is direct");
 
                 // Output compartment target
@@ -620,10 +616,7 @@ namespace PharmML
         
         // Output compartments and mass transfers (in a order of transfers directly following associated compartment)
         for (PharmML::PKMacro *macro : cmt_trans_macros) {
-            // Get type of macro
-            std::string type = macro->getType();
-
-            if (type == "Compartment" || type == "Peripheral" || type == "Effect") { // Treat all compartments similarly
+            if (macro->isCompartment()) { // Treat all compartments similarly
                 // Construct enclosure
                 std::string name = macro->getName();
                 std::string pad = std::string(max_length - name.length(), ' ');
@@ -657,17 +650,16 @@ namespace PharmML
                 // TODO: How should kij and k_i_j of Peripheral be treated? What are even i and j here?
 
                 form.closeVector();
-            } else if (type == "Elimination" || type == "Transfer") {
+            } else if (macro->isMassTransfer()) {
                 // Construct enclosure (mass transfers only have a colon as "name" in MDL)
                 std::string pad = std::string(max_length - 1, ' ');
                 std::string prefix = pad;
                 form.openVector(prefix + " :: {}", 0, ", ");
 
                 // Treat elimination and transfer the same
-                std::string type = macro->getType();
-                if (type == "Elimination") {
+                if (macro->getSubType() == MacroType::Elimination) {
                     form.add("type is elimination");
-                } else if (type ==  "Transfer") {
+                } else if (macro->getSubType() == MacroType::Transfer) {
                     form.add("type is transfer");
                 }
 

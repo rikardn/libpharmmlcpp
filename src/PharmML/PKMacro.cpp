@@ -23,6 +23,7 @@ namespace PharmML
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
+        this->postParse();
     }
 
     void PKMacro::parse(xml::Node node) {
@@ -95,10 +96,42 @@ namespace PharmML
 
     // POST PARSE/CONSOLIDATION
     // Perform post-parse functions to enable higher-level abstraction/consolidation
+    void PKMacro::postParse() {
+        // TODO: Hopefully validation and argument parsing can be done in here instead of in PKMacros/MDLGenerator
+        if (this->type == "Compartment") {
+            this->is_comp = true;
+            this->sub_type = MacroType::Compartment;
+        } else if (this->type == "Peripheral") {
+            this->is_comp = true;
+            this->sub_type = MacroType::Peripheral;
+        } else if (this->type == "Effect") {
+            this->is_comp = true;
+            this->sub_type = MacroType::Effect;
+        } else if (this->type == "Depot") {
+            this->is_abs = true;
+            this->sub_type = MacroType::Depot;
+        } else if (this->type == "IV") {
+            this->is_abs = true;
+            this->sub_type = MacroType::IV;
+        } else if (this->type == "Absorption") {
+            this->is_abs = true;
+            this->sub_type = MacroType::Absorption;
+        } else if (this->type == "Oral") {
+            this->is_abs = true;
+            this->sub_type = MacroType::Oral;
+        } else if (this->type == "Elimination") {
+            this->is_trans = true;
+            this->sub_type = MacroType::Elimination;
+        } else if (this->type == "Transfer") {
+            this->is_trans = true;
+            this->sub_type = MacroType::Transfer;
+        }
+    }
+
     // Generate a name for this macro via using the symbol attributes
     std::string PKMacro::generateName() {
         PharmML::AstAnalyzer ast_analyzer;
-        if (this->type == "Absorption" || this->type == "Depot") {
+        if (this->sub_type == MacroType::Absorption || this->sub_type == MacroType::Depot) {
             // Try to name in order: ka, Tlag, p
             std::vector<PharmML::AstNode *> nodes;
             nodes.push_back( this->getAssignment("ka") );
@@ -117,11 +150,11 @@ namespace PharmML
                     }
                 }
             }
-        } else if (this->type == "Oral") {
+        } else if (this->sub_type == MacroType::Oral) {
             return("INPUT_ORAL");
-        } else if (this->type == "IV") {
+        } else if (this->sub_type == MacroType::IV) {
             return("INPUT_IV");
-        } else if (this->type == "Compartment" || this->type == "Peripheral") {
+        } else if (this->sub_type == MacroType::Compartment || this->sub_type == MacroType::Peripheral) {
             // Try to name in order: amount, cmt
             std::vector<PharmML::AstNode *> nodes;
             nodes.push_back( this->getAssignment("amount") );
@@ -142,7 +175,7 @@ namespace PharmML
                     }
                 }
             }
-        } else if (this->type == "Elimination" || this->type == "Transfer") {
+        } else if (this->sub_type == MacroType::Elimination || this->sub_type == MacroType::Transfer) {
             // Try to name in order: from, cmt
             std::vector<PharmML::AstNode *> nodes;
             nodes.push_back( this->getAssignment("from") );
@@ -163,7 +196,7 @@ namespace PharmML
                     }
                 }
             }
-        } else if (this->type == "Effect") {
+        } else if (this->sub_type == MacroType::Effect) {
             // Try to name in order: cmt
             PharmML::AstNode *cmt = this->getAssignment("cmt");
             if (cmt) {
@@ -192,6 +225,22 @@ namespace PharmML
 
     std::string PKMacro::getName() {
         return this->name;
+    }
+
+    bool PKMacro::isCompartment() {
+        return this->is_comp;
+    }
+
+    bool PKMacro::isAbsorptionProcess() {
+        return this->is_abs;
+    }
+
+    bool PKMacro::isMassTransfer() {
+        return this->is_trans;
+    }
+
+    MacroType PKMacro::getSubType() {
+        return this->sub_type;
     }
 
     // Wrapping layer holding all macros and convenience functions
@@ -247,10 +296,9 @@ namespace PharmML
     // POST PARSE/CONSOLIDATION
     // Perform post-parse functions to enable higher-level abstraction/consolidation
     void PKMacros::postParse() {
-        // Name the macros (hopefully useful for many end-tools but in particular, MDL)
         std::unordered_set<std::string> picked_names;
         for (PharmML::PKMacro *macro : this->macros) {
-            // Auto-generate a fitting name
+            // Auto-generate a fitting name (hopefully useful for many end-tools but in particular, MDL)
             std::string name = macro->generateName();
             std::string uniq_name = name;
             size_t count = 2; // FIXME: Remove when perfect naming
@@ -292,15 +340,13 @@ namespace PharmML
                     this->context->logger.warning("PK macro '" + type + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
                 } else if (attribute == "cmt" || attribute == "adm") {
                     // Check "cmt" and "adm" attributes
-                    bool is_compartment = (type == "Compartment" || type == "Peripheral");
-                    bool is_administration = (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral");
                     ast_analyzer.reset();
                     assignment->accept(&ast_analyzer);
                     PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     if (!scalar_int) {
                         // No ScalarInt child on "cmt" or "adm" attribute
                         this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
-                    } else if ( (attribute == "cmt" && is_compartment) || (attribute == "adm" && is_administration) ) {
+                    } else if ( (attribute == "cmt" && macro->isCompartment()) || (attribute == "adm" && macro->isAbsorptionProcess()) ) {
                         // Check if this integer is a duplicate of an earlier such integer found
                         int num = scalar_int->toInt();
                         auto got = int_codes[attribute].find(num);
@@ -323,7 +369,7 @@ namespace PharmML
         for (PKMacro *macro : this->macros) {
             // Find compartment
             std::string type = macro->getType();
-            if (type == "Compartment" || type == "Peripheral" || type == "Effect") {
+            if (macro->isCompartment()) {
                 cmt_macros.push_back(macro);
             }
         }
@@ -336,7 +382,7 @@ namespace PharmML
         for (PKMacro *macro : this->macros) {
             // Find administration
             std::string type = macro->getType();
-            if (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral") {
+            if (macro->isAbsorptionProcess()) {
                 adm_macros.push_back(macro);
             }
         }
@@ -349,7 +395,7 @@ namespace PharmML
         for (PKMacro *macro : this->macros) {
             // Find mass transfers
             std::string type = macro->getType();
-            if (type == "Elimination" || type == "Transfer") {
+            if (macro->isMassTransfer()) {
                 trans_macros.push_back(macro);
             }
         }

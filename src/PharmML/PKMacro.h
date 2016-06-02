@@ -30,6 +30,7 @@
 namespace PharmML
 {
     typedef std::pair<std::string, AstNode *> MacroValue;
+    enum class MacroType {Compartment, Peripheral, Effect, Depot, IV, Absorption, Oral, Elimination, Transfer};
     class PKMacro : public PharmMLSection, public Referer
     {
         public:
@@ -47,6 +48,10 @@ namespace PharmML
             std::string generateName();
             void setName(std::string name);
             std::string getName();
+            bool isCompartment();
+            bool isAbsorptionProcess();
+            bool isMassTransfer();
+            MacroType getSubType();
 
         private:
             PharmML::PharmMLContext *context;
@@ -56,7 +61,12 @@ namespace PharmML
             std::vector<MacroValue> values;
 
             // POST PARSE/CONSOLIDATION
+            void postParse();
             std::string name;
+            bool is_comp = false;
+            bool is_abs = false;
+            bool is_trans = false;
+            MacroType sub_type;
     };
 
     class PKMacros : public PharmMLSection

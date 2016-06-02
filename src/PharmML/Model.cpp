@@ -97,9 +97,13 @@ namespace PharmML
         return this->consolidator;
     }
 
-    // Print an error for duplicate oid
-    void Model::duplicateOidError(const std::string &oid, PharmML::PharmMLSection *section) {
-        this->context->logger.error("Duplicate oid '" + oid + "'", section);
+    // Check if oid already exists
+    void Model::checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section) {
+        if (allOids.count(object->getOid()) == 1) {
+            this->context->logger.error("Duplicate oid '" + object->getOid() + "'", section);
+        }
+        allOids.insert(object->getOid());
+        this->allObjects.insert(object);
     }
 
     // Gather all Objects and setup ObjectRefs 
@@ -112,46 +116,25 @@ namespace PharmML
             Arms *arms = td->getArms();
             if (arms) {
                 for (Arm *arm : arms->getArms()) {
-                    // Check if oid already exists
-                    if (allOids.count(arm->getOid()) == 1) {
-                        this->duplicateOidError(arm->getOid(), arm);
-                    }
-                    allOids.insert(arm->getOid());
-                    this->allObjects.insert(arm);
+                    this->checkAndAddOid(allOids, arm, arm);
                 }
             }
             Observations *observations = td->getObservations();
             if (observations) {
                 for (Observation *observation : observations->getObservations()) {
-                    if (allOids.count(observation->getOid()) == 1) {
-                        this->duplicateOidError(observation->getOid(), observation);
-                    }
-                    allOids.insert(observation->getOid());
-                    this->allObjects.insert(observation);
+                    this->checkAndAddOid(allOids, observation, observation);
                 }
                 for (IndividualObservations *observation : observations->getIndividualObservations()) {
-                    if (allOids.count(observation->getOid()) == 1) {
-                        this->duplicateOidError(observation->getOid(), observation);
-                    }
-                    allOids.insert(observation->getOid());
-                    this->allObjects.insert(observation);
+                    this->checkAndAddOid(allOids, observation, observation);
                 }
             }
             Interventions *interventions = td->getInterventions();
             if (interventions) {
                 for (Administration *admin : interventions->getAdministrations()) {
-                    if (allOids.count(admin->getOid()) == 1) {
-                        this->duplicateOidError(admin->getOid(), admin);
-                    }
-                    allOids.insert(admin->getOid());
-                    this->allObjects.insert(admin);
+                    this->checkAndAddOid(allOids, admin, admin);
                 }
                 for (InterventionsCombination *comb : interventions->getInterventionsCombinations()) {
-                    if (allOids.count(comb->getOid()) == 1) {
-                        this->duplicateOidError(comb->getOid(), comb);
-                    }
-                    allOids.insert(comb->getOid());
-                    this->allObjects.insert(comb);
+                    this->checkAndAddOid(allOids, comb, comb);
                 }
             }
         }

@@ -57,7 +57,7 @@ namespace PharmML
             void parse(xml::Node node);
             void postParse();
             void setupObjects();
-            void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
+            void checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section);
     };
 }
 

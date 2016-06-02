@@ -22,6 +22,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/PharmMLSection.h>
 #include <visitors/PharmMLVisitor.h>
+#include <visitors/AstAnalyzer.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <AST/AstNode.h>
@@ -34,7 +35,7 @@ namespace PharmML
         public:
             PKMacro(PharmMLContext *context, xml::Node node);
 
-            std::string getName();
+            std::string getType();
             bool hasAttribute(std::string attribute);
             std::vector<MacroValue> getValues();
             AstNode *getAssignment(std::string attribute);
@@ -42,12 +43,20 @@ namespace PharmML
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             void accept(PharmMLVisitor *visitor);
 
+            // POST PARSE/CONSOLIDATION
+            std::string generateName();
+            void setName(std::string name);
+            
+
         private:
             PharmML::PharmMLContext *context;
             void parse(xml::Node node);
 
-            std::string name;
+            std::string type;
             std::vector<MacroValue> values;
+
+            // POST PARSE/CONSOLIDATION
+            std::string name;
     };
 
     class PKMacros : public PharmMLSection
@@ -59,12 +68,17 @@ namespace PharmML
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
 
+            // POST PARSE/CONSOLIDATION
+
         private:
             PharmML::PharmMLContext *context;
 
             std::vector<PKMacro *> macros;
             
             void parse(xml::Node node);
+            
+            // POST PARSE/CONSOLIDATION
+            void postParse();
     };
 }
 

@@ -47,7 +47,7 @@ namespace CPharmML
 
     // Generate a name for this macro via using the symbol attributes
     std::string PKMacro::generateName(PharmML::AstAnalyzer &ast_analyzer) {
-        std::string n = macro->getName();
+        std::string n = macro->getType();
         if (n == "Absorption" || n == "Depot") {
             // Try to name in order: ka, Tlag, p
             std::vector<PharmML::AstNode *> nodes;
@@ -198,36 +198,36 @@ namespace CPharmML
         for (PKMacro *cmacro : this->cmacros) {
             // Get name of macro ("Absorption", "Compartment", etc.)
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
+            std::string type = macro->getType();
 
             // Check all values in macro
             for (PharmML::MacroValue value : macro->getValues()) {
-                // Get attribute name and assignment ("cmt" and 1, etc.)
+                // Get attribute type and assignment ("cmt" and 1, etc.)
                 std::string attribute = value.first;
                 PharmML::AstNode *assignment = value.second;
 
                 if (!assignment) {
                     // TODO: See comment in PKMacros.cpp; Schema doesn't seem to block this!
-                    this->logger->error("PK macro '" + name + "' (%a) contains a broken value: No content found", macro, nullptr);
+                    this->logger->error("PK macro '" + type + "' (%a) contains a broken value: No content found", macro, nullptr);
                 } else if (attribute == "") {
                     // Anonymous attribute
-                    this->logger->warning("PK macro '" + name + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
+                    this->logger->warning("PK macro '" + type + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
                 } else if (attribute == "cmt" || attribute == "adm") {
                     // Check if "cmt" and "adm" attributes contain an integer code
                     this->ast_analyzer.reset();
                     assignment->accept(&ast_analyzer);
                     PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     if (!scalar_int) {
-                        this->logger->error("PK macro '" + name + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
-                    } else if ((attribute == "cmt" && name == "Compartment") || ( (attribute == "adm") && (name == "Absorption" || name == "IV" || name == "Depot" || name == "Oral") )) {
+                        this->logger->error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
+                    } else if ((attribute == "cmt" && type == "Compartment") || ( (attribute == "adm") && (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral") )) {
                         // Check if there's a (duplicate) referable integer code registred
                         int num = scalar_int->toInt();
                         auto got = int_codes[attribute].find(num);
                         if (got != int_codes[attribute].end()) {
                             PKMacro *dup_cmacro = int_codes[attribute][num];
                             PharmML::PKMacro *dup_macro = dup_cmacro->getMacro();
-                            this->logger->error("PK macro '" + name + "' (%a) shares identifier '"
-                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getName() + "' (%b)", macro, dup_macro);
+                            this->logger->error("PK macro '" + type + "' (%a) shares identifier '"
+                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getType() + "' (%b)", macro, dup_macro);
                         }
 
                         // Link attribute, code and cmacro for above check
@@ -254,8 +254,8 @@ namespace CPharmML
         for (PKMacro *cmacro : this->cmacros) {
             // Find compartment
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
-            if (name == "Compartment" || name == "Peripheral" || name == "Effect") {
+            std::string type = macro->getType();
+            if (type == "Compartment" || type == "Peripheral" || type == "Effect") {
                 cmts.push_back(cmacro);
             }
         }
@@ -290,8 +290,8 @@ namespace CPharmML
         for (PKMacro *cmacro : this->cmacros) {
             // Find administration
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
-            if (name == "Absorption" || name == "IV" || name == "Depot" || name == "Oral") {
+            std::string type = macro->getType();
+            if (type == "Absorption" || type == "IV" || type == "Depot" || type == "Oral") {
                 adms.push_back(cmacro);
             }
         }
@@ -326,8 +326,8 @@ namespace CPharmML
         for (PKMacro *cmacro : this->cmacros) {
             // Find mass transfers
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string name = macro->getName();
-            if (name == "Elimination" || name == "Transfer") {
+            std::string type = macro->getType();
+            if (type == "Elimination" || type == "Transfer") {
                 trans.push_back(cmacro);
             }
         }

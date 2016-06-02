@@ -252,8 +252,8 @@ namespace PharmML
                             ext_ds_section, pk_macros_section);
                     }
                 } else {
-                    std::string name = macro->getName();
-                    logger.error("PK macro '" + name + "' (%a) contains attribute 'adm' but value is not an integer", macro, nullptr);
+                    std::string type = macro->getType();
+                    logger.error("PK macro '" + type + "' (%a) contains attribute 'adm' but value is not an integer", macro, nullptr);
                 }
             }
         }

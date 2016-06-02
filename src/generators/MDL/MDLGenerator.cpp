@@ -514,7 +514,7 @@ namespace PharmML
         std::unordered_map<CPharmML::PKMacro *, int> mdl_cmt;
         std::vector<CPharmML::PKMacro *> adm_cmacros = pk_macros->getAdministrations();
         for (CPharmML::PKMacro *adm_cmacro : adm_cmacros) {
-            std::string type = adm_cmacro->getMacro()->getName();
+            std::string type = adm_cmacro->getMacro()->getType();
             if (type != "IV") {
                 // IV are called "direct" in MDL and gets no number
                 mdl_cmt[adm_cmacro] = mdl_cmt_iterator++;
@@ -566,7 +566,7 @@ namespace PharmML
             PharmML::PKMacro *macro = cmacro->getMacro();
 
             // Add differently if depot-ish absorption or direct (IV)
-            std::string type = macro->getName();
+            std::string type = macro->getType();
             
             // Add differently if depot-ish absorption or direct (IV)
             if (type == "Absorption" || type == "Oral" || type == "Depot") {
@@ -624,7 +624,7 @@ namespace PharmML
         for (CPharmML::PKMacro *cmacro : cmt_trans_cmacros) {
             // Get type of macro
             PharmML::PKMacro *macro = cmacro->getMacro();
-            std::string type = macro->getName();
+            std::string type = macro->getType();
 
             if (type == "Compartment" || type == "Peripheral" || type == "Effect") { // Treat all compartments similarly
                 // Construct enclosure
@@ -635,7 +635,7 @@ namespace PharmML
                 form.openVector(prefix + " : {}", 0, ", ");
 
                 // Output type and compartment number
-                std::string type = macro->getName();
+                std::string type = macro->getType();
                 if (type == "Compartment") {
                     form.add("type is compartment");
                 } else if (type ==  "Peripheral") {
@@ -669,7 +669,7 @@ namespace PharmML
                 form.openVector(prefix + " :: {}", 0, ", ");
 
                 // Treat elimination and transfer the same
-                std::string type = macro->getName();
+                std::string type = macro->getType();
                 if (type == "Elimination") {
                     form.add("type is elimination");
                 } else if (type ==  "Transfer") {

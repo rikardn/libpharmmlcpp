@@ -27,7 +27,7 @@ namespace PharmML
 
     void PKMacro::parse(xml::Node node) {
         // Get type and all values of macro
-        this->name = node.getName();
+        this->type = node.getName();
         std::vector<xml::Node> val_nodes = this->context->getElements(node, "./mdef:Value");
         for (xml::Node val_node : val_nodes) {
             // Get (optional) argument name
@@ -51,8 +51,8 @@ namespace PharmML
         }
     }
 
-    std::string PKMacro::getName() {
-        return this->name;
+    std::string PKMacro::getType() {
+        return this->type;
     }
 
     // Check if macro has a certain attribute
@@ -93,10 +93,109 @@ namespace PharmML
         visitor->visit(this);
     }
 
+    // POST PARSE/CONSOLIDATION
+    // Perform post-parse functions to enable higher-level abstraction/consolidation
+    // Generate a name for this macro via using the symbol attributes
+    std::string PKMacro::generateName() {
+        PharmML::AstAnalyzer ast_analyzer;
+        if (this->type == "Absorption" || this->type == "Depot") {
+            // Try to name in order: ka, Tlag, p
+            std::vector<PharmML::AstNode *> nodes;
+            nodes.push_back( this->getAssignment("ka") );
+            nodes.push_back( this->getAssignment("Tlag") );
+            nodes.push_back( this->getAssignment("p") );
+            for (PharmML::AstNode *node : nodes) {
+                if (node) {
+                    ast_analyzer.reset();
+                    node->accept(&ast_analyzer);
+                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    if (ref) {
+                        PharmML::Symbol *symbol = ref->getSymbol();
+                        if (symbol) { // FIXME: Shouldn't be necessary
+                            return("INPUT_" + symbol->getSymbId());
+                        }
+                    }
+                }
+            }
+        } else if (this->type == "Oral") {
+            return("INPUT_ORAL");
+        } else if (this->type == "IV") {
+            return("INPUT_IV");
+        } else if (this->type == "Compartment" || this->type == "Peripheral") {
+            // Try to name in order: amount, cmt
+            std::vector<PharmML::AstNode *> nodes;
+            nodes.push_back( this->getAssignment("amount") );
+            nodes.push_back( this->getAssignment("cmt") );
+            for (PharmML::AstNode *node : nodes) {
+                if (node) {
+                    ast_analyzer.reset();
+                    node->accept(&ast_analyzer);
+                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    if (ref) {
+                        PharmML::Symbol *symbol = ref->getSymbol();
+                        if (symbol) { // FIXME: Shouldn't be necessary
+                            return(symbol->getSymbId());
+                        }
+                    } else if (sint) {
+                        return("CMT" + sint->toString());
+                    }
+                }
+            }
+        } else if (this->type == "Elimination" || this->type == "Transfer") {
+            // Try to name in order: from, cmt
+            std::vector<PharmML::AstNode *> nodes;
+            nodes.push_back( this->getAssignment("from") );
+            nodes.push_back( this->getAssignment("cmt") );
+            for (PharmML::AstNode *node : nodes) {
+                if (node) {
+                    ast_analyzer.reset();
+                    node->accept(&ast_analyzer);
+                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    if (ref) {
+                        PharmML::Symbol *symbol = ref->getSymbol();
+                        if (symbol) { // FIXME: Shouldn't be necessary
+                            return("FROM_" + symbol->getSymbId());
+                        }
+                    } else if (sint) {
+                        return("FROM_CMT" + sint->toString());
+                    }
+                }
+            }
+        } else if (this->type == "Effect") {
+            // Try to name in order: cmt
+            PharmML::AstNode *cmt = this->getAssignment("cmt");
+            if (cmt) {
+                ast_analyzer.reset();
+                cmt->accept(&ast_analyzer);
+                PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                if (ref) {
+                    PharmML::Symbol *symbol = ref->getSymbol();
+                    if (symbol) { // FIXME: Shouldn't be necessary
+                        return("EFF_" + symbol->getSymbId());
+                    }
+                } else if (sint) {
+                    return("CMT" + sint->toString() + "_EFF");
+                }
+            }
+        }
+
+        // We failed
+        return("NAMELESS");
+    }
+
+    void PKMacro::setName(std::string name) {
+        this->name = name;
+    }
+
+    // Wrapping layer holding all macros and convenience functions
     PKMacros::PKMacros(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
+        this->postParse();
     }
 
     void PKMacros::parse(xml::Node node) {
@@ -138,6 +237,26 @@ namespace PharmML
     void PKMacros::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (PKMacro *macro : this->macros) {
             macro->gatherSymbRefs(symbolMap);
+        }
+    }
+
+    // POST PARSE/CONSOLIDATION
+    // Perform post-parse functions to enable higher-level abstraction/consolidation
+    void PKMacros::postParse() {
+        // Name the macros (hopefully useful for many end-tools but in particular, MDL)
+        std::unordered_set<std::string> picked_names;
+        for (PharmML::PKMacro *macro : this->macros) {
+            // Auto-generate a fitting name
+            std::string name = macro->generateName();
+            std::string uniq_name = name;
+            size_t count = 2; // FIXME: Remove when perfect naming
+            while (picked_names.count(uniq_name) > 0) {
+                std::string suffix = "_" + std::to_string(count);
+                uniq_name = name + suffix;
+                count++;
+            }
+            macro->setName(uniq_name);
+            picked_names.insert(uniq_name);
         }
     }
 }

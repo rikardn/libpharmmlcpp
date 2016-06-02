@@ -292,30 +292,35 @@ namespace PharmML
         SymbolSet output_set;
         output_set.addSymbol(output->getSymbol());
 
-        SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
+        // Special case if output is derivative
+        if (output_set.hasDerivatives()) {
+            form.add("y <- out[, '" + output->getSymbol()->getSymbId() + "']");
+        } else {
+            SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
 
-        // Remove non-transformed covariates
-        SymbolSet covariates = post_ode_symbol_set.getCovariates();
-        for (Symbol *symbol : covariates) {
-            Covariate *cov = static_cast<Covariate *>(symbol);
-            if (!cov->isTransformed()) {
-                post_ode_symbol_set.removeSymbol(symbol);
+            // Remove non-transformed covariates
+            SymbolSet covariates = post_ode_symbol_set.getCovariates();
+            for (Symbol *symbol : covariates) {
+                Covariate *cov = static_cast<Covariate *>(symbol);
+                if (!cov->isTransformed()) {
+                    post_ode_symbol_set.removeSymbol(symbol);
+                }
             }
+
+            std::vector<Symbol *> post_ode_symbols = post_ode_symbol_set.getOrdered();
+            post_ode_symbols.push_back(output->getSymbol());
+
+            // Need R symbol generator with non-default AST generator that use non-default symbol generator
+            PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();   // Symbol name generator
+            PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);     // Ast generator taking the symbol name generator as argument
+            RSymbols rsymb_past(astgen);                                    // Symbol expression generator with ast generator as argument
+            for (Symbol *symbol : post_ode_symbols) {
+                symbol->accept(&rsymb_past);
+                form.add(rsymb_past.getValue());
+            }
+
+            form.add("y <- " + output->toString());
         }
-
-        std::vector<Symbol *> post_ode_symbols = post_ode_symbol_set.getOrdered();
-        post_ode_symbols.push_back(output->getSymbol());
-
-        // Need R symbol generator with non-default AST generator that use non-default symbol generator
-        PopEDPastDerivativesSymbols *symbgen = new PopEDPastDerivativesSymbols();   // Symbol name generator
-        PopEDAstGenerator *astgen = new PopEDAstGenerator(symbgen);     // Ast generator taking the symbol name generator as argument
-        RSymbols rsymb_past(astgen);                                    // Symbol expression generator with ast generator as argument
-        for (Symbol *symbol : post_ode_symbols) {
-            symbol->accept(&rsymb_past);
-            form.add(rsymb_past.getValue());
-        }
-
-        form.add("y <- " + output->toString());
 
         if (!has_derivatives) {
             form.outdentAdd("}");

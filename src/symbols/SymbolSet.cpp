@@ -77,7 +77,12 @@ namespace PharmML
     }
 
     void SymbolSet::merge(const SymbolSet& set) {
-        this->symbols.insert(set.symbols.begin(), set.symbols.end());
+        // FIXME: The commented out line does not work as it seems as the final element does not get included.
+        // FIXME: The const-ness of set makes it hard to work with the set hence the cast to non-const.
+        //this->symbols.insert(set.symbols.begin(), set.symbols.end());
+        for (Symbol *symbol : (SymbolSet&) set) {
+            this->symbols.insert(symbol);
+        }
     }
 
     void SymbolSet::remove(SymbolSet& set) {

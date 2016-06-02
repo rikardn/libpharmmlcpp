@@ -240,6 +240,66 @@ namespace PharmML
         visitor->visit(this);
     }
 
+    // SingleIntervention
+    SingleIntervention::SingleIntervention(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void SingleIntervention::parse(xml::Node node) {
+        std::vector<xml::Node> interventionref_nodes = this->context->getElements(node, "./design:InterventionRef");
+        for (xml::Node interventionref_node: interventionref_nodes) {
+            ObjectRef *ref = new ObjectRef(interventionref_node);
+            this->oidRefs.push_back(ref);
+        }
+        xml::Node start_node = this->context->getSingleElement(node, "./design:Start");
+        if (start_node.exists()) {
+            this->start = this->context->factory.create(start_node.getChild());
+        }
+        xml::Node end_node = this->context->getSingleElement(node, "./design:End");
+        if (end_node.exists()) {
+            this->end = this->context->factory.create(end_node.getChild());
+        }
+    }
+
+    std::vector<ObjectRef *> SingleIntervention::getOidRefs() {
+        return this->oidRefs;
+    }
+
+    AstNode *SingleIntervention::getStart() {
+        return this->start;
+    }
+
+    AstNode *SingleIntervention::getEnd() {
+        return this->end;
+    }
+
+    // InterventionsCombination
+    InterventionsCombination::InterventionsCombination(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+    
+    void InterventionsCombination::parse(xml::Node node) {
+        xml::Node relative_node = this->context->getSingleElement(node, "./design:Relative");
+        if (relative_node.exists()) {
+            this->relative = this->context->factory.create(relative_node.getChild());
+        }
+        std::vector<xml::Node> interventions_nodes = this->context->getElements(node, "./design:Interventions");
+        for (xml::Node intervention_node : interventions_nodes) {
+            SingleIntervention *intervention = new SingleIntervention(this->context, intervention_node);
+            this->singleInterventions.push_back(intervention);
+        }
+    }
+
+    std::vector<SingleIntervention *> InterventionsCombination::getSingleInterventions() {
+        return this->singleInterventions;
+    }
+
+    AstNode *InterventionsCombination::getRelative() {
+        return this->relative;
+    }
+
     // Interventions class
     Interventions::Interventions(PharmMLContext *context, xml::Node node) {
         this->context = context;

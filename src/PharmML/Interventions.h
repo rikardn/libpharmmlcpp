@@ -105,6 +105,36 @@ namespace PharmML
             Dataset *dataset;
     };
 
+    class SingleIntervention
+    {
+        public:
+            SingleIntervention(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<ObjectRef *> getOidRefs();
+            AstNode *getStart();
+            AstNode *getEnd();
+
+        private:
+            PharmMLContext *context;
+            std::vector<ObjectRef *> oidRefs;
+            AstNode *start;
+            AstNode *end;
+    };
+
+    class InterventionsCombination : public Object
+    {
+        public:
+            InterventionsCombination(PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::vector<SingleIntervention *> getSingleInterventions();
+            AstNode *getRelative();
+
+        private:
+            PharmMLContext *context;
+            std::vector<SingleIntervention *> singleInterventions;
+            AstNode *relative;
+    };
+
     class Interventions
     {
         public:

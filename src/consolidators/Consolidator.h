@@ -54,7 +54,6 @@ namespace CPharmML
             PharmML::PharmMLContext *context;
 
             PharmML::SymbolSet allSymbols;
-            std::unordered_set<PharmML::Object *> allObjects;
 
             std::vector<CPharmML::PopulationParameters *> populationParameters; // Vector with one wrapper object per parameter model
             std::vector<CPharmML::Covariate *> covariates;
@@ -71,8 +70,6 @@ namespace CPharmML
             void consolidateFunctions(PharmML::Model *model);
             void consolidatePKMacros(PharmML::Model *model);
             void consolidateTrialDesign(PharmML::Model *model);
-
-            void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }
 

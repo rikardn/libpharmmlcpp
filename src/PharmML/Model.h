@@ -53,8 +53,11 @@ namespace PharmML
             PharmML::TrialDesign *TrialDesign;
             PharmML::ModellingSteps *ModellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
+            std::unordered_set<PharmML::Object *> allObjects;
             void parse(xml::Node node);
-
+            void postParse();
+            void setupObjects();
+            void duplicateOidError(const std::string&, PharmML::PharmMLSection *arm);
     };
 }
 

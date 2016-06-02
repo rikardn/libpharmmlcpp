@@ -19,6 +19,7 @@
 #include <PharmML/Model.h>
 #include <PharmML/PharmMLContext.h>
 #include <xml/xml.h>
+#include <PharmML/TrialDesign.h>
 
 namespace PharmML
 {
@@ -50,6 +51,12 @@ namespace PharmML
 
         // Build consolidator object
         this->consolidator = new CPharmML::Consolidator(this->context, this);
+
+        this->postParse();
+    }
+
+    void Model::postParse() {
+        this->setupObjects();
     }
 
     Model::Model(const char *filename) {
@@ -88,6 +95,79 @@ namespace PharmML
 
     CPharmML::Consolidator *Model::getConsolidator() {
         return this->consolidator;
+    }
+
+    // Print an error for duplicate oid
+    void Model::duplicateOidError(const std::string &oid, PharmML::PharmMLSection *section) {
+        this->context->logger.error("Duplicate oid '" + oid + "'", section);
+    }
+
+    // Gather all Objects and setup ObjectRefs 
+    void Model::setupObjects() {
+        std::unordered_set<std::string> allOids;
+
+        PharmML::TrialDesign *td = this->getTrialDesign();
+
+        if (td) {
+            Arms *arms = td->getArms();
+            if (arms) {
+                for (Arm *arm : arms->getArms()) {
+                    // Check if oid already exists
+                    if (allOids.count(arm->getOid()) == 1) {
+                        this->duplicateOidError(arm->getOid(), arm);
+                    }
+                    allOids.insert(arm->getOid());
+                    this->allObjects.insert(arm);
+                }
+            }
+            Observations *observations = td->getObservations();
+            if (observations) {
+                for (Observation *observation : observations->getObservations()) {
+                    if (allOids.count(observation->getOid()) == 1) {
+                        this->duplicateOidError(observation->getOid(), observation);
+                    }
+                    allOids.insert(observation->getOid());
+                    this->allObjects.insert(observation);
+                }
+                for (IndividualObservations *observation : observations->getIndividualObservations()) {
+                    if (allOids.count(observation->getOid()) == 1) {
+                        this->duplicateOidError(observation->getOid(), observation);
+                    }
+                    allOids.insert(observation->getOid());
+                    this->allObjects.insert(observation);
+                }
+            }
+            Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                for (Administration *admin : interventions->getAdministrations()) {
+                    if (allOids.count(admin->getOid()) == 1) {
+                        this->duplicateOidError(admin->getOid(), admin);
+                    }
+                    allOids.insert(admin->getOid());
+                    this->allObjects.insert(admin);
+                }
+            }
+        }
+
+        // Obtain a map from all oids to Objects. Will be used to populate ObjectRefs
+        std::unordered_map<std::string, PharmML::Object *> oidMap;
+        for (Object *object : this->allObjects) {
+            oidMap[object->getOid()] = object;
+        }
+
+        for (Object *object : this->allObjects) {
+            object->gatherObjectRefs(oidMap);
+        }
+
+        // Populate ObjectReferer ObjectRefs
+        if (td) {
+            Interventions *interventions = td->getInterventions();
+            if (interventions) {
+                for (IndividualAdministration *ia : interventions->getIndividualAdministrations()) {
+                    ia->gatherObjectRefs(oidMap);
+                }
+            }
+        }
     }
 
     void Model::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {

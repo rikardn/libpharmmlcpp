@@ -29,6 +29,7 @@
 #include <xml/xml.h>
 #include <AST/AstNodeFactory.h>
 #include <AST/symbols.h>
+#include <helpers/Logger.h>
 
 namespace PharmML
 {
@@ -36,6 +37,7 @@ namespace PharmML
     class PharmMLContext
     {
         public:
+            Logger logger;
             std::unordered_map<std::string, Symbol *> symbols;
             std::vector<SymbRef *> symbRefs;
             Symbol *resolveSymbref(SymbRef *symbRef);

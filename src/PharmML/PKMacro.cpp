@@ -190,6 +190,10 @@ namespace PharmML
         this->name = name;
     }
 
+    std::string PKMacro::getName() {
+        return this->name;
+    }
+
     // Wrapping layer holding all macros and convenience functions
     PKMacros::PKMacros(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);

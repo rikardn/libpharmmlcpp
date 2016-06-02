@@ -46,7 +46,7 @@ namespace PharmML
             // POST PARSE/CONSOLIDATION
             std::string generateName();
             void setName(std::string name);
-            
+            std::string getName();
 
         private:
             PharmML::PharmMLContext *context;

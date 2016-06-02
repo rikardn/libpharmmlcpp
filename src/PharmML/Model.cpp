@@ -146,6 +146,13 @@ namespace PharmML
                     allOids.insert(admin->getOid());
                     this->allObjects.insert(admin);
                 }
+                for (InterventionsCombination *comb : interventions->getInterventionsCombinations()) {
+                    if (allOids.count(comb->getOid()) == 1) {
+                        this->duplicateOidError(comb->getOid(), comb);
+                    }
+                    allOids.insert(comb->getOid());
+                    this->allObjects.insert(comb);
+                }
             }
         }
 

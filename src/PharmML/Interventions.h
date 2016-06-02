@@ -121,7 +121,7 @@ namespace PharmML
             AstNode *end;
     };
 
-    class InterventionsCombination : public Object
+    class InterventionsCombination : public Object, public PharmMLSection
     {
         public:
             InterventionsCombination(PharmMLContext *context, xml::Node node);

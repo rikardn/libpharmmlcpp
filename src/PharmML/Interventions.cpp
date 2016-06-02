@@ -276,11 +276,13 @@ namespace PharmML
 
     // InterventionsCombination
     InterventionsCombination::InterventionsCombination(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
     
     void InterventionsCombination::parse(xml::Node node) {
+        this->Object::parse(node);
         xml::Node relative_node = this->context->getSingleElement(node, "./design:Relative");
         if (relative_node.exists()) {
             this->relative = this->context->factory.create(relative_node.getChild());

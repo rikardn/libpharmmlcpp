@@ -242,7 +242,10 @@ namespace PharmML
                 for (SymbRef *symbref : finder.getSymbRefs()) {
                     Symbol *symbol = symbref->getSymbol();
                     symbol->accept(&this->r_symb);
-                    form.add(this->r_symb.getValue());
+                    std::string res = this->r_symb.getValue();
+                    if (!res.empty()) {         // Some symbols give empty strings. Ignore these.
+                        form.add(this->r_symb.getValue());
+                    }
                 }
             }
 

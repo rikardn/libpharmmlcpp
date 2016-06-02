@@ -43,12 +43,15 @@ namespace PharmML
     }
 
     void RSymbols::visit(ObservationModel *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(Parameter *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(PopulationParameter *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(IndividualParameter *node) {
@@ -57,9 +60,11 @@ namespace PharmML
     }
 
     void RSymbols::visit(RandomVariable *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(VariabilityLevel *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(IndependentVariable *node) {
@@ -91,8 +96,10 @@ namespace PharmML
     }
 
     void RSymbols::visit(FunctionDefinition *node) {
+        this->setValue("");
     }
 
     void RSymbols::visit(FunctionArgumentDefinition *node) {
+        this->setValue("");
     }
 }

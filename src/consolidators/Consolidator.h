@@ -29,7 +29,6 @@
 #include <consolidators/Covariates.h>
 #include <consolidators/VariabilityModels.h>
 #include <consolidators/Functions.h>
-#include <consolidators/PKMacros.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <objects/Object.h>
@@ -46,8 +45,6 @@ namespace CPharmML
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
             CPharmML::Functions *getFunctions();
-            CPharmML::PKMacros *getPKMacros();
-            std::vector<CPharmML::PKMacros *> getExternalDatasets();
 
         private:
             std::shared_ptr<PharmML::Logger> logger;
@@ -59,7 +56,6 @@ namespace CPharmML
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
-            CPharmML::PKMacros *pk_macros;
 
             void consolidateSymbols(PharmML::Model *model);
             void consolidateObjects(PharmML::Model *model);
@@ -68,7 +64,6 @@ namespace CPharmML
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
-            void consolidatePKMacros(PharmML::Model *model);
             void consolidateTrialDesign(PharmML::Model *model);
     };
 }

@@ -261,7 +261,7 @@ namespace PharmML
     }
 
     // Validate the macros (where the schema won't help)
-    void PKMacros::validate() {
+    void PKMacros::validate() { // FIXME: Who should call this now that consolidator is gone?
         PharmML::AstAnalyzer ast_analyzer;
         // Map from compartment/administration to (referable) integer codes (and the referees themselves)
         std::unordered_map<std::string, std::unordered_map<int, PKMacro *>> int_codes = {

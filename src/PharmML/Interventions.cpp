@@ -205,6 +205,16 @@ namespace PharmML
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
         PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
         this->dataset = ds;
+
+        // Check that all individual administrations have an independent variable and a dose column
+        PharmML::DataColumn *idv_col = ds->getIdvColumn();
+        if (!idv_col) {     // No idv column was found
+            this->context->logger.error("Missing idv column in IndividualAdministration", this);
+        }
+        PharmML::DataColumn *dose_col = ds->getColumnFromType("dose");
+        if (!dose_col) {
+            this->context->logger.error("Missing dose column in IndividualAdministration", this);
+        }
     }
 
     void IndividualAdministration::gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {

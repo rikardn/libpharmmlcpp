@@ -64,7 +64,6 @@ namespace CPharmML
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
             void consolidateFunctions(PharmML::Model *model);
-            void consolidateTrialDesign(PharmML::Model *model);
     };
 }
 

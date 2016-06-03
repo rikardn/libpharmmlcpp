@@ -33,7 +33,6 @@ namespace CPharmML
         this->consolidateCovariates(model);
         this->consolidateVariabilityModels(model);
         this->consolidateFunctions(model);
-        this->consolidateTrialDesign(model); // Dependent on PKMacros
     }
 
     // Build the allSymbols set. Set all SymbRef to point to Symbols. Set all referencedSymbols for Symbols
@@ -217,31 +216,6 @@ namespace CPharmML
         std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
         for (PharmML::FunctionDefinition *fun : funs) {
             this->functions->addFunctionDefinition(fun);
-        }
-    }
-
-    void Consolidator::consolidateTrialDesign(PharmML::Model *model) {
-        PharmML::TrialDesign *td = model->getTrialDesign();
-
-        if (td) {   // This seems like a repetition of code from consolidateObject but it is probably best to keep separate
-            PharmML::Interventions *ints = td->getInterventions();
-            if (ints) {
-                // Check that all individual administrations have an independent variable and a dose column
-                std::vector<PharmML::IndividualAdministration *> ind_adms = ints->getIndividualAdministrations();
-                for (PharmML::IndividualAdministration *ind_adm : ind_adms) {
-                    PharmML::Dataset *ds = ind_adm->getDataset();
-                    PharmML::DataColumn *idv_col = ds->getIdvColumn();
-                    if (!idv_col) {     // No idv column was found
-                        this->logger->error("Missing idv column in IndividualAdministration", ind_adm);
-                        return;
-                    }
-                    PharmML::DataColumn *dose_col = ds->getColumnFromType("dose");
-                    if (!dose_col) {
-                        this->logger->error("Missing dose column in IndividualAdministration", ind_adm);
-                        return;
-                    }
-                }
-            }
         }
     }
 

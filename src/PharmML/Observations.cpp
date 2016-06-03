@@ -129,6 +129,15 @@ namespace PharmML
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
         PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
         this->dataset = ds;
+
+        // Check that the individual observation has an independent variable
+        PharmML::DataColumn *col = ds->getIdvColumn();
+        if (!col) {     // No idv column was found
+            this->context->logger.error("Missing idv column in IndividualObservations", this);
+            // FIXME: What to do here?
+        }
+        // FIXME: Need to check ColumnMapping and IndependentVariables also
+        // FIXME: What happens if there is no Column definitions and/or ColumnMapping. Error checking is hard!
     }
 
     xml::Node IndividualObservations::xml() {

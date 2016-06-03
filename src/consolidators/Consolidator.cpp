@@ -224,21 +224,6 @@ namespace CPharmML
         PharmML::TrialDesign *td = model->getTrialDesign();
 
         if (td) {   // This seems like a repetition of code from consolidateObject but it is probably best to keep separate
-            PharmML::Observations *obs = td->getObservations();
-            if (obs) {
-                // Check that all individual observations has an independent variable
-                std::vector<PharmML::IndividualObservations *> ind_obs_vector = obs->getIndividualObservations();
-                for (PharmML::IndividualObservations *ind_obs : ind_obs_vector) {
-                    PharmML::Dataset *ds = ind_obs->getDataset();
-                    PharmML::DataColumn *col = ds->getIdvColumn();
-                    if (!col) {     // No idv column was found
-                        this->logger->error("Missing idv column in IndividualObservations", ind_obs);
-                        return;     // FIXME: Should we really return here?
-                    }
-                    // FIXME: Need to check ColumnMapping and IndependentVariables also
-                    // FIXME: What happens if there is no Column definitions and/or ColumnMapping. Error checking is hard!
-                }
-            }
             PharmML::Interventions *ints = td->getInterventions();
             if (ints) {
                 // Check that all individual administrations have an independent variable and a dose column

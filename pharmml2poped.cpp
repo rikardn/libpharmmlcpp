@@ -22,7 +22,7 @@ void convert_pharmml_poped(const char *);
 int main(int argc, char **argv)
 {
     if (argc < 2) {
-        std::cout << "No PharmML file specified" << std::endl;
+        std::cerr << "No PharmML file specified" << std::endl;
         return 5;
     }
 

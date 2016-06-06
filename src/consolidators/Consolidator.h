@@ -50,15 +50,10 @@ namespace CPharmML
             std::shared_ptr<PharmML::Logger> logger;
             PharmML::PharmMLContext *context;
 
-            PharmML::SymbolSet allSymbols;
-
             std::vector<CPharmML::PopulationParameters *> populationParameters; // Vector with one wrapper object per parameter model
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
             CPharmML::Functions *functions;
-
-            void consolidateSymbols(PharmML::Model *model);
-            void consolidateObjects(PharmML::Model *model);
 
             void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateCovariates(PharmML::Model *model);

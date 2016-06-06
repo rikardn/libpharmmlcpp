@@ -49,6 +49,9 @@ namespace PharmML
             this->ModellingSteps = new PharmML::ModellingSteps(this->context, msteps_node);
         }
 
+        // TODO: This an be moved into postParse when the consolidator call below is removed
+        this->setupSymbols();
+
         // Build consolidator object
         this->consolidator = new CPharmML::Consolidator(this->context, this);
 
@@ -113,6 +116,83 @@ namespace PharmML
         }
         allOids.insert(object->getOid());
         this->allObjects.insert(object);
+    }
+
+    // Gater all Symbols and setup SymbolRefs and referencedSymbols
+    void Model::setupSymbols() {
+        std::vector<Parameter *> params = this->getModelDefinition()->getParameterModel()->getParameters();
+        for (Parameter *param : params) {
+            this->allSymbols.addSymbol(param);
+        }
+
+        std::vector<PopulationParameter *> pop_params = this->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        for (PopulationParameter *param : pop_params) {
+            this->allSymbols.addSymbol(param);
+        }
+
+        std::vector<IndividualParameter *> ips = this->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        for (IndividualParameter *ip : ips) {
+            this->allSymbols.addSymbol(ip);
+        }
+
+        std::vector<RandomVariable *> random = this->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (RandomVariable *rv : random) {
+            this->allSymbols.addSymbol(rv);
+        }
+
+        std::vector<CommonVariable *> cvs = this->getModelDefinition()->getStructuralModel()->getVariables();
+        for (CommonVariable *cv : cvs) {
+            this->allSymbols.addSymbol(cv);
+        }
+
+        std::vector<VariabilityModel *> vmods = this->getModelDefinition()->getVariabilityModels();
+        for (VariabilityModel *vmod : vmods) {
+            std::vector<VariabilityLevel *> vlevels = vmod->getVariabilityLevels();
+            for (VariabilityLevel *vlevel : vlevels) {
+                this->allSymbols.addSymbol(vlevel);
+            }
+        }
+
+        CovariateModel *cm = this->getModelDefinition()->getCovariateModel();
+        if (cm) {
+            std::vector<Covariate *> covs = cm->getCovariates();
+            for (Covariate *cov : covs) {
+                this->allSymbols.addSymbol(cov);
+                // Remember to add the transformations (e.g. logtWT in UC2)
+                for (Covariate *transformation : cov->getTransformations()) {
+                    this->allSymbols.addSymbol(transformation);
+                }
+            }
+        }
+
+        ObservationModel *om = this->getModelDefinition()->getObservationModel();
+        if (om) {
+            this->allSymbols.addSymbol(om);
+        }
+
+        std::vector<FunctionDefinition *> funs = this->getFunctionDefinitions();
+        for (FunctionDefinition *fun : funs) {
+            this->allSymbols.addSymbol(fun);
+            for (FunctionArgumentDefinition *arg : fun->getArguments()) {
+                this->allSymbols.addSymbol(arg);
+            }
+        }
+
+        this->allSymbols.addSymbol(this->getIndependentVariable());
+
+        // Obtain a map from all symbIds to Symbols. Will be used to populate SymbRefs
+        std::unordered_map<std::string, Symbol *> symbIdMap;
+        for (Symbol *symbol : this->allSymbols) {
+            symbIdMap[symbol->getSymbId()] = symbol;
+        }
+
+        // Ask symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols (also in Referer children)
+        for (Symbol *symbol : this->allSymbols) {
+            symbol->gatherSymbRefs(symbIdMap);
+        }
+
+        // Ask non-symbols to set all SymbRefs to point to Symbols and to update the referencedSymbols in Referer children
+        this->gatherSymbRefs(symbIdMap);
     }
 
     // Gather all Objects and setup ObjectRefs 

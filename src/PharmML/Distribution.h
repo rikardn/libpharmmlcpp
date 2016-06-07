@@ -23,7 +23,6 @@
 #include <AST/Scalar.h>
 #include <AST/symbols.h>
 #include <visitors/PharmMLVisitor.h>
-//#include <PharmML/Dependencies.h>
 
 namespace PharmML
 {

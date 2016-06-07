@@ -27,12 +27,12 @@ namespace PharmML
 {
     VariabilityModel::VariabilityModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->Block::parse(node);
         this->parse(node);
     }
 
     void VariabilityModel::parse(xml::Node node) {
-        // Get blkId, type and name
-        this->blkId = node.getAttribute("blkId").getValue();
+        // Get type and name
         this->type = node.getAttribute("type").getValue();
         xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
         if (name_node.exists()) {
@@ -49,10 +49,6 @@ namespace PharmML
 
     std::string VariabilityModel::getName() {
         return this->name;
-    }
-
-    std::string VariabilityModel::getBlkId() {
-        return this->blkId;
     }
 
     bool VariabilityModel::onResidualError() {

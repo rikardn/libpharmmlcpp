@@ -27,6 +27,7 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <AST/symbols.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {

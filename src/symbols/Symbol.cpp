@@ -74,8 +74,5 @@ namespace PharmML
 
     void Symbol::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
-        /* Here it may be tempting to place blkId puller as well but keep in mind that for e.g.
-         * ObservationModel's this is on root node while symbId is further down. I.e.
-         * Symbol::parse(..) argument list needs to take two nodes as argument. */
     }
 }

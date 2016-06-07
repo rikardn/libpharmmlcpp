@@ -27,10 +27,11 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <PharmML/PKMacro.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    class StructuralModel
+    class StructuralModel : public Block
     {
         public:
             StructuralModel(PharmMLContext *context, xml::Node node);
@@ -43,7 +44,6 @@ namespace PharmML
 
         private:
             PharmML::PharmMLContext *context;
-            std::string blkId;
             std::vector<PharmML::CommonVariable *> variables;
             PharmML::PKMacros *pk_macros = nullptr;
     };

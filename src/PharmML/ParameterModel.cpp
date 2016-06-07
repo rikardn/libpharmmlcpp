@@ -28,7 +28,7 @@ namespace PharmML
     }
 
     void ParameterModel::parse(xml::Node node) {
-        this->blkId = node.getAttribute("blkId").getValue();
+        this->Block::parse(node);
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./mdef:Parameter");
         for (xml::Node n : param_nodes) {
             PharmML::Parameter *param = new PharmML::Parameter(this->context, n);
@@ -85,10 +85,6 @@ namespace PharmML
 
     std::vector<Correlation *> ParameterModel::getCorrelations() {
         return this->correlations;
-    }
-
-    std::string ParameterModel::getBlkId() {
-        return this->blkId;
     }
 
     // Return the the initial covariance between var1 and var2 given a vector of parameterEstimations

@@ -51,11 +51,13 @@ namespace PharmML
     {
         public:
             std::string getSymbId();
+            Block *getBlock();
             virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
             std::string symbId;
+            Block *block;
             void parse(xml::Node node);
     };
 }

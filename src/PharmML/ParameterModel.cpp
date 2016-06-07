@@ -67,6 +67,22 @@ namespace PharmML
         }
     }
 
+    void ParameterModel::gatherSymbols(SymbolGathering &gatherer) {
+        gatherer.newBlock(this);
+        for (Parameter *parameter : this->parameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (PopulationParameter *parameter : this->populationParameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (IndividualParameter *parameter : this->individualParameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (RandomVariable *rv : this->randomVariables) {
+            gatherer.addSymbol(rv);
+        }
+    }
+
     std::vector<Parameter *> ParameterModel::getParameters() {
         return this->parameters;
     }

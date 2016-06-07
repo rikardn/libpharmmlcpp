@@ -26,6 +26,7 @@
 #include <symbols/Symbol.h>
 #include <PharmML/ModellingSteps.h>
 #include <PharmML/Block.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
@@ -40,6 +41,7 @@ namespace PharmML
             ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void gatherSymbols(SymbolGathering &gatherer) override;
 
             AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);
 

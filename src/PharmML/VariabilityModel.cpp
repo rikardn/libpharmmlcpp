@@ -62,4 +62,11 @@ namespace PharmML
     std::vector<PharmML::VariabilityLevel *> VariabilityModel::getVariabilityLevels() {
         return this->variabilityLevels;
     }
+            
+    void VariabilityModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (VariabilityLevel *varlev : this->variabilityLevels) {
+            gathering.addSymbol(varlev);
+        }
+    }
 }

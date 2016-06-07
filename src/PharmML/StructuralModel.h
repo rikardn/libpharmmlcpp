@@ -41,6 +41,7 @@ namespace PharmML
             std::vector<PharmML::CommonVariable *> getDerivatives();
             PharmML::PKMacros *getPKMacros();
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void gatherSymbols(SymbolGathering &gathering) override;
 
         private:
             PharmML::PharmMLContext *context;

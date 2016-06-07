@@ -21,14 +21,16 @@
 #include <string>
 #include <unordered_map>
 #include <symbols/Symbol.h>
-#include <PharmML/Block.h>
 
 namespace PharmML
 {
+    class Block;
+
     class SymbolGathering
     {
         public:
             void newBlock(Block *block);
+            void globalBlock();
             void addSymbol(Symbol *symbol);
 
         private:

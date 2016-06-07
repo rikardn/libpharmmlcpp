@@ -75,4 +75,11 @@ namespace PharmML
             this->pk_macros->gatherSymbRefs(symbolMap);
         }
     }
+
+    void StructuralModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (CommonVariable *common_variable : this->variables) {
+            gathering.addSymbol(common_variable);
+        }
+    }
 }

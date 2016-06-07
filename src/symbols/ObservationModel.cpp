@@ -218,6 +218,11 @@ namespace PharmML
         }
     }
 
+    void ObservationModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        gathering.addSymbol(this);
+    }
+
     void ObservationModel::accept(SymbolVisitor *visitor) {
         visitor->visit(this);
     }

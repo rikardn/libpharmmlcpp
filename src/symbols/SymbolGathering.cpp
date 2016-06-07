@@ -16,14 +16,23 @@
  */
 
 #include <symbols/SymbolGathering.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
     void SymbolGathering::newBlock(Block *block) {
         this->current_block = block;
     }
+    
+    void SymbolGathering::globalBlock() {
+        this->current_block = nullptr;
+    }
 
     void SymbolGathering::addSymbol(Symbol *symbol) {
-        this->map[current_block->getBlkId()][symbol->getSymbId()] = symbol;
+        std::string blkId;
+        if (current_block) {
+            blkId = current_block->getBlkId();
+        }
+        this->map[blkId][symbol->getSymbId()] = symbol;
     }
 }

@@ -37,6 +37,7 @@ namespace PharmML
             bool onResidualError();
             bool onParameter();
             std::vector<PharmML::VariabilityLevel *> getVariabilityLevels();
+            void gatherSymbols(SymbolGathering &gathering);
 
         private:
             PharmML::PharmMLContext *context;

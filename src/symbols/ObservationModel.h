@@ -65,6 +65,7 @@ namespace PharmML
             SymbolSet getNeededSymbols();
 
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void gatherSymbols(SymbolGathering &gathering) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 

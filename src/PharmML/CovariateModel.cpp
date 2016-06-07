@@ -43,4 +43,13 @@ namespace PharmML
         return this->covariates;
     }
 
+    void CovariateModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (Covariate *cov : this->covariates) {
+            gathering.addSymbol(cov);
+            for (Covariate *transformation : cov->getTransformations()) {
+                gathering.addSymbol(transformation);
+            }
+        }
+    }
 }

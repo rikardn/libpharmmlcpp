@@ -83,7 +83,7 @@ namespace PharmML
 
     void FunctionDefinition::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         if (this->definition) {
-            std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->definition, symbolMap);
+            std::unordered_set<PharmML::Symbol *> found_symbols = this->setupAstSymbRefs(this->definition, symbolMap);
             this->addReferences(found_symbols);
         }
     }

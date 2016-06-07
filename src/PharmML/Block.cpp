@@ -15,30 +15,15 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PopulationParameter.h"
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    // FIXME: How to get context when created like this
-    PopulationParameter::PopulationParameter(std::string symbId) {
-        this->symbId = symbId;        
+    std::string Block::getBlkId() {
+        return this->blkId;
     }
 
-    PopulationParameter::PopulationParameter(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->PopulationParameter::parse(node);
-        this->context->symbols[this->symbId] = this;
-    }
-
-    void PopulationParameter::parse(xml::Node node) {
-        this->Symbol::parse(node);
-    }
-
-    void PopulationParameter::accept(PharmMLVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void PopulationParameter::accept(SymbolVisitor *visitor) {
-        visitor->visit(this);
+    void Block::parse(xml::Node node) {
+        this->blkId = node.getAttribute("blkId").getValue();
     }
 }

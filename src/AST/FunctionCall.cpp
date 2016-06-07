@@ -40,7 +40,7 @@ namespace PharmML
         this->addReference(found_symbol);
         for (FunctionArgument *arg : this->functionArguments) {
             arg->gatherSymbRefs(symbolMap);
-            std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(arg, symbolMap);
+            std::unordered_set<PharmML::Symbol *> found_symbols = this->setupAstSymbRefs(arg, symbolMap);
             this->addReferences(found_symbols);
         }
     }
@@ -66,7 +66,7 @@ namespace PharmML
     }
 
     void FunctionArgument::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->argument, symbolMap);
+        std::unordered_set<PharmML::Symbol *> found_symbols = this->setupAstSymbRefs(this->argument, symbolMap);
         this->addReferences(found_symbols);
     }
 

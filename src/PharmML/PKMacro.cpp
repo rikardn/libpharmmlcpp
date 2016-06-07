@@ -84,7 +84,7 @@ namespace PharmML
     void PKMacro::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (MacroValue value : this->values) {
             if (value.second) { // TODO: See above comment
-                std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(value.second, symbolMap);
+                std::unordered_set<Symbol *> symbols = this->setupAstSymbRefs(value.second, symbolMap);
                 this->referencedSymbols.addSymbols(symbols);
             }
         }

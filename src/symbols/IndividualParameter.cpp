@@ -273,10 +273,10 @@ namespace PharmML
 
     void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         for (PharmML::AstNode *trans_param : this->transformationParameters) {
-            this->symbRefsFromAst(trans_param, symbolMap);
+            this->setupAstSymbRefs(trans_param, symbolMap);
         }
         if (this->populationValue) {
-            this->symbRefsFromAst(this->populationValue, symbolMap);
+            this->setupAstSymbRefs(this->populationValue, symbolMap);
         }
         for (SymbRef *cov : this->covariates) {
             Symbol *found_symbol = this->addSymbRef(cov, symbolMap);
@@ -290,10 +290,10 @@ namespace PharmML
             this->addReference(found_symbol);
         }
         if (this->generalAssignment) {
-            this->symbRefsFromAst(this->generalAssignment, symbolMap);
+            this->setupAstSymbRefs(this->generalAssignment, symbolMap);
         }
         if (this->explicitAssignment) {
-            this->symbRefsFromAst(this->explicitAssignment, symbolMap);
+            this->setupAstSymbRefs(this->explicitAssignment, symbolMap);
         }
     }
 

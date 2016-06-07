@@ -209,8 +209,8 @@ namespace PharmML
             // Output
             found_symbols.insert(this->addSymbRef(this->output, symbolMap));
             // Error model and residual error
-            std::unordered_set<PharmML::Symbol *> error_symbols = this->symbRefsFromAst(this->errorModel, symbolMap);
-            std::unordered_set<PharmML::Symbol *> res_symbols = this->symbRefsFromAst(this->residualError, symbolMap);
+            std::unordered_set<PharmML::Symbol *> error_symbols = this->setupAstSymbRefs(this->errorModel, symbolMap);
+            std::unordered_set<PharmML::Symbol *> res_symbols = this->setupAstSymbRefs(this->residualError, symbolMap);
             found_symbols.insert(error_symbols.begin(), error_symbols.end());
             found_symbols.insert(res_symbols.begin(), res_symbols.end());
 

@@ -148,7 +148,7 @@ namespace PharmML
         if (this->symbRef) {
             this->mappedSymbol = this->addSymbRef(this->symbRef, symbolMap);
         } else if (this->assignment) {
-            std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(this->assignment, symbolMap);
+            std::unordered_set<Symbol *> symbols = this->setupAstSymbRefs(this->assignment, symbolMap);
             this->mappedSymbol = *(symbols.begin()); // There shall only be one
         }
     }

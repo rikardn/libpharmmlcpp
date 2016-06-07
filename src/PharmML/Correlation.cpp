@@ -96,7 +96,7 @@ namespace PharmML
     void Correlation::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
         this->variabilityReference->gatherSymbRefs(symbolMap);
         if (this->pairwiseAssignment) {
-            std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(this->pairwiseAssignment, symbolMap);
+            std::unordered_set<Symbol *> symbols = this->setupAstSymbRefs(this->pairwiseAssignment, symbolMap);
             this->addReferences(symbols);
             for (PharmML::SymbRef *symbRef : this->pairwiseSymbRefs) {
                 // Separation of correlated random variables seem like a good idea

@@ -4,5 +4,5 @@ LIBS = -lxml2
 .PHONY: check
 
 check:
-	g++ -std=c++11 $(CFLAGS) Dependencies.cpp -L.. -lpharmmlc $(LIBS) -otest
+	g++ -std=c++11 $(CFLAGS) SymbolSet.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
 	./test

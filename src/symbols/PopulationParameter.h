@@ -28,6 +28,7 @@ namespace PharmML
     class PopulationParameter : public Symbol
     {
         public:
+            PopulationParameter(std::string symbId);
             PopulationParameter(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};

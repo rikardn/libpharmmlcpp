@@ -25,10 +25,11 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    class ObservationModel : public Symbol, public PharmMLSection
+    class ObservationModel : public Block, public Symbol, public PharmMLSection
     {
         public:
             ObservationModel(PharmMLContext *context, xml::Node node);
@@ -70,7 +71,6 @@ namespace PharmML
         private:
             PharmML::PharmMLContext *context;
             // Common to all observation models
-            std::string blkId;
             std::string name;
 
             // Type of observation data

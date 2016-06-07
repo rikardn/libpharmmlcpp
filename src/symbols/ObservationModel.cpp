@@ -22,12 +22,12 @@ namespace PharmML
     ObservationModel::ObservationModel(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
+        this->Block::parse(node);
         this->ObservationModel::parse(node);
     }
 
     void ObservationModel::parse(xml::Node node) {
         // Get common data (to all observation model types)
-        this->blkId = node.getAttribute("blkId").getValue();
         xml::Node name_node = this->context->getSingleElement(node, ".//ct:Name");
         if (name_node.exists()) {
             this->name = name_node.getText();

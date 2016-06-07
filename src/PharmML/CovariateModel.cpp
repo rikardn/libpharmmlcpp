@@ -27,6 +27,7 @@ namespace PharmML
 {
     CovariateModel::CovariateModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->Block::parse(node);
         this->parse(node);
     }
 

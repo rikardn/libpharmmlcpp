@@ -24,10 +24,11 @@
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <symbols/Covariate.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    class CovariateModel
+    class CovariateModel : public Block
     {
         public:
             CovariateModel(PharmMLContext *context, xml::Node node);

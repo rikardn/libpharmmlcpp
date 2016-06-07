@@ -23,7 +23,6 @@
 #include <PharmML/Distribution.h>
 #include <visitors/PharmMLVisitor.h>
 #include "VariabilityLevel.h"
-#include <PharmML/Dependencies.h>
 #include <PharmML/ModellingSteps.h>
 
 namespace PharmML

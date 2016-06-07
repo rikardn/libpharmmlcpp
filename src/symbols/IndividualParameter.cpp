@@ -224,7 +224,6 @@ namespace PharmML
         return this->randomEffects;
     }
 
-    // FIXME: This could in the future create an assignment for the full expression given a structured model
     PharmML::AstNode *IndividualParameter::getAssignment() {
         if (this->is_general_cov) {
             return this->generalAssignment;

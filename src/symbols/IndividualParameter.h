@@ -23,7 +23,6 @@
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <PharmML/PharmMLSection.h>
-#include <PharmML/Dependencies.h>
 #include <symbols/Symbol.h>
 #include <AST/Scalar.h>
 

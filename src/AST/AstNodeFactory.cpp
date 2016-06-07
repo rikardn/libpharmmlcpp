@@ -40,7 +40,7 @@ namespace PharmML
         AstNodeFactory::context = context;
     }
 
-    AstNode *AstNodeFactory::create(xml::Node node, Dependencies *deps) {
+    AstNode *AstNodeFactory::create(xml::Node node) {
         AstNode *instance = nullptr;
 
         std::string name = node.getName();
@@ -140,7 +140,7 @@ namespace PharmML
             } else if (op == "not") {
                 uniop = new LogicUniopNot();
             }
-            uniop->setChild(AstNodeFactory::create(node.getChild(), deps));
+            uniop->setChild(AstNodeFactory::create(node.getChild()));
             instance = uniop;
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
@@ -188,8 +188,8 @@ namespace PharmML
             } else if (op == "xor") {
                 binop = new LogicBinopXor();
             }
-            binop->setLeft(AstNodeFactory::create(node.getChild(), deps));
-            binop->setRight(AstNodeFactory::create(node.getLastChild(), deps));
+            binop->setLeft(AstNodeFactory::create(node.getChild()));
+            binop->setRight(AstNodeFactory::create(node.getLastChild()));
             instance = binop;
         } else if (name == "False") {
             instance = new LogicFalse();
@@ -207,16 +207,10 @@ namespace PharmML
         } else if (name == "SymbRef") {
             SymbRef *symbref = new SymbRef(node);
             PharmML::AstNodeFactory::context->symbRefs.push_back(symbref);
-            if (deps) {
-                deps->addDependency(symbref);
-            }
             instance = symbref;
         } else if (name == "ColumnRef") {
             std::string symbol = node.getAttribute("columnIdRef").getValue();
             instance = new ColumnRef(symbol);
-            if (deps) {
-                deps->addDependency(symbol);
-            }
         } else if (name == "Int") {
             instance = new ScalarInt(node);
         } else if (name == "Real") {
@@ -245,14 +239,14 @@ namespace PharmML
                 xml::Node elements_node = vectorElements[0];
                 std::vector<xml::Node> elements = elements_node.getChildren();
                 for (xml::Node element : elements) {
-                    vector->addElement(AstNodeFactory::create(element, deps));
+                    vector->addElement(AstNodeFactory::create(element));
                 }
             } else if (!(vectorCells.empty() && vectorSegments.empty())) {
                 // Build vector from cells
                 for (xml::Node cell : vectorCells) {
                     std::vector<xml::Node> children = cell.getChildren();
                     int cellIndex = std::stoi(children[0].getText());
-                    AstNode *cellContent = AstNodeFactory::create(children[1], deps);
+                    AstNode *cellContent = AstNodeFactory::create(children[1]);
 
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
@@ -273,8 +267,8 @@ namespace PharmML
                 // Assumes expression is first child and condition last child
                 xml::Node expression = n.getChild();
                 xml::Node condition = n.getLastChild().getChild();
-                piece->setExpression(AstNodeFactory::create(expression, deps));
-                piece->setCondition(AstNodeFactory::create(condition, deps));
+                piece->setExpression(AstNodeFactory::create(expression));
+                piece->setCondition(AstNodeFactory::create(condition));
                 // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
                 if (condition.getName() == "Otherwise") {
                     piece->setOtherwise();
@@ -291,7 +285,7 @@ namespace PharmML
                 FunctionArgument *arg = new FunctionArgument();
                 fcall->addFunctionArgument(arg);
                 arg->setSymbId(n.getAttribute("symbId").getValue());
-                arg->setArgument(AstNodeFactory::create(n.getChild(), deps));
+                arg->setArgument(AstNodeFactory::create(n.getChild()));
             }
             instance = fcall;
         } else if (name == "Interval") {

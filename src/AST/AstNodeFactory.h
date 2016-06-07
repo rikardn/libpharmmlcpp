@@ -20,7 +20,6 @@
 
 #include <xml/xml.h>
 #include <AST/AstNode.h>
-#include <PharmML/Dependencies.h>
 
 namespace PharmML
 {
@@ -29,7 +28,7 @@ namespace PharmML
     {
         public:
             void setContext(PharmMLContext *context);
-            static AstNode *create(xml::Node node, Dependencies *deps = nullptr);
+            static AstNode *create(xml::Node node);
         
         private:
             static PharmMLContext *context;

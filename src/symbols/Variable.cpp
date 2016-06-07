@@ -31,16 +31,12 @@ namespace PharmML
         xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = this->context->factory.create(tree, &this->deps);
+            this->assignment = this->context->factory.create(tree);
         }
     }
 
     AstNode *CommonVariable::getAssignment() {
         return this->assignment;
-    }
-
-    Dependencies& CommonVariable::getDependencies() {
-        return this->deps;
     }
 
     bool CommonVariable::isDerivative() {

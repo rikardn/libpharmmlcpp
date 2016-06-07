@@ -40,7 +40,7 @@ namespace PharmML
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);
             bool refersIndirectlyTo(Symbol *symbol);
-            std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
+            std::unordered_set<Symbol *> setupAstSymbRefs(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
 
         protected:
             // FIXME: Why haven't FunctionCall got parse(..) like normal nice classes?

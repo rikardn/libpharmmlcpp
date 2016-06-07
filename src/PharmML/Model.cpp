@@ -120,6 +120,24 @@ namespace PharmML
 
     // Gater all Symbols and setup SymbolRefs and referencedSymbols
     void Model::setupSymbols() {
+        SymbolGathering gathering;
+        PharmML::ModelDefinition *mdef = this->getModelDefinition();
+
+        mdef->getParameterModel()->gatherSymbols(gathering);
+        mdef->getStructuralModel()->gatherSymbols(gathering);
+        for (VariabilityModel *vmod : mdef->getVariabilityModels()) {
+            vmod->gatherSymbols(gathering);
+        }
+        if (mdef->getCovariateModel()) {
+            mdef->getCovariateModel()->gatherSymbols(gathering);
+        }
+        mdef->getObservationModel()->gatherSymbols(gathering);
+        gathering.newBlock(nullptr);    // Set global namespace
+        gathering.addSymbol(this->getIndependentVariable());
+        for (FunctionDefinition *fdef : this->getFunctionDefinitions()) {
+            gathering.addSymbol(fdef);
+        }
+
         std::vector<Parameter *> params = this->getModelDefinition()->getParameterModel()->getParameters();
         for (Parameter *param : params) {
             this->allSymbols.addSymbol(param);

@@ -18,6 +18,7 @@
 #include <iostream>
 #include <algorithm>
 #include "StructuralModel.h"
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {

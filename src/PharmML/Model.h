@@ -28,6 +28,7 @@
 #include <PharmML/TrialDesign.h>
 #include <xml/xml.h>
 #include <consolidators/Consolidator.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {

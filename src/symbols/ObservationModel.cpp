@@ -16,6 +16,7 @@
  */
 
 #include "ObservationModel.h"
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {

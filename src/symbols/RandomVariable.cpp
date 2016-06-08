@@ -23,7 +23,6 @@ namespace PharmML
     RandomVariable::RandomVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->RandomVariable::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void RandomVariable::parse(xml::Node node) {

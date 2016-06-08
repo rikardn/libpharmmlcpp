@@ -123,7 +123,9 @@ namespace PharmML
         PharmML::ModelDefinition *mdef = this->getModelDefinition();
 
         // Gather all symbols
-        mdef->getParameterModel()->gatherSymbols(gathering);
+        if (mdef->getParameterModel()) {
+            mdef->getParameterModel()->gatherSymbols(gathering);
+        }
         mdef->getStructuralModel()->gatherSymbols(gathering);
         for (VariabilityModel *vmod : mdef->getVariabilityModels()) {
             vmod->gatherSymbols(gathering);
@@ -202,8 +204,12 @@ namespace PharmML
     }
 
     void Model::setupRefererSymbRefs(SymbolGathering &gathering) {
-        this->ModellingSteps->setupRefererSymbRefs(gathering);
+        if (this->ModellingSteps) {
+            this->ModellingSteps->setupRefererSymbRefs(gathering);
+        }
         this->ModelDefinition->setupRefererSymbRefs(gathering);
-        this->TrialDesign->setupRefererSymbRefs(gathering);
+        if (this->TrialDesign) {
+            this->TrialDesign->setupRefererSymbRefs(gathering);
+        }
     }
 }

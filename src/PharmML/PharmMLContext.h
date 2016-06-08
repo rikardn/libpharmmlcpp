@@ -38,7 +38,6 @@ namespace PharmML
     {
         public:
             Logger logger;
-            std::unordered_map<std::string, Symbol *> symbols;
             AstNodeFactory factory;
             xmlDoc *getDocument();
             void validateDocument();

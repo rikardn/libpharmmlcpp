@@ -67,26 +67,19 @@ namespace PharmML
         // Try to shift case for each character if illegal
         name = this->shiftIllegalCase(name, this->legal_chars);
 
-        // Substitute characters not in legal set
-        for (auto it = name.begin(); it < name.end(); ++it) {
-            if (!this->charInSet(*it, this->legal_chars)) {
-                *it = this->substituteStandardChar(*it, this->legal_chars);
-            }
-            if (it == name.begin() && !this->charInSet(*it, this->legal_initial_chars)) {
-                *it = this->substituteStandardChar(*it, this->legal_initial_chars);
-            }
-        }
+        // Substitute the rest of characters not in legal set
+        name = this->substituteIllegalChars(name, this->legal_chars, this->legal_initial_chars);
 
         // If illegal word was formed, try to modify into legal word
         if (this->illegal_words.count(name) > 0) {
             if (!this->reserved_prefix.empty()) {
                 name = this->reserved_prefix + name;
             }
-            name = this->avoidCollision(name, this->illegal_words);
+            name = this->escapeCollision(name, this->illegal_words);
         }
 
         // Modify if name is not unique
-        name = this->avoidCollision(name, this->names);
+        name = this->escapeCollision(name, this->names);
 
         // Remember and return generated name
         names.insert(name);
@@ -113,7 +106,7 @@ namespace PharmML
         }
     }
 
-    // Try to substitute the (illegal) char with alternative (standard) char
+    // Try to substitute (illegal) char with alternative (standard) char. 'X' if no substitute and random legal char if 'X' is illegal.
     char32_t SymbolNamer::substituteStandardChar(char32_t ch, const std::unordered_set<char32_t> &legal_chars) {
         // Defined substitutions
         char32_t def_sub = 'X';
@@ -143,6 +136,22 @@ namespace PharmML
             }
         }
         return sub;
+    }
+
+    // Substitute each illegal character in string. If initial char set is empty, assume no difference.
+    std::u32string SymbolNamer::substituteIllegalChars(std::u32string name, const std::unordered_set<char32_t> &legal_chars, const std::unordered_set<char32_t> &legal_initial_chars) {
+        std::u32string new_name = name;
+        
+        for (auto it = new_name.begin(); it < new_name.end(); ++it) {
+            if (!this->charInSet(*it, this->legal_chars)) {
+                *it = this->substituteStandardChar(*it, this->legal_chars);
+            }
+            if (it == new_name.begin() && !legal_initial_chars.empty() && !this->charInSet(*it, this->legal_initial_chars)) {
+                *it = this->substituteStandardChar(*it, this->legal_initial_chars);
+            }
+        }
+
+        return new_name;
     }
 
     // Try to substitute the other case char. Returns same char if not convertable and char 0 if not legal.
@@ -176,6 +185,7 @@ namespace PharmML
         }
     }
 
+    // Shift case to lower/upper of each illegal character in string, if unsuccessful a standard char is inserted instead
     std::u32string SymbolNamer::shiftIllegalCase(std::u32string name, const std::unordered_set<char32_t> &legal_chars) {
         std::u32string new_name = name;
 
@@ -193,8 +203,8 @@ namespace PharmML
         return new_name;
     }
 
-    // Check if name collides with set and if so, try to iterate a new word
-    std::u32string SymbolNamer::avoidCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals) {
+    // Check if name collides with string set and if so, try to iterate a new word
+    std::u32string SymbolNamer::escapeCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals) {
         // Return immediately if no collision
         std::u32string new_name = name;
         if (illegals.count(new_name) == 0) {
@@ -245,6 +255,7 @@ namespace PharmML
         return new_name;
     }
 
+    // Form a string from a number and set of (ordered) numerals, e.g 12 & {'1','0'} -> "1100"
     std::u32string SymbolNamer::stringFromNumerals(uint num, const std::vector<char32_t> &numerals) {
         std::u32string result;
         while (num > 0) {

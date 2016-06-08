@@ -76,10 +76,14 @@ namespace PharmML
 
             // Private helper functions
             bool charInSet(char32_t ch, const std::unordered_set<char32_t> &ch_set);
+            
             char32_t substituteStandardChar(char32_t ch, const std::unordered_set<char32_t> &legal_chars);
+            std::u32string substituteIllegalChars(std::u32string name, const std::unordered_set<char32_t> &legal_chars, const std::unordered_set<char32_t> &legal_initial_chars);
+            
             char32_t substituteOtherCase(char32_t ch, const std::unordered_set<char32_t> &legal_chars);
             std::u32string shiftIllegalCase(std::u32string name, const std::unordered_set<char32_t> &legal_chars);
-            std::u32string avoidCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals);
+            
+            std::u32string escapeCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals);
             std::u32string stringFromNumerals(uint num, const std::vector<char32_t> &numerals);
     };
 }

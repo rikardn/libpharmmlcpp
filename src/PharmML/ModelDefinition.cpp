@@ -57,7 +57,9 @@ namespace PharmML
     void ModelDefinition::setupRefererSymbRefs(SymbolGathering &gathering) {
         //~ this->getVariabilityModels()->gatherSymbRefs(symbolMap);
         //~ this->getCovariateModel()->gatherSymbRefs(symbolMap);
-        this->getParameterModel()->setupRefererSymbRefs(gathering);
+        if (this->getParameterModel()) {
+            this->getParameterModel()->setupRefererSymbRefs(gathering);
+        }
         this->getStructuralModel()->setupRefererSymbRefs(gathering);
         //~ this->getObservationModel()->gatherSymbRefs(symbolMap);
     }

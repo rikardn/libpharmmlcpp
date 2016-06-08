@@ -105,34 +105,38 @@ namespace PharmML
 
         SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
 
-        // Declare population parameters except variability parameters
-        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
-            if (!param->isVariabilityParameter() and !param->isCorrelation()) {
-                param->getPopulationParameter()->accept(&symbgen);
-                form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+        if (this->model->getModelDefinition()->getParameterModel()) {
+            // Declare population parameters except variability parameters
+            for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+                if (!param->isVariabilityParameter() and !param->isCorrelation()) {
+                    param->getPopulationParameter()->accept(&symbgen);
+                    form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+                }
+            }
+
+            // Declare ETAs
+            SymbolSet random_vars = needed_symbols.getRandomVariables();
+            Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
+            random_vars.removeSymbol(error);
+
+            for (Symbol *symbol : random_vars) {
+                symbol->accept(&symbgen);
+                form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
+                this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
             }
         }
 
-        // Declare ETAs
-        SymbolSet random_vars = needed_symbols.getRandomVariables();
-        Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
-        random_vars.removeSymbol(error);
-
-        for (Symbol *symbol : random_vars) {
-            symbol->accept(&symbgen);
-            form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
-            this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
-        }
-
         // Declare dose/time
-        std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-        std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
-
         int index = 1;
-        for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-            form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-            form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-            index += 2;
+        if (this->model->getTrialDesign()) {
+            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+
+            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                index += 2;
+            }
         }
 
         // Declare covariates
@@ -384,6 +388,10 @@ namespace PharmML
         form.add("ff_fun = 'ff'");
         form.add("fg_fun = 'sfg'");
         form.add("fError_fun = 'feps'");
+
+        if (!this->model->getModelDefinition()->getParameterModel()) {
+            return "";
+        }
 
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");

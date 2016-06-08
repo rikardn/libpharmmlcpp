@@ -50,10 +50,16 @@ namespace PharmML
         std::string legacy_name = symbol->getSymbId(); // TODO: Remove when full Unicode support
         std::u32string name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.from_bytes(legacy_name);
 
+        // Try to shift case for each character if illegal
+        name = this->shiftIllegalCase(name, this->legal_chars);
+
         // Substitute characters not in legal set
         for (auto it = name.begin(); it < name.end(); ++it) {
-            if (!this->charInSet(*it, this->legal_chars) || (it == name.begin() && !this->charInSet(*it, this->legal_initial_chars))) {
-                *it = this->substituteStandardChar(*it);
+            if (!this->charInSet(*it, this->legal_chars)) {
+                *it = this->substituteStandardChar(*it, this->legal_chars);
+            }
+            if (it == name.begin() && !this->charInSet(*it, this->legal_initial_chars)) {
+                *it = this->substituteStandardChar(*it, this->legal_initial_chars);
             }
         }
 
@@ -87,21 +93,83 @@ namespace PharmML
     }
 
     // Try to substitute the (illegal) char with alternative (standard) char
-    char32_t SymbolNamer::substituteStandardChar(char32_t ch) {
+    char32_t SymbolNamer::substituteStandardChar(char32_t ch, const std::unordered_set<char32_t> &legal_chars) {
         // Defined substitutions
         char32_t def_sub = 'X';
         std::unordered_map<char32_t, char32_t> std_alts = {
             {u'\uC3A5', 'a'}, {u'\uC385', 'A'}, // å,Å
             {u'\uC3A4', 'a'}, {u'\uC384', 'A'}, // ä,Ä
-            {u'\uC3B6', 'O'}, {u'\uC396', 'O'} // ö,Ö
+            {u'\uC3B6', 'O'}, {u'\uC396', 'O'}, // ö,Ö
+            {u'\u0020', '_'}, {u'\u0009', '_'}, // space,htab
+            {u'\u000A', '_'}, {u'\u000D', '_'}  // LF,CR
         };
 
         // Substitute
+        char32_t sub;
         if (std_alts.count(ch) > 0) {
-            return std_alts[ch];
+            sub = std_alts[ch];
         } else {
-            return def_sub;
+            sub = def_sub;
         }
+
+        // Substitute again if not legal
+        if (legal_chars.count(sub) == 0) {
+            if (legal_chars.count(def_sub) > 0) {
+                sub = def_sub;
+            } else {
+                // Fallback on any legal character
+                sub = *(legal_chars.begin());
+            }
+        }
+        return sub;
+    }
+
+    // Try to substitute the other case char. Returns same char if not convertable and char 0 if not legal.
+    char32_t SymbolNamer::substituteOtherCase(char32_t ch, const std::unordered_set<char32_t> &legal_chars) {
+        // Get latin conversion maps
+        std::unordered_map<char32_t, char32_t> upper_latin, lower_latin;
+        std::transform(std::begin(LatinChars::LOWER_ALPHA), std::end(LatinChars::LOWER_ALPHA)
+            , std::begin(LatinChars::UPPER_ALPHA)
+            , std::inserter(upper_latin, std::begin(upper_latin))
+            , [] (char32_t l, char32_t u) { return std::make_pair(l, u); });
+        std::transform(std::begin(LatinChars::UPPER_ALPHA), std::end(LatinChars::UPPER_ALPHA)
+            , std::begin(LatinChars::LOWER_ALPHA)
+            , std::inserter(lower_latin, std::begin(lower_latin))
+            , [] (char32_t u, char32_t l) { return std::make_pair(u, l); });
+
+        // Swap latin case
+        char32_t other_case = 0;
+        if (upper_latin.count(ch) > 0) {
+            other_case = upper_latin[ch];
+        } else if (lower_latin.count(ch) > 0) {
+            other_case = lower_latin[ch];
+        }
+
+        // Return same char if no conversion, 0 if conversion is not legal and resulting char if sucessful
+        if (other_case == 0) {
+            return ch;
+        } else if (legal_chars.count(other_case) > 0) {
+            return other_case;
+        } else {
+            return 0;
+        }
+    }
+
+    std::u32string SymbolNamer::shiftIllegalCase(std::u32string name, const std::unordered_set<char32_t> &legal_chars) {
+        std::u32string new_name = name;
+
+        // Try to swap case for each illegal character
+        for (auto it = new_name.begin(); it < new_name.end(); ++it) {
+            if (!this->charInSet(*it, this->legal_chars)) {
+                char32_t sub = this->substituteOtherCase(*it, legal_chars);
+                if (sub == 0) {
+                    sub = this->substituteStandardChar(*it, legal_chars);
+                }
+                *it = sub;
+            }
+        }
+
+        return new_name;
     }
 
     // Check if name collides with set and if so, try to iterate a new word
@@ -117,9 +185,8 @@ namespace PharmML
         }
 
         // Get legal digits for iteration
-        const std::vector<char32_t> try_digits = {'0','1','2','3','4','5','6','7','8','9'};
         std::vector<char32_t> digits;
-        std::set_intersection(try_digits.begin(), try_digits.end(), this->legal_chars.begin(), this->legal_chars.end(), std::back_inserter(digits));
+        std::set_intersection(LatinChars::DIGITS.begin(), LatinChars::DIGITS.end(), this->legal_chars.begin(), this->legal_chars.end(), std::back_inserter(digits));
 
         // Try to iterate away from collisions
         std::u32string new_name = name + sep;

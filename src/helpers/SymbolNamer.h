@@ -31,12 +31,12 @@
 namespace PharmML
 {
     namespace LatinChars {
-        const std::unordered_set<char32_t> DIGITS      = {'0','1','2','3','4','5','6','7','8','9'};
-        const std::unordered_set<char32_t> LOWER_ALPHA = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-        const std::unordered_set<char32_t> UPPER_ALPHA = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-        const std::unordered_set<char32_t> UNDERSCORE  = {'_'};
-        const std::unordered_set<char32_t> PERIOD      = {'.'};
-        const std::unordered_set<char32_t> HYPHEN      = {'-'};
+        const std::vector<char32_t> DIGITS      = {'0','1','2','3','4','5','6','7','8','9'};
+        const std::vector<char32_t> LOWER_ALPHA = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        const std::vector<char32_t> UPPER_ALPHA = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+        const std::vector<char32_t> UNDERSCORE  = {'_'};
+        const std::vector<char32_t> PERIOD      = {'.'};
+        const std::vector<char32_t> HYPHEN      = {'-'};
     };
 
     class SymbolNamer
@@ -65,7 +65,9 @@ namespace PharmML
 
             // Private helper functions
             bool charInSet(char32_t ch, const std::unordered_set<char32_t> &ch_set);
-            char32_t substituteStandardChar(char32_t ch);
+            char32_t substituteStandardChar(char32_t ch, const std::unordered_set<char32_t> &legal_chars);
+            char32_t substituteOtherCase(char32_t ch, const std::unordered_set<char32_t> &legal_chars);
+            std::u32string shiftIllegalCase(std::u32string name, const std::unordered_set<char32_t> &legal_chars);
             std::u32string avoidCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals);
             std::u32string stringFromNumerals(uint num, const std::vector<char32_t> &numerals);
     };

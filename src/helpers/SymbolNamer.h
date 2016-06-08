@@ -61,6 +61,7 @@ namespace PharmML
             void addInitialCharSet(std::unordered_set<char32_t> chars);
             void subInitialCharSet(std::unordered_set<char32_t> chars);
             void setReservedPrefix(std::u32string prefix);
+            void setMaximumLength(uint length);
 
             // Name getters
             std::u32string getName(Symbol *symbol);
@@ -72,6 +73,7 @@ namespace PharmML
             std::unordered_set<char32_t> legal_chars;
             std::unordered_set<char32_t> legal_initial_chars;
             std::u32string reserved_prefix;
+            uint max_length = 0;
 
             // Earlier generated names
             std::unordered_set<std::u32string> names;

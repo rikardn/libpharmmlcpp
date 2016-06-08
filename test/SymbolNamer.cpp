@@ -233,4 +233,31 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
             }
         }
     }
+
+    SECTION("Length restriction") {
+        // Stringent restrictions
+        std::unordered_set<std::string> illegals = {"if","then","else","NOT","OR","AND"};
+        PharmML::SymbolNamer namer(illegals);
+        std::unordered_set<char32_t> legal_chars = {'A','a','D','d','E','e','F','f','I','i','N','n','O','o'};
+        namer.addCharSet(legal_chars);
+        uint max_length = 4;
+        namer.setMaximumLength(max_length);
+
+        // Set test strings
+        std::vector<std::string> names(illegals.begin(), illegals.end());
+        names.insert(names.end(), illegals.begin(), illegals.end());
+
+        // Tests
+        std::unordered_set<std::string> gen_names;
+        for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+            std::string name = namer.getNameString(symbol);
+            INFO(symbol->getSymbId() << " => " << name);
+            REQUIRE(gen_names.count(name) == 0);
+            REQUIRE(name.length() <= max_length);
+            gen_names.insert(name);
+        }
+
+        // Test that all symbols are there
+        REQUIRE(gen_names.size() == names.size());
+    }
 }

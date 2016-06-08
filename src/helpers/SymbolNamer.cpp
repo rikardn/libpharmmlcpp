@@ -63,6 +63,11 @@ namespace PharmML
         this->reserved_prefix = prefix;
     }
 
+    // Set a maximum length of names to accept (0 is default and imposes no restrictions)
+    void SymbolNamer::setMaximumLength(uint length) {
+        this->max_length = length;
+    }
+
     // Get name of symbol or generate name if none exists
     std::u32string SymbolNamer::getName(Symbol *symbol) {
         // Return name if symbol already named
@@ -79,6 +84,11 @@ namespace PharmML
 
         // Substitute the rest of characters not in legal set
         name = this->substituteIllegalChars(name, this->legal_chars, this->legal_initial_chars);
+
+        // Shorten word if too long
+        if (this->max_length > 0 && name.length() > this->max_length) {
+            name = name.substr(0, this->max_length);
+        }
 
         // If illegal word was formed, try to modify into legal word
         if (this->illegal_words.count(name) > 0) {
@@ -257,8 +267,12 @@ namespace PharmML
         while (illegals.count(new_name)) {
             std::u32string suffix = this->stringFromNumerals(version, sorted_numerals);
             new_name = name + sep + suffix;
-            if (illegals.count(new_name) == 0) {
+            if (illegals.count(new_name) == 0 && (this->max_length == 0 || new_name.length() <= this->max_length)) {
                 return new_name;
+            } else if (this->max_length > 0 && new_name.length() > this->max_length) {
+                // Shorten if too long
+                name = name.substr( 0, name.length()-(new_name.length()-this->max_length) );
+                new_name = name + sep + suffix;
             }
             version++;
         };

@@ -89,7 +89,7 @@ namespace PharmML
     // Returns true if char is in set
     bool SymbolNamer::charInSet(char32_t ch, const std::unordered_set<char32_t> &ch_set) {
         auto got = ch_set.find(ch);
-        if (got == ch_set.end()) {
+        if (got != ch_set.end()) {
             return true;
         } else {
             return false;

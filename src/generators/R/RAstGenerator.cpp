@@ -67,7 +67,7 @@ namespace PharmML
     }
 
     void RAstGenerator::visit(SymbRef *node) {
-        this->setValue(node->toString());
+        this->setValue(node->getSymbIdRef());
     }
 
     void RAstGenerator::visit(SteadyStateParameter *node) {

@@ -15,18 +15,29 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_ASTNODEFACTORY_H_
-#define PHARMML_ASTNODEFACTORY_H_
+#ifndef PHARMML_SYMBOLGATHERING_H_
+#define PHARMML_SYMBOLGATHERING_H_
 
-#include <xml/xml.h>
-#include <AST/AstNode.h>
+#include <string>
+#include <unordered_map>
+#include <symbols/Symbol.h>
 
 namespace PharmML
 {
-    class AstNodeFactory
+    class Block;
+
+    class SymbolGathering
     {
         public:
-            static AstNode *create(xml::Node node);
+            void newBlock(Block *block);
+            void globalBlock();
+            void addSymbol(Symbol *symbol);
+            Symbol *getSymbol(std::string blkId, std::string symbId);
+            void setupAllSymbRefs();
+
+        private:
+            Block *current_block;
+            std::unordered_map<std::string, std::unordered_map<std::string, Symbol *>> map;
     };
 }
 

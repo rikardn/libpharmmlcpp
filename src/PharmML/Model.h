@@ -28,6 +28,7 @@
 #include <PharmML/TrialDesign.h>
 #include <xml/xml.h>
 #include <consolidators/Consolidator.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
@@ -43,7 +44,6 @@ namespace PharmML
             PharmML::TrialDesign *getTrialDesign();
             PharmML::ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
 
         private:
             PharmMLContext *context;
@@ -60,6 +60,7 @@ namespace PharmML
             void setupSymbols();
             void setupObjects();
             void checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
     };
 }
 

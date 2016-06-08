@@ -59,13 +59,11 @@ namespace PharmML
         return this->catId;
     }
 
-    Symbol *FixedEffect::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void FixedEffect::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->symbRef) {
-            Symbol *found_symbol = this->addSymbRef(symbRef, symbolMap);
-            this->addReference(found_symbol);
-            return found_symbol;
+            this->addSymbRef(symbRef, gathering, blkId);
         }
-        return nullptr;
     }
 
     IndividualParameter::IndividualParameter(PharmMLContext *context, xml::Node node) {
@@ -271,29 +269,28 @@ namespace PharmML
         return result;
     }
 
-    void IndividualParameter::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void IndividualParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (PharmML::AstNode *trans_param : this->transformationParameters) {
-            this->setupAstSymbRefs(trans_param, symbolMap);
+            this->setupAstSymbRefs(trans_param, gathering, blkId);
         }
         if (this->populationValue) {
-            this->setupAstSymbRefs(this->populationValue, symbolMap);
+            this->setupAstSymbRefs(this->populationValue, gathering, blkId);
         }
         for (SymbRef *cov : this->covariates) {
-            Symbol *found_symbol = this->addSymbRef(cov, symbolMap);
-            this->addReference(found_symbol);
+            this->addSymbRef(cov, gathering, blkId);
             for (FixedEffect *fixed_eff : this->fixedEffects[cov]) {
-                this->addReference(fixed_eff->gatherSymbRefs(symbolMap));
+                fixed_eff->setupSymbRefs(gathering, blkId);
+                this->addReference(*(fixed_eff->referencedSymbols.begin()));
             }
         }
         for (SymbRef *rand_effect : this->randomEffects) {
-            Symbol *found_symbol = this->addSymbRef(rand_effect, symbolMap);
-            this->addReference(found_symbol);
+            this->addSymbRef(rand_effect, gathering, blkId);
         }
         if (this->generalAssignment) {
-            this->setupAstSymbRefs(this->generalAssignment, symbolMap);
+            this->setupAstSymbRefs(this->generalAssignment, gathering, blkId);
         }
         if (this->explicitAssignment) {
-            this->setupAstSymbRefs(this->explicitAssignment, symbolMap);
+            this->setupAstSymbRefs(this->explicitAssignment, gathering, blkId);
         }
     }
 

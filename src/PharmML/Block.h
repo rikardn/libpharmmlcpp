@@ -23,11 +23,14 @@
 
 namespace PharmML
 {
+    class SymbolGathering;
+
     class Block
     {
         public:
             std::string getBlkId();
             void parse(xml::Node node);
+            virtual void gatherSymbols(SymbolGathering &gathering) = 0;
 
         private:
             std::string blkId;

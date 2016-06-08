@@ -46,7 +46,7 @@ namespace PharmML
              * below only those that refer to the correlated random variables (to not mix them up): */
             PharmML::SymbolSet correlatedSymbols;
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
         private:

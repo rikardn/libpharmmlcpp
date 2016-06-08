@@ -102,7 +102,7 @@ namespace PharmML
         form.openVector("parameters = c()", 1, ", ");
         PopEDSymbols symbgen;
         PopEDAstGenerator astgen(&symbgen);
- 
+
         SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
 
         // Declare population parameters except variability parameters
@@ -319,7 +319,7 @@ namespace PharmML
                 form.add(rsymb_past.getValue());
             }
 
-            form.add("y <- " + output->toString());
+            form.add("y <- " + output->getSymbIdRef());
         }
 
         if (!has_derivatives) {
@@ -347,7 +347,7 @@ namespace PharmML
 
         ObservationModel *om = this->model->getModelDefinition()->getObservationModel();
         std::string result_name = om->getSymbId();
-        std::string output_name = om->getOutput()->toString();
+        std::string output_name = om->getOutput()->getSymbIdRef();
 
         form.indentAdd("feps <- function(model_switch, xt, parameters, epsi, poped.db) {");
         form.indentAdd("with(as.list(parameters), {");

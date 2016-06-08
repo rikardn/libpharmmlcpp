@@ -107,13 +107,12 @@ namespace PharmML
         return this->assignment;
     }
 
-    void Covariate::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void Covariate::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->assignment) {
-            std::unordered_set<Symbol *> found_symbols = this->setupAstSymbRefs(this->assignment, symbolMap);
-            this->addReferences(found_symbols);
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
         }
         for (Covariate *cov : this->transformations) {
-            cov->gatherSymbRefs(symbolMap);
+            cov->setupSymbRefs(gathering, blkId);
         }
     }
 

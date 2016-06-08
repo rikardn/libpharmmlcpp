@@ -47,15 +47,16 @@ namespace PharmML
         return this->initial_time;
     }
 
-    void DerivativeVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void DerivativeVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, symbolMap);
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
         }
         if (this->initial_value) {
-            this->setupAstSymbRefs(this->initial_value, symbolMap);
+            this->setupAstSymbRefs(this->initial_value, gathering, blkId);
         }
         if (this->initial_time) {
-            this->setupAstSymbRefs(this->initial_time, symbolMap);
+            this->setupAstSymbRefs(this->initial_time, gathering, blkId);
         }
     }
 

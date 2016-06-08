@@ -43,7 +43,6 @@ namespace PharmML
     {
         public:
             SymbRefFinder();
-            SymbRefFinder(std::unordered_map<std::string, Symbol *> *symbolMap);
 
             std::unordered_set<SymbRef *> getSymbRefs();
 
@@ -140,7 +139,6 @@ namespace PharmML
 
         private:
             std::unordered_set<SymbRef *> symbRefs;
-            std::unordered_map<std::string, Symbol *> *symbolMap = nullptr;
     };
 }
 

@@ -36,12 +36,13 @@ namespace PharmML
     {
         public:
             PharmML::SymbolSet referencedSymbols;
-            PharmML::Symbol *addSymbRef(SymbRef *symbRef, std::unordered_map<std::string, Symbol *> &symbolMap);
+            PharmML::Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
             void addReference(Symbol *symbol);
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);
             bool refersIndirectlyTo(Symbol *symbol);
-            std::unordered_set<Symbol *> setupAstSymbRefs(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupAstSymbRefs(AstNode *node, SymbolGathering &gathering, std::string blkId);
+            virtual void setupSymbRefs(SymbolGathering &gathering, std::string blkId) = 0;
 
         protected:
             // FIXME: Why haven't FunctionCall got parse(..) like normal nice classes?
@@ -53,7 +54,6 @@ namespace PharmML
         public:
             std::string getSymbId();
             Block *getBlock();
-            virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:

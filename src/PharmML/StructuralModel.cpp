@@ -18,6 +18,7 @@
 #include <iostream>
 #include <algorithm>
 #include "StructuralModel.h"
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
@@ -70,9 +71,16 @@ namespace PharmML
         return this->pk_macros;
     }
 
-    void StructuralModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void StructuralModel::setupRefererSymbRefs(SymbolGathering &gathering) {
         if (this->pk_macros) {
-            this->pk_macros->gatherSymbRefs(symbolMap);
+            this->pk_macros->setupRefererSymbRefs(gathering, this->getBlkId());
+        }
+    }
+
+    void StructuralModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (CommonVariable *common_variable : this->variables) {
+            gathering.addSymbol(common_variable);
         }
     }
 }

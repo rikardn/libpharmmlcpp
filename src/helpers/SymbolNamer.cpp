@@ -194,35 +194,37 @@ namespace PharmML
             }
         }
 
-        // Get legal digits for iteration
-        std::vector<char32_t> digits;
-        std::set_intersection(LatinChars::DIGITS.begin(), LatinChars::DIGITS.end(), this->legal_chars.begin(), this->legal_chars.end(), std::back_inserter(digits));
+        // Order all literals (std::set_intersection below requires it)
+        std::vector<char32_t> temp(this->legal_chars.begin(), this->legal_chars.end());
+        std::vector<char32_t> sorted_literals;
+        std::copy(temp.begin(), temp.end(), std::inserter(sorted_literals, sorted_literals.end()));
 
-        // Try to iterate away from collisions
-        new_name = name + sep;
-        if (digits.size() > 0) {
-            uint version = 1;
-            while (illegals.count(new_name)) {
-                std::u32string suffix = this->stringFromNumerals(version, digits);
-                new_name = name + sep + suffix;
-                if (illegals.count(new_name) == 0) {
-                    return new_name;
+        // Get digits in order to use as incremental numerals
+        std::vector<char32_t> sorted_numerals;
+        std::set_intersection(LatinChars::DIGITS.begin(), LatinChars::DIGITS.end(), sorted_literals.begin(), sorted_literals.end(), std::back_inserter(sorted_numerals));
+        if (sorted_numerals.size() == 0) {
+            // No digits found? Fallback on upper/lower alphas as numerals
+            std::set_intersection(LatinChars::UPPER_ALPHA.begin(), LatinChars::UPPER_ALPHA.end(), sorted_literals.begin(), sorted_literals.end(), std::back_inserter(sorted_numerals));
+            if (sorted_numerals.size() == 0) {
+                std::set_intersection(LatinChars::LOWER_ALPHA.begin(), LatinChars::LOWER_ALPHA.end(), sorted_literals.begin(), sorted_literals.end(), std::back_inserter(sorted_numerals));
+                if (sorted_numerals.size() == 0) {
+                    // Still nothing? No choice but to use all legal literals as numerals
+                    std::swap(sorted_numerals, sorted_literals);
                 }
-                version++;
-            };
-        } else {
-            // Just try any mess of legal characters remaining...
-            std::vector<char32_t> mess(this->legal_chars.begin(), this->legal_chars.end());
-            uint version = 1;
-            while (illegals.count(new_name)) {
-                std::u32string suffix = this->stringFromNumerals(version, mess);
-                new_name = name + sep + suffix;
-                if (illegals.count(new_name) == 0) {
-                    return new_name;
-                }
-                version++;
-            };
+            }
         }
+
+        // Iterate away from collisions via numerals
+        new_name = name + sep;
+        uint version = 1;
+        while (illegals.count(new_name)) {
+            std::u32string suffix = this->stringFromNumerals(version, sorted_numerals);
+            new_name = name + sep + suffix;
+            if (illegals.count(new_name) == 0) {
+                return new_name;
+            }
+            version++;
+        };
         return new_name;
     }
 

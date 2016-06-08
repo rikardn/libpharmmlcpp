@@ -42,7 +42,6 @@ namespace PharmML
     class PopEDGenerator
     {
         public:
-            std::string getValue();
             std::string generateModel(Model *model);
 
         private:
@@ -58,8 +57,6 @@ namespace PharmML
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
             std::vector<RandomVariable *> etas;
 
-            std::string value;
-            void setValue(std::string str);
             std::string accept(AstNode *);
             std::string genParameterModel();
             std::string genODEFunc();

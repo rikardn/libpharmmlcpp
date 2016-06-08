@@ -24,20 +24,12 @@
 namespace PharmML
 {
     // private
-    void PopEDGenerator::setValue(std::string str) {
-        this->value = str;
-    }
-
     std::string PopEDGenerator::accept(AstNode *node) {
         node->accept(&this->ast_gen);
         return ast_gen.getValue();
     }
 
     // public
-    std::string PopEDGenerator::getValue() {
-        return this->value;
-    }
-
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
         this->logger.setToolName("PopED");

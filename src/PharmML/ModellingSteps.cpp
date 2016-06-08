@@ -373,11 +373,11 @@ namespace PharmML
         }
     }
 
-    void ModellingSteps::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ModellingSteps::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (PharmML::EstimationStep *est_step : this->getEstimationSteps()) {
             std::vector<ParameterEstimation *> est_params = est_step->getParameters();
             for (PharmML::ParameterEstimation *est_param : est_params) {
-                Symbol *found_symbol = symbolMap[est_param->getSymbRef()->toString()];
+                Symbol *found_symbol = gathering.getSymbol(est_param->getSymbRef()->getBlkId(), est_param->getSymbRef()->toString());
                 est_param->addReference(found_symbol);
                 est_param->getSymbRef()->setSymbol(found_symbol);
             }
@@ -388,7 +388,7 @@ namespace PharmML
         for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
             std::vector<ParameterEstimation *> opt_params = opt_step->getParameters();
             for (PharmML::ParameterEstimation *opt_param : opt_params) {
-                Symbol *found_symbol = symbolMap[opt_param->getSymbRef()->toString()];
+                Symbol *found_symbol = gathering.getSymbol(opt_param->getSymbRef()->getBlkId(), opt_param->getSymbRef()->toString());
                 opt_param->addReference(found_symbol);
                 opt_param->getSymbRef()->setSymbol(found_symbol);
             }

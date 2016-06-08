@@ -31,7 +31,7 @@ namespace PharmML
             PopulationParameter(std::string symbId);
             PopulationParameter(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 

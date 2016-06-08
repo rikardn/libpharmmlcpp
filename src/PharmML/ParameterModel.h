@@ -40,7 +40,7 @@ namespace PharmML
             std::vector<Correlation *> getCorrelations();
             ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gatherer) override;
 
             AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);

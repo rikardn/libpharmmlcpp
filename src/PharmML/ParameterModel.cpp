@@ -60,10 +60,10 @@ namespace PharmML
         }
     }
 
-    void ParameterModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ParameterModel::setupRefererSymbRefs(SymbolGathering &gathering) {
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
         for (PharmML::Correlation *corr : this->getCorrelations()) {
-            corr->gatherSymbRefs(symbolMap);
+            corr->setupSymbRefs(gathering, this->getBlkId());
         }
     }
 

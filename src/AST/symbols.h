@@ -33,6 +33,7 @@ namespace PharmML
             virtual void accept(AstNodeVisitor *visitor);
             std::string toString();
             std::string getBlkId();
+            std::string getBlkId(std::string defaultBlkId);
             void setSymbol(Symbol *symbol);
             Symbol *getSymbol();
 

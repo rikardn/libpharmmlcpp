@@ -51,11 +51,11 @@ namespace PharmML
         return this->maps;
     }
 
-    void TargetMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void TargetMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         // TODO: Is this right? How else should these strings be resolved to real symbols?
         for (MapType map : this->maps) {
             if (map.modelSymbol != "") {
-                PharmML::Symbol *symbol = symbolMap[map.modelSymbol];
+                PharmML::Symbol *symbol = gathering.getSymbol(blkId, map.modelSymbol);
                 map.modelSymbol_ptr = symbol;
                 this->addReference(symbol);
             }
@@ -144,12 +144,12 @@ namespace PharmML
         return adm_map;
     }
 
-    void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ColumnMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->symbRef) {
-            this->mappedSymbol = this->addSymbRef(this->symbRef, symbolMap);
+            this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
         } else if (this->assignment) {
-            std::unordered_set<Symbol *> symbols = this->setupAstSymbRefs(this->assignment, symbolMap);
-            this->mappedSymbol = *(symbols.begin()); // There shall only be one
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }
     }
 

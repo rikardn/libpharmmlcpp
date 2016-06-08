@@ -32,6 +32,8 @@ namespace PharmML
             void newBlock(Block *block);
             void globalBlock();
             void addSymbol(Symbol *symbol);
+            Symbol *getSymbol(std::string blkId, std::string symbId);
+            void setupAllSymbRefs();
 
         private:
             Block *current_block;

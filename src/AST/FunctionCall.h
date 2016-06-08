@@ -25,14 +25,13 @@
 
 namespace PharmML
 {
-    class FunctionCall : public AstNode, public Referer
+    class FunctionCall : public AstNode
     {
         public:
             void setFunction(SymbRef *node);
             SymbRef *getFunction();
             void addFunctionArgument(FunctionArgument *farg);
             std::vector<FunctionArgument *> getFunctionArguments();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             virtual void accept(AstNodeVisitor *visitor);
         
         private:
@@ -40,14 +39,13 @@ namespace PharmML
             std::vector<FunctionArgument *> functionArguments;
     };
 
-    class FunctionArgument : public AstNode, public Referer
+    class FunctionArgument : public AstNode
     {
         public:
             void setSymbId(std::string symbId);
             std::string getSymbId();
             void setArgument(AstNode *node);
             AstNode *getArgument();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
             virtual void accept(AstNodeVisitor *visitor);
         
         private:

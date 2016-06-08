@@ -33,9 +33,9 @@ namespace CPharmML
 
     PharmML::FunctionDefinition *Functions::resolveFunctionCall(PharmML::FunctionCall *functionCall) {
         for (PharmML::FunctionDefinition *functionDefinition : this->functionDefinitions) {
-            if (functionCall->referencedSymbols.dependsOn(functionDefinition)) {
-                return functionDefinition;
-            }
+            //if (functionCall->referencedSymbols.dependsOn(functionDefinition)) {
+            //    return functionDefinition;
+            //}
         }
         return nullptr;
     }

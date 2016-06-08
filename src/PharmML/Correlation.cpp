@@ -93,14 +93,13 @@ namespace PharmML
         return this->pure_symbref_assignment;
     }
 
-    void Correlation::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        this->variabilityReference->gatherSymbRefs(symbolMap);
+    void Correlation::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
+        this->variabilityReference->setupSymbRefs(gathering, blkId);
         if (this->pairwiseAssignment) {
-            std::unordered_set<Symbol *> symbols = this->setupAstSymbRefs(this->pairwiseAssignment, symbolMap);
-            this->addReferences(symbols);
+            this->setupAstSymbRefs(this->pairwiseAssignment, gathering, blkId);
             for (PharmML::SymbRef *symbRef : this->pairwiseSymbRefs) {
                 // Separation of correlated random variables seem like a good idea
-                this->correlatedSymbols.addSymbol( this->addSymbRef(symbRef, symbolMap) );
+                this->correlatedSymbols.addSymbol(this->addSymbRef(symbRef, gathering, blkId));
             }
         } else {
             // TODO: Matrix support

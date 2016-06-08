@@ -48,13 +48,13 @@ namespace PharmML
         return this->Distribution;
     }
 
-    void RandomVariable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void RandomVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (DistributionParameter *par : this->Distribution->getDistributionParameters()) {
-            std::unordered_set<Symbol *> found_symbols = this->setupAstSymbRefs(par->getAssignment(), symbolMap);
-            par->addReferences(found_symbols);
+            this->setupAstSymbRefs(par->getAssignment(), gathering, blkId);
         }
-        for (PharmML::VariabilityReference *var_ref : this->getVariabilityReferences()) {
-            var_ref->gatherSymbRefs(symbolMap);
+        for (VariabilityReference *var_ref : this->getVariabilityReferences()) {
+            var_ref->setupSymbRefs(gathering, blkId);
         }
     }
 

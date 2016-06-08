@@ -40,7 +40,7 @@ namespace PharmML
             bool hasDerivatives();
             std::vector<PharmML::CommonVariable *> getDerivatives();
             PharmML::PKMacros *getPKMacros();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gathering) override;
 
         private:

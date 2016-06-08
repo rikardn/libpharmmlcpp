@@ -102,7 +102,7 @@ namespace PharmML
         form.openVector("parameters = c()", 1, ", ");
         PopEDSymbols symbgen;
         PopEDAstGenerator astgen(&symbgen);
- 
+
         SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
 
         // Declare population parameters except variability parameters

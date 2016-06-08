@@ -53,11 +53,12 @@ namespace PharmML
         }
     }
 
-    void ModelDefinition::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void ModelDefinition::setupRefererSymbRefs(SymbolGathering &gathering) {
         //~ this->getVariabilityModels()->gatherSymbRefs(symbolMap);
         //~ this->getCovariateModel()->gatherSymbRefs(symbolMap);
-        this->getParameterModel()->gatherSymbRefs(symbolMap);
-        this->getStructuralModel()->gatherSymbRefs(symbolMap);
+        this->getParameterModel()->setupRefererSymbRefs(gathering);
+        this->getStructuralModel()->setupRefererSymbRefs(gathering);
         //~ this->getObservationModel()->gatherSymbRefs(symbolMap);
     }
 

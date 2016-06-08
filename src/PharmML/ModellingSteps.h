@@ -25,6 +25,7 @@
 #include <AST/symbols.h>
 #include <PharmML/Dataset.h>
 #include <symbols/Symbol.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
@@ -97,6 +98,7 @@ namespace PharmML
             AstNode *getLoBound();
             AstNode *getHiBound();
             void accept(PharmMLVisitor *visitor);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
 
         private:
             PharmML::PharmMLContext *context;
@@ -169,7 +171,7 @@ namespace PharmML
         public:
             ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             std::vector<EstimationStep *> getEstimationSteps();
             std::vector<SimulationStep *> getSimulationSteps();
             std::vector<OptimalDesignStep *> getOptimalDesignSteps();

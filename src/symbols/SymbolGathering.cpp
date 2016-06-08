@@ -17,6 +17,7 @@
 
 #include <symbols/SymbolGathering.h>
 #include <PharmML/Block.h>
+#include <iostream>
 
 namespace PharmML
 {
@@ -34,5 +35,17 @@ namespace PharmML
             blkId = current_block->getBlkId();
         }
         this->map[blkId][symbol->getSymbId()] = symbol;
+    }
+
+    Symbol *SymbolGathering::getSymbol(std::string blkId, std::string symbId) {
+        return this->map[blkId][symbId];
+    }
+
+    void SymbolGathering::setupAllSymbRefs() {
+        for (auto &blkId_pair : this->map) {
+            for (auto &symbRef_pair : blkId_pair.second) {
+                symbRef_pair.second->setupSymbRefs(*this, blkId_pair.first);
+            }
+        }
     }
 }

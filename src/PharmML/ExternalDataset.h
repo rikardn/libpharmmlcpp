@@ -40,7 +40,7 @@ namespace PharmML
             Dataset *getDataset();
             std::string getToolName();
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
 
             void accept(PharmMLVisitor *visitor);
 

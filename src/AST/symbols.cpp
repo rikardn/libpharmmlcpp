@@ -41,6 +41,14 @@ namespace PharmML
         return this->blkIdRef;
     }
 
+    std::string SymbRef::getBlkId(std::string defaultBlkId) {
+        if (this->blkIdRef.empty()) {
+            return defaultBlkId;
+        } else {
+            return this->blkIdRef;
+        }
+    }
+
     void SymbRef::setSymbol(Symbol *symbol) {
         this->symbol = symbol;
     }

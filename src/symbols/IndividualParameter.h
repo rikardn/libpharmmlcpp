@@ -37,7 +37,7 @@ namespace PharmML
             PharmML::AstNode *getScalar();
             std::string getCategory();
 
-            Symbol *gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
 
         private:
             PharmMLContext *context;
@@ -73,7 +73,7 @@ namespace PharmML
 
             AstNode *asExplicit();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 

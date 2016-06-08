@@ -64,7 +64,7 @@ namespace PharmML
             // Convenience methods
             SymbolSet getNeededSymbols();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void gatherSymbols(SymbolGathering &gathering) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

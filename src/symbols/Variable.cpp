@@ -43,9 +43,10 @@ namespace PharmML
         return this->is_derivative;
     }
 
-    void Variable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void Variable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
        if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, symbolMap);
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
        }
     }
 

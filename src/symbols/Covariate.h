@@ -40,7 +40,7 @@ namespace PharmML
             std::vector<Covariate *> getTransformations();
             AstNode *getAssignment();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 

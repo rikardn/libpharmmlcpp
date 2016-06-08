@@ -19,6 +19,10 @@
 
 namespace PharmML
 {
+    // Initialize new SymbolNamer (without illegal word set)
+    SymbolNamer::SymbolNamer() {
+
+    } 
     // Initialize new SymbolNamer with list of illegal word (e.g. target reserved)
     SymbolNamer::SymbolNamer(std::unordered_set<std::u32string> illegal_words) {
         this->illegal_words = illegal_words;

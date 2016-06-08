@@ -216,4 +216,11 @@ namespace xml
     long Node::getLineNo() {
         return xmlGetLineNo(this->node);
     }
+
+    Node nodeFromString(std::string xml_string) {
+        xmlDocPtr doc = xmlParseMemory(xml_string.c_str(), xml_string.size()); 
+        xmlNodePtr node = xmlDocGetRootElement(doc);
+        xml::Node xml_node(node);
+        return xml_node;
+    }
 }

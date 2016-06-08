@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PharmML xmlns="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    writtenVersion="0.8.1">
+    <ct:Name/>
+    <IndependentVariable symbId="time"/>
+    <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
+        <StructuralModel blkId="sm1">
+            <ct:Variable symbolType="real" symbId="A"/>
+        </StructuralModel>
+        <ObservationModel blkId="om1">
+            <ContinuousData>
+                <Standard symbId="Y">
+                    <Output>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </Output>
+                    <ErrorModel>
+                        <ct:Assign>
+                            <ct:Real>1</ct:Real>
+                        </ct:Assign>
+                    </ErrorModel>
+                    <ResidualError>
+                        <ct:SymbRef blkIdRef="sm1" symbIdRef="A"/>
+                    </ResidualError>
+                </Standard>
+            </ContinuousData>
+        </ObservationModel>
+    </ModelDefinition>
+</PharmML>

@@ -178,6 +178,12 @@ namespace PharmML
 
     // Check if name collides with set and if so, try to iterate a new word
     std::u32string SymbolNamer::avoidCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals) {
+        // Return immediately if no collision
+        std::u32string new_name = name;
+        if (illegals.count(new_name) == 0) {
+            return new_name;
+        }
+        
         // Try to get legal suffix separator
         const std::vector<char32_t> try_seps = {'_','-','.'};
         std::u32string sep;
@@ -193,7 +199,7 @@ namespace PharmML
         std::set_intersection(LatinChars::DIGITS.begin(), LatinChars::DIGITS.end(), this->legal_chars.begin(), this->legal_chars.end(), std::back_inserter(digits));
 
         // Try to iterate away from collisions
-        std::u32string new_name = name + sep;
+        new_name = name + sep;
         if (digits.size() > 0) {
             uint version = 1;
             while (illegals.count(new_name)) {

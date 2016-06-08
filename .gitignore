@@ -19,6 +19,7 @@ spec-docs/
 pharmml_internalRelease_0_8_1/pharmml-examples/
 peripheral/
 test/testfiles/
+!test/testfiles/minimal.xml
 
 .gdb_history
 powermake

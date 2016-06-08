@@ -24,20 +24,12 @@
 namespace PharmML
 {
     // private
-    void PopEDGenerator::setValue(std::string str) {
-        this->value = str;
-    }
-
     std::string PopEDGenerator::accept(AstNode *node) {
         node->accept(&this->ast_gen);
         return ast_gen.getValue();
     }
 
     // public
-    std::string PopEDGenerator::getValue() {
-        return this->value;
-    }
-
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
         this->logger.setToolName("PopED");
@@ -105,34 +97,38 @@ namespace PharmML
 
         SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
 
-        // Declare population parameters except variability parameters
-        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
-            if (!param->isVariabilityParameter() and !param->isCorrelation()) {
-                param->getPopulationParameter()->accept(&symbgen);
-                form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+        if (this->model->getModelDefinition()->getParameterModel()) {
+            // Declare population parameters except variability parameters
+            for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+                if (!param->isVariabilityParameter() and !param->isCorrelation()) {
+                    param->getPopulationParameter()->accept(&symbgen);
+                    form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+                }
+            }
+
+            // Declare ETAs
+            SymbolSet random_vars = needed_symbols.getRandomVariables();
+            Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
+            random_vars.removeSymbol(error);
+
+            for (Symbol *symbol : random_vars) {
+                symbol->accept(&symbgen);
+                form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
+                this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
             }
         }
 
-        // Declare ETAs
-        SymbolSet random_vars = needed_symbols.getRandomVariables();
-        Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
-        random_vars.removeSymbol(error);
-
-        for (Symbol *symbol : random_vars) {
-            symbol->accept(&symbgen);
-            form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
-            this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
-        }
-
         // Declare dose/time
-        std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-        std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
-
         int index = 1;
-        for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-            form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-            form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-            index += 2;
+        if (this->model->getTrialDesign()) {
+            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+
+            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                index += 2;
+            }
         }
 
         // Declare covariates
@@ -385,6 +381,10 @@ namespace PharmML
         form.add("fg_fun = 'sfg'");
         form.add("fError_fun = 'feps'");
 
+        if (!this->model->getModelDefinition()->getParameterModel()) {
+            return "";
+        }
+
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");
         TextFormatter notfixed_bpop;
@@ -562,53 +562,4 @@ namespace PharmML
 
         return nullptr;
     }
-
-    // Visitors
-    void PopEDGenerator::visit(FunctionDefinition *node) {}
-
-    void PopEDGenerator::visit(FunctionArgumentDefinition *node) {}
-
-    void PopEDGenerator::visit(PopulationParameter *node) {}
-
-    void PopEDGenerator::visit(IndividualParameter *node) {}
-
-    void PopEDGenerator::visit(RandomVariable *node) {}
-    void PopEDGenerator::visit(VariabilityLevel *node) {}
-    void PopEDGenerator::visit(Correlation *node) {}
-    void PopEDGenerator::visit(Covariate *node) {}
-    void PopEDGenerator::visit(IndependentVariable *node) {}
-    void PopEDGenerator::visit(Variable *node) {}
-    void PopEDGenerator::visit(DerivativeVariable *node) {}
-    void PopEDGenerator::visit(ObservationModel *node) {}
-    void PopEDGenerator::visit(Distribution *node) {}
-    void PopEDGenerator::visit(ColumnMapping *node) {}
-
-    void PopEDGenerator::visit(ExternalFile *node) {}
-    void PopEDGenerator::visit(DataColumn *node) {}
-    void PopEDGenerator::visit(Dataset *node) {}
-    void PopEDGenerator::visit(TargetMapping *node) {}
-
-    void PopEDGenerator::visit(ExternalDataset *node) {}
-
-    void PopEDGenerator::visit(Interventions *node) {}
-    void PopEDGenerator::visit(Administration *node) {}
-    void PopEDGenerator::visit(IndividualAdministration *node) {}
-
-    void PopEDGenerator::visit(Observations *node) {}
-    void PopEDGenerator::visit(Observation *node) {}
-    void PopEDGenerator::visit(IndividualObservations *node) {}
-    void PopEDGenerator::visit(ObservationCombination *node) {}
-
-    void PopEDGenerator::visit(Arms *node) {}
-    void PopEDGenerator::visit(Arm *node) {}
-    void PopEDGenerator::visit(InterventionSequence *node) {}
-    void PopEDGenerator::visit(ObservationSequence *node) {}
-    void PopEDGenerator::visit(OccasionSequence *node) {}
-
-    void PopEDGenerator::visit(DesignSpaces *node) {}
-    void PopEDGenerator::visit(DesignSpace *node) {}
-
-    void PopEDGenerator::visit(ParameterEstimation *node) {}
-
-    void PopEDGenerator::visit(PKMacro *node) {}
 }

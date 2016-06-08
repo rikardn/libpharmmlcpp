@@ -67,10 +67,6 @@ namespace PharmML
         return this->symbId;
     }
 
-    Block *Symbol::getBlock() {
-        return this->block;
-    }
-
     void Symbol::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
     }

@@ -53,12 +53,10 @@ namespace PharmML
     {
         public:
             std::string getSymbId();
-            Block *getBlock();
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
             std::string symbId;
-            Block *block;
             void parse(xml::Node node);
     };
 }

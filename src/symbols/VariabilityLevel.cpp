@@ -22,7 +22,6 @@ namespace PharmML
     VariabilityLevel::VariabilityLevel(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->VariabilityLevel::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void VariabilityLevel::parse(xml::Node node) {

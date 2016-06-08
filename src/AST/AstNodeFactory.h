@@ -23,15 +23,10 @@
 
 namespace PharmML
 {
-    class PharmMLContext;
     class AstNodeFactory
     {
         public:
-            void setContext(PharmMLContext *context);
             static AstNode *create(xml::Node node);
-        
-        private:
-            static PharmMLContext *context;
     };
 }
 

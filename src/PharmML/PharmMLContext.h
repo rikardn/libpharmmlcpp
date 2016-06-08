@@ -39,8 +39,6 @@ namespace PharmML
         public:
             Logger logger;
             std::unordered_map<std::string, Symbol *> symbols;
-            std::vector<SymbRef *> symbRefs;
-            Symbol *resolveSymbref(SymbRef *symbRef);
             AstNodeFactory factory;
             xmlDoc *getDocument();
             void validateDocument();
@@ -51,7 +49,6 @@ namespace PharmML
             PharmMLContext(const char *filename, Model *model);
             ~PharmMLContext();
             void write(const char *filename);
-            void fillSymbRefs();
 
         private:
             Model *model;

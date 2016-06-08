@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -std=c++11 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-test: test.cpp ../libpharmmlc.a
+test: test.cpp SymbolSet.cpp SymbolNamer.cpp ../libpharmmlc.a
 	$(CC) $(CFLAGS) test.cpp SymbolSet.cpp SymbolNamer.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
 
 .PHONY: check

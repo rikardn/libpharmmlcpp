@@ -22,10 +22,20 @@ namespace PharmML
     // Initialize new SymbolNamer (without illegal word set)
     SymbolNamer::SymbolNamer() {
 
-    } 
+    }
+
     // Initialize new SymbolNamer with list of illegal word (e.g. target reserved)
     SymbolNamer::SymbolNamer(std::unordered_set<std::u32string> illegal_words) {
         this->illegal_words = illegal_words;
+    }
+
+    // Wrapper for initializer above (give string's instead of u32string's)
+    SymbolNamer::SymbolNamer(std::unordered_set<std::string> illegal_words) {
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+        for (std::string illegal_word : illegal_words) {
+            std::u32string u32_word = converter.from_bytes(illegal_word);
+            this->illegal_words.insert(u32_word);
+        }
     }
 
     // Add a charset to collection of word legal (throughout) chars
@@ -84,6 +94,13 @@ namespace PharmML
         return name;
     }
 
+    // Wrapper for getNameString above (return string instead of u32string)
+    std::string SymbolNamer::getNameString(Symbol *symbol) {
+        std::u32string name = this->getName(symbol);
+        std::string legacy_name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(name);
+        return legacy_name;
+    }
+
     // Private helper functions
 
     // Returns true if char is in set
@@ -101,9 +118,9 @@ namespace PharmML
         // Defined substitutions
         char32_t def_sub = 'X';
         std::unordered_map<char32_t, char32_t> std_alts = {
-            {u'\uC3A5', 'a'}, {u'\uC385', 'A'}, // å,Å
-            {u'\uC3A4', 'a'}, {u'\uC384', 'A'}, // ä,Ä
-            {u'\uC3B6', 'O'}, {u'\uC396', 'O'}, // ö,Ö
+            {u'\u00E5', 'a'}, {u'\u00C5', 'A'}, // å,Å
+            {u'\u00E4', 'a'}, {u'\u00C4', 'A'}, // ä,Ä
+            {u'\u00F6', 'o'}, {u'\u00D6', 'O'}, // ö,Ö
             {u'\u0020', '_'}, {u'\u0009', '_'}, // space,htab
             {u'\u000A', '_'}, {u'\u000D', '_'}  // LF,CR
         };
@@ -195,7 +212,7 @@ namespace PharmML
         }
 
         // Order all literals (std::set_intersection below requires it)
-        std::vector<char32_t> temp(this->legal_chars.begin(), this->legal_chars.end());
+        std::set<char32_t> temp(this->legal_chars.begin(), this->legal_chars.end());
         std::vector<char32_t> sorted_literals;
         std::copy(temp.begin(), temp.end(), std::inserter(sorted_literals, sorted_literals.end()));
 
@@ -216,7 +233,7 @@ namespace PharmML
 
         // Iterate away from collisions via numerals
         new_name = name + sep;
-        uint version = 1;
+        uint version = 2;
         while (illegals.count(new_name)) {
             std::u32string suffix = this->stringFromNumerals(version, sorted_numerals);
             new_name = name + sep + suffix;
@@ -230,17 +247,10 @@ namespace PharmML
 
     std::u32string SymbolNamer::stringFromNumerals(uint num, const std::vector<char32_t> &numerals) {
         std::u32string result;
-        uint remainder = num;
-        while (remainder > 0) {
-            uint digit;
-            if (remainder < numerals.size()) {
-                digit = remainder;
-                remainder = 0;
-            } else {
-                digit = remainder / numerals.size();
-                remainder -= digit * numerals.size();
-            }
-            result += numerals.at(digit);
+        while (num > 0) {
+            uint digit = num % numerals.size();
+            num = num / numerals.size();
+            result.insert(0, 1, numerals.at(digit));
         }
         return result;
     }

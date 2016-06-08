@@ -18,6 +18,7 @@
 #ifndef PHARMML_SYMBOLNAMER_H_
 #define PHARMML_SYMBOLNAMER_H_
 
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <codecvt>
@@ -51,14 +52,16 @@ namespace PharmML
         public:
             SymbolNamer();
             SymbolNamer(std::unordered_set<std::u32string> reserved_words);
+            SymbolNamer(std::unordered_set<std::string> reserved_words);
 
             // Set target tool restrictions
             void addCharSet(std::unordered_set<char32_t> chars);
             void addInitialCharSet(std::unordered_set<char32_t> chars);
             void setReservedPrefix(std::u32string prefix);
 
-            // Name getter
+            // Name getters
             std::u32string getName(Symbol *symbol);
+            std::string getNameString(Symbol *symbol);
 
         private:
             // Target tool restrictions

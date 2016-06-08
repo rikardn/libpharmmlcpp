@@ -39,12 +39,14 @@ namespace PharmML
         const std::vector<char32_t> PERIOD      = {'.'};
         const std::vector<char32_t> HYPHEN      = {'-'};
 
-        const std::vector<char32_t> ALL         = {
+        const std::vector<char32_t> ALL_EN      = {
             '0','1','2','3','4','5','6','7','8','9'
             ,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
             ,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
             ,'_','.','-'
         };
+
+        const std::vector<char32_t> SE_EXT      = {u'\u00E5',u'\u00C5',u'\u00E4',u'\u00C4',u'\u00F6',u'\u00D6'}; // å,Å,ä,Ä,ö,Ö
     };
 
     class SymbolNamer
@@ -57,6 +59,7 @@ namespace PharmML
             // Set target tool restrictions
             void addCharSet(std::unordered_set<char32_t> chars);
             void addInitialCharSet(std::unordered_set<char32_t> chars);
+            void subInitialCharSet(std::unordered_set<char32_t> chars);
             void setReservedPrefix(std::u32string prefix);
 
             // Name getters

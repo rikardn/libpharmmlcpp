@@ -48,6 +48,16 @@ namespace PharmML
         this->legal_initial_chars.insert(chars.begin(), chars.end());
     }
 
+    // Subtract a charset to collection of word legal initial chars (if none defined, subtract from general charset)
+    void SymbolNamer::subInitialCharSet(std::unordered_set<char32_t> chars) {
+        if (this->legal_initial_chars.empty()) {
+            this->legal_initial_chars = this->legal_chars;
+        }
+        for (char32_t ch : chars) {
+            this->legal_initial_chars.erase(ch);
+        }
+    }
+
     // Set a prefix to prepend for collisions with reserved words
     void SymbolNamer::setReservedPrefix(std::u32string prefix) {
         this->reserved_prefix = prefix;

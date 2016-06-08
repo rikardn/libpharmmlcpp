@@ -33,15 +33,15 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    std::string SymbRef::toString() {
-        return symbIdRef;
+    std::string SymbRef::getSymbIdRef() {
+        return this->symbIdRef;
     }
 
-    std::string SymbRef::getBlkId() {
+    std::string SymbRef::getBlkIdRef() {
         return this->blkIdRef;
     }
 
-    std::string SymbRef::getBlkId(std::string defaultBlkId) {
+    std::string SymbRef::getBlkIdRef(std::string defaultBlkId) {
         if (this->blkIdRef.empty()) {
             return defaultBlkId;
         } else {

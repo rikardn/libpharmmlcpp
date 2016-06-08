@@ -24,7 +24,7 @@ namespace PharmML
 {
     // Convenience method for naked SymbRefs.
     PharmML::Symbol *Referer::addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId) {
-        Symbol *found_symbol = gathering.getSymbol(symbRef->getBlkId(blkId), symbRef->toString());
+        Symbol *found_symbol = gathering.getSymbol(symbRef->getBlkIdRef(blkId), symbRef->getSymbIdRef());
         symbRef->setSymbol(found_symbol);
         this->referencedSymbols.addSymbol(found_symbol);
         return found_symbol;
@@ -54,9 +54,9 @@ namespace PharmML
         SymbRefFinder finder;
         node->accept(&finder);
         for (SymbRef *symbref : finder.getSymbRefs()) {
-            Symbol *symbol = gathering.getSymbol(symbref->getBlkId(blkId), symbref->toString());
+            Symbol *symbol = gathering.getSymbol(symbref->getBlkIdRef(blkId), symbref->getSymbIdRef());
             if (!symbol) {
-                symbol = gathering.getSymbol(symbref->getBlkId(""), symbref->toString());
+                symbol = gathering.getSymbol(symbref->getBlkIdRef(""), symbref->getSymbIdRef());
             }
             symbref->setSymbol(symbol);
             this->referencedSymbols.addSymbol(symbol);

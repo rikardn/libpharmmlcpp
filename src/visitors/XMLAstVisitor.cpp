@@ -81,10 +81,10 @@ namespace PharmML
 
     void XMLAstVisitor::visit(SymbRef *node) {
         xml::Node symbref("SymbRef", xml::Namespace::ct);
-        if (!node->getBlkId().empty()) {
-            symbref.setAttribute("blkIdRef", node->getBlkId());
+        if (!node->getBlkIdRef().empty()) {
+            symbref.setAttribute("blkIdRef", node->getBlkIdRef());
         }
-        symbref.setAttribute("symbIdRef", node->toString());
+        symbref.setAttribute("symbIdRef", node->getSymbIdRef());
         this->setValue(symbref);
     }
 

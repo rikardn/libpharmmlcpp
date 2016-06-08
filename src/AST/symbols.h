@@ -31,9 +31,9 @@ namespace PharmML
             SymbRef(std::string ref);
             SymbRef(xml::Node node);
             virtual void accept(AstNodeVisitor *visitor);
-            std::string toString();
-            std::string getBlkId();
-            std::string getBlkId(std::string defaultBlkId);
+            std::string getSymbIdRef();
+            std::string getBlkIdRef();
+            std::string getBlkIdRef(std::string defaultBlkId);
             void setSymbol(Symbol *symbol);
             Symbol *getSymbol();
 

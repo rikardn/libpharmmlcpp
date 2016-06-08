@@ -23,7 +23,6 @@ namespace PharmML
     CommonVariable::CommonVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->CommonVariable::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void CommonVariable::parse(xml::Node node) {

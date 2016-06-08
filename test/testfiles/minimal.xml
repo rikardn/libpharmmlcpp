@@ -4,7 +4,6 @@
     xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     writtenVersion="0.8.1">
     <ct:Name/>
-    <IndependentVariable symbId="time"/>
     <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
         <StructuralModel blkId="sm1">
             <ct:Variable symbolType="real" symbId="A"/>

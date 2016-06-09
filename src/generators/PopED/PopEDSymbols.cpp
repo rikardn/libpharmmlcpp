@@ -29,7 +29,7 @@
 namespace PharmML
 {
     void PopEDSymbols::visit(ObservationModel *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(Parameter *node) {
@@ -43,7 +43,7 @@ namespace PharmML
     }
 
     void PopEDSymbols::visit(IndividualParameter *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(RandomVariable *node) {
@@ -58,26 +58,26 @@ namespace PharmML
     }
 
     void PopEDSymbols::visit(IndependentVariable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(Variable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(DerivativeVariable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(Covariate *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(FunctionDefinition *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void PopEDSymbols::visit(FunctionArgumentDefinition *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 }

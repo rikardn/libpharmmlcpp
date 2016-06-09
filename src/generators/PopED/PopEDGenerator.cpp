@@ -32,6 +32,7 @@ namespace PharmML
     // public
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
+        model->setSymbolNamer(&this->symbolNamer);      // Use the RSymbolNamer for symbol naming
         this->logger.setToolName("PopED");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
@@ -272,7 +273,7 @@ namespace PharmML
 
         if (!has_derivatives) {
             form.indentAdd("mod <- function(xt) {");
-            form.add(model->getIndependentVariable()->getSymbId() + " <- xt");
+            form.add(model->getIndependentVariable()->getName() + " <- xt");
         }
 
         // Don't want to have derivatives or pass through dependencies of derivatives

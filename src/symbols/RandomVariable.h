@@ -41,7 +41,6 @@ namespace PharmML
             AstNode *initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
         
         private:
-            PharmMLContext *context;
             std::vector<VariabilityReference *> variabilityReferences;
             PharmML::Distribution *Distribution;
     };

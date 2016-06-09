@@ -28,10 +28,12 @@
 #include <symbols/SymbolSet.h>
 #include <AST/symbols.h>
 #include <PharmML/Block.h>
+#include <helpers/SymbolNamer.h>
 
 namespace PharmML
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
+    class PharmMLContext;
     class Referer
     {
         public:
@@ -53,9 +55,11 @@ namespace PharmML
     {
         public:
             std::string getSymbId();
+            std::string getName();
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
+            PharmMLContext *context;
             std::string symbId;
             void parse(xml::Node node);
     };

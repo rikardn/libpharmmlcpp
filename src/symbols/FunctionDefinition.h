@@ -37,7 +37,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmMLContext *context;
             std::string symbolType;
             void parse(xml::Node node);
     };
@@ -56,8 +55,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmMLContext *context;
-
             AstNode *definition = nullptr;
             std::string symbolType;
             std::vector<FunctionArgumentDefinition *> arguments;

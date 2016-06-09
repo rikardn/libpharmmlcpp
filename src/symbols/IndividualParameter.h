@@ -78,8 +78,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmMLContext *context;
-
             bool is_structured;
             bool is_linear_cov = false;
             bool is_general_cov = false;

@@ -70,7 +70,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
             // Common to all observation models
             std::string name;
 

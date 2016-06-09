@@ -36,7 +36,6 @@ namespace PharmML
 
          protected:
             AstNode *assignment = nullptr;
-            PharmML::PharmMLContext *context;
             bool is_derivative;
     };
 

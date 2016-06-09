@@ -39,6 +39,7 @@ namespace PharmML
         public:
             Logger logger;
             AstNodeFactory factory;
+            Model *model;
             xmlDoc *getDocument();
             void validateDocument();
             xml::Node getRoot();
@@ -50,7 +51,6 @@ namespace PharmML
             void write(const char *filename);
 
         private:
-            Model *model;
             xmlDoc *doc;
             xmlXPathContext *xpath_context;
 

@@ -34,9 +34,6 @@ namespace PharmML
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
-
-        private:
-            PharmMLContext *context;
     };
 
     // FIXME: Inheritance should be other way around

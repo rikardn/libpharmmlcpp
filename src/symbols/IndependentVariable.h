@@ -31,9 +31,6 @@ namespace PharmML
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
-
-        private:
-            PharmMLContext *context;
     };
 }
 

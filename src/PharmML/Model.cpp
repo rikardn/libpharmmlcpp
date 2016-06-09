@@ -212,4 +212,12 @@ namespace PharmML
             this->TrialDesign->setupRefererSymbRefs(gathering);
         }
     }
+
+    void Model::setSymbolNamer(SymbolNamer *namer) {
+        this->symbolNamer = namer;
+    }
+            
+    SymbolNamer *Model::getSymbolNamer() {
+        return this->symbolNamer;
+    }
 }

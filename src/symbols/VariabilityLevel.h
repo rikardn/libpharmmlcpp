@@ -38,7 +38,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
         
         private:
-            PharmML::PharmMLContext *context;
             std::string name;
             bool referenceLevel;
             SymbRef *parentLevelRef = nullptr;

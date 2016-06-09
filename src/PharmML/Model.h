@@ -29,6 +29,7 @@
 #include <xml/xml.h>
 #include <consolidators/Consolidator.h>
 #include <symbols/SymbolGathering.h>
+#include <helpers/SymbolNamer.h>
 
 namespace PharmML
 {
@@ -44,6 +45,8 @@ namespace PharmML
             PharmML::TrialDesign *getTrialDesign();
             PharmML::ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
+            void setSymbolNamer(SymbolNamer *namer);
+            SymbolNamer *getSymbolNamer();
 
         private:
             PharmMLContext *context;
@@ -55,6 +58,7 @@ namespace PharmML
             CPharmML::Consolidator *consolidator;
             PharmML::SymbolSet allSymbols;
             std::unordered_set<PharmML::Object *> allObjects;
+            SymbolNamer *symbolNamer;
             void parse(xml::Node node);
             void postParse();
             void setupSymbols();

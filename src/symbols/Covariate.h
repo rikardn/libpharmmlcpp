@@ -45,7 +45,6 @@ namespace PharmML
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
             bool transformed = false;
             bool continuous;
             std::string type;

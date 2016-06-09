@@ -36,6 +36,7 @@
 #include <generators/PopED/PopEDErrorAstGenerator.h>
 #include <helpers/Logger.h>
 #include <generators/PopED/PopEDObjects.h>
+#include <generators/R/RSymbolNamer.h>
 
 namespace PharmML
 {
@@ -46,6 +47,7 @@ namespace PharmML
 
         private:
             Logger logger;
+            RSymbolNamer symbolNamer;
             RAstGenerator ast_gen;
             RSymbols r_symb;
             PopEDAstGenerator poped_astgen;

@@ -529,16 +529,11 @@ namespace PharmML
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
             
             // Find transfers FROM this compartment
-            int cmt_attr;
-            //~ cmt_macro->tryParseInt("cmt", cmt_attr, this->ast_analyzer);
+            int cmt_attr = cmt_macro->getCompartmentNum();
             for (PharmML::PKMacro *trans_macro : trans_macros) {
                 cmt_trans_macros.push_back(cmt_macro);
                 int from_attr;
-                if ( trans_macro->hasAttribute("cmt") ) { // For Elimination's we call it 'cmt'
-                    //~ trans_macro->tryParseInt("cmt", from_attr, this->ast_analyzer);
-                } else if ( trans_macro->hasAttribute("from") ) { // For Transfer's we call it 'from'
-                    //~ trans_macro->tryParseInt("from", from_attr, this->ast_analyzer);
-                }
+                from_attr = trans_macro->getFromNum();
                 if (cmt_attr == from_attr) {
                     cmt_trans_macros.push_back(trans_macro);
                 }

@@ -103,7 +103,7 @@ namespace PharmML
             for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
                 if (!param->isVariabilityParameter() and !param->isCorrelation()) {
                     param->getPopulationParameter()->accept(&symbgen);
-                    form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+                    form.add(param->getPopulationParameter()->getName() + "=bpop[" + symbgen.getValue() + "]");
                 }
             }
 
@@ -114,7 +114,7 @@ namespace PharmML
 
             for (Symbol *symbol : random_vars) {
                 symbol->accept(&symbgen);
-                form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
+                form.add(symbol->getName() + "=b[" + symbgen.getValue() + "]");
                 this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
             }
         }
@@ -137,7 +137,7 @@ namespace PharmML
         for (Symbol *symbol : covariates) {
             Covariate *cov = static_cast<Covariate *>(symbol);
             if (!cov->isTransformed()) {
-                form.add(symbol->getSymbId() + "=a[" + std::to_string(index++) + "]");
+                form.add(symbol->getName() + "=a[" + std::to_string(index++) + "]");
             }
         }
 
@@ -180,7 +180,7 @@ namespace PharmML
             symbol->accept(&this->r_symb);
             form.add(this->r_symb.getValue());
             this->derivs.push_back(symbol);
-            name_list.push_back("d" + symbol->getSymbId());
+            name_list.push_back("d" + symbol->getName());
         }
 
         // Return list
@@ -233,7 +233,7 @@ namespace PharmML
                 DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
                 AstNode *init = derivative_variable->getInitialValue();
                 init->accept(&this->ast_gen);
-                dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+                dini_formatter.add(symbol->getName() + "=" + this->ast_gen.getValue());
                 SymbRefFinder finder;     // Needed to find SymbRefs in the initial value
                 init->accept(&finder);
                 for (SymbRef *symbref : finder.getSymbRefs()) {
@@ -291,7 +291,7 @@ namespace PharmML
 
         // Special case if output is derivative
         if (output_set.hasDerivatives()) {
-            form.add("y <- out[, '" + output->getSymbol()->getSymbId() + "']");
+            form.add("y <- out[, '" + output->getSymbol()->getName() + "']");
         } else {
             SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
 
@@ -316,7 +316,7 @@ namespace PharmML
                 form.add(rsymb_past.getValue());
             }
 
-            form.add("y <- " + output->getSymbIdRef());
+            form.add("y <- " + output->getSymbol()->getName());
         }
 
         if (!has_derivatives) {

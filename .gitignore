@@ -1,4 +1,5 @@
 *.o
+*.d
 *.swp
 main
 main.exe
@@ -6,6 +7,7 @@ pharmml2poped
 pharmml2poped.exe
 mdl
 libpharmmlc.a
+libpharmmlc.d.a
 test/test
 
 output

@@ -67,7 +67,7 @@ namespace PharmML
     }
 
     void RAstGenerator::visit(SymbRef *node) {
-        this->setValue(node->getSymbol()->getName());
+        this->setValue(node->getSymbIdRef());  //getSymbol()->getName());
     }
 
     void RAstGenerator::visit(SteadyStateParameter *node) {
@@ -464,7 +464,7 @@ namespace PharmML
 
     void RAstGenerator::visit(FunctionArgument *node) {
         node->getArgument()->accept(this);
-        this->setValue(node->getName() + "=" + this->getValue());
+        this->setValue(node->getSymbId() + "=" + this->getValue());
     }
 
     void RAstGenerator::visit(Interval *node) {

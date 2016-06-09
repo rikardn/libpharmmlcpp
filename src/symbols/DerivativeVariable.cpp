@@ -52,6 +52,9 @@ namespace PharmML
         if (this->assignment) {
             this->setupAstSymbRefs(this->assignment, gathering, blkId);
         }
+        if (this->independent_variable) {
+            //this->setupAstSymbRefs(this->independent_variable, gathering, blkId);
+        }
         if (this->initial_value) {
             this->setupAstSymbRefs(this->initial_value, gathering, blkId);
         }

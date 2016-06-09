@@ -48,6 +48,8 @@ namespace PharmML
             void setSymbolNamer(SymbolNamer *namer);
             SymbolNamer *getSymbolNamer();
 
+            PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
+
         private:
             PharmMLContext *context;
             PharmML::IndependentVariable *IndependentVariable;

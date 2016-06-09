@@ -237,6 +237,101 @@ namespace PharmML
         visitor->visit(this);
     }
 
+    OperationProperty::OperationProperty(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void OperationProperty::parse(xml::Node node) {
+        this->name = node.getAttribute("name").getValue();
+        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+        this->assignment = this->context->factory.create(assign_node.getChild());
+    }
+
+    std::string OperationProperty::getName() {
+        return this->name;
+    }
+
+    AstNode *OperationProperty::getAssignment() {
+        return this->assignment;
+    }
+
+    Algorithm::Algorithm(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void Algorithm::parse(xml::Node node) {
+        this->definition = node.getAttribute("definition").getValue();
+        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        if (name_node.exists()) {
+            this->name = name_node.getText();
+        }
+        std::vector<xml::Node> prop_nodes = this->context->getElements(node, "./msteps:Property");
+        for (xml::Node prop_node : prop_nodes) {
+            OperationProperty *prop = new OperationProperty(this->context, prop_node);
+            this->properties.push_back(prop);
+        }
+    }
+
+    std::string Algorithm::getName() {
+        return this->name;
+    }
+
+    std::string Algorithm::getDefinition() {
+        return this->definition;
+    }
+
+    std::vector<OperationProperty *> Algorithm::getProperties() {
+        return this->properties;
+    }
+
+    Operation::Operation(PharmMLContext *context, xml::Node node) {
+        this->context = context;
+        this->parse(node);
+    }
+
+    void Operation::parse(xml::Node node) {
+        // Get attributes (opType restrictions: only differences between est, sim and opt)
+        this->order = std::stoi(node.getAttribute("order").getValue());
+        this->type = node.getAttribute("opType").getValue();
+
+        // Get name, properties and algorithm
+        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        if (name_node.exists()) {
+            this->name = name_node.getText();
+        }
+        std::vector<xml::Node> prop_nodes = this->context->getElements(node, "./msteps:Property");
+        for (xml::Node prop_node : prop_nodes) {
+            OperationProperty *prop = new OperationProperty(this->context, prop_node);
+            this->properties.push_back(prop);
+        }
+        xml::Node algo_node = this->context->getSingleElement(node, "./msteps:Algorithm");
+        if (algo_node.exists()) {
+            this->algorithm = new Algorithm(this->context, algo_node);
+        }
+    }
+
+    int Operation::getOrder() {
+        return this->order;
+    }
+
+    std::string Operation::getType() {
+        return this->type;
+    }
+
+    std::string Operation::getName() {
+        return this->name;
+    }
+
+    std::vector<OperationProperty *> Operation::getProperties() {
+        return this->properties;
+    }
+
+    Algorithm *Operation::getAlgorithm() {
+        return this->algorithm;
+    }
+
     EstimationStep::EstimationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;
         this->parse(node);
@@ -250,11 +345,20 @@ namespace PharmML
             this->parameterEstimations.push_back(param);
         }
 
-        // TODO: Add Operation support! SAEM etc. Forgot that one.
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
     }
 
     std::vector<ParameterEstimation *> EstimationStep::getParameters() {
         return this->parameterEstimations;
+    }
+
+    std::vector<Operation *> EstimationStep::getOperations() {
+        return this->operations;
     }
 
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
@@ -263,7 +367,18 @@ namespace PharmML
     }
 
     void SimulationStep::parse(xml::Node node) {
+        // TODO: Simulation support!
 
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
+    }
+
+    std::vector<Operation *> SimulationStep::getOperations() {
+        return this->operations;
     }
 
     OptimiseOn::OptimiseOn(PharmMLContext *context, xml::Node node) {
@@ -320,17 +435,29 @@ namespace PharmML
             this->optOn = new OptimiseOn(this->context, opt_on_node);
         }
 
+        // Get parameters to estimate
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./msteps:ParametersToEstimate/msteps:ParameterEstimation");
         for (xml::Node param_node : param_nodes) {
             ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
             this->parameterEstimations.push_back(param);
         }
 
-        // TODO: Get more stuff here
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
+
+        // TODO: Get more optimal design stuff
     }
 
     std::vector<ParameterEstimation *> OptimalDesignStep::getParameters() {
         return this->parameterEstimations;
+    }
+
+    std::vector<Operation *> OptimalDesignStep::getOperations() {
+        return this->operations;
     }
 
     ModellingSteps::ModellingSteps(PharmMLContext *context, xml::Node node) {

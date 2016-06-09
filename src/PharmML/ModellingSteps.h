@@ -109,17 +109,68 @@ namespace PharmML
             AstNode *hiBound = nullptr;
     };
 
+    class OperationProperty
+    {
+        public:
+            OperationProperty(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            AstNode *getAssignment();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            AstNode *assignment;
+    };
+
+    class Algorithm
+    {
+        public:
+            Algorithm(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            std::string getDefinition();
+            std::vector<OperationProperty *> getProperties();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            std::string definition;
+            std::vector<OperationProperty *> properties;
+    };
+
+    class Operation
+    {
+        public:
+            Operation(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            int getOrder();
+            std::string getType();
+            std::string getName();
+            std::vector<OperationProperty *> getProperties();
+            Algorithm *getAlgorithm();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            int order;
+            std::string type;
+            std::vector<OperationProperty *> properties;
+            Algorithm *algorithm = nullptr;
+    };
+
     class EstimationStep : CommonStepType
     {
         public:
             EstimationStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
             std::vector<ParameterEstimation *> parameterEstimations;
-            // TODO: Add Operation support! SAEM etc. Forgot that one.
+            std::vector<Operation *> operations;
 
     };
 
@@ -128,9 +179,11 @@ namespace PharmML
         public:
             SimulationStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
+            std::vector<Operation *> operations;
     };
 
     class OptimiseOn
@@ -158,12 +211,14 @@ namespace PharmML
             OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
             std::string oid;
             OptimiseOn *optOn = nullptr;
             std::vector<ParameterEstimation *> parameterEstimations;
+            std::vector<Operation *> operations;
     };
 
     class ModellingSteps

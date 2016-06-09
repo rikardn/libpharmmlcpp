@@ -38,12 +38,16 @@ namespace PharmML
     }
 
     Symbol *SymbolGathering::getSymbol(std::string blkId, std::string symbId) {
-        return this->map[blkId][symbId];
+        try {
+            return this->map.at(blkId).at(symbId);
+        } catch (std::out_of_range) {
+            return nullptr;
+        }
     }
 
     void SymbolGathering::setupAllSymbRefs() {
-        for (auto &blkId_pair : this->map) {
-            for (auto &symbRef_pair : blkId_pair.second) {
+        for (auto &blkId_pair : this->map) {        // blkId_pair = (blkId, symbRef_pair)
+            for (auto &symbRef_pair : blkId_pair.second) {      // symbRef_pair = (symbId, Symbol)
                 symbRef_pair.second->setupSymbRefs(*this, blkId_pair.first);
             }
         }

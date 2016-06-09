@@ -212,4 +212,9 @@ namespace PharmML
             this->TrialDesign->setupRefererSymbRefs(gathering);
         }
     }
+
+    // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
+    PharmMLContext *Model::getContext() {
+        return this->context;
+    }
 }

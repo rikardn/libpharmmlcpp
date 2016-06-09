@@ -156,7 +156,7 @@ namespace PharmML
             int order;
             std::string type;
             std::vector<OperationProperty *> properties;
-            Algorithm *algorithm;
+            Algorithm *algorithm = nullptr;
     };
 
     class EstimationStep : CommonStepType

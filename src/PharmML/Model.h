@@ -45,6 +45,8 @@ namespace PharmML
             PharmML::ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
 
+            PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
+
         private:
             PharmMLContext *context;
             PharmML::IndependentVariable *IndependentVariable;

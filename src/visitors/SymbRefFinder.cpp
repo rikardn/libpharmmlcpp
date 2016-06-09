@@ -364,6 +364,7 @@ namespace PharmML
     }
 
     void SymbRefFinder::visit(FunctionArgument *node) {
+        node->getArgument()->accept(this);
     }
 
     void SymbRefFinder::visit(Interval *node) {

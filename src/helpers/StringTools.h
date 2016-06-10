@@ -18,15 +18,19 @@
 #ifndef PHARMML_STRINGTOOLS_H_
 #define PHARMML_STRINGTOOLS_H_
 
+#include <sstream>
 #include <string>
 #include <algorithm>
-#include <cstdlib>
 #include "limits.h"
 
 namespace StringTools
 {
     bool isInt(std::string str, int &result);
     bool iequals(std::string str1, std::string str2);
+    std::string trimLeadingWhitespace(std::string str);
+    std::string trimTrailingWhitespace(std::string str);
+    std::string mergeLines(std::string str);
+    std::string removeWhitespace(std::string str);
 }
 
 #endif

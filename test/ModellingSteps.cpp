@@ -3,6 +3,7 @@
 #include <PharmML/Model.h>
 #include <PharmML/ModellingSteps.h>
 #include <visitors/AstAnalyzer.h>
+#include <helpers/StringTools.h>
 
 TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
     PharmML::Model model("testfiles/minimal.xml");
@@ -10,8 +11,8 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
     SECTION("Construct Operation") {
         SECTION("simple PopED example") {
             // Construct test node
-            const char *xml = R"(\
-                <msteps::Operation xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps" order="1" opType="optimization">
+            std::string xml_string = R"(
+                <Operation xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps" order="1" opType="optimization">
                     <Algorithm definition="PopED">
                         <Property name="criterion">
                             <ct:Assign>
@@ -25,9 +26,11 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
                             </ct:Assign>
                         </Property>
                     </Algorithm>
-                </Operation>\
+                </Operation>
             )";
-            xml::Node node = xml::nodeFromString(std::string(xml));
+            xml_string = StringTools::trimLeadingWhitespace(xml_string);
+            xml_string = StringTools::mergeLines(xml_string);
+            xml::Node node = xml::nodeFromString(xml_string);
 
             // Root data
             PharmML::Operation op(model.getContext(), node);

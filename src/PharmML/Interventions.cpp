@@ -172,6 +172,12 @@ namespace PharmML
         return this->rate;
     }
 
+    void Administration::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
+        if (this->getTargetSymbRef()) {
+            this->setupAstSymbRefs(this->getTargetSymbRef(), gathering, blkId);
+        }
+    }
+
     void Administration::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
@@ -374,6 +380,12 @@ namespace PharmML
 
     std::vector<InterventionsCombination *> Interventions::getInterventionsCombinations() {
         return this->interventionsCombinations;
+    }
+
+    void Interventions::setupRefererSymbRefs(SymbolGathering &gathering) {
+        for (Administration *adm : this->getAdministrations()) {
+            adm->setupSymbRefs(gathering, "");      // Default to global namespace
+        }
     }
 
     void Interventions::accept(PharmMLVisitor *visitor) {

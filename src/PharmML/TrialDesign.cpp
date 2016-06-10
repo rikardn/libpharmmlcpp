@@ -96,7 +96,7 @@ namespace PharmML
         for (ExternalDataset *ext_dataset : ext_datasets) {
             ext_dataset->setupRefererSymbRefs(gathering);
         }
-        //~ this->getInterventions()->gatherSymbRefs(symbolMap);
+        this->getInterventions()->setupRefererSymbRefs(gathering);
         //~ this->getObservations()->gatherSymbRefs(symbolMap);
         //~ this->getArms()->gatherSymbRefs(symbolMap);
         //~ this->getDesignSpaces()->gatherSymbRefs(symbolMap);

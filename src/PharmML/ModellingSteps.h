@@ -143,7 +143,7 @@ namespace PharmML
             // FIXME: Above is properly setup by a postParse method!
     };
 
-    class Algorithm
+    class Algorithm : public PharmMLSection
     {
         public:
             Algorithm(PharmML::PharmMLContext *context, xml::Node node);
@@ -153,6 +153,7 @@ namespace PharmML
             std::vector<OperationProperty *> getProperties();
 
             bool isNamed(std::string case_insensitive_name);
+            bool isDefinedAs(std::string case_insensitive_def);
 
         private:
             PharmML::PharmMLContext *context;
@@ -161,7 +162,7 @@ namespace PharmML
             std::vector<OperationProperty *> properties;
     };
 
-    class Operation
+    class Operation : public PharmMLSection
     {
         public:
             Operation(PharmML::PharmMLContext *context, xml::Node node);
@@ -227,7 +228,7 @@ namespace PharmML
             std::vector<SymbRef *> symbols;
     };
 
-    class OptimalDesignStep
+    class OptimalDesignStep : public PharmMLSection
     {
         public:
             OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
@@ -243,7 +244,7 @@ namespace PharmML
             std::vector<Operation *> operations;
     };
 
-    class ModellingSteps
+    class ModellingSteps : public PharmMLSection
     {
         public:
             ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);

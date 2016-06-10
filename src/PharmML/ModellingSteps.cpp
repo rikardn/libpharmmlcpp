@@ -343,6 +343,7 @@ namespace PharmML
     }
 
     Algorithm::Algorithm(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -377,7 +378,13 @@ namespace PharmML
         return StringTools::iequals(this->name, case_insensitive_name);
     }
 
+    // Ask algorithm if (case-insensitively) defined something
+    bool Algorithm::isDefinedAs(std::string case_insensitive_def) {
+        return StringTools::iequals(this->definition, case_insensitive_def);
+    }
+
     Operation::Operation(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -514,6 +521,7 @@ namespace PharmML
     }
 
     OptimalDesignStep::OptimalDesignStep(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -552,6 +560,7 @@ namespace PharmML
     }
 
     ModellingSteps::ModellingSteps(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->xml_node = node;
         this->parse(node);

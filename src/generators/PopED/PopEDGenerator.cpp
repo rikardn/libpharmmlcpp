@@ -377,6 +377,51 @@ namespace PharmML
     std::string PopEDGenerator::genDatabaseCall() {
         TextFormatter form;
 
+        // Try to get PopED algorithm (containing settings) from PharmML
+        Algorithm *algo = nullptr;
+        PharmML::ModellingSteps *msteps = this->model->getModellingSteps();
+        if (msteps) {
+            std::vector<OptimalDesignStep *> od_steps = msteps->getOptimalDesignSteps();
+            for (OptimalDesignStep *od_step : od_steps) {
+                // Get and erase non-PopED operations
+                std::vector<Operation *> ops = od_step->getOperations();
+                ops.erase(std::remove_if(ops.begin(), ops.end(), [&](Operation *x) {
+                    if (x->getAlgorithm() && (x->getAlgorithm()->isNamed("PopED") || x->getAlgorithm()->isDefinedAs("PopED"))) {
+                        return false;
+                    } else {
+                        this->logger.warning("No PopED operation algorithm found in design step", x);
+                        return true;
+                    }
+                }), ops.end());
+
+                // Filter forward primary PopED operation
+                if (ops.size() > 1) {
+                    int min_o = ops.back()->getOrder();
+                    ops.erase(std::remove_if(ops.begin(), ops.end(), [&min_o](Operation *x) {
+                        if (min_o > x->getOrder()) {
+                            min_o = x->getOrder();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }), ops.end());
+                    this->logger.warning("Multiple PopED operations in same optimal design step, selecting lowest in order number", ops.at(0));
+                }
+
+                // Warn if multiple OptimalDesignStep's found with PopED algorithms in them
+                if (algo && !ops.empty()) {
+                    this->logger.warning("Multiple PopED algorithms in multiple design steps, selecting first seen", algo);
+                } else if (!ops.empty()) {
+                    algo = ops.at(0)->getAlgorithm();
+                }
+            }
+
+            // Warn if no PopED algorithm found
+            if (!algo) {
+                this->logger.warning("No PopED-specific settings could be retrieved from modelling steps", msteps);
+            }
+        }
+
         form.openVector("poped.db <- create.poped.database()", 1, ", ");
         form.add("ff_fun = 'ff'");
         form.add("fg_fun = 'sfg'");

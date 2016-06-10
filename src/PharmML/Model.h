@@ -52,7 +52,7 @@ namespace PharmML
 
         private:
             PharmMLContext *context;
-            PharmML::IndependentVariable *IndependentVariable;
+            PharmML::IndependentVariable *IndependentVariable = nullptr;
             std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
             PharmML::ModelDefinition *ModelDefinition;
             PharmML::TrialDesign *TrialDesign;

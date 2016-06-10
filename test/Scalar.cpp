@@ -30,12 +30,12 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
     }
     SECTION("Construct from string") {
         PharmML::ScalarReal sr("-10.0");
-        REQUIRE(sr.toDouble() == -10);
+        REQUIRE(sr.toDouble() == -10.0);
     }
     SECTION("Construct from xml") {
         std::string xml = "<ct:Real>790.3</ct:Real>";
         xml::Node node = xml::nodeFromString(xml);
         PharmML::ScalarReal sr(node);
-        REQUIRE(sr.toDouble() == 790.3);
+        REQUIRE(Approx(sr.toDouble()) == 790.3);
     }
 }

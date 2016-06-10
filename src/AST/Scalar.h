@@ -53,7 +53,7 @@ namespace PharmML
             virtual void accept(AstNodeVisitor *visitor);
         
         private:
-            double value;
+            std::string value;
     };
 }
 

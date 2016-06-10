@@ -4,7 +4,7 @@ LIBS = -lxml2
 
 ifeq ($(TARGET), UNIX)
   CC = g++
-  CFLAGS = -MMD -Wall -std=c++11 -g -Isrc `xml2-config --cflags`
+  CFLAGS = -MMD -Wall -std=c++14 -g -Isrc `xml2-config --cflags`
   OUTPUT = pharmml2poped
 else
   CC = x86_64-w64-mingw32-g++

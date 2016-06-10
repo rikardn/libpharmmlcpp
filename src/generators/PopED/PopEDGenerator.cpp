@@ -110,7 +110,7 @@ namespace PharmML
             // Declare ETAs
             SymbolSet random_vars = needed_symbols.getRandomVariables();
             Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
-            random_vars.removeSymbol(error);
+            random_vars.remove(error);
 
             for (Symbol *symbol : random_vars) {
                 symbol->accept(&symbgen);
@@ -300,7 +300,7 @@ namespace PharmML
             for (Symbol *symbol : covariates) {
                 Covariate *cov = static_cast<Covariate *>(symbol);
                 if (!cov->isTransformed()) {
-                    post_ode_symbol_set.removeSymbol(symbol);
+                    post_ode_symbol_set.remove(symbol);
                 }
             }
 

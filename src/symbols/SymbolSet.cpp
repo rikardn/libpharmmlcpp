@@ -52,8 +52,14 @@ namespace PharmML
         }
     }
 
-    void SymbolSet::removeSymbol(Symbol *symbol) {
+    void SymbolSet::remove(Symbol *symbol) {
         this->symbols.erase(symbol);
+    }
+
+    void SymbolSet::remove(SymbolSet& set) {
+        for (Symbol *symbol : set) {
+            this->symbols.erase(symbol);
+        }
     }
 
     bool SymbolSet::hasSymbol(Symbol *symbol) {
@@ -85,11 +91,6 @@ namespace PharmML
         }
     }
 
-    void SymbolSet::remove(SymbolSet& set) {
-        for (Symbol *symbol : set) {
-            this->symbols.erase(symbol);
-        }
-    }
 
     // Get all dependencies of a set of symbols. Excluding the symbols themselves
     SymbolSet SymbolSet::getDependencies() {

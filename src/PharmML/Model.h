@@ -55,7 +55,7 @@ namespace PharmML
             PharmML::IndependentVariable *IndependentVariable = nullptr;
             std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
             PharmML::ModelDefinition *ModelDefinition;
-            PharmML::TrialDesign *TrialDesign;
+            PharmML::TrialDesign *TrialDesign = nullptr;
             PharmML::ModellingSteps *ModellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
             PharmML::SymbolSet allSymbols;

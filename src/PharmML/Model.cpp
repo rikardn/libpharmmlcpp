@@ -135,9 +135,8 @@ namespace PharmML
         }
         mdef->getObservationModel()->gatherSymbols(gathering);
         gathering.globalBlock();
-        PharmML::IndependentVariable *iv = this->getIndependentVariable();
-        if (iv) {
-            gathering.addSymbol(iv);
+        if (this->IndependentVariable) {
+            gathering.addSymbol(this->IndependentVariable);
         }
         for (FunctionDefinition *fdef : this->getFunctionDefinitions()) {
             gathering.addSymbol(fdef);

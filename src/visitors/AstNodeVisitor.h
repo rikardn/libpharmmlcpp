@@ -70,6 +70,7 @@ namespace PharmML
     class ScalarInt;
     class ScalarReal;
     class ScalarBool;
+    class ScalarString;
 
     class BinopPlus;
     class BinopMinus;
@@ -163,6 +164,7 @@ namespace PharmML
             virtual void visit(ScalarInt *node) {};
             virtual void visit(ScalarReal *node) {};
             virtual void visit(ScalarBool *node) {};
+            virtual void visit(ScalarString *node) {};
 
             virtual void visit(BinopPlus *node) {};
             virtual void visit(BinopMinus *node) {};

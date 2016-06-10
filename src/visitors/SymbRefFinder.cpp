@@ -218,6 +218,9 @@ namespace PharmML
     void SymbRefFinder::visit(ScalarBool *node) {
     }
 
+    void SymbRefFinder::visit(ScalarString *node) {
+    }
+
     void SymbRefFinder::visit(BinopPlus *node) {
         node->getLeft()->accept(this);
         node->getRight()->accept(this);

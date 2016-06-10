@@ -92,6 +92,7 @@ namespace PharmML
             void visit(ScalarInt *node) override;
             void visit(ScalarReal *node) override;
             void visit(ScalarBool *node) override;
+            void visit(ScalarString *node) override;
 
             void visit(BinopPlus *node) override;
             void visit(BinopMinus *node) override;

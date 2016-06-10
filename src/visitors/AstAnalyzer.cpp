@@ -411,11 +411,20 @@ namespace PharmML
             //~ this->scalar_real = node;
             //~ this->first_node = false;
         //~ }
-        if (node->getValue() == true) {
+        if (node->toBool() == true) {
             this->setValue("true");
         } else {
             this->setValue("false");
         }
+    }
+
+    void AstAnalyzer::visit(ScalarString *node) {
+        //~ if (this->first_node) {
+            //~ this->scalar = node;
+            //~ this->scalar_real = node;
+            //~ this->first_node = false;
+        //~ }
+        this->setValue("\"" + node->toString() + "\"");
     }
 
     void AstAnalyzer::visit(BinopPlus *node) {

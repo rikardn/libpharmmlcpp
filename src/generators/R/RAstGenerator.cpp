@@ -290,11 +290,15 @@ namespace PharmML
     }
 
     void RAstGenerator::visit(ScalarBool *node) {
-        if (node->getValue() == true) {
+        if (node->toBool() == true) {
             this->setValue("(TRUE)");
         } else {
             this->setValue("(FALSE)");
         }
+    }
+    
+    void RAstGenerator::visit(ScalarString *node) {
+        this->setValue(node->toString());
     }
 
     void RAstGenerator::visit(BinopPlus *node) {

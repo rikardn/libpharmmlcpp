@@ -72,11 +72,27 @@ namespace PharmML
         this->value = value;
     }
 
-    bool ScalarBool::getValue() {
+    bool ScalarBool::toBool() {
         return value;
     }
 
     void ScalarBool::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    ScalarString::ScalarString(std::string value) {
+        this->value = value;
+    }
+
+    ScalarString::ScalarString(xml::Node xml_node) {
+        this->value = xml_node.getText();
+    }
+
+    std::string ScalarString::toString() {
+        return value;
+    }
+
+    void ScalarString::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

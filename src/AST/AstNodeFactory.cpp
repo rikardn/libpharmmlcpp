@@ -207,6 +207,8 @@ namespace PharmML
             instance = new ScalarBool(true);
         } else if (name == "False") {
             instance = new ScalarBool(false);
+        } else if (name == "String") {
+            instance = new ScalarString(node);
         } else if (name == "Vector") {
             std::string length = node.getAttribute("length").getValue();
             std::string defaultValue = node.getAttribute("default").getValue();

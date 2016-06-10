@@ -277,11 +277,15 @@ namespace PharmML
     }
 
     void MDLAstGenerator::visit(ScalarBool *node) {
-        if (node->getValue() == true) {
+        if (node->toBool() == true) {
             this->setValue("(" + this->getLogicLiteral(true) + ")");
         } else {
             this->setValue("(" + this->getLogicLiteral(false) + ")");
         }
+    }
+
+    void MDLAstGenerator::visit(ScalarString *node) {
+        this->setValue(node->toString());
     }
 
     void MDLAstGenerator::visit(BinopPlus *node) {

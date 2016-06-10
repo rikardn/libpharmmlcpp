@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -g `xml2-config --cflags`
+CXXFLAGS = -std=c++14 -g `xml2-config --cflags`
 LIBS = -lxml2
 
 ../libpharmmlc.a: ../libpharmmlc.d.a

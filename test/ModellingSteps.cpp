@@ -11,7 +11,7 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
         SECTION("simple PopED example") {
             // Construct test node
             const char *xml = R"(\
-                <Operation xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps" order="1" opType="optimization">
+                <msteps::Operation xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps" order="1" opType="optimization">
                     <Algorithm definition="PopED">
                         <Property name="criterion">
                             <ct:Assign>

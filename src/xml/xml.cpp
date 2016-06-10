@@ -227,6 +227,7 @@ namespace xml
         xmlNodePtr node = xmlDocGetRootElement(doc);
         xml::Node xml_node(node);
         xml_node.setAttribute("xmlns:ct", xml::buildNamespace("CommonTypes", "0.8.1").c_str());
+        xml_node.setAttribute("xmlns:msteps", xml::buildNamespace("ModellingSteps", "0.8.1").c_str());
 
         return xml_node;
     }

@@ -11,7 +11,7 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
         SECTION("simple PopED example") {
             // Construct test node
             const char *xml = R"(\
-                <Operation order="1" opType="optimization">
+                <Operation xmlns="http://www.pharmml.org/pharmml/0.8/ModellingSteps" order="1" opType="optimization">
                     <Algorithm definition="PopED">
                         <Property name="criterion">
                             <ct:Assign>
@@ -28,7 +28,7 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
                 </Operation>\
             )";
             xml::Node node = xml::nodeFromString(std::string(xml));
-            
+
             // Root data
             PharmML::Operation op(model.getContext(), node);
             REQUIRE(op.getOrder() == 1);

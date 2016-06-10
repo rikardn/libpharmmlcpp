@@ -22,7 +22,7 @@
 
 #include <string>
 #include <unordered_set>
-#include <helpers/StringTyper.h>
+#include <helpers/StringTools.h>
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/StringVisitor.h>
 #include <AST/symbols.h>

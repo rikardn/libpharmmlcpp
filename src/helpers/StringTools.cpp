@@ -15,9 +15,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StringTyper.h"
+#include "StringTools.h"
 
-namespace StringTyper
+namespace StringTools
 {
     // Try to convert a string into an int (result) and report sucess/failure
     bool isInt(std::string str, int &result) {
@@ -36,5 +36,16 @@ namespace StringTyper
 
         result = (int)long_int;
         return true;
+    }
+
+    // Case-insensitive identity check two strings
+    bool iequals(std::string str1, std::string str2) {
+        if (str1.length() != str2.length()) {
+            return false;
+        } else {
+            std::transform(str1.begin(), str1.end(), str1.begin(), ::tolower);
+            std::transform(str2.begin(), str2.end(), str2.begin(), ::tolower);
+            return str1 == str2;
+        }
     }
 }

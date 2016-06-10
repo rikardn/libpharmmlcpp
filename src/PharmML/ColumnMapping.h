@@ -19,7 +19,7 @@
 #define PHARMML_COLUMNMAPPING_H_
 
 #include <unordered_map>
-#include <helpers/StringTyper.h>
+#include <helpers/StringTools.h>
 #include <helpers/Logger.h>
 #include <xml/xml.h>
 #include <PharmML/PharmMLSection.h>

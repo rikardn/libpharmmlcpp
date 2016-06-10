@@ -104,7 +104,7 @@ namespace PharmML
         if (!scint) {
             return false;
         }
-        return (StringTyper::isInt(scint->toString(), result));
+        return (StringTools::isInt(scint->toString(), result));
     }
 
     // visitor methods

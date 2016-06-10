@@ -184,10 +184,6 @@ namespace PharmML
             binop->setLeft(AstNodeFactory::create(node.getChild()));
             binop->setRight(AstNodeFactory::create(node.getLastChild()));
             instance = binop;
-        } else if (name == "False") {
-            instance = new LogicFalse();
-        } else if (name == "True") {
-            instance = new LogicTrue();
         } else if (name == "ConstantType") {
             std::string op = node.getAttribute("op").getValue();
             Constant *constant;
@@ -207,6 +203,10 @@ namespace PharmML
             instance = new ScalarInt(node);
         } else if (name == "Real") {
             instance = new ScalarReal(node);
+        } else if (name == "True") {
+            instance = new ScalarBool(true);
+        } else if (name == "False") {
+            instance = new ScalarBool(false);
         } else if (name == "Vector") {
             std::string length = node.getAttribute("length").getValue();
             std::string defaultValue = node.getAttribute("default").getValue();

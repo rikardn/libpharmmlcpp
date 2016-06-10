@@ -289,6 +289,14 @@ namespace PharmML
         this->setValue("(" + s + ")");
     }
 
+    void RAstGenerator::visit(ScalarBool *node) {
+        if (node->getValue() == true) {
+            this->setValue("(TRUE)");
+        } else {
+            this->setValue("(FALSE)");
+        }
+    }
+
     void RAstGenerator::visit(BinopPlus *node) {
         this->setValue("(" + this->acceptLeft(node) + " + " + this->acceptRight(node) + ")");
     }
@@ -424,14 +432,6 @@ namespace PharmML
         node->getExpression()->accept(this);
         std::string expr = this->getValue();
         this->setValue(cond + ", " + expr);
-    }
-
-    void RAstGenerator::visit(LogicFalse *node) {
-        this->setValue("(FALSE)");
-    }
-
-    void RAstGenerator::visit(LogicTrue *node) {
-        this->setValue("(TRUE)");
     }
 
     void RAstGenerator::visit(Pi *node) {

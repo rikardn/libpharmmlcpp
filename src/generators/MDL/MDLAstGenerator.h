@@ -97,6 +97,7 @@ namespace PharmML
 
             void visit(ScalarInt *node) override;
             void visit(ScalarReal *node) override;
+            void visit(ScalarBool *node) override;
 
             void visit(BinopPlus *node) override;
             void visit(BinopMinus *node) override;
@@ -110,8 +111,6 @@ namespace PharmML
             void visit(BinopRem *node) override;
             void visit(BinopAtan2 *node) override;
 
-            void visit(LogicFalse *node) override;
-            void visit(LogicTrue *node) override;
             void visit(Pi *node) override;
             void visit(Exponentiale *node) override;
             void visit(NullValue *node) override;

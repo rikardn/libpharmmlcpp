@@ -69,6 +69,7 @@ namespace PharmML
 
     class ScalarInt;
     class ScalarReal;
+    class ScalarBool;
 
     class BinopPlus;
     class BinopMinus;
@@ -96,8 +97,6 @@ namespace PharmML
     class SteadyStateParameter;
     class ColumnRef;
 
-    class LogicFalse;
-    class LogicTrue;
     class Pi;
     class Exponentiale;
     class NullValue;
@@ -163,6 +162,7 @@ namespace PharmML
 
             virtual void visit(ScalarInt *node) {};
             virtual void visit(ScalarReal *node) {};
+            virtual void visit(ScalarBool *node) {};
 
             virtual void visit(BinopPlus *node) {};
             virtual void visit(BinopMinus *node) {};
@@ -190,8 +190,6 @@ namespace PharmML
             virtual void visit(SteadyStateParameter *node) {};
             virtual void visit(ColumnRef *node) {};
 
-            virtual void visit(LogicFalse *node) {};
-            virtual void visit(LogicTrue *node) {};
             virtual void visit(Pi *node) {};
             virtual void visit(Exponentiale *node) {};
             virtual void visit(NullValue *node) {};

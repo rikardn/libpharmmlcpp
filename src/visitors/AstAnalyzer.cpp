@@ -405,6 +405,19 @@ namespace PharmML
         this->setValue("real[" + node->toString() + "]");
     }
 
+    void AstAnalyzer::visit(ScalarBool *node) {
+        //~ if (this->first_node) {
+            //~ this->scalar = node;
+            //~ this->scalar_real = node;
+            //~ this->first_node = false;
+        //~ }
+        if (node->getValue() == true) {
+            this->setValue("true");
+        } else {
+            this->setValue("false");
+        }
+    }
+
     void AstAnalyzer::visit(BinopPlus *node) {
         this->first_node = false;
         this->setValue("plus(" + this->infix(node, ";") + ")");
@@ -564,16 +577,6 @@ namespace PharmML
         } else {
             this->setValue("Otherwise[" + s + "]");
         }
-    }
-
-    void AstAnalyzer::visit(LogicFalse *node) {
-        this->first_node = false;
-        this->setValue("false");
-    }
-
-    void AstAnalyzer::visit(LogicTrue *node) {
-        this->first_node = false;
-        this->setValue("true");
     }
 
     void AstAnalyzer::visit(Pi *node) {

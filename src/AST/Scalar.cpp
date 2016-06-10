@@ -67,4 +67,16 @@ namespace PharmML
     void ScalarReal::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
+
+    ScalarBool::ScalarBool(bool value) {
+        this->value = value;
+    }
+
+    bool ScalarBool::getValue() {
+        return value;
+    }
+
+    void ScalarBool::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

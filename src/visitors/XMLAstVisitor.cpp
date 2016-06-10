@@ -281,6 +281,17 @@ namespace PharmML
         this->setValue(scalar_real);
     }
 
+    void XMLAstVisitor::visit(ScalarBool *node) {
+        std::string name;
+        if (node->getValue() == true) {
+            name = "True";
+        } else {
+            name = "False";
+        }
+        xml::Node scalar_bool(name, xml::Namespace::ct);
+        this->setValue(scalar_bool);
+    }
+
     void XMLAstVisitor::visit(BinopPlus *node) {
         this->createBinop(node, "plus");
     }
@@ -376,12 +387,6 @@ namespace PharmML
     }
 
     void XMLAstVisitor::visit(Piece *node) {
-    }
-
-    void XMLAstVisitor::visit(LogicFalse *node) {
-    }
-
-    void XMLAstVisitor::visit(LogicTrue *node) {
     }
 
     void XMLAstVisitor::visit(Pi *node) {

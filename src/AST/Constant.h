@@ -36,19 +36,6 @@ namespace PharmML
             virtual void accept(AstNodeVisitor *visitor);
     };
 
-    // Boolean primitives
-    class LogicFalse : public Constant
-    {
-        public:
-            virtual void accept(AstNodeVisitor *visitor);
-    };
-
-    class LogicTrue : public Constant
-    {
-        public:
-            virtual void accept(AstNodeVisitor *visitor);
-    };
-
     // Pi and Euler's constant
     class Pi : public Constant
     {

@@ -55,6 +55,18 @@ namespace PharmML
         private:
             std::string value;
     };
+
+    // Boolean scalar (formerly a constant)
+    class ScalarBool : public Scalar
+    {
+        public:
+            ScalarBool(bool value);
+            bool getValue();
+            virtual void accept(AstNodeVisitor *visitor);
+
+        private:
+            bool value;
+    };
 }
 
 #endif

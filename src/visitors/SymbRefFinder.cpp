@@ -215,6 +215,9 @@ namespace PharmML
     void SymbRefFinder::visit(ScalarReal *node) {
     }
 
+    void SymbRefFinder::visit(ScalarBool *node) {
+    }
+
     void SymbRefFinder::visit(BinopPlus *node) {
         node->getLeft()->accept(this);
         node->getRight()->accept(this);
@@ -339,12 +342,6 @@ namespace PharmML
         if (node->getCondition()) {
             node->getCondition()->accept(this);
         }
-    }
-
-    void SymbRefFinder::visit(LogicFalse *node) {
-    }
-
-    void SymbRefFinder::visit(LogicTrue *node) {
     }
 
     void SymbRefFinder::visit(Pi *node) {

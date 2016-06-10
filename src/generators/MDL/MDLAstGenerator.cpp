@@ -276,6 +276,14 @@ namespace PharmML
         this->setValue(s);
     }
 
+    void MDLAstGenerator::visit(ScalarBool *node) {
+        if (node->getValue() == true) {
+            this->setValue("(" + this->getLogicLiteral(true) + ")");
+        } else {
+            this->setValue("(" + this->getLogicLiteral(false) + ")");
+        }
+    }
+
     void MDLAstGenerator::visit(BinopPlus *node) {
         this->setValue("(" + this->acceptLeft(node) + " + " + this->acceptRight(node) + ")");
     }
@@ -417,14 +425,6 @@ namespace PharmML
         std::string expr = this->getValue();
 
         this->setValue(cond + " then " + expr);
-    }
-
-    void MDLAstGenerator::visit(LogicFalse *node) {
-        this->setValue("(" + this->getLogicLiteral(false) + ")");
-    }
-
-    void MDLAstGenerator::visit(LogicTrue *node) {
-        this->setValue("(" + this->getLogicLiteral(true) + ")");
     }
 
     void MDLAstGenerator::visit(Pi *node) {

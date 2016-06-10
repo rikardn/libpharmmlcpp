@@ -23,6 +23,11 @@
 
 namespace PharmML
 {
+    Model::Model(const char *filename) {
+        this->context = new PharmMLContext(filename, this);
+        this->parse(this->context->getRoot());
+    }
+
     void Model::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
@@ -69,11 +74,6 @@ namespace PharmML
         if (pk_macros) {
             pk_macros->postParse();
         }
-    }
-
-    Model::Model(const char *filename) {
-        this->context = new PharmMLContext(filename, this);
-        this->parse(this->context->getRoot());
     }
 
     Model::~Model() {

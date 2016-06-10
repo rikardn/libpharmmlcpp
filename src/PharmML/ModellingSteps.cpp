@@ -286,6 +286,10 @@ namespace PharmML
         return this->properties;
     }
 
+    bool Algorithm::isNamed(std::string case_insensitive_name) {
+        return StringTools::iequals(this->name, case_insensitive_name);
+    }
+
     Operation::Operation(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);

@@ -27,6 +27,8 @@
 #include <symbols/Symbol.h>
 #include <symbols/SymbolGathering.h>
 
+#include <helpers/StringTools.h>
+
 namespace PharmML
 {
     class TargetTool
@@ -131,6 +133,8 @@ namespace PharmML
             std::string getName();
             std::string getDefinition();
             std::vector<OperationProperty *> getProperties();
+
+            bool isNamed(std::string case_insensitive_name);
 
         private:
             PharmML::PharmMLContext *context;

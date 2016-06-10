@@ -51,6 +51,8 @@ namespace PharmML
             Scalar *getPureScalar();
             ScalarInt *getPureScalarInt();
             ScalarReal *getPureScalarReal();
+            ScalarBool *getPureScalarBool();
+            ScalarString *getPureScalarString();
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
             Vector *getPureVector();
@@ -158,6 +160,8 @@ namespace PharmML
             Scalar *scalar;
             ScalarInt *scalar_int;
             ScalarReal *scalar_real;
+            ScalarBool *scalar_bool;
+            ScalarString *scalar_string;
             FunctionCall *functioncall;
             Piecewise *piecewise;
             Vector *vector;
@@ -168,7 +172,6 @@ namespace PharmML
             std::string infix(Binop *binop, std::string op);
             std::string acceptChild(Uniop *uniop);
             std::string accept(AstNode *node);
-            std::string getLogicLiteral(bool value);
 
             int length = 1;     // The length of the result from the AST. 1 for scalar and n for vector
             /* Currently support vector and default for scalar.

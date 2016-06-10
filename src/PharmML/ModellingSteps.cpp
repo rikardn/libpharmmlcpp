@@ -256,6 +256,92 @@ namespace PharmML
         return this->assignment;
     }
 
+    // Convenience functions for simply accessing simple property values
+    // FIXME: Below is properly setup by a postParse method (instead of AstAnalyzer usage each method)!
+    bool OperationProperty::isInt() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarInt()) {
+            this->int_val = new int(aa.getPureScalarInt()->toInt());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isReal() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarReal()) {
+            this->real_val = new double(aa.getPureScalarReal()->toDouble());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isBool() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarBool()) {
+            this->bool_val = new bool(aa.getPureScalarBool()->toBool());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isString() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarString()) {
+            this->string_val = new std::string(aa.getPureScalarString()->toString());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    int OperationProperty::getInt() {
+        if (this->int_val) {
+            return *(this->int_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarInt()->toInt();
+        }
+    }
+
+    double OperationProperty::getReal() {
+        if (this->real_val) {
+            return *(this->real_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarReal()->toDouble();
+        }
+    }
+
+    bool OperationProperty::getBool() {
+        if (this->bool_val) {
+            return *(this->bool_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarBool()->toBool();
+        }
+    }
+
+    std::string OperationProperty::getString() {
+        if (this->string_val) {
+            return *(this->string_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarString()->toString();
+        }
+    }
+
     Algorithm::Algorithm(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
@@ -286,6 +372,7 @@ namespace PharmML
         return this->properties;
     }
 
+    // Ask algorithm if (case-insensitively) named something
     bool Algorithm::isNamed(std::string case_insensitive_name) {
         return StringTools::iequals(this->name, case_insensitive_name);
     }

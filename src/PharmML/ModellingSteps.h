@@ -28,6 +28,7 @@
 #include <symbols/SymbolGathering.h>
 
 #include <helpers/StringTools.h>
+#include <visitors/AstAnalyzer.h>
 
 namespace PharmML
 {
@@ -119,10 +120,27 @@ namespace PharmML
             std::string getName();
             AstNode *getAssignment();
 
+            // Convenience functions for simply accessing simple property values
+            bool isInt();
+            bool isReal();
+            bool isBool();
+            bool isString();
+            int getInt();
+            double getReal();
+            bool getBool();
+            std::string getString();
+
         private:
             PharmML::PharmMLContext *context;
             std::string name;
             AstNode *assignment;
+
+            // Convenience storage of simple property values
+            int *int_val = nullptr;
+            double *real_val = nullptr;
+            bool *bool_val = nullptr;
+            std::string *string_val = nullptr;
+            // FIXME: Above is properly setup by a postParse method!
     };
 
     class Algorithm

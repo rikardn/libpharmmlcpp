@@ -766,8 +766,9 @@ namespace PharmML
                     }
 
                     // Get structural model output and make a list of arguments referencing it
-                    SymbRef *output = observationModel->getOutput();
-                    std::vector<std::string> output_arg_names;
+                    // FIXME: See below
+                    //~ SymbRef *output = observationModel->getOutput();
+                    //~ std::vector<std::string> output_arg_names;
 
                     // Output the mapped arguments
                     std::unordered_map<std::string, FunctionArgumentDefinition *> def_arg_map = functions->getStandardArgumentMap(function_def);
@@ -777,9 +778,10 @@ namespace PharmML
 
                         // Check if it's a prediction argument and output the argument in standardized form
                         FunctionArgument *call_arg = call_arg_map[actual_arg_name];
-                        if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
-                            output_arg_names.push_back(actual_arg_name);
-                        }
+                        // FIXME: Figure out how to resolve this now when FunctionArgument has been demoted from Referer-status
+                        //~ if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
+                            //~ output_arg_names.push_back(actual_arg_name);
+                        //~ }
                         form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
                     }
 
@@ -788,12 +790,13 @@ namespace PharmML
                     form.closeVector();
 
                     // Warn if unexpected structure with regards to the output symbol
-                    if (output_arg_names.empty()) {
-                        this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
-                    } else if (output_arg_names.size() > 1) {
-                        this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
-                            + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", observationModel);
-                    }
+                    // FIXME: Same as above outcommented block
+                    //~ if (output_arg_names.empty()) {
+                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
+                    //~ } else if (output_arg_names.size() > 1) {
+                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
+                            //~ + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", observationModel);
+                    //~ }
                 } else {
                     // TODO: Non-standard function call must be resolved
                     form.openVector(obs_name + " : {}", 0, ", ");

@@ -25,7 +25,7 @@ namespace PharmML
 {
     Model::Model(const char *filename) {
         this->context = new PharmMLContext(filename, this);
-        this->parse(this->context->getRoot());
+        this->parse(this->context->doc.getRoot());
     }
 
     void Model::parse(xml::Node node) {
@@ -80,8 +80,8 @@ namespace PharmML
         delete context;
     }
 
-    void Model::write(const char *filename) {
-        this->context->write(filename);
+    void Model::write(std::string filename) {
+        this->context->doc.write(filename);
     }
 
     PharmML::IndependentVariable *Model::getIndependentVariable() {

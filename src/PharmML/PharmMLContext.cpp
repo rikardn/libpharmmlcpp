@@ -15,7 +15,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream> // DEBUG_OUTPUT
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/Model.h>
 
@@ -26,7 +25,7 @@ namespace PharmML
     }
 
     std::string PharmMLContext::getNamespaceVersion() {
-        xml::Node root = this->getRoot();
+        xml::Node root = this->doc.getRoot();
         std::string version = root.getAttribute("writtenVersion").getValue();
         int first_dot_index = version.find_first_of(".");
         int last_dot_index = version.find_last_of(".");
@@ -36,15 +35,12 @@ namespace PharmML
         return version;
     }
 
-    PharmMLContext::PharmMLContext(const char *filename, Model *model) {
+    PharmMLContext::PharmMLContext(std::string filename, Model *model) {
         this->model = model;
         xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
-        this->doc = xmlReadFile(filename, NULL, 0);
-        if (!this->doc) {
-            throw std::runtime_error("File " + std::string(filename) + " not found");
-        }
-        this->validateDocument();
-        this->xpath_context = xmlXPathNewContext(this->doc);
+        this->doc.read(filename);
+        this->doc.validate();
+        this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST buildNamespace("Maths", version).c_str());
@@ -56,67 +52,6 @@ namespace PharmML
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 
-    xmlDoc *PharmMLContext::getDocument() {
-        return this->doc;
-    }
-
-    void PharmMLContext::validateDocument() {
-        if (xmlLoadCatalog("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
-            return;
-        }
-        int result = 42;
-        xmlSchemaParserCtxtPtr parserCtxt = NULL;
-        xmlSchemaPtr schema = NULL;
-        xmlSchemaValidCtxtPtr validCtxt = NULL;
-
-        parserCtxt = xmlSchemaNewParserCtxt("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/pharmml.xsd");
-
-        if (parserCtxt == NULL) {
-            goto leave;
-        }
-
-        schema = xmlSchemaParse(parserCtxt);
-
-        if (schema == NULL) {
-            goto leave;
-        }
-
-        validCtxt = xmlSchemaNewValidCtxt(schema);
-
-        if (!validCtxt) {
-            goto leave;
-        }
-
-        result = xmlSchemaValidateDoc(validCtxt, this->doc);
-
-leave:
-
-        if (parserCtxt) {
-            xmlSchemaFreeParserCtxt(parserCtxt);
-        }
-
-        if (schema) {
-            xmlSchemaFree(schema);
-        }
-
-        if (validCtxt) {
-            xmlSchemaFreeValidCtxt(validCtxt);
-        }
-        if (result != 0) {
-            printf("\n");
-            printf("Validation successful: %s (result: %d)\n", (result == 0) ? "YES" : "NO", result);
-            exit(10);
-        }
-
-        xmlCatalogCleanup();
-    }
-
-    xml::Node PharmMLContext::getRoot() {
-        xmlNode *root = xmlDocGetRootElement(this->doc);
-        xml::Node node(root);
-        return node;
-    }
-
     xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {
         return node.getSingleElement(this->xpath_context, xpath);
     }
@@ -125,16 +60,9 @@ leave:
         return node.getElements(this->xpath_context, xpath);
     }
 
-    void PharmMLContext::write(const char *filename) {
-        xmlSaveFormatFileEnc(filename, this->doc, "UTF-8", 1);
-    }
-
     PharmMLContext::~PharmMLContext() {
         if (this->xpath_context) {
             xmlXPathFreeContext(xpath_context);
-        }
-        if (this->doc) {
-            xmlFreeDoc(this->doc);
         }
     }
 }

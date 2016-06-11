@@ -20,9 +20,14 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/parser.h>
+#include <libxml/valid.h>
+#include <libxml/xmlschemas.h>
+#include <libxml/catalog.h>
+#include <libxml/xpath.h>
 
 namespace xml
 {
@@ -75,6 +80,20 @@ namespace xml
 
     // This is expected to be used for testing
     Node nodeFromString(std::string xml_string);
+
+    // Representing a xmlDoc in libxml2
+    class Document
+    {
+        public:
+            ~Document();
+            void validate();
+            void read(std::string filename);
+            void write(std::string filename);
+            xml::Node getRoot();
+
+            xmlDoc *doc;        // FIXME: Move to private soon
+        private:
+    };
 }
 
 #endif

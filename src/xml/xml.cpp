@@ -232,4 +232,78 @@ namespace xml
         return xml_node;
     }
 
+    xml::Node Document::getRoot() {
+        xmlNode *root = xmlDocGetRootElement(this->doc);
+        xml::Node node(root);
+        return node;
+    }
+
+    void Document::write(std::string filename) {
+        xmlSaveFormatFileEnc(filename.c_str(), this->doc, "UTF-8", 1);
+    }
+
+    void Document::read(std::string filename) {
+        this->doc = xmlReadFile(filename.c_str(), NULL, 0);
+        if (!this->doc) {
+            throw std::runtime_error("File " + filename + " not found");
+        }
+    }
+
+    void Document::validate() {
+        if (xmlLoadCatalog("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
+            return;
+        }
+        int result = 42;
+        xmlSchemaParserCtxtPtr parserCtxt = NULL;
+        xmlSchemaPtr schema = NULL;
+        xmlSchemaValidCtxtPtr validCtxt = NULL;
+
+        parserCtxt = xmlSchemaNewParserCtxt("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/pharmml.xsd");
+
+        if (parserCtxt == NULL) {
+            goto leave;
+        }
+
+        schema = xmlSchemaParse(parserCtxt);
+
+        if (schema == NULL) {
+            goto leave;
+        }
+
+        validCtxt = xmlSchemaNewValidCtxt(schema);
+
+        if (!validCtxt) {
+            goto leave;
+        }
+
+        result = xmlSchemaValidateDoc(validCtxt, this->doc);
+
+leave:
+
+        if (parserCtxt) {
+            xmlSchemaFreeParserCtxt(parserCtxt);
+        }
+
+        if (schema) {
+            xmlSchemaFree(schema);
+        }
+
+        if (validCtxt) {
+            xmlSchemaFreeValidCtxt(validCtxt);
+        }
+        if (result != 0) {
+            printf("\n");
+            printf("Validation successful: %s (result: %d)\n", (result == 0) ? "YES" : "NO", result);
+            exit(10);           // Gah! FIXME!
+        }
+
+        xmlCatalogCleanup();
+    }
+
+    Document::~Document() {
+        if (this->doc) {
+            xmlFreeDoc(this->doc);
+        }
+    }
+
 }

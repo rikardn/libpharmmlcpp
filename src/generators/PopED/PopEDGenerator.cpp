@@ -749,6 +749,7 @@ namespace PharmML
                 case FIMApproxType::NA      : break;
             }
             if (e_family_use) {
+                form.add("d_switch = 0");
                 switch (e_integration_type) {
                     case EIntegrationType::MC      : form.add("iEDCalculationType = 0");
                                                      break;

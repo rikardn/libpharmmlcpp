@@ -37,7 +37,6 @@ namespace PharmML
 
     PharmMLContext::PharmMLContext(std::string filename, Model *model) {
         this->model = model;
-        xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
         this->doc.read(filename);
         this->doc.validate();
         this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!

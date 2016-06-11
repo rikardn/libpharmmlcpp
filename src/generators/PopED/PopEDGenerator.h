@@ -68,6 +68,12 @@ namespace PharmML
             std::string getDoseVariable();
             void collectTrialDesignInformation();
             Symbol *findSigmaSymbol();
+
+            // Logger methods
+            void warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type);
+            void warnOperationPropertyUnderflow(OperationProperty *prop, int min);
+            void warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings);
+            void warnOperationPropertyUnknown(OperationProperty *prop);
     };
 }
 

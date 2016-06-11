@@ -583,6 +583,138 @@ namespace PharmML
             }
         }
 
+        // Use PopED settings from PharmML if found
+        if (algo) {
+            // Store recognized and parsed settings in these
+            enum Criterion {EXPLICIT, IMPLICIT, UNDEF, NA};
+            Criterion criterion = Criterion::NA;
+
+            std::string file;
+
+            enum class FIMCalcType {FO, FOCE, FOCEI, FOI, UNDEF, NA};
+            FIMCalcType fim_calc_type = FIMCalcType::NA;
+
+            enum class FIMApproxType {FULL, REDUCED, UNDEF, NA};
+            FIMApproxType fim_approx_type = FIMApproxType::NA;
+
+            bool e_family_use = false;
+
+            enum class EIntegrationType {MC, LAPLACE, BFGS, UNDEF, NA};
+            EIntegrationType e_integration_type = EIntegrationType::NA;
+
+            enum class ESamplingType {LHC, UNDEF, NA};
+            ESamplingType e_sampling_type = ESamplingType::NA;
+
+            int e_sampling = -1;
+
+            // Recognize and parse settings (and warn of all unexpectedness)
+            for (OperationProperty *prop : algo->getProperties()) {
+                if (prop->isNamed("criterion")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("explicit")) {
+                            criterion = Criterion::EXPLICIT;
+                        } else if (prop->isFoldedCaseString("implicit")) {
+                            criterion = Criterion::IMPLICIT;
+                        } else {
+                            criterion = Criterion::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"explicit","implicit"});
+                        }
+                    } else if (!prop->isString()) {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("file")) {
+                    if (prop->isString()) {
+                        file = prop->getString();
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("computeFIM")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("FO")) {
+                            fim_calc_type = FIMCalcType::FO;
+                        } else if (prop->isFoldedCaseString("FOCE")) {
+                            fim_calc_type = FIMCalcType::FOCE;
+                        } else if (prop->isFoldedCaseString("FOCEI")) {
+                            fim_calc_type = FIMCalcType::FOCEI;
+                        } else if (prop->isFoldedCaseString("FOI")) {
+                            fim_calc_type = FIMCalcType::FOI;
+                        } else {
+                            fim_calc_type = FIMCalcType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"FO","FOCE","FOCEI","FOI"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("approximationFIM")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("full")) {
+                            fim_approx_type = FIMApproxType::FULL;
+                        } else if (prop->isFoldedCaseString("reduced")) {
+                            fim_approx_type = FIMApproxType::REDUCED;
+                        } else {
+                            fim_approx_type = FIMApproxType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"full","reduced"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_value")) {
+                    // E family master switch: Determines if other E_family_* properties should be used
+                    if (prop->isBool() && prop->getBool() == true) {
+                        e_family_use = true;
+                    } else if (!prop->isBool()) {
+                        this->warnOperationPropertyUnexpectedType(prop, "bool");
+                    }
+                } else if (prop->isNamed("E_family_calc_type")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("MC")) {
+                            e_integration_type = EIntegrationType::MC;
+                        } else if (prop->isFoldedCaseString("LAPLACE")) {
+                            e_integration_type = EIntegrationType::LAPLACE;
+                        } else if (prop->isFoldedCaseString("BFGS")) {
+                            e_integration_type = EIntegrationType::BFGS;
+                        } else {
+                            e_integration_type = EIntegrationType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"MC","LAPLACE","BFGS"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_sampling")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("LHC")) {
+                            e_sampling_type = ESamplingType::LHC;
+                        } else if (prop->isFoldedCaseString("")) {
+                        } else {
+                            e_sampling_type = ESamplingType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"LHC",""});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_edsampling")) {
+                    if (prop->isInt()) {
+                        if (prop->getInt() >= 0) {
+                            e_sampling = prop->getInt();
+                        } else {
+                            this->warnOperationPropertyUnderflow(prop, 0);
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "integer");
+                    }
+                } else {
+                    this->warnOperationPropertyUnknown(prop);
+                }
+            }
+
+            // Warn if E_family_* settings have been read but not flagged for usage
+            if (!e_family_use && (e_integration_type != EIntegrationType::NA || e_sampling_type != ESamplingType::NA || e_sampling >= 0)) {
+                this->logger.warning("E family settings found but not actively used ('E_family_value' is 'false' or missing)", algo);
+            }
+
+            // TODO: Use the parsed settings
+        }
+
         if (scalar) {
             form.add("iFIMCalculationType = 0");
         }
@@ -590,6 +722,38 @@ namespace PharmML
         form.closeVector();
 
         return form.createString();
+    }
+
+    // OperationProperty has unexpected type: Warn and inform of expected type
+    void PopEDGenerator::warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type) {
+        std::string name = prop->getName();
+        this->logger.warning("'" + name + "' has unexpected type (expected: " + exp_type + ")", prop);
+    }
+
+    // OperationProperty is out of lower bound: Warn and inform of expected minimum
+    void PopEDGenerator::warnOperationPropertyUnderflow(OperationProperty *prop, int min) {
+        std::string name = prop->getName();
+        this->logger.warning("'" + name + "' value (" + std::to_string(prop->getInt()) + ") is illegal (expected: >= 0)", prop);
+    }
+
+    // OperationProperty has unexpected string value: Warn and inform of expected string value
+    void PopEDGenerator::warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings) {
+        std::string name = prop->getName();
+        TextFormatter form;
+        form.openVector("", 0, ",");
+        std::for_each(std::begin(exp_strings), std::end(exp_strings), [&](std::string x){ form.add("'" + x + "'"); });
+        this->logger.warning("'" + name + "' has unknown or unsupported value '" + prop->getString() + "' (expected: " + form.createString() + ")", prop);
+    }
+
+    // OperationProperty is unknown or unsupported: Warn and inform of all known properties
+    void PopEDGenerator::warnOperationPropertyUnknown(OperationProperty *prop) {
+        const std::vector<std::string> known_props = {"criterion","file","computeFIM","approximationFIM","E_family_value","E_family_calc_type","E_family_sampling","E_family_edsampling"};
+
+        std::string name = prop->getName();
+        TextFormatter form;
+        form.openVector("", 0, ",");
+        std::for_each(std::begin(known_props), std::end(known_props), [&](std::string x){ form.add("'" + x + "'"); });
+        this->logger.warning("'" + prop->getName() +  "' property unknown or unsupported (known: " + form.createString() + ")", prop);
     }
 
     Symbol *PopEDGenerator::findSigmaSymbol() {

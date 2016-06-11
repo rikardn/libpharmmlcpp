@@ -112,7 +112,7 @@ namespace PharmML
             AstNode *hiBound = nullptr;
     };
 
-    class OperationProperty
+    class OperationProperty : public PharmMLSection
     {
         public:
             OperationProperty(PharmML::PharmMLContext *context, xml::Node node);
@@ -120,15 +120,18 @@ namespace PharmML
             std::string getName();
             AstNode *getAssignment();
 
+            bool isNamed(std::string case_insensitive_name);
             // Convenience functions for simply accessing simple property values
             bool isInt();
             bool isReal();
             bool isBool();
             bool isString();
+            
             int getInt();
             double getReal();
             bool getBool();
             std::string getString();
+            bool isFoldedCaseString(std::string case_insensitive);
 
         private:
             PharmML::PharmMLContext *context;

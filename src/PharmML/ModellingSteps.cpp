@@ -238,6 +238,7 @@ namespace PharmML
     }
 
     OperationProperty::OperationProperty(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -254,6 +255,10 @@ namespace PharmML
 
     AstNode *OperationProperty::getAssignment() {
         return this->assignment;
+    }
+
+    bool OperationProperty::isNamed(std::string case_insensitive_name) {
+        return StringTools::iequals(this->name, case_insensitive_name);
     }
 
     // Convenience functions for simply accessing simple property values
@@ -340,6 +345,10 @@ namespace PharmML
             this->assignment->accept(&aa);
             return aa.getPureScalarString()->toString();
         }
+    }
+
+    bool OperationProperty::isFoldedCaseString(std::string case_insensitive) {
+         return StringTools::iequals(this->getString(), case_insensitive);
     }
 
     Algorithm::Algorithm(PharmMLContext *context, xml::Node node) {

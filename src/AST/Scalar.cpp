@@ -16,6 +16,7 @@
  */
 
 #include "Scalar.h"
+#include <iostream>
 
 namespace PharmML
 {
@@ -44,26 +45,54 @@ namespace PharmML
     }
 
     ScalarReal::ScalarReal(double value) {
+        this->value = std::to_string(value);
+    }
+
+    ScalarReal::ScalarReal(std::string value) {
         this->value = value;
     }
 
-    ScalarReal::ScalarReal(std::string s) {
-        this->value = std::stod(s);
-    }
-
     double ScalarReal::toDouble() {
-        return value;
+        return std::stod(this->value);
     }
 
     ScalarReal::ScalarReal(xml::Node xml_node) {
-        this->value = std::stod(xml_node.getText());
+        this->value = xml_node.getText();
     }
 
     std::string ScalarReal::toString() {
-        return std::to_string(value);
+        return value;
     }
 
     void ScalarReal::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    ScalarBool::ScalarBool(bool value) {
+        this->value = value;
+    }
+
+    bool ScalarBool::toBool() {
+        return value;
+    }
+
+    void ScalarBool::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    ScalarString::ScalarString(std::string value) {
+        this->value = value;
+    }
+
+    ScalarString::ScalarString(xml::Node xml_node) {
+        this->value = xml_node.getText();
+    }
+
+    std::string ScalarString::toString() {
+        return value;
+    }
+
+    void ScalarString::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 }

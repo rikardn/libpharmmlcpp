@@ -1,4 +1,5 @@
 *.o
+*.d
 *.swp
 main
 main.exe
@@ -6,6 +7,7 @@ pharmml2poped
 pharmml2poped.exe
 mdl
 libpharmmlc.a
+libpharmmlc.d.a
 test/test
 
 output
@@ -19,6 +21,7 @@ spec-docs/
 pharmml_internalRelease_0_8_1/pharmml-examples/
 peripheral/
 test/testfiles/
+!test/testfiles/minimal.xml
 
 .gdb_history
 powermake

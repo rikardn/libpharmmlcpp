@@ -22,7 +22,7 @@
 
 #include <string>
 #include <unordered_set>
-#include <helpers/StringTyper.h>
+#include <helpers/StringTools.h>
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/StringVisitor.h>
 #include <AST/symbols.h>
@@ -51,6 +51,8 @@ namespace PharmML
             Scalar *getPureScalar();
             ScalarInt *getPureScalarInt();
             ScalarReal *getPureScalarReal();
+            ScalarBool *getPureScalarBool();
+            ScalarString *getPureScalarString();
             FunctionCall *getPureFunctionCall();
             Piecewise *getPurePiecewise();
             Vector *getPureVector();
@@ -110,6 +112,8 @@ namespace PharmML
 
             void visit(ScalarInt *node) override;
             void visit(ScalarReal *node) override;
+            void visit(ScalarBool *node) override;
+            void visit(ScalarString *node) override;
 
             void visit(BinopPlus *node) override;
             void visit(BinopMinus *node) override;
@@ -123,8 +127,6 @@ namespace PharmML
             void visit(BinopRem *node) override;
             void visit(BinopAtan2 *node) override;
 
-            void visit(LogicFalse *node) override;
-            void visit(LogicTrue *node) override;
             void visit(Pi *node) override;
             void visit(Exponentiale *node) override;
             void visit(NullValue *node) override;
@@ -158,6 +160,8 @@ namespace PharmML
             Scalar *scalar;
             ScalarInt *scalar_int;
             ScalarReal *scalar_real;
+            ScalarBool *scalar_bool;
+            ScalarString *scalar_string;
             FunctionCall *functioncall;
             Piecewise *piecewise;
             Vector *vector;
@@ -168,7 +172,6 @@ namespace PharmML
             std::string infix(Binop *binop, std::string op);
             std::string acceptChild(Uniop *uniop);
             std::string accept(AstNode *node);
-            std::string getLogicLiteral(bool value);
 
             int length = 1;     // The length of the result from the AST. 1 for scalar and n for vector
             /* Currently support vector and default for scalar.

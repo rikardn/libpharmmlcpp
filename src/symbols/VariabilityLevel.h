@@ -33,12 +33,11 @@ namespace PharmML
             std::string getName();
             bool isReferenceLevel();
             SymbRef *getParentReference();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
         
         private:
-            PharmML::PharmMLContext *context;
             std::string name;
             bool referenceLevel;
             SymbRef *parentLevelRef = nullptr;
@@ -50,7 +49,7 @@ namespace PharmML
             VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             SymbRef *getLevelReference();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             AstNode *getRandomEffectsMapping();
             //~ void accept(AstNodeVisitor *visitor);
         

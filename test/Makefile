@@ -1,8 +1,17 @@
-CFLAGS = -std=c++11 -g `xml2-config --cflags`
+CXX = g++
+CXXFLAGS = -std=c++14 -g `xml2-config --cflags`
 LIBS = -lxml2
 
-.PHONY: check
+../libpharmmlc.a: ../libpharmmlc.d.a
+	make -C .. libpharmmlc.a
 
-check:
-	g++ -std=c++11 $(CFLAGS) Dependencies.cpp -L.. -lpharmmlc $(LIBS) -otest
+test: test.cpp Scalar.cpp SymbolSet.cpp SymbolNamer.cpp ModellingSteps.cpp ../libpharmmlc.a
+	$(CXX) $(CXXFLAGS) test.cpp Scalar.cpp SymbolSet.cpp SymbolNamer.cpp ModellingSteps.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
+
+.PHONY: check
+check: test
 	./test
+
+.PHONY: clean
+clean:
+	rm -f test

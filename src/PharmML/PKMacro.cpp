@@ -81,11 +81,10 @@ namespace PharmML
         return nullptr;
     }
 
-    void PKMacro::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void PKMacro::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (MacroValue value : this->values) {
             if (value.second) { // TODO: See above comment
-                std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(value.second, symbolMap);
-                this->referencedSymbols.addSymbols(symbols);
+                this->setupAstSymbRefs(value.second, gathering, blkId);
             }
         }
     }
@@ -316,9 +315,9 @@ namespace PharmML
         return this->macros;
     }
 
-    void PKMacros::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void PKMacros::setupRefererSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (PKMacro *macro : this->macros) {
-            macro->gatherSymbRefs(symbolMap);
+            macro->setupSymbRefs(gathering, blkId);
         }
     }
 

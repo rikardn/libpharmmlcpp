@@ -22,7 +22,6 @@ namespace PharmML
     VariabilityLevel::VariabilityLevel(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->VariabilityLevel::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void VariabilityLevel::parse(xml::Node node) {
@@ -55,10 +54,9 @@ namespace PharmML
         return this->parentLevelRef;
     }
 
-    void VariabilityLevel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void VariabilityLevel::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->parentLevelRef) {
-            PharmML::Symbol *found_symbol = this->addSymbRef(this->parentLevelRef, symbolMap);
-            this->addReference(found_symbol);
+            this->addSymbRef(this->parentLevelRef, gathering, blkId);
         }
     }
 
@@ -96,9 +94,8 @@ namespace PharmML
         return this->randomEffectsMapping;
     }
 
-    void VariabilityReference::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        PharmML::Symbol *found_symbol = this->addSymbRef(this->levelReference, symbolMap);
-        this->addReference(found_symbol);
+    void VariabilityReference::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
+        this->addSymbRef(this->levelReference, gathering, blkId);
     }
 
     //~ void VariabilityReference::accept(AstNodeVisitor *visitor) {

@@ -27,20 +27,24 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <AST/symbols.h>
+#include <PharmML/Block.h>
+#include <helpers/SymbolNamer.h>
 
 namespace PharmML
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
+    class PharmMLContext;
     class Referer
     {
         public:
             PharmML::SymbolSet referencedSymbols;
-            PharmML::Symbol *addSymbRef(SymbRef *symbRef, std::unordered_map<std::string, Symbol *> &symbolMap);
+            PharmML::Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
             void addReference(Symbol *symbol);
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);
             bool refersIndirectlyTo(Symbol *symbol);
-            std::unordered_set<Symbol *> symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupAstSymbRefs(AstNode *node, SymbolGathering &gathering, std::string blkId);
+            virtual void setupSymbRefs(SymbolGathering &gathering, std::string blkId) = 0;
 
         protected:
             // FIXME: Why haven't FunctionCall got parse(..) like normal nice classes?
@@ -51,10 +55,11 @@ namespace PharmML
     {
         public:
             std::string getSymbId();
-            virtual void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) = 0;
+            std::string getName();
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
+            PharmMLContext *context;
             std::string symbId;
             void parse(xml::Node node);
     };

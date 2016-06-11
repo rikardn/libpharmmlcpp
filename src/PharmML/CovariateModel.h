@@ -24,15 +24,18 @@
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <symbols/Covariate.h>
+#include <PharmML/Block.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
-    class CovariateModel
+    class CovariateModel : public Block
     {
         public:
             CovariateModel(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<PharmML::Covariate *> getCovariates();
+            void gatherSymbols(SymbolGathering &gathering) override;
         
         private:
             PharmML::PharmMLContext *context;

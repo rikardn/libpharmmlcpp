@@ -29,6 +29,7 @@
 #include <PharmML/PharmMLSection.h>
 #include <visitors/ObjectVisitor.h>
 #include <PharmML/PharmMLSection.h>
+#include <symbols/Symbol.h>
 
 #include <PharmML/ColumnMapping.h> // TODO: Consider (for TargetMapping class; separate src file?)
 
@@ -52,7 +53,7 @@ namespace PharmML
             SymbRef *symbRef = nullptr;
     };
 
-    class Administration : public Object, public PharmMLSection
+    class Administration : public Object, public Referer, public PharmMLSection
     {
         public:
             Administration(PharmMLContext *context, xml::Node node);
@@ -70,6 +71,7 @@ namespace PharmML
             AstNode *getSteady();
             AstNode *getDuration();
             AstNode *getRate();
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
@@ -146,6 +148,7 @@ namespace PharmML
             std::vector<Administration *> getAdministrations();
             std::vector<IndividualAdministration *> getIndividualAdministrations();
             std::vector<InterventionsCombination *> getInterventionsCombinations();
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:

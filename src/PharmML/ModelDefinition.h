@@ -41,7 +41,7 @@ namespace PharmML
             PharmML::ObservationModel *getObservationModel();
             ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
 
         private:
             PharmML::PharmMLContext *context;

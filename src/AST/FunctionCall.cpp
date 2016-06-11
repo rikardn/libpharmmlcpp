@@ -35,16 +35,6 @@ namespace PharmML
         this->functionArguments.push_back(farg);
     }
 
-    void FunctionCall::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        PharmML::Symbol *found_symbol = this->addSymbRef(this->function, symbolMap);
-        this->addReference(found_symbol);
-        for (FunctionArgument *arg : this->functionArguments) {
-            arg->gatherSymbRefs(symbolMap);
-            std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(arg, symbolMap);
-            this->addReferences(found_symbols);
-        }
-    }
-
     std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
         return this->functionArguments;
     }
@@ -63,11 +53,6 @@ namespace PharmML
 
     AstNode *FunctionArgument::getArgument() {
         return this->argument;
-    }
-
-    void FunctionArgument::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
-        std::unordered_set<PharmML::Symbol *> found_symbols = this->symbRefsFromAst(this->argument, symbolMap);
-        this->addReferences(found_symbols);
     }
 
     void FunctionArgument::accept(AstNodeVisitor *visitor) {

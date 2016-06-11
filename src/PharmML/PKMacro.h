@@ -41,7 +41,7 @@ namespace PharmML
             std::vector<MacroValue> getValues();
             AstNode *getAssignment(std::string attribute);
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
 
             // POST PARSE/CONSOLIDATION
@@ -80,7 +80,7 @@ namespace PharmML
 
             std::vector<PKMacro *> getMacros();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering, std::string blkId);
 
             // POST PARSE/CONSOLIDATION
             void postParse(); // FIXME: See comment in Model.cpp!!!

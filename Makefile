@@ -4,19 +4,19 @@ LIBS = -lxml2
 
 ifeq ($(TARGET), UNIX)
   CC = g++
-  CFLAGS = -Wall -std=c++11 -g -Isrc `xml2-config --cflags`
+  CFLAGS = -MMD -Wall -std=c++14 -g -Isrc `xml2-config --cflags`
   OUTPUT = pharmml2poped
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -Wall -O3 -std=c++11 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -Wall -O3 -std=c++14 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = pharmml2poped.exe
 endif
 
 #main: main.cpp libpharmmlc.a
 #	$(CC) main.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-pharmml2poped: pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.h src/generators/PopED/PopEDSymbols.h src/generators/PopED/PopEDObjects.cpp src/generators/PopED/PopEDObjects.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
-	$(CC) pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
+pharmml2poped: pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.h src/generators/PopED/PopEDSymbols.h src/generators/PopED/PopEDObjects.cpp src/generators/PopED/PopEDObjects.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h src/generators/R/RSymbolNamer.cpp src/generators/R/RSymbolNamer.h libpharmmlc.a
+	$(CC) pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp src/generators/R/RSymbolNamer.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
 	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
@@ -24,8 +24,16 @@ mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGen
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o AstTransformation.o SymbolNameVisitor.o AstBuilder.o SymbolSortVisitor.o StringTyper.o
-	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o AstTransformation.o SymbolNameVisitor.o AstBuilder.o SymbolSortVisitor.o StringTyper.o
+libpharmmlc.a: PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o AstTransformation.o SymbolNameVisitor.o AstBuilder.o SymbolSortVisitor.o StringTools.o Block.o SymbolNamer.o SymbolGathering.o
+	ar -rcs libpharmmlc.a PharmMLContext.o Model.o ModellingSteps.o ModelDefinition.o VariabilityModel.o CovariateModel.o Covariate.o AstNodeFactory.o Constant.o Uniop.o Binop.o symbols.o Scalar.o RAstGenerator.o RPharmMLGenerator.o RPharmMLConsolidator.o StructuralModel.o Variable.o PKMacro.o Vector.o Piecewise.o FunctionDefinition.o ParameterModel.o Interventions.o Observations.o Arms.o DesignSpaces.o TrialDesign.o PopulationParameter.o IndividualParameter.o ObservationModel.o FunctionCall.o IndependentVariable.o Correlation.o RandomVariable.o Distribution.o DistributionParameter.o DerivativeVariable.o VariabilityLevel.o Dataset.o ExternalDataset.o ColumnMapping.o Interval.o XMLAstVisitor.o StringVisitor.o Symbol.o SymbolSet.o SymbRefFinder.o AstAnalyzer.o xml.o TextFormatter.o Consolidator.o CPopulationParameters.o CCovariates.o CVariabilityModels.o CFunctions.o RSymbols.o Logger.o PharmMLSection.o Object.o AstTransformation.o SymbolNameVisitor.o AstBuilder.o SymbolSortVisitor.o StringTools.o SymbolNamer.o Block.o SymbolGathering.o
+	ar -rcs libpharmmlc.d.a PharmMLContext.d Model.d ModellingSteps.d ModelDefinition.d VariabilityModel.d CovariateModel.d Covariate.d AstNodeFactory.d Constant.d Uniop.d Binop.d symbols.d Scalar.d RAstGenerator.d RPharmMLGenerator.d RPharmMLConsolidator.d StructuralModel.d Variable.d PKMacro.d Vector.d Piecewise.d FunctionDefinition.d ParameterModel.d Interventions.d Observations.d Arms.d DesignSpaces.d TrialDesign.d PopulationParameter.d IndividualParameter.d ObservationModel.d FunctionCall.d IndependentVariable.d Correlation.d RandomVariable.d Distribution.d DistributionParameter.d DerivativeVariable.d VariabilityLevel.d Dataset.d ExternalDataset.d ColumnMapping.d Interval.d XMLAstVisitor.d StringVisitor.d Symbol.d SymbolSet.d SymbRefFinder.d AstAnalyzer.d xml.d TextFormatter.d Consolidator.d CPopulationParameters.d CCovariates.d CVariabilityModels.d CFunctions.d RSymbols.d Logger.d PharmMLSection.d Object.d AstTransformation.d SymbolNameVisitor.d AstBuilder.d SymbolSortVisitor.d StringTools.d SymbolNamer.d Block.d SymbolGathering.d
+
+
+SymbolGathering.o: src/symbols/SymbolGathering.cpp src/symbols/SymbolGathering.h
+	$(CC) -c src/symbols/SymbolGathering.cpp -oSymbolGathering.o $(CFLAGS)
+
+Block.o: src/PharmML/Block.cpp src/PharmML/Block.h
+	$(CC) -c src/PharmML/Block.cpp -oBlock.o $(CFLAGS)
 
 SymbolSortVisitor.o: src/visitors/SymbolSortVisitor.cpp src/visitors/SymbolSortVisitor.h
 	$(CC) -c src/visitors/SymbolSortVisitor.cpp -oSymbolSortVisitor.o $(CFLAGS)
@@ -225,17 +233,22 @@ xml.o: src/xml/xml.cpp src/xml/xml.h
 TextFormatter.o: src/generators/TextFormatter.cpp src/generators/TextFormatter.h
 	$(CC) -c src/generators/TextFormatter.cpp -oTextFormatter.o $(CFLAGS)
 
-StringTyper.o: src/helpers/StringTyper.cpp src/helpers/StringTyper.h
-	$(CC) -c src/helpers/StringTyper.cpp -oStringTyper.o $(CFLAGS)
+StringTools.o: src/helpers/StringTools.cpp src/helpers/StringTools.h
+	$(CC) -c src/helpers/StringTools.cpp -oStringTools.o $(CFLAGS)
+
+SymbolNamer.o: src/helpers/SymbolNamer.cpp src/helpers/SymbolNamer.h
+	$(CC) -c src/helpers/SymbolNamer.cpp -oSymbolNamer.o $(CFLAGS)
 
 .PHONY: clean
 
 clean:
 	rm -f *.o
+	rm -f *.d
 	rm -f pharmml2poped
 	rm -f pharmml2poped.exe
 	rm -f mdl
 	rm -f libpharmmlc.a
+	rm -f libpharmmlc.d.a
 	rm -f main
 	rm -f output
 	rm -f main.exe

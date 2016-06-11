@@ -34,6 +34,7 @@ namespace PharmML
             void setName(std::string name);
             AstNode *getAssignment();
             void setAssignment(AstNode *assignment);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
         
         private:
             PharmMLContext *context;

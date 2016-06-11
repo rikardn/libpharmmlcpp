@@ -15,26 +15,30 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StringTyper.h"
+#ifndef PHARMML_SYMBOLGATHERING_H_
+#define PHARMML_SYMBOLGATHERING_H_
 
-namespace StringTyper
+#include <string>
+#include <unordered_map>
+#include <symbols/Symbol.h>
+
+namespace PharmML
 {
-    // Try to convert a string into an int (result) and report sucess/failure
-    bool isInt(std::string str, int &result) {
-        const char *c_str = str.c_str();
+    class Block;
 
-        int base = 10;
-        char *end_str;
-        long long_int;
-        errno = 0;
-        long_int = strtol(c_str, &end_str, base);
-        if ((errno == ERANGE && long_int == LONG_MAX) ||
-            long_int > INT_MAX || long_int < INT_MIN ||
-            *c_str == '\0' || *end_str != '\0') {
-            return false;
-        }
+    class SymbolGathering
+    {
+        public:
+            void newBlock(Block *block);
+            void globalBlock();
+            void addSymbol(Symbol *symbol);
+            Symbol *getSymbol(std::string blkId, std::string symbId);
+            void setupAllSymbRefs();
 
-        result = (int)long_int;
-        return true;
-    }
+        private:
+            Block *current_block;
+            std::unordered_map<std::string, std::unordered_map<std::string, Symbol *>> map;
+    };
 }
+
+#endif

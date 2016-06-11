@@ -34,6 +34,9 @@ namespace CPharmML
 
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
         // Consolidate PharmML PopulationParameter's and Correlation's into a wrapping object (with convenience functions)
+        if (!model->getModelDefinition()->getParameterModel()) {
+            return;
+        }
         std::vector<PharmML::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
         // FIXME: This will soon be cleaned
         for (auto param : model->getModelDefinition()->getParameterModel()->getParameters()) {
@@ -62,6 +65,9 @@ namespace CPharmML
     }
 
     void Consolidator::consolidateCovariates(PharmML::Model *model) {
+        if (!model->getModelDefinition()->getCovariateModel()) {
+            return;
+        }
         // Get ExternalDataset's (holding both ColumnMapping's and ColumnDefinition's)
         std::vector<PharmML::ColumnMapping *> col_maps;
         std::vector<PharmML::ColumnDefinition *> col_defs;
@@ -113,6 +119,10 @@ namespace CPharmML
     }
 
     void Consolidator::consolidateVariabilityModels(PharmML::Model *model) {
+        if (model->getModelDefinition()->getVariabilityModels().empty()) {
+            return;
+        }
+
         this->variabilityModels = new VariabilityModels();
         // VariabilityModels assumes a maximum of one model of each type (parameter/residual error)
         std::vector<PharmML::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();

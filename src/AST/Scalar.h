@@ -53,7 +53,31 @@ namespace PharmML
             virtual void accept(AstNodeVisitor *visitor);
         
         private:
-            double value;
+            std::string value;
+    };
+
+    // Boolean scalar (formerly a constant)
+    class ScalarBool : public Scalar
+    {
+        public:
+            ScalarBool(bool value);
+            bool toBool();
+            virtual void accept(AstNodeVisitor *visitor);
+
+        private:
+            bool value;
+    };
+
+    class ScalarString : public Scalar
+    {
+        public:
+            ScalarString(std::string value);
+            ScalarString(xml::Node xml_node);
+            std::string toString();
+            virtual void accept(AstNodeVisitor *visitor);
+
+        private:
+            std::string value;
     };
 }
 

@@ -25,10 +25,11 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    class ObservationModel : public Symbol, public PharmMLSection
+    class ObservationModel : public Block, public Symbol, public PharmMLSection
     {
         public:
             ObservationModel(PharmMLContext *context, xml::Node node);
@@ -63,14 +64,13 @@ namespace PharmML
             // Convenience methods
             SymbolSet getNeededSymbols();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
+            void gatherSymbols(SymbolGathering &gathering) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
             // Common to all observation models
-            std::string blkId;
             std::string name;
 
             // Type of observation data

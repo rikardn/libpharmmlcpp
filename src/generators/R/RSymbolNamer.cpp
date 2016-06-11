@@ -15,16 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_STRINGTYPER_H_
-#define PHARMML_STRINGTYPER_H_
+#include <generators/R/RSymbolNamer.h>
 
-#include <string>
-#include <cstdlib>
-#include "limits.h"
-
-namespace StringTyper
+namespace PharmML
 {
-    bool isInt(std::string str, int &result);
 }
-
-#endif

@@ -17,6 +17,7 @@
 
 #include "PopEDGenerator.h"
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <visitors/SymbolNameVisitor.h>
 #include <visitors/SymbRefFinder.h>
@@ -24,22 +25,15 @@
 namespace PharmML
 {
     // private
-    void PopEDGenerator::setValue(std::string str) {
-        this->value = str;
-    }
-
     std::string PopEDGenerator::accept(AstNode *node) {
         node->accept(&this->ast_gen);
         return ast_gen.getValue();
     }
 
     // public
-    std::string PopEDGenerator::getValue() {
-        return this->value;
-    }
-
     // Generators
     std::string PopEDGenerator::generateModel(Model *model) {
+        model->setSymbolNamer(&this->symbolNamer);      // Use the RSymbolNamer for symbol naming
         this->logger.setToolName("PopED");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
         // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
@@ -102,37 +96,41 @@ namespace PharmML
         form.openVector("parameters = c()", 1, ", ");
         PopEDSymbols symbgen;
         PopEDAstGenerator astgen(&symbgen);
- 
+
         SymbolSet needed_symbols = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols();
 
-        // Declare population parameters except variability parameters
-        for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
-            if (!param->isVariabilityParameter() and !param->isCorrelation()) {
-                param->getPopulationParameter()->accept(&symbgen);
-                form.add(param->getPopulationParameter()->getSymbId() + "=bpop[" + symbgen.getValue() + "]");
+        if (this->model->getModelDefinition()->getParameterModel()) {
+            // Declare population parameters except variability parameters
+            for (CPharmML::PopulationParameter *param : this->model->getConsolidator()->getPopulationParameters()->getPopulationParameters()) {
+                if (!param->isVariabilityParameter() and !param->isCorrelation()) {
+                    param->getPopulationParameter()->accept(&symbgen);
+                    form.add(param->getPopulationParameter()->getName() + "=bpop[" + symbgen.getValue() + "]");
+                }
+            }
+
+            // Declare ETAs
+            SymbolSet random_vars = needed_symbols.getRandomVariables();
+            Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
+            random_vars.remove(error);
+
+            for (Symbol *symbol : random_vars) {
+                symbol->accept(&symbgen);
+                form.add(symbol->getName() + "=b[" + symbgen.getValue() + "]");
+                this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
             }
         }
 
-        // Declare ETAs
-        SymbolSet random_vars = needed_symbols.getRandomVariables();
-        Symbol *error = this->model->getModelDefinition()->getObservationModel()->getResidualError()->getSymbol();
-        random_vars.removeSymbol(error);
-
-        for (Symbol *symbol : random_vars) {
-            symbol->accept(&symbgen);
-            form.add(symbol->getSymbId() + "=b[" + symbgen.getValue() + "]");
-            this->etas.push_back(static_cast<RandomVariable *>(symbol));        // Save for later use
-        }
-
         // Declare dose/time
-        std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-        std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
-
         int index = 1;
-        for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-            form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-            form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-            index += 2;
+        if (this->model->getTrialDesign()) {
+            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+
+            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                index += 2;
+            }
         }
 
         // Declare covariates
@@ -140,7 +138,7 @@ namespace PharmML
         for (Symbol *symbol : covariates) {
             Covariate *cov = static_cast<Covariate *>(symbol);
             if (!cov->isTransformed()) {
-                form.add(symbol->getSymbId() + "=a[" + std::to_string(index++) + "]");
+                form.add(symbol->getName() + "=a[" + std::to_string(index++) + "]");
             }
         }
 
@@ -183,7 +181,7 @@ namespace PharmML
             symbol->accept(&this->r_symb);
             form.add(this->r_symb.getValue());
             this->derivs.push_back(symbol);
-            name_list.push_back("d" + symbol->getSymbId());
+            name_list.push_back("d" + symbol->getName());
         }
 
         // Return list
@@ -236,7 +234,7 @@ namespace PharmML
                 DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
                 AstNode *init = derivative_variable->getInitialValue();
                 init->accept(&this->ast_gen);
-                dini_formatter.add(symbol->getSymbId() + "=" + this->ast_gen.getValue());
+                dini_formatter.add(symbol->getName() + "=" + this->ast_gen.getValue());
                 SymbRefFinder finder;     // Needed to find SymbRefs in the initial value
                 init->accept(&finder);
                 for (SymbRef *symbref : finder.getSymbRefs()) {
@@ -276,7 +274,7 @@ namespace PharmML
 
         if (!has_derivatives) {
             form.indentAdd("mod <- function(xt) {");
-            form.add(model->getIndependentVariable()->getSymbId() + " <- xt");
+            form.add(model->getIndependentVariable()->getName() + " <- xt");
         }
 
         // Don't want to have derivatives or pass through dependencies of derivatives
@@ -294,7 +292,7 @@ namespace PharmML
 
         // Special case if output is derivative
         if (output_set.hasDerivatives()) {
-            form.add("y <- out[, '" + output->getSymbol()->getSymbId() + "']");
+            form.add("y <- out[, '" + output->getSymbol()->getName() + "']");
         } else {
             SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
 
@@ -303,7 +301,7 @@ namespace PharmML
             for (Symbol *symbol : covariates) {
                 Covariate *cov = static_cast<Covariate *>(symbol);
                 if (!cov->isTransformed()) {
-                    post_ode_symbol_set.removeSymbol(symbol);
+                    post_ode_symbol_set.remove(symbol);
                 }
             }
 
@@ -319,7 +317,7 @@ namespace PharmML
                 form.add(rsymb_past.getValue());
             }
 
-            form.add("y <- " + output->toString());
+            form.add("y <- " + output->getSymbol()->getName());
         }
 
         if (!has_derivatives) {
@@ -347,7 +345,7 @@ namespace PharmML
 
         ObservationModel *om = this->model->getModelDefinition()->getObservationModel();
         std::string result_name = om->getSymbId();
-        std::string output_name = om->getOutput()->toString();
+        std::string output_name = om->getOutput()->getSymbIdRef();
 
         form.indentAdd("feps <- function(model_switch, xt, parameters, epsi, poped.db) {");
         form.indentAdd("with(as.list(parameters), {");
@@ -380,10 +378,59 @@ namespace PharmML
     std::string PopEDGenerator::genDatabaseCall() {
         TextFormatter form;
 
+        // Try to get PopED algorithm (containing settings) from PharmML
+        Algorithm *algo = nullptr;
+        PharmML::ModellingSteps *msteps = this->model->getModellingSteps();
+        if (msteps) {
+            std::vector<OptimalDesignStep *> od_steps = msteps->getOptimalDesignSteps();
+            for (OptimalDesignStep *od_step : od_steps) {
+                // Get and erase non-PopED operations
+                std::vector<Operation *> ops = od_step->getOperations();
+                ops.erase(std::remove_if(ops.begin(), ops.end(), [&](Operation *x) {
+                    if (x->getAlgorithm() && (x->getAlgorithm()->isNamed("PopED") || x->getAlgorithm()->isDefinedAs("PopED"))) {
+                        return false;
+                    } else {
+                        this->logger.warning("No PopED operation algorithm found in design step", x);
+                        return true;
+                    }
+                }), ops.end());
+
+                // Filter forward primary PopED operation
+                if (ops.size() > 1) {
+                    int min_o = ops.back()->getOrder();
+                    ops.erase(std::remove_if(ops.begin(), ops.end(), [&min_o](Operation *x) {
+                        if (min_o > x->getOrder()) {
+                            min_o = x->getOrder();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }), ops.end());
+                    this->logger.warning("Multiple PopED operations in same optimal design step, selecting lowest in order number", ops.at(0));
+                }
+
+                // Warn if multiple OptimalDesignStep's found with PopED algorithms in them
+                if (algo && !ops.empty()) {
+                    this->logger.warning("Multiple PopED algorithms in multiple design steps, selecting first seen", algo);
+                } else if (!ops.empty()) {
+                    algo = ops.at(0)->getAlgorithm();
+                }
+            }
+
+            // Warn if no PopED algorithm found
+            if (!algo) {
+                this->logger.warning("No PopED-specific settings could be retrieved from modelling steps", msteps);
+            }
+        }
+
         form.openVector("poped.db <- create.poped.database()", 1, ", ");
         form.add("ff_fun = 'ff'");
         form.add("fg_fun = 'sfg'");
         form.add("fError_fun = 'feps'");
+
+        if (!this->model->getModelDefinition()->getParameterModel()) {
+            return "";
+        }
 
         TextFormatter bpop;
         bpop.openVector("bpop = c()", 0, ", ");
@@ -537,13 +584,245 @@ namespace PharmML
             }
         }
 
-        if (scalar) {
+        // Use PopED settings from PharmML if found
+        bool fim_approx_type_set = false;
+        if (algo) {
+            // Store recognized and parsed settings in these
+            enum Criterion {EXPLICIT, UNDEF, NA};
+            Criterion criterion = Criterion::NA;
+
+            std::string penalty_file;
+
+            enum class FIMCalcType {FO, FOCE, FOCEI, FOI, UNDEF, NA};
+            FIMCalcType fim_calc_type = FIMCalcType::NA;
+
+            enum class FIMApproxType {FULL, REDUCED, UNDEF, NA};
+            FIMApproxType fim_approx_type = FIMApproxType::NA;
+
+            bool e_family_use = false;
+
+            enum class EIntegrationType {MC, LAPLACE, BFGS, UNDEF, NA};
+            EIntegrationType e_integration_type = EIntegrationType::NA;
+
+            enum class ESamplingType {RANDOM, LHC, UNDEF, NA};
+            ESamplingType e_sampling_type = ESamplingType::NA;
+
+            int e_samples = -1;
+
+            // Recognize and parse settings (and warn of all unexpectedness)
+            for (OperationProperty *prop : algo->getProperties()) {
+                if (prop->isNamed("criterion")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("explicit")) {
+                            criterion = Criterion::EXPLICIT;
+                        } else {
+                            criterion = Criterion::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"explicit"});
+                        }
+                    } else if (!prop->isString()) {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("file")) {
+                    if (prop->isString()) {
+                        penalty_file = prop->getString();
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("computeFIM")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("FO")) {
+                            fim_calc_type = FIMCalcType::FO;
+                        } else if (prop->isFoldedCaseString("FOCE")) {
+                            fim_calc_type = FIMCalcType::FOCE;
+                        } else if (prop->isFoldedCaseString("FOCEI")) {
+                            fim_calc_type = FIMCalcType::FOCEI;
+                        } else if (prop->isFoldedCaseString("FOI")) {
+                            fim_calc_type = FIMCalcType::FOI;
+                        } else {
+                            fim_calc_type = FIMCalcType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"FO","FOCE","FOCEI","FOI"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("approximationFIM")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("full")) {
+                            fim_approx_type = FIMApproxType::FULL;
+                        } else if (prop->isFoldedCaseString("reduced")) {
+                            fim_approx_type = FIMApproxType::REDUCED;
+                        } else {
+                            fim_approx_type = FIMApproxType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"full","reduced"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_value")) {
+                    // E family master switch: Determines if other E_family_* properties should be used
+                    if (prop->isBool() && prop->getBool() == true) {
+                        e_family_use = true;
+                    } else if (!prop->isBool()) {
+                        this->warnOperationPropertyUnexpectedType(prop, "bool");
+                    }
+                } else if (prop->isNamed("E_family_calc_type")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("MC") || prop->isFoldedCaseString("Monte-Carlo")) {
+                            e_integration_type = EIntegrationType::MC;
+                        } else if (prop->isFoldedCaseString("LAPLACE")) {
+                            e_integration_type = EIntegrationType::LAPLACE;
+                        } else if (prop->isFoldedCaseString("BFGS")) {
+                            e_integration_type = EIntegrationType::BFGS;
+                        } else {
+                            e_integration_type = EIntegrationType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"MC","LAPLACE","BFGS"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_sampling")) {
+                    if (prop->isString()) {
+                        if (prop->isFoldedCaseString("random")) {
+                            e_sampling_type = ESamplingType::RANDOM;
+                        } else if (prop->isFoldedCaseString("LHC")) {
+                            e_sampling_type = ESamplingType::LHC;
+                        } else {
+                            e_sampling_type = ESamplingType::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"random","LHC"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("E_family_edsampling")) {
+                    if (prop->isInt()) {
+                        if (prop->getInt() >= 0) {
+                            e_samples = prop->getInt();
+                        } else {
+                            this->warnOperationPropertyUnderflow(prop, 0);
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "integer");
+                    }
+                } else {
+                    this->warnOperationPropertyUnknown(prop);
+                }
+            }
+
+            // Use the parsed settings
+            if (criterion == Criterion::EXPLICIT) {
+                if (!penalty_file.empty()) {
+                    form.add("strEDPenaltyFile = '" + penalty_file + "'");
+                    std::ifstream file(penalty_file);
+                    if (!file.good()) {
+                        this->logger.warning("File '" + penalty_file + "' (penalty function) not found or not accessible");
+                    }
+                    file.close();
+                } else {
+                    this->logger.warning("Explicit criterion requested but no 'file' property set (penalty function)");
+                }
+            } else if (!penalty_file.empty()) {
+                this->logger.warning("Explicit criterion not requested but 'file' property set (penalty function), ignored");
+            }
+            switch (fim_calc_type) {
+                case FIMCalcType::FO    : form.add("iApproximationMethod = 0");
+                                          break;
+                case FIMCalcType::FOCE  : form.add("iApproximationMethod = 1");
+                                          break;
+                case FIMCalcType::FOCEI : form.add("iApproximationMethod = 2");
+                                          break;
+                case FIMCalcType::FOI   : form.add("iApproximationMethod = 3");
+                                          break;
+                case FIMCalcType::UNDEF : form.add("# iApproximationMethod NOT SET from 'computeFIM' (value not supported)");
+                                          break;
+                case FIMCalcType::NA    : break;
+            }
+            switch (fim_approx_type) {
+                case FIMApproxType::FULL    : form.add("iFIMCalculationType = 0");
+                                              fim_approx_type_set = true;
+                                              break;
+                case FIMApproxType::REDUCED : form.add("iFIMCalculationType = 1");
+                                              fim_approx_type_set = true;
+                                              break;
+                // TODO: iFIMCalculationType=2 to =7 (see page 15 of PopED 0.3 manual)
+                case FIMApproxType::UNDEF   : form.add("# iFIMCalculationType NOT SET from 'approximationFIM' (value not supported)");
+                                              break;
+                case FIMApproxType::NA      : break;
+            }
+            if (e_family_use) {
+                form.add("d_switch = 0");
+                switch (e_integration_type) {
+                    case EIntegrationType::MC      : form.add("iEDCalculationType = 0");
+                                                     break;
+                    case EIntegrationType::LAPLACE : form.add("iEDCalculationType = 1");
+                                                     break;
+                    case EIntegrationType::BFGS    : form.add("iEDCalculationType = 2");
+                                                     break;
+                    case EIntegrationType::UNDEF   : form.add("# iEDCalculationType NOT SET from 'E_family_calc_type' (value not supported)");
+                                                     break;
+                    case EIntegrationType::NA      : break;
+                }
+                switch (e_sampling_type) {
+                    case ESamplingType::RANDOM : form.add("bLHS = 0");
+                                                 break;
+                    case ESamplingType::LHC    : form.add("bLHS = 1");
+                                                 break;
+                    case ESamplingType::UNDEF  : form.add("# bLHS NOT SET from 'E_family_sampling' (value not supported)");
+                                                 break;
+                    case ESamplingType::NA     : break;
+                }
+                if (e_samples >= 0) {
+                    form.add("ED_samp_size = " + std::to_string(e_samples));
+                } else {
+                    form.add("# ED_samp_size NOT SET from 'E_family_ed_sampling' (out of bounds)");
+                }
+            } else if (e_integration_type != EIntegrationType::NA || e_sampling_type != ESamplingType::NA || e_samples >= 0) {
+                // Warn if E_family_* settings have been read but not flagged for usage
+                this->logger.warning("E family settings found but not actively used ('E_family_value' is 'false' or missing)", algo);
+            }
+        }
+
+        // Set FIM approximation to FO only if not overriden by PopED settings in PharmML
+        if (scalar && !fim_approx_type_set) {
             form.add("iFIMCalculationType = 0");
         }
 
         form.closeVector();
 
         return form.createString();
+    }
+
+    // OperationProperty has unexpected type: Warn and inform of expected type
+    void PopEDGenerator::warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type) {
+        std::string name = prop->getName();
+        this->logger.warning("Property '" + name + "' has unexpected type (expected: " + exp_type + ")", prop);
+    }
+
+    // OperationProperty is out of lower bound: Warn and inform of expected minimum
+    void PopEDGenerator::warnOperationPropertyUnderflow(OperationProperty *prop, int min) {
+        std::string name = prop->getName();
+        this->logger.warning("Property '" + name + "' value (" + std::to_string(prop->getInt()) + ") is illegal (restriction: >= " + std::to_string(min) + ")", prop);
+    }
+
+    // OperationProperty has unexpected string value: Warn and inform of expected string value
+    void PopEDGenerator::warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings) {
+        std::string name = prop->getName();
+        TextFormatter form;
+        form.openVector("", 0, ",");
+        std::for_each(std::begin(exp_strings), std::end(exp_strings), [&](std::string x){ form.add("'" + x + "'"); });
+        form.noFinalNewline();
+        this->logger.warning("Property '" + name + "' has unknown or unsupported value '" + prop->getString() + "' (supported: " + form.createString() + ")", prop);
+    }
+
+    // OperationProperty is unknown or unsupported: Warn and inform of all known properties
+    void PopEDGenerator::warnOperationPropertyUnknown(OperationProperty *prop) {
+        const std::vector<std::string> known_props = {"criterion","file","computeFIM","approximationFIM","E_family_value","E_family_calc_type","E_family_sampling","E_family_edsampling"};
+
+        std::string name = prop->getName();
+        TextFormatter form;
+        form.openVector("", 0, ",");
+        std::for_each(std::begin(known_props), std::end(known_props), [&](std::string x){ form.add("'" + x + "'"); });
+        form.noFinalNewline();
+        this->logger.warning("Property '" + prop->getName() +  "' unknown or unsupported (supported: " + form.createString() + ")", prop);
     }
 
     Symbol *PopEDGenerator::findSigmaSymbol() {
@@ -562,53 +841,4 @@ namespace PharmML
 
         return nullptr;
     }
-
-    // Visitors
-    void PopEDGenerator::visit(FunctionDefinition *node) {}
-
-    void PopEDGenerator::visit(FunctionArgumentDefinition *node) {}
-
-    void PopEDGenerator::visit(PopulationParameter *node) {}
-
-    void PopEDGenerator::visit(IndividualParameter *node) {}
-
-    void PopEDGenerator::visit(RandomVariable *node) {}
-    void PopEDGenerator::visit(VariabilityLevel *node) {}
-    void PopEDGenerator::visit(Correlation *node) {}
-    void PopEDGenerator::visit(Covariate *node) {}
-    void PopEDGenerator::visit(IndependentVariable *node) {}
-    void PopEDGenerator::visit(Variable *node) {}
-    void PopEDGenerator::visit(DerivativeVariable *node) {}
-    void PopEDGenerator::visit(ObservationModel *node) {}
-    void PopEDGenerator::visit(Distribution *node) {}
-    void PopEDGenerator::visit(ColumnMapping *node) {}
-
-    void PopEDGenerator::visit(ExternalFile *node) {}
-    void PopEDGenerator::visit(DataColumn *node) {}
-    void PopEDGenerator::visit(Dataset *node) {}
-    void PopEDGenerator::visit(TargetMapping *node) {}
-
-    void PopEDGenerator::visit(ExternalDataset *node) {}
-
-    void PopEDGenerator::visit(Interventions *node) {}
-    void PopEDGenerator::visit(Administration *node) {}
-    void PopEDGenerator::visit(IndividualAdministration *node) {}
-
-    void PopEDGenerator::visit(Observations *node) {}
-    void PopEDGenerator::visit(Observation *node) {}
-    void PopEDGenerator::visit(IndividualObservations *node) {}
-    void PopEDGenerator::visit(ObservationCombination *node) {}
-
-    void PopEDGenerator::visit(Arms *node) {}
-    void PopEDGenerator::visit(Arm *node) {}
-    void PopEDGenerator::visit(InterventionSequence *node) {}
-    void PopEDGenerator::visit(ObservationSequence *node) {}
-    void PopEDGenerator::visit(OccasionSequence *node) {}
-
-    void PopEDGenerator::visit(DesignSpaces *node) {}
-    void PopEDGenerator::visit(DesignSpace *node) {}
-
-    void PopEDGenerator::visit(ParameterEstimation *node) {}
-
-    void PopEDGenerator::visit(PKMacro *node) {}
 }

@@ -24,15 +24,6 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    // Boolean primitives
-    void LogicFalse::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicTrue::accept(AstNodeVisitor *visitor) {
-        return visitor->visit(this);
-    }
-
     // Pi and Euler's constant
     void Pi::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);

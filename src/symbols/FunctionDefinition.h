@@ -32,12 +32,11 @@ namespace PharmML
 
             std::string getType();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {};
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmMLContext *context;
             std::string symbolType;
             void parse(xml::Node node);
     };
@@ -51,13 +50,11 @@ namespace PharmML
             std::vector<FunctionArgumentDefinition *> getArguments();
             AstNode *getDefinition();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
         private:
-            PharmMLContext *context;
-
             AstNode *definition = nullptr;
             std::string symbolType;
             std::vector<FunctionArgumentDefinition *> arguments;

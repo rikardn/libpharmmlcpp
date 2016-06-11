@@ -67,7 +67,7 @@ namespace PharmML
     }
 
     void RAstGenerator::visit(SymbRef *node) {
-        this->setValue(node->toString());
+        this->setValue(node->getSymbol()->getName());
     }
 
     void RAstGenerator::visit(SteadyStateParameter *node) {
@@ -259,7 +259,46 @@ namespace PharmML
     }
 
     void RAstGenerator::visit(ScalarReal *node) {
-        this->setValue("(" + node->toString() + ")");
+        // Format as scientific or float, whichever is shorter
+        double d = node->toDouble();
+        size_t len = std::snprintf(0, 0, "%.*G", 8, d);
+        std::string s(len+1, 0);
+        std::snprintf(&s[0], len+1, "%.*G", 8, d);
+        s.pop_back();
+        
+        // Remove trailing zeroes after decimal point
+        if (s.find('.') != std::string::npos) {
+            // Find last zero (before 'E' if present)
+            size_t exp_pos, last_nonzero, num_zeroes;
+            if ((exp_pos = s.find('E')) == std::string::npos) {
+                last_nonzero = s.find_last_not_of('0');
+                num_zeroes = (s.length() - last_nonzero - 1);
+            } else {
+                last_nonzero = s.find_last_not_of('0', (exp_pos - 1));
+                num_zeroes = (exp_pos - last_nonzero - 1);
+            }
+            if (last_nonzero != std::string::npos) {
+                // Erase zeroes up to and including decimal point
+                s.erase(last_nonzero + 1, num_zeroes);
+                if(s.at(last_nonzero) == '.') {
+                    s.erase(last_nonzero, 1);
+                }
+            }
+        }
+        
+        this->setValue("(" + s + ")");
+    }
+
+    void RAstGenerator::visit(ScalarBool *node) {
+        if (node->toBool() == true) {
+            this->setValue("(TRUE)");
+        } else {
+            this->setValue("(FALSE)");
+        }
+    }
+    
+    void RAstGenerator::visit(ScalarString *node) {
+        this->setValue(node->toString());
     }
 
     void RAstGenerator::visit(BinopPlus *node) {
@@ -397,14 +436,6 @@ namespace PharmML
         node->getExpression()->accept(this);
         std::string expr = this->getValue();
         this->setValue(cond + ", " + expr);
-    }
-
-    void RAstGenerator::visit(LogicFalse *node) {
-        this->setValue("(FALSE)");
-    }
-
-    void RAstGenerator::visit(LogicTrue *node) {
-        this->setValue("(TRUE)");
     }
 
     void RAstGenerator::visit(Pi *node) {

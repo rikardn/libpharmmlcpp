@@ -28,7 +28,7 @@ namespace PharmML
     }
 
     void ParameterModel::parse(xml::Node node) {
-        this->blkId = node.getAttribute("blkId").getValue();
+        this->Block::parse(node);
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./mdef:Parameter");
         for (xml::Node n : param_nodes) {
             PharmML::Parameter *param = new PharmML::Parameter(this->context, n);
@@ -60,10 +60,26 @@ namespace PharmML
         }
     }
 
-    void ParameterModel::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ParameterModel::setupRefererSymbRefs(SymbolGathering &gathering) {
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
         for (PharmML::Correlation *corr : this->getCorrelations()) {
-            corr->gatherSymbRefs(symbolMap);
+            corr->setupSymbRefs(gathering, this->getBlkId());
+        }
+    }
+
+    void ParameterModel::gatherSymbols(SymbolGathering &gatherer) {
+        gatherer.newBlock(this);
+        for (Parameter *parameter : this->parameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (PopulationParameter *parameter : this->populationParameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (IndividualParameter *parameter : this->individualParameters) {
+            gatherer.addSymbol(parameter);
+        }
+        for (RandomVariable *rv : this->randomVariables) {
+            gatherer.addSymbol(rv);
         }
     }
 
@@ -85,10 +101,6 @@ namespace PharmML
 
     std::vector<Correlation *> ParameterModel::getCorrelations() {
         return this->correlations;
-    }
-
-    std::string ParameterModel::getBlkId() {
-        return this->blkId;
     }
 
     // Return the the initial covariance between var1 and var2 given a vector of parameterEstimations

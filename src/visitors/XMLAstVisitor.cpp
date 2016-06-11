@@ -81,10 +81,10 @@ namespace PharmML
 
     void XMLAstVisitor::visit(SymbRef *node) {
         xml::Node symbref("SymbRef", xml::Namespace::ct);
-        if (!node->getBlkId().empty()) {
-            symbref.setAttribute("blkIdRef", node->getBlkId());
+        if (!node->getBlkIdRef().empty()) {
+            symbref.setAttribute("blkIdRef", node->getBlkIdRef());
         }
-        symbref.setAttribute("symbIdRef", node->toString());
+        symbref.setAttribute("symbIdRef", node->getSymbIdRef());
         this->setValue(symbref);
     }
 
@@ -281,6 +281,23 @@ namespace PharmML
         this->setValue(scalar_real);
     }
 
+    void XMLAstVisitor::visit(ScalarBool *node) {
+        std::string name;
+        if (node->toBool() == true) {
+            name = "True";
+        } else {
+            name = "False";
+        }
+        xml::Node scalar_bool(name, xml::Namespace::ct);
+        this->setValue(scalar_bool);
+    }
+
+    void XMLAstVisitor::visit(ScalarString *node) {
+        xml::Node scalar_string("String", xml::Namespace::ct);
+        scalar_string.setContent(node->toString());
+        this->setValue(scalar_string);
+    }
+
     void XMLAstVisitor::visit(BinopPlus *node) {
         this->createBinop(node, "plus");
     }
@@ -376,12 +393,6 @@ namespace PharmML
     }
 
     void XMLAstVisitor::visit(Piece *node) {
-    }
-
-    void XMLAstVisitor::visit(LogicFalse *node) {
-    }
-
-    void XMLAstVisitor::visit(LogicTrue *node) {
     }
 
     void XMLAstVisitor::visit(Pi *node) {

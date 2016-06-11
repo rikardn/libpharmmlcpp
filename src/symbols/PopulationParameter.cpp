@@ -19,10 +19,14 @@
 
 namespace PharmML
 {
+    // FIXME: How to get context when created like this
+    PopulationParameter::PopulationParameter(std::string symbId) {
+        this->symbId = symbId;        
+    }
+
     PopulationParameter::PopulationParameter(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->PopulationParameter::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void PopulationParameter::parse(xml::Node node) {

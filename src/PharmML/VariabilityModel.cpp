@@ -22,17 +22,18 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
     VariabilityModel::VariabilityModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->Block::parse(node);
         this->parse(node);
     }
 
     void VariabilityModel::parse(xml::Node node) {
-        // Get blkId, type and name
-        this->blkId = node.getAttribute("blkId").getValue();
+        // Get type and name
         this->type = node.getAttribute("type").getValue();
         xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
         if (name_node.exists()) {
@@ -51,10 +52,6 @@ namespace PharmML
         return this->name;
     }
 
-    std::string VariabilityModel::getBlkId() {
-        return this->blkId;
-    }
-
     bool VariabilityModel::onResidualError() {
         return (this->type == "residualError");
     }
@@ -65,5 +62,12 @@ namespace PharmML
 
     std::vector<PharmML::VariabilityLevel *> VariabilityModel::getVariabilityLevels() {
         return this->variabilityLevels;
+    }
+            
+    void VariabilityModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (VariabilityLevel *varlev : this->variabilityLevels) {
+            gathering.addSymbol(varlev);
+        }
     }
 }

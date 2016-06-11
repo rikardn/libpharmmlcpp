@@ -216,4 +216,20 @@ namespace xml
     long Node::getLineNo() {
         return xmlGetLineNo(this->node);
     }
+
+    std::string buildNamespace(std::string name, std::string namespace_version) {
+        return "http://www.pharmml.org/pharmml/" + namespace_version + "/" + name;
+    }
+
+    Node nodeFromString(std::string xml_string) {
+        //xmlDocPtr doc = xmlParseMemory(xml_string.c_str(), xml_string.size()); 
+        xmlDocPtr doc = xmlReadMemory(xml_string.c_str(), xml_string.size(), NULL, "UTF-8", XML_PARSE_NOERROR);
+        xmlNodePtr node = xmlDocGetRootElement(doc);
+        xml::Node xml_node(node);
+        xml_node.setAttribute("xmlns:ct", xml::buildNamespace("CommonTypes", "0.8.1").c_str());
+        xml_node.setAttribute("xmlns:msteps", xml::buildNamespace("ModellingSteps", "0.8.1").c_str());
+
+        return xml_node;
+    }
+
 }

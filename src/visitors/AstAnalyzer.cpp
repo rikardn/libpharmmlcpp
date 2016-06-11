@@ -51,6 +51,8 @@ namespace PharmML
         this->scalar = nullptr;
         this->scalar_int = nullptr;
         this->scalar_real = nullptr;
+        this->scalar_bool = nullptr;
+        this->scalar_string = nullptr;
         this->functioncall = nullptr;
         this->piecewise = nullptr;
         this->vector = nullptr;
@@ -72,6 +74,14 @@ namespace PharmML
 
     ScalarReal *AstAnalyzer::getPureScalarReal() {
         return this->scalar_real;
+    }
+
+    ScalarBool *AstAnalyzer::getPureScalarBool() {
+        return this->scalar_bool;
+    }
+
+    ScalarString *AstAnalyzer::getPureScalarString() {
+        return this->scalar_string;
     }
 
     FunctionCall *AstAnalyzer::getPureFunctionCall() {
@@ -104,7 +114,7 @@ namespace PharmML
         if (!scint) {
             return false;
         }
-        return (StringTyper::isInt(scint->toString(), result));
+        return (StringTools::isInt(scint->toString(), result));
     }
 
     // visitor methods
@@ -405,6 +415,28 @@ namespace PharmML
         this->setValue("real[" + node->toString() + "]");
     }
 
+    void AstAnalyzer::visit(ScalarBool *node) {
+        if (this->first_node) {
+            this->scalar = node;
+            this->scalar_bool = node;
+            this->first_node = false;
+        }
+        if (node->toBool() == true) {
+            this->setValue("true");
+        } else {
+            this->setValue("false");
+        }
+    }
+
+    void AstAnalyzer::visit(ScalarString *node) {
+        if (this->first_node) {
+            this->scalar = node;
+            this->scalar_string = node;
+            this->first_node = false;
+        }
+        this->setValue("\"" + node->toString() + "\"");
+    }
+
     void AstAnalyzer::visit(BinopPlus *node) {
         this->first_node = false;
         this->setValue("plus(" + this->infix(node, ";") + ")");
@@ -564,16 +596,6 @@ namespace PharmML
         } else {
             this->setValue("Otherwise[" + s + "]");
         }
-    }
-
-    void AstAnalyzer::visit(LogicFalse *node) {
-        this->first_node = false;
-        this->setValue("false");
-    }
-
-    void AstAnalyzer::visit(LogicTrue *node) {
-        this->first_node = false;
-        this->setValue("true");
     }
 
     void AstAnalyzer::visit(Pi *node) {

@@ -51,11 +51,11 @@ namespace PharmML
         return this->maps;
     }
 
-    void TargetMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void TargetMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         // TODO: Is this right? How else should these strings be resolved to real symbols?
         for (MapType map : this->maps) {
             if (map.modelSymbol != "") {
-                PharmML::Symbol *symbol = symbolMap[map.modelSymbol];
+                PharmML::Symbol *symbol = gathering.getSymbol(blkId, map.modelSymbol);
                 map.modelSymbol_ptr = symbol;
                 this->addReference(symbol);
             }
@@ -136,7 +136,7 @@ namespace PharmML
             // Presence of both dataSymbol and admNumber indicates a map to (macro) administration
             if (map.dataSymbol != "" && map.admNumber != "") {
                 int adm_number;
-                if (StringTyper::isInt(map.admNumber, adm_number)) {
+                if (StringTools::isInt(map.admNumber, adm_number)) {
                     adm_map[adm_number] = map.dataSymbol;
                 }
             }
@@ -144,12 +144,12 @@ namespace PharmML
         return adm_map;
     }
 
-    void ColumnMapping::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ColumnMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->symbRef) {
-            this->mappedSymbol = this->addSymbRef(this->symbRef, symbolMap);
+            this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
         } else if (this->assignment) {
-            std::unordered_set<Symbol *> symbols = this->symbRefsFromAst(this->assignment, symbolMap);
-            this->mappedSymbol = *(symbols.begin()); // There shall only be one
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }
     }
 
@@ -183,7 +183,7 @@ namespace PharmML
                     this->num_maps++;
                 } else if (map.admNumber != "") {
                     int adm;
-                    if (StringTyper::isInt(map.admNumber, adm)) {
+                    if (StringTools::isInt(map.admNumber, adm)) {
                         this->adm_to_data[adm] = map.dataSymbol;
                     } else {
                         logger.error("TargetMapping element contains non-integer 'admNumber': " + map.admNumber, target_map);
@@ -239,7 +239,7 @@ namespace PharmML
             ScalarInt *adm_scint = ast_analyzer.getPureScalarInt();
             if (adm_scint) {
                 int adm_num;
-                if (StringTyper::isInt(adm_scint->toString(), adm_num)) { // FIXME: StringTyper::isInt and check should be done by ScalarInt constructor so it's valid everywhere!
+                if (StringTools::isInt(adm_scint->toString(), adm_num)) { // FIXME: StringTools::isInt and check should be done by ScalarInt constructor so it's valid everywhere!
                     // Add matching macro to data->macro map
                     auto got = this->adm_to_data.find(adm_num);
                     if (got != adm_to_data.end()) {

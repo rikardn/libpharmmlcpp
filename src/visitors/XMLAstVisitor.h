@@ -91,6 +91,8 @@ namespace PharmML
 
             virtual void visit(ScalarInt *node);
             virtual void visit(ScalarReal *node);
+            virtual void visit(ScalarBool *node);
+            virtual void visit(ScalarString *node);
 
             virtual void visit(BinopPlus *node);
             virtual void visit(BinopMinus *node);
@@ -104,8 +106,6 @@ namespace PharmML
             virtual void visit(BinopRem *node);
             virtual void visit(BinopAtan2 *node);
 
-            virtual void visit(LogicFalse *node);
-            virtual void visit(LogicTrue *node);
             virtual void visit(Pi *node);
             virtual void visit(Exponentiale *node);
             virtual void visit(NullValue *node);

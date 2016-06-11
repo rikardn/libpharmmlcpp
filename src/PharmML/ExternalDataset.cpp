@@ -59,9 +59,9 @@ namespace PharmML
         return this->toolName;
     }
 
-    void ExternalDataset::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ExternalDataset::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (ColumnMapping *col_map : this->getColumnMappings()) {
-            col_map->gatherSymbRefs(symbolMap);
+            col_map->setupSymbRefs(gathering, "");
         }
     }
 

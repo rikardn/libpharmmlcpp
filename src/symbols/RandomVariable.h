@@ -34,14 +34,13 @@ namespace PharmML
             void parse(xml::Node node);
             std::vector<VariabilityReference *> getVariabilityReferences();
             PharmML::Distribution *getDistribution();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
             AstNode *initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
         
         private:
-            PharmMLContext *context;
             std::vector<VariabilityReference *> variabilityReferences;
             PharmML::Distribution *Distribution;
     };

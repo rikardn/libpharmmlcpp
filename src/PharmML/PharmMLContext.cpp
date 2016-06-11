@@ -37,7 +37,6 @@ namespace PharmML
     }
 
     PharmMLContext::PharmMLContext(const char *filename, Model *model) {
-        this->factory.setContext(this);
         this->model = model;
         xmlKeepBlanksDefault(0);        // Otherwise updated XML will not get any indentation
         this->doc = xmlReadFile(filename, NULL, 0);
@@ -55,14 +54,6 @@ namespace PharmML
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST buildNamespace("ModellingSteps", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST buildNamespace("TrialDesign", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
-    }
-
-    // TODO: This and this->symbols/this->symbRefs would be better suited within Consolidator?
-    // FIXME: Not needed as symbols already know what they are reffering to via getSymbol()
-    Symbol *PharmMLContext::resolveSymbref(SymbRef *symbRef) {
-        std::string name = symbRef->toString();
-        Symbol *symbol = this->symbols[name];
-        return symbol;
     }
 
     xmlDoc *PharmMLContext::getDocument() {
@@ -136,17 +127,6 @@ leave:
 
     void PharmMLContext::write(const char *filename) {
         xmlSaveFormatFileEnc(filename, this->doc, "UTF-8", 1);
-    }
-
-    void PharmMLContext::fillSymbRefs() {
-        for (SymbRef *symbref : this->symbRefs) {
-            std::string symbId = symbref->toString();
-            if (this->symbols.count(symbId) != 0) {
-                symbref->setSymbol(this->symbols[symbId]);
-            } else {
-                //std::cout << "WARN: context->symbols[" + symbId + "] is undefined; Symbol hasn't reported in so a SymbRef is left dangling!" << std::endl; // DEBUG_OUTPUT
-            }
-        }
     }
 
     PharmMLContext::~PharmMLContext() {

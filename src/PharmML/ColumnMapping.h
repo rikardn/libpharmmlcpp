@@ -19,7 +19,7 @@
 #define PHARMML_COLUMNMAPPING_H_
 
 #include <unordered_map>
-#include <helpers/StringTyper.h>
+#include <helpers/StringTools.h>
 #include <helpers/Logger.h>
 #include <xml/xml.h>
 #include <PharmML/PharmMLSection.h>
@@ -29,6 +29,7 @@
 #include <visitors/AstAnalyzer.h>
 #include <symbols/Symbol.h>
 #include <PharmML/PKMacro.h>
+#include <symbols/SymbolGathering.h>
 
 namespace PharmML
 {
@@ -49,7 +50,7 @@ namespace PharmML
             std::string getBlkIdRef();
             std::vector<MapType> getMaps();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
 
         private:
@@ -73,7 +74,7 @@ namespace PharmML
             TargetMapping *getTargetMapping();
             std::unordered_map<int, std::string> getAdministrationMap();
 
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
 
             // POST PARSE/CONSOLIDATION

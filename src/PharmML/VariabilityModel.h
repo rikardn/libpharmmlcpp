@@ -24,24 +24,24 @@
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>
 #include <symbols/VariabilityLevel.h>
+#include <PharmML/Block.h>
 
 namespace PharmML
 {
-    class VariabilityModel
+    class VariabilityModel : public Block
     {
         public:
             VariabilityModel(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getName();
-            std::string getBlkId();
             bool onResidualError();
             bool onParameter();
             std::vector<PharmML::VariabilityLevel *> getVariabilityLevels();
+            void gatherSymbols(SymbolGathering &gathering);
 
         private:
             PharmML::PharmMLContext *context;
             std::string name;
-            std::string blkId;
             std::string type;
             std::vector<PharmML::VariabilityLevel *> variabilityLevels;
     };

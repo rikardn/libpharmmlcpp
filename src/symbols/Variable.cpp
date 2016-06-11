@@ -23,7 +23,6 @@ namespace PharmML
     CommonVariable::CommonVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->CommonVariable::parse(node);
-        this->context->symbols[this->symbId] = this;
     }
 
     void CommonVariable::parse(xml::Node node) {
@@ -43,9 +42,10 @@ namespace PharmML
         return this->is_derivative;
     }
 
-    void Variable::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+
+    void Variable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
        if (this->assignment) {
-            this->symbRefsFromAst(this->assignment, symbolMap);
+            this->setupAstSymbRefs(this->assignment, gathering, blkId);
        }
     }
 

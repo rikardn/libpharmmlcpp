@@ -237,6 +237,208 @@ namespace PharmML
         visitor->visit(this);
     }
 
+    OperationProperty::OperationProperty(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
+        this->context = context;
+        this->parse(node);
+    }
+
+    void OperationProperty::parse(xml::Node node) {
+        this->name = node.getAttribute("name").getValue();
+        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+        this->assignment = this->context->factory.create(assign_node.getChild());
+    }
+
+    std::string OperationProperty::getName() {
+        return this->name;
+    }
+
+    AstNode *OperationProperty::getAssignment() {
+        return this->assignment;
+    }
+
+    bool OperationProperty::isNamed(std::string case_insensitive_name) {
+        return StringTools::iequals(this->name, case_insensitive_name);
+    }
+
+    // Convenience functions for simply accessing simple property values
+    // FIXME: Below is properly setup by a postParse method (instead of AstAnalyzer usage each method)!
+    bool OperationProperty::isInt() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarInt()) {
+            this->int_val = new int(aa.getPureScalarInt()->toInt());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isReal() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarReal()) {
+            this->real_val = new double(aa.getPureScalarReal()->toDouble());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isBool() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarBool()) {
+            this->bool_val = new bool(aa.getPureScalarBool()->toBool());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OperationProperty::isString() {
+        PharmML::AstAnalyzer aa;
+        this->assignment->accept(&aa);
+        if (aa.getPureScalarString()) {
+            this->string_val = new std::string(aa.getPureScalarString()->toString());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    int OperationProperty::getInt() {
+        if (this->int_val) {
+            return *(this->int_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarInt()->toInt();
+        }
+    }
+
+    double OperationProperty::getReal() {
+        if (this->real_val) {
+            return *(this->real_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarReal()->toDouble();
+        }
+    }
+
+    bool OperationProperty::getBool() {
+        if (this->bool_val) {
+            return *(this->bool_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarBool()->toBool();
+        }
+    }
+
+    std::string OperationProperty::getString() {
+        if (this->string_val) {
+            return *(this->string_val);
+        } else {
+            PharmML::AstAnalyzer aa;
+            this->assignment->accept(&aa);
+            return aa.getPureScalarString()->toString();
+        }
+    }
+
+    bool OperationProperty::isFoldedCaseString(std::string case_insensitive) {
+         return StringTools::iequals(this->getString(), case_insensitive);
+    }
+
+    Algorithm::Algorithm(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
+        this->context = context;
+        this->parse(node);
+    }
+
+    void Algorithm::parse(xml::Node node) {
+        this->definition = node.getAttribute("definition").getValue();
+        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        if (name_node.exists()) {
+            this->name = name_node.getText();
+        }
+        std::vector<xml::Node> prop_nodes = this->context->getElements(node, "./msteps:Property");
+        for (xml::Node prop_node : prop_nodes) {
+            OperationProperty *prop = new OperationProperty(this->context, prop_node);
+            this->properties.push_back(prop);
+        }
+    }
+
+    std::string Algorithm::getName() {
+        return this->name;
+    }
+
+    std::string Algorithm::getDefinition() {
+        return this->definition;
+    }
+
+    std::vector<OperationProperty *> Algorithm::getProperties() {
+        return this->properties;
+    }
+
+    // Ask algorithm if (case-insensitively) named something
+    bool Algorithm::isNamed(std::string case_insensitive_name) {
+        return StringTools::iequals(this->name, case_insensitive_name);
+    }
+
+    // Ask algorithm if (case-insensitively) defined something
+    bool Algorithm::isDefinedAs(std::string case_insensitive_def) {
+        return StringTools::iequals(this->definition, case_insensitive_def);
+    }
+
+    Operation::Operation(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
+        this->context = context;
+        this->parse(node);
+    }
+
+    void Operation::parse(xml::Node node) {
+        // Get attributes (opType restrictions: only differences between est, sim and opt)
+        this->order = std::stoi(node.getAttribute("order").getValue());
+        this->type = node.getAttribute("opType").getValue();
+
+        // Get name, properties and algorithm
+        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        if (name_node.exists()) {
+            this->name = name_node.getText();
+        }
+        std::vector<xml::Node> prop_nodes = this->context->getElements(node, "./msteps:Property");
+        for (xml::Node prop_node : prop_nodes) {
+            OperationProperty *prop = new OperationProperty(this->context, prop_node);
+            this->properties.push_back(prop);
+        }
+        xml::Node algo_node = this->context->getSingleElement(node, "./msteps:Algorithm");
+        if (algo_node.exists()) {
+            this->algorithm = new Algorithm(this->context, algo_node);
+        }
+    }
+
+    int Operation::getOrder() {
+        return this->order;
+    }
+
+    std::string Operation::getType() {
+        return this->type;
+    }
+
+    std::string Operation::getName() {
+        return this->name;
+    }
+
+    std::vector<OperationProperty *> Operation::getProperties() {
+        return this->properties;
+    }
+
+    Algorithm *Operation::getAlgorithm() {
+        return this->algorithm;
+    }
+
     EstimationStep::EstimationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
         this->context = context;
         this->parse(node);
@@ -250,11 +452,20 @@ namespace PharmML
             this->parameterEstimations.push_back(param);
         }
 
-        // TODO: Add Operation support! SAEM etc. Forgot that one.
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
     }
 
     std::vector<ParameterEstimation *> EstimationStep::getParameters() {
         return this->parameterEstimations;
+    }
+
+    std::vector<Operation *> EstimationStep::getOperations() {
+        return this->operations;
     }
 
     SimulationStep::SimulationStep(PharmMLContext *context, xml::Node node) : CommonStepType(context, node) {
@@ -263,7 +474,18 @@ namespace PharmML
     }
 
     void SimulationStep::parse(xml::Node node) {
+        // TODO: Simulation support!
 
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
+    }
+
+    std::vector<Operation *> SimulationStep::getOperations() {
+        return this->operations;
     }
 
     OptimiseOn::OptimiseOn(PharmMLContext *context, xml::Node node) {
@@ -308,6 +530,7 @@ namespace PharmML
     }
 
     OptimalDesignStep::OptimalDesignStep(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->parse(node);
     }
@@ -320,20 +543,33 @@ namespace PharmML
             this->optOn = new OptimiseOn(this->context, opt_on_node);
         }
 
+        // Get parameters to estimate
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./msteps:ParametersToEstimate/msteps:ParameterEstimation");
         for (xml::Node param_node : param_nodes) {
             ParameterEstimation *param = new ParameterEstimation(this->context, param_node);
             this->parameterEstimations.push_back(param);
         }
 
-        // TODO: Get more stuff here
+        // Get Operation's
+        std::vector<xml::Node> op_nodes = this->context->getElements(node, "./msteps:Operation");
+        for (xml::Node op_node : op_nodes) {
+            Operation *operation = new Operation(this->context, op_node);
+            this->operations.push_back(operation);
+        }
+
+        // TODO: Get more optimal design stuff
     }
 
     std::vector<ParameterEstimation *> OptimalDesignStep::getParameters() {
         return this->parameterEstimations;
     }
 
+    std::vector<Operation *> OptimalDesignStep::getOperations() {
+        return this->operations;
+    }
+
     ModellingSteps::ModellingSteps(PharmMLContext *context, xml::Node node) {
+        this->setXMLNode(node);
         this->context = context;
         this->xml_node = node;
         this->parse(node);
@@ -373,11 +609,11 @@ namespace PharmML
         }
     }
 
-    void ModellingSteps::gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap) {
+    void ModellingSteps::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (PharmML::EstimationStep *est_step : this->getEstimationSteps()) {
             std::vector<ParameterEstimation *> est_params = est_step->getParameters();
             for (PharmML::ParameterEstimation *est_param : est_params) {
-                Symbol *found_symbol = symbolMap[est_param->getSymbRef()->toString()];
+                Symbol *found_symbol = gathering.getSymbol(est_param->getSymbRef()->getBlkIdRef(), est_param->getSymbRef()->getSymbIdRef());
                 est_param->addReference(found_symbol);
                 est_param->getSymbRef()->setSymbol(found_symbol);
             }
@@ -388,7 +624,7 @@ namespace PharmML
         for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
             std::vector<ParameterEstimation *> opt_params = opt_step->getParameters();
             for (PharmML::ParameterEstimation *opt_param : opt_params) {
-                Symbol *found_symbol = symbolMap[opt_param->getSymbRef()->toString()];
+                Symbol *found_symbol = gathering.getSymbol(opt_param->getSymbRef()->getBlkIdRef(), opt_param->getSymbRef()->getSymbIdRef());
                 opt_param->addReference(found_symbol);
                 opt_param->getSymbRef()->setSymbol(found_symbol);
             }

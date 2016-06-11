@@ -25,6 +25,10 @@
 #include <AST/symbols.h>
 #include <PharmML/Dataset.h>
 #include <symbols/Symbol.h>
+#include <symbols/SymbolGathering.h>
+
+#include <helpers/StringTools.h>
+#include <visitors/AstAnalyzer.h>
 
 namespace PharmML
 {
@@ -97,6 +101,7 @@ namespace PharmML
             AstNode *getLoBound();
             AstNode *getHiBound();
             void accept(PharmMLVisitor *visitor);
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
 
         private:
             PharmML::PharmMLContext *context;
@@ -107,17 +112,91 @@ namespace PharmML
             AstNode *hiBound = nullptr;
     };
 
+    class OperationProperty : public PharmMLSection
+    {
+        public:
+            OperationProperty(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            AstNode *getAssignment();
+
+            bool isNamed(std::string case_insensitive_name);
+            // Convenience functions for simply accessing simple property values
+            bool isInt();
+            bool isReal();
+            bool isBool();
+            bool isString();
+            
+            int getInt();
+            double getReal();
+            bool getBool();
+            std::string getString();
+            bool isFoldedCaseString(std::string case_insensitive);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            AstNode *assignment;
+
+            // Convenience storage of simple property values
+            int *int_val = nullptr;
+            double *real_val = nullptr;
+            bool *bool_val = nullptr;
+            std::string *string_val = nullptr;
+            // FIXME: Above is properly setup by a postParse method!
+    };
+
+    class Algorithm : public PharmMLSection
+    {
+        public:
+            Algorithm(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            std::string getName();
+            std::string getDefinition();
+            std::vector<OperationProperty *> getProperties();
+
+            bool isNamed(std::string case_insensitive_name);
+            bool isDefinedAs(std::string case_insensitive_def);
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            std::string definition;
+            std::vector<OperationProperty *> properties;
+    };
+
+    class Operation : public PharmMLSection
+    {
+        public:
+            Operation(PharmML::PharmMLContext *context, xml::Node node);
+            void parse(xml::Node node);
+            int getOrder();
+            std::string getType();
+            std::string getName();
+            std::vector<OperationProperty *> getProperties();
+            Algorithm *getAlgorithm();
+
+        private:
+            PharmML::PharmMLContext *context;
+            std::string name;
+            int order;
+            std::string type;
+            std::vector<OperationProperty *> properties;
+            Algorithm *algorithm = nullptr;
+    };
+
     class EstimationStep : CommonStepType
     {
         public:
             EstimationStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
             std::vector<ParameterEstimation *> parameterEstimations;
-            // TODO: Add Operation support! SAEM etc. Forgot that one.
+            std::vector<Operation *> operations;
 
     };
 
@@ -126,9 +205,11 @@ namespace PharmML
         public:
             SimulationStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
+            std::vector<Operation *> operations;
     };
 
     class OptimiseOn
@@ -150,26 +231,28 @@ namespace PharmML
             std::vector<SymbRef *> symbols;
     };
 
-    class OptimalDesignStep
+    class OptimalDesignStep : public PharmMLSection
     {
         public:
             OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
+            std::vector<Operation *> getOperations();
 
         private:
             PharmML::PharmMLContext *context;
             std::string oid;
             OptimiseOn *optOn = nullptr;
             std::vector<ParameterEstimation *> parameterEstimations;
+            std::vector<Operation *> operations;
     };
 
-    class ModellingSteps
+    class ModellingSteps : public PharmMLSection
     {
         public:
             ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             std::vector<EstimationStep *> getEstimationSteps();
             std::vector<SimulationStep *> getSimulationSteps();
             std::vector<OptimalDesignStep *> getOptimalDesignSteps();

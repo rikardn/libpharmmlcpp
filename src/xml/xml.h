@@ -72,6 +72,9 @@ namespace xml
         private:
             xmlNode *node;
     };
+
+    // This is expected to be used for testing
+    Node nodeFromString(std::string xml_string);
 }
 
 #endif

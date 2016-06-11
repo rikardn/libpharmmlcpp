@@ -28,6 +28,8 @@
 #include <PharmML/TrialDesign.h>
 #include <xml/xml.h>
 #include <consolidators/Consolidator.h>
+#include <symbols/SymbolGathering.h>
+#include <helpers/SymbolNamer.h>
 
 namespace PharmML
 {
@@ -43,23 +45,28 @@ namespace PharmML
             PharmML::TrialDesign *getTrialDesign();
             PharmML::ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
-            void gatherSymbRefs(std::unordered_map<std::string, Symbol *> &symbolMap);
+            void setSymbolNamer(SymbolNamer *namer);
+            SymbolNamer *getSymbolNamer();
+
+            PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
 
         private:
             PharmMLContext *context;
-            PharmML::IndependentVariable *IndependentVariable;
+            PharmML::IndependentVariable *IndependentVariable = nullptr;
             std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
             PharmML::ModelDefinition *ModelDefinition;
-            PharmML::TrialDesign *TrialDesign;
+            PharmML::TrialDesign *TrialDesign = nullptr;
             PharmML::ModellingSteps *ModellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
             PharmML::SymbolSet allSymbols;
             std::unordered_set<PharmML::Object *> allObjects;
+            SymbolNamer *symbolNamer;
             void parse(xml::Node node);
             void postParse();
             void setupSymbols();
             void setupObjects();
             void checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section);
+            void setupRefererSymbRefs(SymbolGathering &gathering);
     };
 }
 

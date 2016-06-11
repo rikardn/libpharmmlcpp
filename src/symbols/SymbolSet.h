@@ -32,12 +32,12 @@ namespace PharmML
             SymbolSet(std::unordered_set<Symbol *> symbol_set);
             void addSymbol(Symbol *symbol);
             void addSymbols(std::unordered_set<Symbol *> symbol_set);
-            void removeSymbol(Symbol *symbol);
+            void remove(Symbol *symbol);
+            void remove(SymbolSet& set);
             bool hasSymbol(Symbol *symbol);
             bool isEmpty();
             bool dependsOn(Symbol *symbol);
             void merge(const SymbolSet& set);
-            void remove(SymbolSet& set);
             SymbolSet getDependencies();
             SymbolSet getDependenciesNoPass(SymbolSet &nopass);
             std::vector<Symbol *> getOrdered();
@@ -51,6 +51,7 @@ namespace PharmML
             SymbolSet getIndividualParameters();
             SymbolSet getAllParameters();       // Parameters, PopulationParameters, IndividualParameters and RandomVariables
             bool hasDerivatives();
+            int numSymbols();
             std::unordered_set<Symbol *>::iterator begin();
             std::unordered_set<Symbol *>::iterator end();
 

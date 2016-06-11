@@ -18,17 +18,20 @@
 #include "Symbol.h"
 #include <visitors/SymbRefFinder.h>
 #include <iostream>
+#include <symbols/SymbolGathering.h>
+#include <PharmML/PharmMLContext.h>
+#include <PharmML/Model.h>
 
 namespace PharmML
 {
-    /* Convenience method for those Referer derived classes that have naked SymbRef's. Also returns
-     * Symbol so gatherer also can add them to a separate collection if deemed necessary. */
-    PharmML::Symbol *Referer::addSymbRef(SymbRef *symbRef, std::unordered_map<std::string, Symbol *> &symbolMap) {
-        Symbol *found_symbol = symbolMap[symbRef->toString()];
+    // Convenience method for naked SymbRefs.
+    PharmML::Symbol *Referer::addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId) {
+        Symbol *found_symbol = gathering.getSymbol(symbRef->getBlkIdRef(blkId), symbRef->getSymbIdRef());
         symbRef->setSymbol(found_symbol);
         this->referencedSymbols.addSymbol(found_symbol);
         return found_symbol;
     }
+
     void Referer::addReference(Symbol *symbol) {
         this->referencedSymbols.addSymbol(symbol);
     }
@@ -49,29 +52,34 @@ namespace PharmML
     }
 
     // Put Symbols into SymbRefs and add Symbols to referencedSymbols from an AST
-    // Also return the found symbols (see Consolidator, DistributionParameter and Referer class)
-    std::unordered_set<Symbol *> Referer::symbRefsFromAst(AstNode *node, std::unordered_map<std::string, Symbol *> &symbolMap) {
-        std::unordered_set<Symbol *> found_symbols;
-        //~ SymbRefFinder finder; // See comment in SymbRefFinder.cpp
-        SymbRefFinder finder(&symbolMap);
+    void Referer::setupAstSymbRefs(AstNode *node, SymbolGathering &gathering, std::string blkId) {
+        SymbRefFinder finder;
         node->accept(&finder);
         for (SymbRef *symbref : finder.getSymbRefs()) {
-            Symbol *symbol = symbolMap[symbref->toString()];
+            Symbol *symbol = gathering.getSymbol(symbref->getBlkIdRef(blkId), symbref->getSymbIdRef());
+            if (!symbol) {
+                symbol = gathering.getSymbol(symbref->getBlkIdRef(""), symbref->getSymbIdRef());
+            }
             symbref->setSymbol(symbol);
-            found_symbols.insert(symbol);
             this->referencedSymbols.addSymbol(symbol);
         }
-        return found_symbols;
     }
 
     std::string Symbol::getSymbId() {
         return this->symbId;
     }
 
+    // Get the name mangled through the global model symbolMangler
+    std::string Symbol::getName() {
+        SymbolNamer *namer = this->context->model->getSymbolNamer();
+        if (namer) {
+            return namer->getNameString(this);
+        } else {        // No namer was installed. Do the most sensible
+            return this->symbId;
+        }
+    }
+
     void Symbol::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
-        /* Here it may be tempting to place blkId puller as well but keep in mind that for e.g.
-         * ObservationModel's this is on root node while symbId is further down. I.e.
-         * Symbol::parse(..) argument list needs to take two nodes as argument. */
     }
 }

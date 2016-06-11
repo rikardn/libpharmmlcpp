@@ -27,6 +27,7 @@ namespace PharmML
 {
     CovariateModel::CovariateModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
+        this->Block::parse(node);
         this->parse(node);
     }
 
@@ -42,4 +43,13 @@ namespace PharmML
         return this->covariates;
     }
 
+    void CovariateModel::gatherSymbols(SymbolGathering &gathering) {
+        gathering.newBlock(this);
+        for (Covariate *cov : this->covariates) {
+            gathering.addSymbol(cov);
+            for (Covariate *transformation : cov->getTransformations()) {
+                gathering.addSymbol(transformation);
+            }
+        }
+    }
 }

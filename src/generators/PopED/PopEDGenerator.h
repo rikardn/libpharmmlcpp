@@ -36,62 +36,18 @@
 #include <generators/PopED/PopEDErrorAstGenerator.h>
 #include <helpers/Logger.h>
 #include <generators/PopED/PopEDObjects.h>
+#include <generators/R/RSymbolNamer.h>
 
 namespace PharmML
 {
-    class PopEDGenerator : public PharmMLVisitor
+    class PopEDGenerator
     {
         public:
-            std::string getValue();
             std::string generateModel(Model *model);
-
-            void visit(FunctionDefinition *node) override;
-            void visit(FunctionArgumentDefinition *node) override;
-
-            void visit(PopulationParameter *node) override;
-            void visit(IndividualParameter *node) override;
-            void visit(RandomVariable *node) override;
-            void visit(VariabilityLevel *node) override;
-            void visit(Correlation *node) override;
-            void visit(Covariate *node) override;
-            void visit(IndependentVariable *node) override;
-            void visit(Variable *node) override;
-            void visit(DerivativeVariable *node) override;
-            void visit(ObservationModel *node) override;
-            void visit(Distribution *node) override;
-            void visit(ColumnMapping *node) override;
-
-            void visit(ExternalFile *node) override;
-            void visit(DataColumn *node) override;
-            void visit(Dataset *node) override;
-            void visit(TargetMapping *node) override;
-
-            void visit(ExternalDataset *node) override;
-
-            void visit(Interventions *node) override;
-            void visit(Administration *node) override;
-            void visit(IndividualAdministration *node) override;
-
-            void visit(Observations *node) override;
-            void visit(Observation *node) override;
-            void visit(IndividualObservations *node) override;
-            void visit(ObservationCombination *node) override;
-
-            void visit(Arms *node) override;
-            void visit(Arm *node) override;
-            void visit(InterventionSequence *node) override;
-            void visit(ObservationSequence *node) override;
-            void visit(OccasionSequence *node) override;
-
-            void visit(DesignSpaces *node) override;
-            void visit(DesignSpace *node) override;
-
-            void visit(ParameterEstimation *node) override;
-
-            void visit(PKMacro *node) override;
 
         private:
             Logger logger;
+            RSymbolNamer symbolNamer;
             RAstGenerator ast_gen;
             RSymbols r_symb;
             PopEDAstGenerator poped_astgen;
@@ -103,8 +59,6 @@ namespace PharmML
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
             std::vector<RandomVariable *> etas;
 
-            std::string value;
-            void setValue(std::string str);
             std::string accept(AstNode *);
             std::string genParameterModel();
             std::string genODEFunc();
@@ -114,6 +68,12 @@ namespace PharmML
             std::string getDoseVariable();
             void collectTrialDesignInformation();
             Symbol *findSigmaSymbol();
+
+            // Logger methods
+            void warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type);
+            void warnOperationPropertyUnderflow(OperationProperty *prop, int min);
+            void warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings);
+            void warnOperationPropertyUnknown(OperationProperty *prop);
     };
 }
 

@@ -96,55 +96,67 @@ namespace PharmML
     // POST PARSE/CONSOLIDATION
     // Perform post-parse functions to enable higher-level abstraction/consolidation
     void PKMacro::postParse() {
-        PharmML::AstAnalyzer ast_analyzer;
         // TODO: Hopefully validation and argument parsing can be done in here instead of in PKMacros/MDLGenerator
+
+        // Get integer attributes
+        int from_int, to_int, target_int, cmt_int;
+        PharmML::AstAnalyzer ast_analyzer;
+        for (MacroValue value : this->values) {
+            auto get_int = [&](AstNode *x) -> int {
+                ast_analyzer.reset();
+                x->accept(&ast_analyzer);
+                PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                return scalar_int->toInt();
+            };
+            if (value.first == "from") {
+                from_int = get_int( this->getAssignment(value.first) );
+            } else if (value.first == "to") {
+                to_int = get_int( this->getAssignment(value.first) );
+            } else if (value.first == "target") {
+                target_int = get_int( this->getAssignment(value.first) );
+            } else if (value.first == "cmt") {
+                cmt_int = get_int( this->getAssignment(value.first) );
+            } 
+        }
+
+        // Split into types and store integer attributes more logically
         if (this->type == "Compartment") {
             this->is_comp = true;
             this->sub_type = MacroType::Compartment;
-
-            AstNode *as = this->getAssignment("cmt");
-            as->accept(&ast_analyzer);
-            PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-            this->cmt_num = scalar_int->toInt();
+            this->cmt_num = cmt_int;
         } else if (this->type == "Peripheral") {
             this->is_comp = true;
             this->sub_type = MacroType::Peripheral;
-
-            AstNode *as = this->getAssignment("cmt");
-            as->accept(&ast_analyzer);
-            PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-            this->cmt_num = scalar_int->toInt();
+            // TODO: Parse kij and k_i_j to determine MacroType::Compartment linked
         } else if (this->type == "Effect") {
             this->is_comp = true;
             this->sub_type = MacroType::Effect;
+            // TODO: cmt_int here means what?
         } else if (this->type == "Depot") {
             this->is_abs = true;
             this->sub_type = MacroType::Depot;
+            this->target_cmt_num = target_int;
         } else if (this->type == "IV") {
             this->is_abs = true;
             this->sub_type = MacroType::IV;
+            this->target_cmt_num = cmt_int;
         } else if (this->type == "Absorption") {
             this->is_abs = true;
             this->sub_type = MacroType::Absorption;
+            this->target_cmt_num = cmt_int;
         } else if (this->type == "Oral") {
             this->is_abs = true;
             this->sub_type = MacroType::Oral;
+            this->target_cmt_num = cmt_int;
         } else if (this->type == "Elimination") {
             this->is_trans = true;
             this->sub_type = MacroType::Elimination;
-
-            AstNode *as = this->getAssignment("cmt");
-            as->accept(&ast_analyzer);
-            PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-            this->from_num = scalar_int->toInt();
+            this->source_cmt_num = cmt_int;
         } else if (this->type == "Transfer") {
             this->is_trans = true;
             this->sub_type = MacroType::Transfer;
-
-            AstNode *as = this->getAssignment("from");
-            as->accept(&ast_analyzer);
-            PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
-            this->from_num = scalar_int->toInt();
+            this->source_cmt_num = from_int;
+            this->target_cmt_num = to_int;
         }
     }
 
@@ -263,12 +275,19 @@ namespace PharmML
         return this->sub_type;
     }
 
-    int PKMacro::getCompartmentNum() {
+    // For compartments: Get referable integer number
+    int PKMacro::getNum() {
         return this->cmt_num;
     }
 
-    int PKMacro::getFromNum() {
-        return this->from_num;
+    // For mass transfers: Get integer number reference (source)
+    int PKMacro::getSourceNum() {
+        return this->source_cmt_num;
+    }
+
+    // For mass transfers/absorptions: Get integer number reference (target)
+    int PKMacro::getTargetNum() {
+        return this->target_cmt_num;
     }
 
     // Wrapping layer holding all macros and convenience functions

@@ -52,8 +52,9 @@ namespace PharmML
             bool isAbsorptionProcess();
             bool isMassTransfer();
             MacroType getSubType();
-            int getCompartmentNum();
-            int getFromNum();
+            int getNum();
+            int getSourceNum();
+            int getTargetNum();
 
         private:
             PharmML::PharmMLContext *context;
@@ -70,7 +71,8 @@ namespace PharmML
             bool is_trans = false;
             MacroType sub_type;
             int cmt_num;
-            int from_num;
+            int source_cmt_num;
+            int target_cmt_num;
     };
 
     class PKMacros : public PharmMLSection

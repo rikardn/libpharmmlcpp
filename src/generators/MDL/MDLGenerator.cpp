@@ -524,17 +524,15 @@ namespace PharmML
         // Number compartments consecutively and build ordered list of compartments and mass transfers
         std::vector<PharmML::PKMacro *> cmt_macros = pk_macros->getCompartments();
         std::vector<PharmML::PKMacro *> trans_macros = pk_macros->getTransfers();
-        std::vector<PharmML::PKMacro *> cmt_trans_macros;
+        std::vector<PharmML::PKMacro *> cmt_trans_macros; // To contain both of the above in good order
         for (PharmML::PKMacro *cmt_macro : cmt_macros) {
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
             
             // Find transfers FROM this compartment
-            int cmt_attr = cmt_macro->getCompartmentNum();
+            int cmt_num = cmt_macro->getNum();
             for (PharmML::PKMacro *trans_macro : trans_macros) {
                 cmt_trans_macros.push_back(cmt_macro);
-                int from_attr;
-                from_attr = trans_macro->getFromNum();
-                if (cmt_attr == from_attr) {
+                if (cmt_num == trans_macro->getSourceNum()) {
                     cmt_trans_macros.push_back(trans_macro);
                 }
             }
@@ -549,13 +547,8 @@ namespace PharmML
             form.openVector(prefix + " : {}", 0, ", ");
 
             // Get target of absorption process (MDL uses the names when refering)
-            int to_attr;
-            if ( macro->hasAttribute("cmt") ) {
-                //~ macro->tryParseInt("cmt", to_attr, this->ast_analyzer);
-            } else if ( macro->hasAttribute("target") ) { // PharmML Depot has 'target' instead of 'cmt'
-                //~ macro->tryParseInt("target", to_attr, this->ast_analyzer);
-            }
-            std::string to_name = pk_macros->getCompartment(to_attr)->getName();
+            int target_num = macro->getTargetNum();
+            std::string target_name = pk_macros->getCompartment(target_num)->getName();
             
             // Add differently if depot-ish absorption or direct (IV)
             if (macro->getSubType() != MacroType::IV) {
@@ -563,7 +556,7 @@ namespace PharmML
                 form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
 
                 // Output compartment target 
-                form.add("to=" + to_name);
+                form.add("to=" + target_name);
 
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
                 AstNode *tlag = macro->getAssignment("Tlag");
@@ -594,7 +587,7 @@ namespace PharmML
                 form.add("type is direct");
 
                 // Output compartment target
-                form.add("to=" + to_name);
+                form.add("to=" + target_name);
 
                 // Get parameterization
                 AstNode *tlag = macro->getAssignment("Tlag");
@@ -659,25 +652,19 @@ namespace PharmML
                 }
 
                 // In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from
-                int from_attr;
-                if ( macro->hasAttribute("cmt") ) { // For eliminations we call it 'cmt'
-                    //~ macro->tryParseInt("cmt", from_attr, this->ast_analyzer);
-                } else if ( macro->hasAttribute("from") ) { // For transfers we call it 'from'
-                    //~ macro->tryParseInt("from", from_attr, this->ast_analyzer);
-                }
-                PharmML::PKMacro *from_macro = pk_macros->getCompartment(from_attr);
+                int source_num = macro->getSourceNum();
+                PharmML::PKMacro *from_macro = pk_macros->getCompartment(source_num);
                 form.add("modelCmt=" + std::to_string(mdl_cmt[from_macro]));
 
                 // Output source compartment
-                std::string from_name = pk_macros->getCompartment(from_attr)->getName();
+                std::string from_name = pk_macros->getCompartment(source_num)->getName();
                 form.add("from=" + from_name);
 
                 // Output target compartment (for transfers only)
                 if ( macro->hasAttribute("to") ) {
-                    int to_attr;
-                    //~ macro->tryParseInt("to", to_attr, this->ast_analyzer);
-                    std::string to_name = pk_macros->getCompartment(to_attr)->getName();
-                    form.add("to=" + to_name);
+                    int target_num = macro->getTargetNum();
+                    std::string target_name = pk_macros->getCompartment(target_num)->getName();
+                    form.add("to=" + target_name);
                 }
 
                 // Get (linear) elimination parameterization

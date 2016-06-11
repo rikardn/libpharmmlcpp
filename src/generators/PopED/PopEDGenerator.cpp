@@ -17,6 +17,7 @@
 
 #include "PopEDGenerator.h"
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <visitors/SymbolNameVisitor.h>
 #include <visitors/SymbRefFinder.h>
@@ -584,12 +585,13 @@ namespace PharmML
         }
 
         // Use PopED settings from PharmML if found
+        bool fim_approx_type_set = false;
         if (algo) {
             // Store recognized and parsed settings in these
-            enum Criterion {EXPLICIT, IMPLICIT, UNDEF, NA};
+            enum Criterion {EXPLICIT, UNDEF, NA};
             Criterion criterion = Criterion::NA;
 
-            std::string file;
+            std::string penalty_file;
 
             enum class FIMCalcType {FO, FOCE, FOCEI, FOI, UNDEF, NA};
             FIMCalcType fim_calc_type = FIMCalcType::NA;
@@ -602,10 +604,10 @@ namespace PharmML
             enum class EIntegrationType {MC, LAPLACE, BFGS, UNDEF, NA};
             EIntegrationType e_integration_type = EIntegrationType::NA;
 
-            enum class ESamplingType {LHC, UNDEF, NA};
+            enum class ESamplingType {RANDOM, LHC, UNDEF, NA};
             ESamplingType e_sampling_type = ESamplingType::NA;
 
-            int e_sampling = -1;
+            int e_samples = -1;
 
             // Recognize and parse settings (and warn of all unexpectedness)
             for (OperationProperty *prop : algo->getProperties()) {
@@ -613,18 +615,16 @@ namespace PharmML
                     if (prop->isString()) {
                         if (prop->isFoldedCaseString("explicit")) {
                             criterion = Criterion::EXPLICIT;
-                        } else if (prop->isFoldedCaseString("implicit")) {
-                            criterion = Criterion::IMPLICIT;
                         } else {
                             criterion = Criterion::UNDEF;
-                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"explicit","implicit"});
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"explicit"});
                         }
                     } else if (!prop->isString()) {
                         this->warnOperationPropertyUnexpectedType(prop, "string");
                     }
                 } else if (prop->isNamed("file")) {
                     if (prop->isString()) {
-                        file = prop->getString();
+                        penalty_file = prop->getString();
                     } else {
                         this->warnOperationPropertyUnexpectedType(prop, "string");
                     }
@@ -667,7 +667,7 @@ namespace PharmML
                     }
                 } else if (prop->isNamed("E_family_calc_type")) {
                     if (prop->isString()) {
-                        if (prop->isFoldedCaseString("MC")) {
+                        if (prop->isFoldedCaseString("MC") || prop->isFoldedCaseString("Monte-Carlo")) {
                             e_integration_type = EIntegrationType::MC;
                         } else if (prop->isFoldedCaseString("LAPLACE")) {
                             e_integration_type = EIntegrationType::LAPLACE;
@@ -682,12 +682,13 @@ namespace PharmML
                     }
                 } else if (prop->isNamed("E_family_sampling")) {
                     if (prop->isString()) {
-                        if (prop->isFoldedCaseString("LHC")) {
+                        if (prop->isFoldedCaseString("random")) {
+                            e_sampling_type = ESamplingType::RANDOM;
+                        } else if (prop->isFoldedCaseString("LHC")) {
                             e_sampling_type = ESamplingType::LHC;
-                        } else if (prop->isFoldedCaseString("")) {
                         } else {
                             e_sampling_type = ESamplingType::UNDEF;
-                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"LHC",""});
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"random","LHC"});
                         }
                     } else {
                         this->warnOperationPropertyUnexpectedType(prop, "string");
@@ -695,7 +696,7 @@ namespace PharmML
                 } else if (prop->isNamed("E_family_edsampling")) {
                     if (prop->isInt()) {
                         if (prop->getInt() >= 0) {
-                            e_sampling = prop->getInt();
+                            e_samples = prop->getInt();
                         } else {
                             this->warnOperationPropertyUnderflow(prop, 0);
                         }
@@ -707,15 +708,80 @@ namespace PharmML
                 }
             }
 
-            // Warn if E_family_* settings have been read but not flagged for usage
-            if (!e_family_use && (e_integration_type != EIntegrationType::NA || e_sampling_type != ESamplingType::NA || e_sampling >= 0)) {
+            // Use the parsed settings
+            if (criterion == Criterion::EXPLICIT) {
+                if (!penalty_file.empty()) {
+                    form.add("strEDPenaltyFile = '" + penalty_file + "'");
+                    std::ifstream file(penalty_file);
+                    if (!file.good()) {
+                        this->logger.warning("File '" + penalty_file + "' (penalty function) not found or not accessible");
+                    }
+                    file.close();
+                } else {
+                    this->logger.warning("Explicit criterion requested but no 'file' property set (penalty function)");
+                }
+            } else if (!penalty_file.empty()) {
+                this->logger.warning("Explicit criterion not requested but 'file' property set (penalty function), ignored");
+            }
+            switch (fim_calc_type) {
+                case FIMCalcType::FO    : form.add("iApproximationMethod = 0");
+                                          break;
+                case FIMCalcType::FOCE  : form.add("iApproximationMethod = 1");
+                                          break;
+                case FIMCalcType::FOCEI : form.add("iApproximationMethod = 2");
+                                          break;
+                case FIMCalcType::FOI   : form.add("iApproximationMethod = 3");
+                                          break;
+                case FIMCalcType::UNDEF : form.add("# iApproximationMethod NOT SET from 'computeFIM' (value not supported)");
+                                          break;
+                case FIMCalcType::NA    : break;
+            }
+            switch (fim_approx_type) {
+                case FIMApproxType::FULL    : form.add("iFIMCalculationType = 0");
+                                              fim_approx_type_set = true;
+                                              break;
+                case FIMApproxType::REDUCED : form.add("iFIMCalculationType = 1");
+                                              fim_approx_type_set = true;
+                                              break;
+                // TODO: iFIMCalculationType=2 to =7 (see page 15 of PopED 0.3 manual)
+                case FIMApproxType::UNDEF   : form.add("# iFIMCalculationType NOT SET from 'approximationFIM' (value not supported)");
+                                              break;
+                case FIMApproxType::NA      : break;
+            }
+            if (e_family_use) {
+                switch (e_integration_type) {
+                    case EIntegrationType::MC      : form.add("iEDCalculationType = 0");
+                                                     break;
+                    case EIntegrationType::LAPLACE : form.add("iEDCalculationType = 1");
+                                                     break;
+                    case EIntegrationType::BFGS    : form.add("iEDCalculationType = 2");
+                                                     break;
+                    case EIntegrationType::UNDEF   : form.add("# iEDCalculationType NOT SET from 'E_family_calc_type' (value not supported)");
+                                                     break;
+                    case EIntegrationType::NA      : break;
+                }
+                switch (e_sampling_type) {
+                    case ESamplingType::RANDOM : form.add("bLHS = 0");
+                                                 break;
+                    case ESamplingType::LHC    : form.add("bLHS = 1");
+                                                 break;
+                    case ESamplingType::UNDEF  : form.add("# bLHS NOT SET from 'E_family_sampling' (value not supported)");
+                                                 break;
+                    case ESamplingType::NA     : break;
+                }
+                if (e_samples >= 0) {
+                    form.add("ED_samp_size = " + std::to_string(e_samples));
+                } else {
+                    form.add("# ED_samp_size NOT SET from 'E_family_ed_sampling' (out of bounds)");
+                }
+            } else if (e_integration_type != EIntegrationType::NA || e_sampling_type != ESamplingType::NA || e_samples >= 0) {
+                // Warn if E_family_* settings have been read but not flagged for usage
                 this->logger.warning("E family settings found but not actively used ('E_family_value' is 'false' or missing)", algo);
             }
-
-            // TODO: Use the parsed settings
         }
 
-        if (scalar) {
+        // Set FIM approximation to FO only if not overriden by PopED settings in PharmML
+        if (scalar && !fim_approx_type_set) {
             form.add("iFIMCalculationType = 0");
         }
 
@@ -727,13 +793,13 @@ namespace PharmML
     // OperationProperty has unexpected type: Warn and inform of expected type
     void PopEDGenerator::warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type) {
         std::string name = prop->getName();
-        this->logger.warning("'" + name + "' has unexpected type (expected: " + exp_type + ")", prop);
+        this->logger.warning("Property '" + name + "' has unexpected type (expected: " + exp_type + ")", prop);
     }
 
     // OperationProperty is out of lower bound: Warn and inform of expected minimum
     void PopEDGenerator::warnOperationPropertyUnderflow(OperationProperty *prop, int min) {
         std::string name = prop->getName();
-        this->logger.warning("'" + name + "' value (" + std::to_string(prop->getInt()) + ") is illegal (expected: >= 0)", prop);
+        this->logger.warning("Property '" + name + "' value (" + std::to_string(prop->getInt()) + ") is illegal (restriction: >= " + std::to_string(min) + ")", prop);
     }
 
     // OperationProperty has unexpected string value: Warn and inform of expected string value
@@ -742,7 +808,8 @@ namespace PharmML
         TextFormatter form;
         form.openVector("", 0, ",");
         std::for_each(std::begin(exp_strings), std::end(exp_strings), [&](std::string x){ form.add("'" + x + "'"); });
-        this->logger.warning("'" + name + "' has unknown or unsupported value '" + prop->getString() + "' (expected: " + form.createString() + ")", prop);
+        form.noFinalNewline();
+        this->logger.warning("Property '" + name + "' has unknown or unsupported value '" + prop->getString() + "' (supported: " + form.createString() + ")", prop);
     }
 
     // OperationProperty is unknown or unsupported: Warn and inform of all known properties
@@ -753,7 +820,8 @@ namespace PharmML
         TextFormatter form;
         form.openVector("", 0, ",");
         std::for_each(std::begin(known_props), std::end(known_props), [&](std::string x){ form.add("'" + x + "'"); });
-        this->logger.warning("'" + prop->getName() +  "' property unknown or unsupported (known: " + form.createString() + ")", prop);
+        form.noFinalNewline();
+        this->logger.warning("Property '" + prop->getName() +  "' unknown or unsupported (supported: " + form.createString() + ")", prop);
     }
 
     Symbol *PopEDGenerator::findSigmaSymbol() {

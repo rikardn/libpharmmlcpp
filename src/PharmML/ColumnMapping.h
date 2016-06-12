@@ -34,6 +34,7 @@
 
 namespace PharmML
 {
+    class MacroGathering; // FIXME: Inclusion problems!
     struct MapType {
         // Raw strings
         std::string dataSymbol;
@@ -46,7 +47,7 @@ namespace PharmML
     };
 
     // TODO: Move elsewhere (Dataset.h?)
-    class TargetMapping : public PharmMLSection, public Referer
+    class TargetMapping : public PharmMLSection
     {
         public:
             TargetMapping(PharmMLContext *context, xml::Node node);
@@ -55,9 +56,13 @@ namespace PharmML
             std::string getBlkIdRef();
             std::vector<MapType> getMaps();
 
-            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
-            void setupSymbolRefs(SymbolGathering &gathering);
-            void setupMacroRefs(MacroGathering &gathering);
+            std::unordered_set<std::string> getSymbolStrings();
+            std::unordered_set<int> getAdmNumbers();
+            std::unordered_map<std::string, PharmML::Symbol *> getDataSymbolMap();
+            std::unordered_map<std::string, PharmML::PKMacro *> getDataMacroMap();
+
+            void setupSymbolRefs(PharmML::SymbolGathering &gathering);
+            void setupMacroRefs(PharmML::MacroGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:
@@ -79,18 +84,9 @@ namespace PharmML
             Symbol *getMappedSymbol();
 
             TargetMapping *getTargetMapping();
-            std::unordered_map<int, std::string> getAdministrationMap();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
-
-            // POST PARSE/CONSOLIDATION
-            bool mapsMultiple();
-            std::unordered_set<std::string> getSymbolStrings();
-            std::unordered_set<int> getAdmNumbers();
-            std::unordered_map<std::string, PharmML::Symbol*> getDataSymbolMap();
-            std::unordered_map<std::string, PharmML::PKMacro *> getDataAdministrationMap(std::vector<PharmML::PKMacro *> macros,
-                PharmML::PharmMLSection *ext_ds_section, PharmML::PharmMLSection *pk_macros_section);
 
         private:
             PharmML::PharmMLContext *context;
@@ -100,13 +96,6 @@ namespace PharmML
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
             TargetMapping *target_map = nullptr;
-
-            // POST PARSE/CONSOLIDATION
-            void postParse();
-            int num_maps = 0;
-            std::unordered_map<std::string, std::string> symbol_to_data;
-            std::unordered_map<int, std::string> adm_to_data;
-            std::unordered_map<std::string, PharmML::Symbol *> data_to_symbol_ptr;
     };
 }
 

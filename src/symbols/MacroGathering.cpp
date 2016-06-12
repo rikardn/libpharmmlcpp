@@ -15,7 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <symbols/MacroGathering.h>
+#include "MacroGathering.h"
 #include <PharmML/Block.h>
 #include <iostream>
 

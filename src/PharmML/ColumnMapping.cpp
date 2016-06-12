@@ -47,36 +47,81 @@ namespace PharmML
         return this->blkIdRef;
     }
 
+    // Get vector of (raw) maps
     std::vector<MapType> TargetMapping::getMaps() {
         return this->maps;
     }
 
-    void TargetMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
-        // TODO: Is this right? How else should these strings be resolved to real symbols?
+    // Get the set of all symbol strings
+    std::unordered_set<std::string> TargetMapping::getSymbolStrings() {
+        std::unordered_set<std::string> set;
         for (MapType map : this->maps) {
-            if (map.modelSymbol != "") {
-                PharmML::Symbol *symbol = gathering.getSymbol(blkId, map.modelSymbol);
-                map.symbol = symbol;
-                this->addReference(symbol);
+            if (!map.modelSymbol.empty()) {
+                set.insert(map.modelSymbol);
             }
         }
+        return set;
     }
 
+    // Get the set of all administration numbers
+    std::unordered_set<int> TargetMapping::getAdmNumbers() {
+        std::unordered_set<int> set;
+        for (MapType map : this->maps) {
+            if (!map.admNumber.empty()) {
+                set.insert(std::stoi(map.admNumber));
+            }
+        }
+        return set;
+    }
+
+    // Get a (resolved) complete map from data symbol strings to the Symbol objects
+    std::unordered_map<std::string, PharmML::Symbol *> TargetMapping::getDataSymbolMap() {
+        // Create associative array
+        std::unordered_map<std::string, PharmML::Symbol *> data_to_symbol;
+        for (PharmML::MapType map : this->maps) {
+            if (!map.modelSymbol.empty()) {
+                data_to_symbol[map.dataSymbol] = map.symbol;
+            }
+        }
+        return data_to_symbol;
+    }
+
+    // Get a (resolved) complete map from data symbol strings to (administration) PKMacro objects
+    std::unordered_map<std::string, PharmML::PKMacro *> TargetMapping::getDataMacroMap() {
+        // Create associative array
+        std::unordered_map<std::string, PharmML::PKMacro *> data_to_macro;
+        for (PharmML::MapType map : this->maps) {
+            if (!map.admNumber.empty()) {
+                data_to_macro[map.dataSymbol] = map.macro;
+            }
+        }
+        return data_to_macro;
+    }
+
+    // Fill modelSymbol string containing maps data with gathered Symbol object
     void TargetMapping::setupSymbolRefs(SymbolGathering &gathering) {
         for (MapType map : this->maps) {
             if (!map.modelSymbol.empty()) {
                 PharmML::Symbol *symbol = gathering.getSymbol(this->blkIdRef, map.modelSymbol);
-                map.symbol = symbol;
-                this->addReference(symbol);
+                if (symbol) {
+                    map.symbol = symbol;
+                } else {
+                    this->context->logger.error("TargetMapping element contains non-resolvable 'modelSymbol' (" + map.modelSymbol + ")", this);
+                }
             }
         }
     }
 
+   // Fill admNumber string containing maps with gathered (administration) PKMacro object
     void TargetMapping::setupMacroRefs(MacroGathering &gathering) {
         for (MapType map : this->maps) {
             if (!map.admNumber.empty()) {
                 PharmML::PKMacro *macro = gathering.getAdmMacro(this->blkIdRef, std::stoi(map.admNumber));
-                map.macro = macro;
+                if (macro) {
+                    map.macro = macro;
+                } else {
+                    this->context->logger.error("TargetMapping element contains non-resolvable 'admNumber' (" + map.admNumber + ")", this);
+                }
             }
         }
     }
@@ -88,7 +133,6 @@ namespace PharmML
     ColumnMapping::ColumnMapping(PharmML::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
-        this->postParse();
     }
 
     void ColumnMapping::parse(xml::Node node) {
@@ -144,25 +188,6 @@ namespace PharmML
         return this->target_map;
     }
 
-    // Convenience method to scan and get all administration->data symbol maps
-    std::unordered_map<int, std::string> ColumnMapping::getAdministrationMap() {
-        std::unordered_map<int, std::string> adm_map;
-        if (!this->target_map) {
-            return adm_map;
-        }
-        std::vector<PharmML::MapType> maps = target_map->getMaps();
-        for (PharmML::MapType map : maps) {
-            // Presence of both dataSymbol and admNumber indicates a map to (macro) administration
-            if (map.dataSymbol != "" && map.admNumber != "") {
-                int adm_number;
-                if (StringTools::isInt(map.admNumber, adm_number)) {
-                    adm_map[adm_number] = map.dataSymbol;
-                }
-            }
-        }
-        return adm_map;
-    }
-
     void ColumnMapping::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->symbRef) {
             this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
@@ -170,113 +195,12 @@ namespace PharmML
             this->setupAstSymbRefs(this->assignment, gathering, blkId);
             this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }
+        if (this->target_map) {
+            this->target_map->setupSymbolRefs(gathering);
+        }
     }
 
     void ColumnMapping::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
-    }
-
-    // POST PARSE/CONSOLIDATION
-    // Perform post-parse functions to enable higher-level abstraction/consolidation
-    void ColumnMapping::postParse() {
-        Logger logger("Post");
-
-        // Deal with mapped symbols
-        if (this->mappedSymbol) {
-            this->num_maps++;
-        }
-
-        // TODO: Deal with categorical covariate mapping
-
-        // Deal with target maps
-        if (this->target_map) {
-            // Create associative arrays of (data) symbols to model (symbols and administrations)
-            for (PharmML::MapType map : this->target_map->getMaps()) {
-                if (map.modelSymbol != "") {
-                    this->symbol_to_data[map.modelSymbol] = map.dataSymbol;
-                    if (map.symbol) {
-                        this->data_to_symbol_ptr[map.dataSymbol] = map.symbol;
-                    } else {
-                        logger.error("TargetMapping element contains non-resolvable 'modelSymbol': " + map.modelSymbol, target_map);
-                    }
-                    this->num_maps++;
-                } else if (map.admNumber != "") {
-                    int adm;
-                    if (StringTools::isInt(map.admNumber, adm)) {
-                        this->adm_to_data[adm] = map.dataSymbol;
-                    } else {
-                        logger.error("TargetMapping element contains non-integer 'admNumber': " + map.admNumber, target_map);
-                    }
-                    this->num_maps++;
-                } else {
-                    logger.error("TargetMapping element doesn't 'modelSymbol' nor 'admNumber'", target_map);
-                }
-            }
-        }
-    }
-
-    // True if this column mapping maps multiple symbols/administrations
-    bool ColumnMapping::mapsMultiple() {
-        return (this->num_maps > 1);
-    }
-
-    // Get the set of all (TargetMapping) symbol strings contained within this column mapping
-    std::unordered_set<std::string> ColumnMapping::getSymbolStrings() {
-        std::unordered_set<std::string> symb_strs;
-        for (std::pair<std::string, std::string> pair : this->symbol_to_data) {
-            symb_strs.insert(pair.first);
-        }
-        return symb_strs;
-    }
-
-    // Get the set of all (TargetMapping) administration numbers contained within this column mapping
-    std::unordered_set<int> ColumnMapping::getAdmNumbers() {
-        std::unordered_set<int> adm_nums;
-        for (std::pair<int, std::string> pair : this->adm_to_data) {
-            adm_nums.insert(pair.first);
-        }
-        return adm_nums;
-    }
-
-    // Get a (resolved) complete (TargetMapping) map from data symbol strings to the PharmML::Symbol pointers
-    std::unordered_map<std::string, PharmML::Symbol *> ColumnMapping::getDataSymbolMap() {
-        return data_to_symbol_ptr;
-    }
-
-    // Get a (resolved) complete (TargetMapping) map from data symbol strings to PharmML::PKMacro pointers
-    std::unordered_map<std::string, PharmML::PKMacro *> ColumnMapping::getDataAdministrationMap(std::vector<PharmML::PKMacro *> macros,
-        PharmML::PharmMLSection *ext_ds_section = nullptr, PharmML::PharmMLSection *pk_macros_section = nullptr) {
-            
-        Logger logger("Post");
-        std::unordered_map<std::string, PharmML::PKMacro *> data_to_adm_macro;
-
-        for (PharmML::PKMacro *macro : macros) {
-            // Only consider administration macros as potential targets
-            AstNode *adm_assignment = macro->getAssignment("adm");
-            AstAnalyzer ast_analyzer;
-            adm_assignment->accept(&ast_analyzer);
-            ScalarInt *adm_scint = ast_analyzer.getPureScalarInt();
-            if (adm_scint) {
-                int adm_num;
-                if (StringTools::isInt(adm_scint->toString(), adm_num)) { // FIXME: StringTools::isInt and check should be done by ScalarInt constructor so it's valid everywhere!
-                    // Add matching macro to data->macro map
-                    auto got = this->adm_to_data.find(adm_num);
-                    if (got != adm_to_data.end()) {
-                        std::string data_symbol = (*got).second;
-                        data_to_adm_macro[data_symbol] = macro;
-                    } else if (ext_ds_section && pk_macros_section) {
-                        // FIXME: Does it really make sense to supply external dataset and pk macros section just to detect situation below? Consolidator was easier...
-                        // TODO: Decide if it's a good idea to save the pk_macros_node as a PharmMLSection for pretty logging
-                        logger.error("Administration " + std::to_string(adm_num) + " refered by external dataset (%a) matches no defined administration macro (%b)",
-                            ext_ds_section, pk_macros_section);
-                    }
-                } else {
-                    std::string type = macro->getType();
-                    logger.error("PK macro '" + type + "' (%a) contains attribute 'adm' but value is not an integer", macro, nullptr);
-                }
-            }
-        }
-
-        return data_to_adm_macro;
     }
 }

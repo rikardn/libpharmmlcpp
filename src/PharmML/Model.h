@@ -41,6 +41,7 @@ namespace PharmML
             void write(std::string filename);
             PharmML::IndependentVariable *getIndependentVariable();
             std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
+            FunctionDefinition *resolveFunctionCall(PharmML::FunctionCall *functionCall);
             PharmML::ModelDefinition *getModelDefinition();
             PharmML::TrialDesign *getTrialDesign();
             PharmML::ModellingSteps *getModellingSteps();

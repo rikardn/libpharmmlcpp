@@ -31,15 +31,6 @@ namespace CPharmML
         return this->functionDefinitions;
     }
 
-    PharmML::FunctionDefinition *Functions::resolveFunctionCall(PharmML::FunctionCall *functionCall) {
-        for (PharmML::FunctionDefinition *functionDefinition : this->functionDefinitions) {
-            if (functionCall->getFunction()->getSymbol() == functionDefinition) {
-                return functionDefinition;
-            }
-        }
-        return nullptr;
-    }
-
     std::string Functions::getLinearizedFunctionDefinition(PharmML::FunctionDefinition *functionDefinition) {
         return this->linearizedFunctionDefinitions[functionDefinition];
     }

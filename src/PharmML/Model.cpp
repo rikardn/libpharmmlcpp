@@ -92,6 +92,15 @@ namespace PharmML
         return this->FunctionDefinitions;
     }
 
+    PharmML::FunctionDefinition *Model::resolveFunctionCall(PharmML::FunctionCall *functionCall) {
+        for (PharmML::FunctionDefinition *FunctionDefinition : this->FunctionDefinitions) {
+            if (functionCall->getFunction()->getSymbol() == FunctionDefinition) {
+                return FunctionDefinition;
+            }
+        }
+        return nullptr;
+    }
+
     PharmML::ModelDefinition *Model::getModelDefinition() {
         return this->ModelDefinition;
     }

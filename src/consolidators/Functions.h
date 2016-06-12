@@ -36,7 +36,6 @@ namespace CPharmML
 
             std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
 
-            PharmML::FunctionDefinition *resolveFunctionCall(PharmML::FunctionCall *functionCall);
             std::string getLinearizedFunctionDefinition(PharmML::FunctionDefinition *functionDefinition);
             bool isStandardFunction(PharmML::FunctionDefinition *functionDefinition);
             std::string getStandardFunctionName(PharmML::FunctionDefinition *functionDefinition);

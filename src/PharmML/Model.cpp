@@ -158,6 +158,9 @@ namespace PharmML
 
         // Handle referrers that are not symbols
         this->setupRefererSymbRefs(gathering);
+
+        // Setup TargetMapping's (refers to Symbol's via strings)
+        this->setupTargetMappings(gathering);
     }
 
     // Gather all Objects and setup ObjectRefs 
@@ -214,6 +217,19 @@ namespace PharmML
         }
     }
 
+    // Gather all referable PK macros and setup TargetMapping's mapping these
+    void Model::setupPKMacros() {
+        // Gather all macros
+        MacroGathering gathering;
+        PharmML::StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
+        if (sm) {
+            sm->gatherMacros(gathering);
+        }
+
+        // Setup TargetMapping's (refers to PKMacro's via strings)
+        this->setupTargetMappings(gathering);
+    }
+
     void Model::setupRefererSymbRefs(SymbolGathering &gathering) {
         if (this->ModellingSteps) {
             this->ModellingSteps->setupRefererSymbRefs(gathering);
@@ -222,6 +238,14 @@ namespace PharmML
         if (this->TrialDesign) {
             this->TrialDesign->setupRefererSymbRefs(gathering);
         }
+    }
+
+    void Model::setupTargetMappings(SymbolGathering &gathering) {
+        
+    }
+
+    void Model::setupTargetMappings(MacroGathering &gathering) {
+        
     }
 
     void Model::setSymbolNamer(SymbolNamer *namer) {

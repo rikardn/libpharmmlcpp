@@ -99,7 +99,7 @@ namespace PharmML
         // TODO: Hopefully validation and argument parsing can be done in here instead of in PKMacros/MDLGenerator
 
         // Get integer attributes
-        int from_int, to_int, target_int, cmt_int;
+        int from_int, to_int, target_int, cmt_int, adm_int;
         PharmML::AstAnalyzer ast_analyzer;
         for (MacroValue value : this->values) {
             auto get_int = [&](AstNode *x) -> int {
@@ -116,6 +116,8 @@ namespace PharmML
                 target_int = get_int( this->getAssignment(value.first) );
             } else if (value.first == "cmt") {
                 cmt_int = get_int( this->getAssignment(value.first) );
+            } else if (value.first == "adm" || value.first == "type") {
+                adm_int = get_int( this->getAssignment(value.first) );
             } 
         }
 
@@ -123,38 +125,51 @@ namespace PharmML
         if (this->type == "Compartment") {
             this->is_comp = true;
             this->sub_type = MacroType::Compartment;
+
             this->cmt_num = cmt_int;
         } else if (this->type == "Peripheral") {
             this->is_comp = true;
             this->sub_type = MacroType::Peripheral;
+
             // TODO: Parse kij and k_i_j to determine MacroType::Compartment linked
         } else if (this->type == "Effect") {
             this->is_comp = true;
             this->sub_type = MacroType::Effect;
+
             // TODO: cmt_int here means what?
         } else if (this->type == "Depot") {
             this->is_abs = true;
             this->sub_type = MacroType::Depot;
+
+            this->adm_num = adm_int;
             this->target_cmt_num = target_int;
         } else if (this->type == "IV") {
             this->is_abs = true;
             this->sub_type = MacroType::IV;
+
+            this->adm_num = adm_int;
             this->target_cmt_num = cmt_int;
         } else if (this->type == "Absorption") {
             this->is_abs = true;
             this->sub_type = MacroType::Absorption;
+
+            this->adm_num = adm_int;
             this->target_cmt_num = cmt_int;
         } else if (this->type == "Oral") {
             this->is_abs = true;
             this->sub_type = MacroType::Oral;
+
+            this->adm_num = adm_int;
             this->target_cmt_num = cmt_int;
         } else if (this->type == "Elimination") {
             this->is_trans = true;
             this->sub_type = MacroType::Elimination;
+
             this->source_cmt_num = cmt_int;
         } else if (this->type == "Transfer") {
             this->is_trans = true;
             this->sub_type = MacroType::Transfer;
+
             this->source_cmt_num = from_int;
             this->target_cmt_num = to_int;
         }
@@ -276,8 +291,13 @@ namespace PharmML
     }
 
     // For compartments: Get referable integer number
-    int PKMacro::getNum() {
+    int PKMacro::getCmtNum() {
         return this->cmt_num;
+    }
+
+    // For compartments: Get referable integer number
+    int PKMacro::getAdmNum() {
+        return this->adm_num;
     }
 
     // For mass transfers: Get integer number reference (source)

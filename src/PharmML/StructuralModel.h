@@ -42,6 +42,7 @@ namespace PharmML
             PharmML::PKMacros *getPKMacros();
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gathering) override;
+            void gatherMacros(MacroGathering &gatherer);
 
         private:
             PharmML::PharmMLContext *context;

@@ -83,4 +83,13 @@ namespace PharmML
             gathering.addSymbol(common_variable);
         }
     }
+
+    void StructuralModel::gatherMacros(MacroGathering &gatherer) {
+        if (this->pk_macros) {
+            gatherer.newBlock(this);
+            for (PKMacro *macro : this->pk_macros->getMacros()) {
+                gatherer.addMacro(macro);
+            }
+        }
+    }
 }

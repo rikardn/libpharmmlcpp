@@ -23,6 +23,7 @@
 #include <PharmML/PharmMLSection.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/AstAnalyzer.h>
+#include <symbols/MacroGathering.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <AST/AstNode.h>
@@ -52,7 +53,8 @@ namespace PharmML
             bool isAbsorptionProcess();
             bool isMassTransfer();
             MacroType getSubType();
-            int getNum();
+            int getCmtNum();
+            int getAdmNum();
             int getSourceNum();
             int getTargetNum();
 
@@ -71,6 +73,7 @@ namespace PharmML
             bool is_trans = false;
             MacroType sub_type;
             int cmt_num;
+            int adm_num;
             int source_cmt_num;
             int target_cmt_num;
     };

@@ -529,7 +529,7 @@ namespace PharmML
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
             
             // Find transfers FROM this compartment
-            int cmt_num = cmt_macro->getNum();
+            int cmt_num = cmt_macro->getCmtNum();
             for (PharmML::PKMacro *trans_macro : trans_macros) {
                 cmt_trans_macros.push_back(cmt_macro);
                 if (cmt_num == trans_macro->getSourceNum()) {

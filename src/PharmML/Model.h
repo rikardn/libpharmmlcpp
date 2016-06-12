@@ -29,6 +29,7 @@
 #include <xml/xml.h>
 #include <consolidators/Consolidator.h>
 #include <symbols/SymbolGathering.h>
+#include <symbols/MacroGathering.h>
 #include <helpers/SymbolNamer.h>
 
 namespace PharmML
@@ -66,8 +67,11 @@ namespace PharmML
             void postParse();
             void setupSymbols();
             void setupObjects();
+            void setupPKMacros();
             void checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section);
             void setupRefererSymbRefs(SymbolGathering &gathering);
+            void setupTargetMappings(SymbolGathering &gathering);
+            void setupTargetMappings(MacroGathering &gathering);
     };
 }
 

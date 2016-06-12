@@ -56,8 +56,27 @@ namespace PharmML
         for (MapType map : this->maps) {
             if (map.modelSymbol != "") {
                 PharmML::Symbol *symbol = gathering.getSymbol(blkId, map.modelSymbol);
-                map.modelSymbol_ptr = symbol;
+                map.symbol = symbol;
                 this->addReference(symbol);
+            }
+        }
+    }
+
+    void TargetMapping::setupSymbolRefs(SymbolGathering &gathering) {
+        for (MapType map : this->maps) {
+            if (!map.modelSymbol.empty()) {
+                PharmML::Symbol *symbol = gathering.getSymbol(this->blkIdRef, map.modelSymbol);
+                map.symbol = symbol;
+                this->addReference(symbol);
+            }
+        }
+    }
+
+    void TargetMapping::setupMacroRefs(MacroGathering &gathering) {
+        for (MapType map : this->maps) {
+            if (!map.admNumber.empty()) {
+                PharmML::PKMacro *macro = gathering.getAdmMacro(this->blkIdRef, std::stoi(map.admNumber));
+                map.macro = macro;
             }
         }
     }
@@ -175,8 +194,8 @@ namespace PharmML
             for (PharmML::MapType map : this->target_map->getMaps()) {
                 if (map.modelSymbol != "") {
                     this->symbol_to_data[map.modelSymbol] = map.dataSymbol;
-                    if (map.modelSymbol_ptr) {
-                        this->data_to_symbol_ptr[map.dataSymbol] = map.modelSymbol_ptr;
+                    if (map.symbol) {
+                        this->data_to_symbol_ptr[map.dataSymbol] = map.symbol;
                     } else {
                         logger.error("TargetMapping element contains non-resolvable 'modelSymbol': " + map.modelSymbol, target_map);
                     }

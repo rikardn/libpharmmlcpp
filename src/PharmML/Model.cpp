@@ -73,6 +73,7 @@ namespace PharmML
         PharmML::PKMacros *pk_macros = this->ModelDefinition->getStructuralModel()->getPKMacros();
         if (pk_macros) {
             pk_macros->postParse();
+            this->setupPKMacros();
         }
     }
 
@@ -241,11 +242,15 @@ namespace PharmML
     }
 
     void Model::setupTargetMappings(SymbolGathering &gathering) {
-        
+        if (this->TrialDesign) {
+            this->TrialDesign->setupTargetMappings(gathering);
+        }
     }
 
     void Model::setupTargetMappings(MacroGathering &gathering) {
-        
+        if (this->TrialDesign) {
+            this->TrialDesign->setupTargetMappings(gathering);
+        }
     }
 
     void Model::setSymbolNamer(SymbolNamer *namer) {

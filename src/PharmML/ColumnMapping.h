@@ -30,14 +30,19 @@
 #include <symbols/Symbol.h>
 #include <PharmML/PKMacro.h>
 #include <symbols/SymbolGathering.h>
+#include <symbols/MacroGathering.h>
 
 namespace PharmML
 {
     struct MapType {
+        // Raw strings
         std::string dataSymbol;
         std::string modelSymbol;
         std::string admNumber;
-        Symbol *modelSymbol_ptr;
+
+        // Filled in by setupTargetMapping
+        Symbol *symbol;
+        PKMacro *macro;
     };
 
     // TODO: Move elsewhere (Dataset.h?)
@@ -51,6 +56,8 @@ namespace PharmML
             std::vector<MapType> getMaps();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
+            void setupSymbolRefs(SymbolGathering &gathering);
+            void setupMacroRefs(MacroGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:

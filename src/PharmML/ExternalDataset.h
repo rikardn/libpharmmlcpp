@@ -22,6 +22,8 @@
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
+#include <symbols/SymbolGathering.h>
+#include <symbols/MacroGathering.h>
 #include <symbols/Symbol.h>
 
 namespace PharmML
@@ -41,6 +43,8 @@ namespace PharmML
             std::string getToolName();
             void parse(xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
+            void setupTargetMappings(SymbolGathering &gatherer);
+            void setupTargetMappings(MacroGathering &gatherer);
 
             void accept(PharmMLVisitor *visitor);
 
@@ -50,8 +54,8 @@ namespace PharmML
         private:
             PharmML::PharmMLContext *context;
             std::string oid;
-            std::vector<PharmML::ColumnMapping *> ColumnMappings;
-            Dataset *dataset;
+            std::vector<PharmML::ColumnMapping *> col_maps;
+            Dataset *dataset = nullptr;
             // Why don't we even have an accept for this?
             std::string toolName;
 

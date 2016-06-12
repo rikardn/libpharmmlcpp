@@ -103,4 +103,16 @@ namespace PharmML
         //~ this->getArms()->gatherSymbRefs(symbolMap);
         //~ this->getDesignSpaces()->gatherSymbRefs(symbolMap);
     }
+
+    void TrialDesign::setupTargetMappings(SymbolGathering &gathering) {
+        for (PharmML::ExternalDataset *ext_ds : this->ExternalDatasets) {
+            ext_ds->setupTargetMappings(gathering);
+        }
+    }
+
+    void TrialDesign::setupTargetMappings(MacroGathering &gathering) {
+        for (PharmML::ExternalDataset *ext_ds : this->ExternalDatasets) {
+            ext_ds->setupTargetMappings(gathering);
+        }
+    }
 }

@@ -42,6 +42,8 @@ namespace PharmML
             PharmML::Arms *getArms();
             PharmML::DesignSpaces *getDesignSpaces();
             void setupRefererSymbRefs(SymbolGathering &gatherer);
+            void setupTargetMappings(SymbolGathering &gatherer);
+            void setupTargetMappings(MacroGathering &gatherer);
 
         private:
             PharmML::PharmMLContext *context;

@@ -412,7 +412,7 @@ namespace PharmML
         }
 
         // Generate OBSERVATION block
-        std::string obs_block = this->genObservationBlock(model->getModelDefinition()->getObservationModel(), model->getConsolidator()->getFunctions());
+        std::string obs_block = this->genObservationBlock(model);
         form.addMany(obs_block);
         form.emptyLine();
 
@@ -717,20 +717,22 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions) {
+    std::string MDLGenerator::genObservationBlock(PharmML::Model *model) {
+        PharmML::ObservationModel *om = model->getModelDefinition()->getObservationModel();
+        std::vector<PharmML::FunctionDefinition *> funcs = model->getFunctionDefinitions();
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
 
-        std::string obs_name = observationModel->getSymbId();
-        if (observationModel->hasStandardErrorModel()) {
+        std::string obs_name = om->getSymbId();
+        if (om->hasStandardErrorModel()) {
             // Determine if error model is a pure function call
-            AstNode *error_model = observationModel->getErrorModel();
+            AstNode *error_model = om->getErrorModel();
             this->ast_analyzer.reset();
             error_model->accept(&this->ast_analyzer);
             FunctionCall *function_call = this->ast_analyzer.getPureFunctionCall();
             if (function_call) {
                 // Resolve the call
-                FunctionDefinition *function_def = functions->resolveFunctionCall(function_call);
+                FunctionDefinition *function_def = model->resolveFunctionCall(function_call);
 
                 // Get the caller arguments
                 std::vector<FunctionArgument *> call_args = function_call->getFunctionArguments();
@@ -740,12 +742,20 @@ namespace PharmML
                 }
 
                 // Determine if function is known to MDL (tricky stuff)
-                if (functions->isStandardFunction(function_def)) {
+                if (function_def->isStandardFunction()) {
                     form.openVector(obs_name + " : {}", 0, ", ");
-                    form.add("type is " + functions->getStandardFunctionName(function_def));
+                    switch (function_def->getStandardFunction()) {
+                        case StandardFunction::additiveError     : form.add("type is additiveError");
+                                                                   break;
+                        case StandardFunction::proportionalError : form.add("type is proportionalError");
+                                                                   break;
+                        case StandardFunction::combinedError1    : form.add("type is combinedError1");
+                                                                   break;
+                        case StandardFunction::NA                : break;
+                    }
 
                     // Get transformation is available (don't know MDL syntax definitely)
-                    std::string trans = observationModel->getTransformation();
+                    std::string trans = om->getTransformation();
                     if (trans == "log") {
                         form.add("trans is ln");
                     } else if (trans != "") {
@@ -754,13 +764,21 @@ namespace PharmML
 
                     // Get structural model output and make a list of arguments referencing it
                     // FIXME: See below
-                    //~ SymbRef *output = observationModel->getOutput();
+                    //~ SymbRef *output = om->getOutput();
                     //~ std::vector<std::string> output_arg_names;
 
                     // Output the mapped arguments
-                    std::unordered_map<std::string, FunctionArgumentDefinition *> def_arg_map = functions->getStandardArgumentMap(function_def);
+                    auto def_arg_map = function_def->getStandardFunctionArgumentMap();
                     for (auto def_arg : def_arg_map) {
-                        std::string standard_arg_name = def_arg.first;
+                        std::string standard_arg_name;
+                        switch (def_arg.first) {
+                            case StandardFunctionArgument::additive     : standard_arg_name = "additive";
+                                                                          break;
+                            case StandardFunctionArgument::proportional : standard_arg_name = "proportional";
+                                                                          break;
+                            case StandardFunctionArgument::prediction   : standard_arg_name = "prediction";
+                                                                          break;
+                        }
                         std::string actual_arg_name = def_arg.second->getSymbId();
 
                         // Check if it's a prediction argument and output the argument in standardized form
@@ -773,16 +791,16 @@ namespace PharmML
                     }
 
                     // Add the residual error
-                    form.add("eps = " + this->accept(observationModel->getResidualError()));
+                    form.add("eps = " + this->accept(om->getResidualError()));
                     form.closeVector();
 
                     // Warn if unexpected structure with regards to the output symbol
                     // FIXME: Same as above outcommented block
                     //~ if (output_arg_names.empty()) {
-                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", observationModel);
+                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", om);
                     //~ } else if (output_arg_names.size() > 1) {
                         //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
-                            //~ + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", observationModel);
+                            //~ + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", om);
                     //~ }
                 } else {
                     // TODO: Non-standard function call must be resolved
@@ -793,13 +811,13 @@ namespace PharmML
                 }
             } else {
                 // Not a pure function call, so dump explicit assignment
-                AstNode *res_err = observationModel->getResidualError();
+                AstNode *res_err = om->getResidualError();
                 form.add(obs_name + " = " + this->accept(error_model) + " + " + this->accept(res_err));
                 form.append(" # Is this how you expect the residual error to associate?");
             }
-        } else if (observationModel->hasGeneralErrorModel()) {
+        } else if (om->hasGeneralErrorModel()) {
             // General error model, so dump explicit assignment
-            AstNode *assignment = observationModel->getAssignment();
+            AstNode *assignment = om->getAssignment();
             form.add(obs_name + " = " + this->accept(assignment));
         }
 

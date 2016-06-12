@@ -160,11 +160,12 @@ namespace PharmML
         }
     }
 
-    // Get standard function
+    // Get standard function (call after isStandardFunction)
     StandardFunction FunctionDefinition::getStandardFunction() {
         return this->std_func;
     }
 
+    // Get standard function argument map (call after isStandardFunction)
     std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> FunctionDefinition::getStandardFunctionArgumentMap() {
         return this->std_arg_map;
     }

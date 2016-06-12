@@ -87,7 +87,7 @@ namespace PharmML
             std::string genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(PharmML::StructuralModel *structuralModel);
             std::string genCompartmentBlock(PharmML::PKMacros *pk_macros);
-            std::string genObservationBlock(PharmML::ObservationModel *observationModel, CPharmML::Functions *functions);
+            std::string genObservationBlock(PharmML::Model *model);
 
             std::string genMdlObj(PharmML::Model *model);
             std::string genTaskObj();

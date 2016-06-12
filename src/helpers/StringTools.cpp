@@ -86,4 +86,13 @@ namespace StringTools
         str.erase(std::remove_if(str.begin(), str.end(), ::isspace), str.end());
         return str;
     }
+
+    // Replace all occurences of 'sub_str' in 'str' with 'replacement'
+    void replaceSubstrings(std::string &str, const std::string &sub_str, const std::string &replacement) {
+        size_t pos = 0;
+        while((pos = str.find(sub_str, pos)) != std::string::npos){
+            str.replace(pos, sub_str.length(), replacement);
+            pos += replacement.length();
+        }
+    }
 }

@@ -22,6 +22,8 @@
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/SymbolVisitor.h>
+#include <visitors/AstAnalyzer.h>
+#include <helpers/StringTools.h>
 
 namespace PharmML
 {
@@ -41,6 +43,16 @@ namespace PharmML
             void parse(xml::Node node);
     };
 
+    enum class StandardFunction { additiveError, proportionalError, combinedError1, NA };
+    enum class StandardFunctionArgument { additive, proportional, prediction };
+    struct EnumClassHash
+    {
+        template <typename T>
+        std::size_t operator()(T t) const
+        {
+            return static_cast<std::size_t>(t);
+        }
+    };
     class FunctionDefinition : public Symbol
     {
         public:
@@ -54,12 +66,22 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
+            // POSTPARSE/CONSOLIDATION
+            bool isStandardFunction();
+            StandardFunction getStandardFunction();
+            std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> getStandardFunctionArgumentMap();
+
         private:
             AstNode *definition = nullptr;
             std::string symbolType;
             std::vector<FunctionArgumentDefinition *> arguments;
 
             void parse(xml::Node node);
+
+            // POSTPARSE/CONSOLIDATION
+            std::string linear_form;
+            StandardFunction std_func;
+            std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> std_arg_map;
     };
 }
 

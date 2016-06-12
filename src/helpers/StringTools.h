@@ -31,6 +31,7 @@ namespace StringTools
     std::string trimTrailingWhitespace(std::string str);
     std::string mergeLines(std::string str);
     std::string removeWhitespace(std::string str);
+    void replaceSubstrings(std::string &str, const std::string &sub_str, const std::string &replacement);
 }
 
 #endif

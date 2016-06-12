@@ -29,7 +29,6 @@ namespace CPharmML
         this->consolidatePopulationParameters(model);
         this->consolidateCovariates(model);
         this->consolidateVariabilityModels(model);
-        this->consolidateFunctions(model);
     }
 
     void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
@@ -141,14 +140,6 @@ namespace CPharmML
         }
     }
 
-    void Consolidator::consolidateFunctions(PharmML::Model *model) {
-        this->functions = new Functions();
-        std::vector<PharmML::FunctionDefinition *> funs = model->getFunctionDefinitions();
-        for (PharmML::FunctionDefinition *fun : funs) {
-            this->functions->addFunctionDefinition(fun);
-        }
-    }
-
     CPharmML::PopulationParameters *Consolidator::getPopulationParameters() {
         // TODO: Plurality support for different parameter models
         return this->populationParameters[0];
@@ -160,9 +151,5 @@ namespace CPharmML
 
     CPharmML::VariabilityModels *Consolidator::getVariabilityModels() {
         return this->variabilityModels;
-    }
-
-    CPharmML::Functions *Consolidator::getFunctions() {
-        return this->functions;
     }
 }

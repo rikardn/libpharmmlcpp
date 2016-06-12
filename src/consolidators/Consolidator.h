@@ -28,7 +28,6 @@
 #include <consolidators/PopulationParameters.h>
 #include <consolidators/Covariates.h>
 #include <consolidators/VariabilityModels.h>
-#include <consolidators/Functions.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 #include <objects/Object.h>
@@ -44,7 +43,6 @@ namespace CPharmML
             CPharmML::PopulationParameters *getPopulationParameters();
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
-            CPharmML::Functions *getFunctions();
 
         private:
             std::shared_ptr<PharmML::Logger> logger;
@@ -53,12 +51,10 @@ namespace CPharmML
             std::vector<CPharmML::PopulationParameters *> populationParameters; // Vector with one wrapper object per parameter model
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
-            CPharmML::Functions *functions;
 
             void consolidatePopulationParameters(PharmML::Model *model);
             void consolidateCovariates(PharmML::Model *model);
             void consolidateVariabilityModels(PharmML::Model *model);
-            void consolidateFunctions(PharmML::Model *model);
     };
 }
 

@@ -510,7 +510,7 @@ namespace PharmML
             max_length = (length > max_length) ? length : max_length;
         }
 
-        // Number absorption processes consecutively (depreceated MDL 'modelCmt' argument)
+        // Number administrations consecutively (depreceated MDL 'modelCmt' argument)
         int mdl_cmt_iterator = 1;
         std::unordered_map<PharmML::PKMacro *, int> mdl_cmt;
         std::vector<PharmML::PKMacro *> adm_macros = pk_macros->getAdministrations();
@@ -546,11 +546,11 @@ namespace PharmML
             std::string prefix = name + pad;
             form.openVector(prefix + " : {}", 0, ", ");
 
-            // Get target of absorption process (MDL uses the names when refering)
+            // Get target of administration (MDL uses the names when refering)
             int target_num = macro->getTargetNum();
             std::string target_name = pk_macros->getCompartment(target_num)->getName();
             
-            // Add differently if depot-ish absorption or direct (IV)
+            // Add differently if depot-ish administration or direct (IV)
             if (macro->getSubType() != MacroType::IV) {
                 form.add("type is depot");
                 form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));

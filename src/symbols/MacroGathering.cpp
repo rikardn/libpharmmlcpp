@@ -29,7 +29,7 @@ namespace PharmML
         std::string blkId = current_block->getBlkId();
         if (macro->isCompartment()) {
             this->cmt_map[blkId][macro->getCmtNum()] = macro;
-        } else if (macro->isAbsorptionProcess()) {
+        } else if (macro->isAdministration()) {
             this->adm_map[blkId][macro->getAdmNum()] = macro;
         }
     }

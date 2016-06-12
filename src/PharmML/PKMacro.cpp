@@ -278,7 +278,7 @@ namespace PharmML
         return this->is_comp;
     }
 
-    bool PKMacro::isAbsorptionProcess() {
+    bool PKMacro::isAdministration() {
         return this->is_abs;
     }
 
@@ -305,7 +305,7 @@ namespace PharmML
         return this->source_cmt_num;
     }
 
-    // For mass transfers/absorptions: Get integer number reference (target)
+    // For mass transfers/administrations: Get integer number reference (target)
     int PKMacro::getTargetNum() {
         return this->target_cmt_num;
     }
@@ -413,7 +413,7 @@ namespace PharmML
                     if (!scalar_int) {
                         // No ScalarInt child on "cmt" or "adm" attribute
                         this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
-                    } else if ( (attribute == "cmt" && macro->isCompartment()) || (attribute == "adm" && macro->isAbsorptionProcess()) ) {
+                    } else if ( (attribute == "cmt" && macro->isCompartment()) || (attribute == "adm" && macro->isAdministration()) ) {
                         // Check if this integer is a duplicate of an earlier such integer found
                         int num = scalar_int->toInt();
                         auto got = int_codes[attribute].find(num);
@@ -443,13 +443,13 @@ namespace PharmML
         return cmt_macros;
     }
 
-    // Get all administration/absorption type macro's
+    // Get all administration type macro's
     std::vector<PKMacro *> PKMacros::getAdministrations() {
         std::vector<PKMacro *> adm_macros;
         for (PKMacro *macro : this->macros) {
             // Find administration
             std::string type = macro->getType();
-            if (macro->isAbsorptionProcess()) {
+            if (macro->isAdministration()) {
                 adm_macros.push_back(macro);
             }
         }
@@ -469,7 +469,7 @@ namespace PharmML
         return trans_macros;
     }
 
-    // Find and return an administration/absorption from administration number
+    // Find and return an administration from administration number
     PKMacro *PKMacros::getAdministration(int adm_num) {
         PharmML::AstAnalyzer ast_analyzer;
         for (PKMacro *macro : this->getAdministrations()) {

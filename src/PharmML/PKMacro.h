@@ -50,7 +50,7 @@ namespace PharmML
             void setName(std::string name);
             std::string getName();
             bool isCompartment();
-            bool isAbsorptionProcess();
+            bool isAdministration();
             bool isMassTransfer();
             MacroType getSubType();
             int getCmtNum();

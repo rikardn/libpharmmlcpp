@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_INTERVAL_H_
-#define PHARMML_INTERVAL_H_
+#ifndef PHARMMLCPP_INTERVAL_H_
+#define PHARMMLCPP_INTERVAL_H_
 
 #include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_COLUMNMAPPING_H_
-#define PHARMML_COLUMNMAPPING_H_
+#ifndef PHARMMLCPP_COLUMNMAPPING_H_
+#define PHARMMLCPP_COLUMNMAPPING_H_
 
 #include <unordered_map>
 #include <helpers/StringTools.h>

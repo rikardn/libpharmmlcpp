@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_OBSERVATIONS_H_
-#define PHARMML_OBSERVATIONS_H_
+#ifndef PHARMMLCPP_OBSERVATIONS_H_
+#define PHARMMLCPP_OBSERVATIONS_H_
 
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_VARIABILITYMODEL_H_
-#define PHARMML_VARIABILITYMODEL_H_
+#ifndef PHARMMLCPP_VARIABILITYMODEL_H_
+#define PHARMMLCPP_VARIABILITYMODEL_H_
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

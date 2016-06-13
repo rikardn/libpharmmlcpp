@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBOLSET_H_
-#define PHARMML_SYMBOLSET_H_
+#ifndef PHARMMLCPP_SYMBOLSET_H_
+#define PHARMMLCPP_SYMBOLSET_H_
 
 #include <unordered_set>
 #include <vector>

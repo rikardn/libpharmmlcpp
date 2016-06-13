@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_ARMS_H_
-#define PHARMML_ARMS_H_
+#ifndef PHARMMLCPP_ARMS_H_
+#define PHARMMLCPP_ARMS_H_
 
 #include <visitors/ObjectVisitor.h>
 #include <symbols/Variable.h>

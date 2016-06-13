@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CPHARMML_CONSOLIDATOR_H_
-#define CPHARMML_CONSOLIDATOR_H_
+#ifndef CPHARMMLCPP_CONSOLIDATOR_H_
+#define CPHARMMLCPP_CONSOLIDATOR_H_
 
 #include <memory>
 #include <vector>

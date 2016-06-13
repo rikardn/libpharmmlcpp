@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_INDEPENDENTVARIABLE_H_H
-#define PHARMML_INDEPENDENTVARIABLE_H_H
+#ifndef PHARMMLCPP_INDEPENDENTVARIABLE_H_H
+#define PHARMMLCPP_INDEPENDENTVARIABLE_H_H
 
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>

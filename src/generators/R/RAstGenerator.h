@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RASTGENERATOR_H_
-#define PHARMML_RASTGENERATOR_H_
+#ifndef PHARMMLCPP_RASTGENERATOR_H_
+#define PHARMMLCPP_RASTGENERATOR_H_
 
 #include <string>
 #include <visitors/AstNodeVisitor.h>

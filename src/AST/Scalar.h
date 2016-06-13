@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SCALAR_H_
-#define PHARMML_SCALAR_H_
+#ifndef PHARMMLCPP_SCALAR_H_
+#define PHARMMLCPP_SCALAR_H_
 
 #include <AST/AstNode.h>
 #include <xml/xml.h>

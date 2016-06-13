@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RSYMBOLNAMER_H_
-#define PHARMML_RSYMBOLNAMER_H_
+#ifndef PHARMMLCPP_RSYMBOLNAMER_H_
+#define PHARMMLCPP_RSYMBOLNAMER_H_
 
 #include <helpers/SymbolNamer.h>
 

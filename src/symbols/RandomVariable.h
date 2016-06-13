@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RANDOMVARIABLE_H_
-#define PHARMML_RANDOMVARIABLE_H_
+#ifndef PHARMMLCPP_RANDOMVARIABLE_H_
+#define PHARMMLCPP_RANDOMVARIABLE_H_
 
 #include <unordered_set>
 #include <PharmML/PharmMLContext.h>

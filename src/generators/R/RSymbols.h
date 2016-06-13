@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_RSYMBOLS_H_
-#define PHARMML_RSYMBOLS_H_
+#ifndef PHARMMLCPP_RSYMBOLS_H_
+#define PHARMMLCPP_RSYMBOLS_H_
 
 #include <unordered_map>
 #include <visitors/StringVisitor.h>

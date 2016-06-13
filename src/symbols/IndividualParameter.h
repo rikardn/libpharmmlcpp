@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_INDIVIDUALPARAMETER_H_
-#define PHARMML_INDIVIDUALPARAMETER_H_
+#ifndef PHARMMLCPP_INDIVIDUALPARAMETER_H_
+#define PHARMMLCPP_INDIVIDUALPARAMETER_H_
 
 #include <PharmML/PharmMLContext.h>
 #include <xml/xml.h>

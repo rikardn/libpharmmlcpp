@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_BLOCK_H_
-#define PHARMML_BLOCK_H_
+#ifndef PHARMMLCPP_BLOCK_H_
+#define PHARMMLCPP_BLOCK_H_
 
 #include <string>
 #include <xml/xml.h>

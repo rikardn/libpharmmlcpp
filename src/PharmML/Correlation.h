@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_CORRELATION_H_
-#define PHARMML_CORRELATION_H_
+#ifndef PHARMMLCPP_CORRELATION_H_
+#define PHARMMLCPP_CORRELATION_H_
 
 #include <xml/xml.h>
 #include <PharmML/PharmMLContext.h>

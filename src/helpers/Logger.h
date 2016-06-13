@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_LOGGER_H_
-#define PHARMML_LOGGER_H_
+#ifndef PHARMMLCPP_LOGGER_H_
+#define PHARMMLCPP_LOGGER_H_
 
 #include <string>
 #include <PharmML/PharmMLSection.h>

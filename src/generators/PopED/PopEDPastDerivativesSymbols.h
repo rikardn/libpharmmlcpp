@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
-#define PHARMML_POPEDPASTDERIVATIVESSYMBOLS_H_
+#ifndef PHARMMLCPP_POPEDPASTDERIVATIVESSYMBOLS_H_
+#define PHARMMLCPP_POPEDPASTDERIVATIVESSYMBOLS_H_
 
 #include <visitors/StringVisitor.h>
 #include <visitors/SymbolVisitor.h>

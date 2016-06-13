@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_VECTOR_H_
-#define PHARMML_VECTOR_H_
+#ifndef PHARMMLCPP_VECTOR_H_
+#define PHARMMLCPP_VECTOR_H_
 
 #include <AST/AstNode.h>
 #include <AST/Scalar.h>

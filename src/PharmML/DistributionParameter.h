@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_DISTRIBUTIONPARAMETER_H_
-#define PHARMML_DISTRIBUTIONPARAMETER_H_
+#ifndef PHARMMLCPP_DISTRIBUTIONPARAMETER_H_
+#define PHARMMLCPP_DISTRIBUTIONPARAMETER_H_
 
 #include "PharmMLContext.h"
 #include <AST/AstNode.h>

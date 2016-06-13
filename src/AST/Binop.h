@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_BINOP_H_
-#define PHARMML_BINOP_H_
+#ifndef PHARMMLCPP_BINOP_H_
+#define PHARMMLCPP_BINOP_H_
 
 #include <AST/AstNode.h>
 #include <visitors/AstNodeVisitor.h>

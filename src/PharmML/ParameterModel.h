@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_PARAMETERMODEL_H_
-#define PHARMML_PARAMETERMODEL_H_
+#ifndef PHARMMLCPP_PARAMETERMODEL_H_
+#define PHARMMLCPP_PARAMETERMODEL_H_
 
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBREFFINDER_H_
-#define PHARMML_SYMBREFFINDER_H_
+#ifndef PHARMMLCPP_SYMBREFFINDER_H_
+#define PHARMMLCPP_SYMBREFFINDER_H_
 
 #include <string>
 #include <unordered_set>

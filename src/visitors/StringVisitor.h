@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_STRINGVISITOR_H_
-#define PHARMML_STRINGVISITOR_H_
+#ifndef PHARMMLCPP_STRINGVISITOR_H_
+#define PHARMMLCPP_STRINGVISITOR_H_
 
 #include <string>
 

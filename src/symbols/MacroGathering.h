@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_MACROGATHERING_H_
-#define PHARMML_MACROGATHERING_H_
+#ifndef PHARMMLCPP_MACROGATHERING_H_
+#define PHARMMLCPP_MACROGATHERING_H_
 
 #include <string>
 #include <unordered_map>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_MDLSYMBOLS_H_
-#define PHARMML_MDLSYMBOLS_H_
+#ifndef PHARMMLCPP_MDLSYMBOLS_H_
+#define PHARMMLCPP_MDLSYMBOLS_H_
 
 #include <memory>
 #include <unordered_map>

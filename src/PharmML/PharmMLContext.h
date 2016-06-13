@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_PHARMMLCONTEXT_H_
-#define PHARMML_PHARMMLCONTEXT_H_
+#ifndef PHARMMLCPP_PHARMMLCONTEXT_H_
+#define PHARMMLCPP_PHARMMLCONTEXT_H_
 
 #include <unordered_map>
 #include <xml/xml.h>

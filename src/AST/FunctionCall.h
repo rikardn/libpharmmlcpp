@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_FUNCTIONCALL_H_
-#define PHARMML_FUNCTIONCALL_H_
+#ifndef PHARMMLCPP_FUNCTIONCALL_H_
+#define PHARMMLCPP_FUNCTIONCALL_H_
 
 #include <vector>
 #include <unordered_set>

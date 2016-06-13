@@ -15,10 +15,10 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_MODEL_H_
-#define PHARMML_MODEL_H_
+#ifndef PHARMMLCPP_MODEL_H_
+#define PHARMMLCPP_MODEL_H_
 
-#ifndef PHARMML_PHARMMLCONTEXT_H_
+#ifndef PHARMMLCPP_PHARMMLCONTEXT_H_
 #include <PharmML/PharmMLContext.h>
 #endif
 

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_COVARIATEMODEL_H_
-#define PHARMML_COVARIATEMODEL_H_
+#ifndef PHARMMLCPP_COVARIATEMODEL_H_
+#define PHARMMLCPP_COVARIATEMODEL_H_
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

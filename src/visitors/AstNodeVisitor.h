@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_ASTNODEVISITOR_H_
-#define PHARMML_ASTNODEVISITOR_H_
+#ifndef PHARMMLCPP_ASTNODEVISITOR_H_
+#define PHARMMLCPP_ASTNODEVISITOR_H_
 
 namespace pharmmlcpp
 {

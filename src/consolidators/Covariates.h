@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CPHARMML_COVARIATES_H_
-#define CPHARMML_COVARIATES_H_
+#ifndef CPHARMMLCPP_COVARIATES_H_
+#define CPHARMMLCPP_COVARIATES_H_
 
 #include <string>
 #include <unordered_set>

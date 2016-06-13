@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_ASTBUILDER_H_
-#define PHARMML_ASTBUILDER_H_
+#ifndef PHARMMLCPP_ASTBUILDER_H_
+#define PHARMMLCPP_ASTBUILDER_H_
 
 #include <vector>
 #include <AST/AstNode.h>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBOLNAMER_H_
-#define PHARMML_SYMBOLNAMER_H_
+#ifndef PHARMMLCPP_SYMBOLNAMER_H_
+#define PHARMMLCPP_SYMBOLNAMER_H_
 
 #include <set>
 #include <unordered_map>

@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBOLGATHERING_H_
-#define PHARMML_SYMBOLGATHERING_H_
+#ifndef PHARMMLCPP_SYMBOLGATHERING_H_
+#define PHARMMLCPP_SYMBOLGATHERING_H_
 
 #include <string>
 #include <unordered_map>

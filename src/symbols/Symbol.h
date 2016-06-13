@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMML_SYMBOL_H_
-#define PHARMML_SYMBOL_H_
+#ifndef PHARMMLCPP_SYMBOL_H_
+#define PHARMMLCPP_SYMBOL_H_
 
 #include <string>
 #include <unordered_set>

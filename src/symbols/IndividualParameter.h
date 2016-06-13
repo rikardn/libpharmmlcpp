@@ -26,7 +26,7 @@
 #include <symbols/Symbol.h>
 #include <AST/Scalar.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class FixedEffect : public Referer
     {
@@ -34,7 +34,7 @@ namespace PharmML
             FixedEffect(PharmMLContext *context, xml::Node node);
 
             SymbRef *getReference();
-            PharmML::AstNode *getScalar();
+            pharmmlcpp::AstNode *getScalar();
             std::string getCategory();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
@@ -42,7 +42,7 @@ namespace PharmML
         private:
             PharmMLContext *context;
             SymbRef *symbRef = nullptr;
-            PharmML::AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
+            pharmmlcpp::AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
             std::string catId;
 
             void parse(xml::Node node);
@@ -61,7 +61,7 @@ namespace PharmML
             bool isGeneric(); // Type 4 (distributional)
 
             std::string getTransformation();
-            PharmML::AstNode *getPopulationValue();
+            pharmmlcpp::AstNode *getPopulationValue();
 
             std::vector<SymbRef *> getCovariates();
             std::vector<FixedEffect *> getFixedEffects(SymbRef *covariate);
@@ -69,7 +69,7 @@ namespace PharmML
 
             std::vector<SymbRef *> getRandomEffects();
 
-            PharmML::AstNode *getAssignment();
+            pharmmlcpp::AstNode *getAssignment();
 
             AstNode *asExplicit();
 
@@ -85,16 +85,16 @@ namespace PharmML
             bool is_generic_cov = false;
 
             std::string transformation;
-            std::vector<PharmML::AstNode *> transformationParameters;
-            PharmML::AstNode *populationValue = nullptr;
+            std::vector<pharmmlcpp::AstNode *> transformationParameters;
+            pharmmlcpp::AstNode *populationValue = nullptr;
 
             std::vector<SymbRef *> covariates;
             std::unordered_map<SymbRef *, std::vector<FixedEffect *>> fixedEffects;
 
             std::vector<SymbRef *> randomEffects;
 
-            PharmML::AstNode *generalAssignment = nullptr;
-            PharmML::AstNode *explicitAssignment = nullptr;
+            pharmmlcpp::AstNode *generalAssignment = nullptr;
+            pharmmlcpp::AstNode *explicitAssignment = nullptr;
 
     };
 }

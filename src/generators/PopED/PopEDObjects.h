@@ -25,7 +25,7 @@
 #include <generators/TextFormatter.h>
 #include <PharmML/Interventions.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class PopEDObjects : public ObjectVisitor, public StringVisitor
     {

@@ -21,7 +21,7 @@
 #include <xml/xml.h>
 #include <PharmML/TrialDesign.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     Model::Model(const char *filename) {
         this->context = new PharmMLContext(filename, this);
@@ -31,27 +31,27 @@ namespace PharmML
     void Model::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
-            this->IndependentVariable = new PharmML::IndependentVariable(this->context, iv);
+            this->IndependentVariable = new pharmmlcpp::IndependentVariable(this->context, iv);
         }
 
         xml::Node mdef_node = this->context->getSingleElement(node, "/x:PharmML/mdef:ModelDefinition");
         if (mdef_node.exists()) {
-            this->ModelDefinition = new PharmML::ModelDefinition(this->context, mdef_node);
+            this->ModelDefinition = new pharmmlcpp::ModelDefinition(this->context, mdef_node);
         }
 
         std::vector<xml::Node> function_nodes = this->context->getElements(node, "/x:PharmML/ct:FunctionDefinition");
         for (xml::Node n : function_nodes) {
-            this->FunctionDefinitions.push_back(new PharmML::FunctionDefinition(this->context, n));
+            this->FunctionDefinitions.push_back(new pharmmlcpp::FunctionDefinition(this->context, n));
         }
 
         xml::Node design_node = this->context->getSingleElement(node, "/x:PharmML/design:TrialDesign");
         if (design_node.exists()) {
-            this->TrialDesign = new PharmML::TrialDesign(this->context, design_node);
+            this->TrialDesign = new pharmmlcpp::TrialDesign(this->context, design_node);
         }
 
         xml::Node msteps_node = this->context->getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
         if (msteps_node.exists()) {
-            this->ModellingSteps = new PharmML::ModellingSteps(this->context, msteps_node);
+            this->ModellingSteps = new pharmmlcpp::ModellingSteps(this->context, msteps_node);
         }
 
         // TODO: This an be moved into postParse when the consolidator call below is removed
@@ -70,7 +70,7 @@ namespace PharmML
          * which in turn uses names of refered Symbol's. Guess who sets SymbRef's? The consolidator, after XML
          * read and object construction... I.e., postParse() CANNOT be called in constructor of PKMacros.
          * This needs a good solution. Quickly. */
-        PharmML::PKMacros *pk_macros = this->ModelDefinition->getStructuralModel()->getPKMacros();
+        pharmmlcpp::PKMacros *pk_macros = this->ModelDefinition->getStructuralModel()->getPKMacros();
         if (pk_macros) {
             pk_macros->postParse();
             this->setupPKMacros();
@@ -85,16 +85,16 @@ namespace PharmML
         this->context->doc.write(filename);
     }
 
-    PharmML::IndependentVariable *Model::getIndependentVariable() {
+    pharmmlcpp::IndependentVariable *Model::getIndependentVariable() {
         return this->IndependentVariable;
     }
 
-    std::vector<PharmML::FunctionDefinition *> Model::getFunctionDefinitions() {
+    std::vector<pharmmlcpp::FunctionDefinition *> Model::getFunctionDefinitions() {
         return this->FunctionDefinitions;
     }
 
-    PharmML::FunctionDefinition *Model::resolveFunctionCall(PharmML::FunctionCall *functionCall) {
-        for (PharmML::FunctionDefinition *FunctionDefinition : this->FunctionDefinitions) {
+    pharmmlcpp::FunctionDefinition *Model::resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall) {
+        for (pharmmlcpp::FunctionDefinition *FunctionDefinition : this->FunctionDefinitions) {
             if (functionCall->getFunction()->getSymbol() == FunctionDefinition) {
                 return FunctionDefinition;
             }
@@ -102,15 +102,15 @@ namespace PharmML
         return nullptr;
     }
 
-    PharmML::ModelDefinition *Model::getModelDefinition() {
+    pharmmlcpp::ModelDefinition *Model::getModelDefinition() {
         return this->ModelDefinition;
     }
 
-    PharmML::TrialDesign *Model::getTrialDesign() {
+    pharmmlcpp::TrialDesign *Model::getTrialDesign() {
         return this->TrialDesign;
     }
 
-    PharmML::ModellingSteps *Model::getModellingSteps() {
+    pharmmlcpp::ModellingSteps *Model::getModellingSteps() {
         return this->ModellingSteps;
     }
 
@@ -130,7 +130,7 @@ namespace PharmML
     // Gater all Symbols and setup SymbolRefs and referencedSymbols
     void Model::setupSymbols() {
         SymbolGathering gathering;
-        PharmML::ModelDefinition *mdef = this->getModelDefinition();
+        pharmmlcpp::ModelDefinition *mdef = this->getModelDefinition();
 
         // Gather all symbols
         if (mdef->getParameterModel()) {
@@ -168,7 +168,7 @@ namespace PharmML
     void Model::setupObjects() {
         std::unordered_set<std::string> allOids;
 
-        PharmML::TrialDesign *td = this->getTrialDesign();
+        pharmmlcpp::TrialDesign *td = this->getTrialDesign();
 
         if (td) {
             Arms *arms = td->getArms();
@@ -198,7 +198,7 @@ namespace PharmML
         }
 
         // Obtain a map from all oids to Objects. Will be used to populate ObjectRefs
-        std::unordered_map<std::string, PharmML::Object *> oidMap;
+        std::unordered_map<std::string, pharmmlcpp::Object *> oidMap;
         for (Object *object : this->allObjects) {
             oidMap[object->getOid()] = object;
         }
@@ -222,7 +222,7 @@ namespace PharmML
     void Model::setupPKMacros() {
         // Gather all macros
         MacroGathering gathering;
-        PharmML::StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
+        pharmmlcpp::StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
         if (sm) {
             sm->gatherMacros(gathering);
         }

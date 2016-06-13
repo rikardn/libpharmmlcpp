@@ -21,7 +21,7 @@
 #include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     Correlation::Correlation(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
@@ -32,7 +32,7 @@ namespace PharmML
     void Correlation::parse(xml::Node node) {
         // Get variability reference
         xml::Node var_ref_node = this->context->getSingleElement(node, "./ct:VariabilityReference");
-        this->variabilityReference = new PharmML::VariabilityReference(this->context, var_ref_node);
+        this->variabilityReference = new pharmmlcpp::VariabilityReference(this->context, var_ref_node);
 
         // Get pairwise/matrix specification of correlation
         xml::Node pairwise_node = this->context->getSingleElement(node, "./mdef:Pairwise");
@@ -40,9 +40,9 @@ namespace PharmML
         if (pairwise_node.exists()) {
             // Get the two correlated random variables
             xml::Node var1_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable1/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new PharmML::SymbRef(var1_node));
+            this->pairwiseSymbRefs.push_back(new pharmmlcpp::SymbRef(var1_node));
             xml::Node var2_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable2/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new PharmML::SymbRef(var2_node));
+            this->pairwiseSymbRefs.push_back(new pharmmlcpp::SymbRef(var2_node));
 
             // Get correlation type
             xml::Node corr_node = this->context->getSingleElement(pairwise_node, "./mdef:CorrelationCoefficient");
@@ -68,7 +68,7 @@ namespace PharmML
         }
     }
 
-    PharmML::VariabilityReference *Correlation::getVariabilityReference() {
+    pharmmlcpp::VariabilityReference *Correlation::getVariabilityReference() {
         return this->variabilityReference;
     }
 
@@ -76,7 +76,7 @@ namespace PharmML
         return (pairwiseSymbRefs.size() == 2);
     }
 
-    std::vector<PharmML::SymbRef *> Correlation::getPairwiseSymbRefs(){
+    std::vector<pharmmlcpp::SymbRef *> Correlation::getPairwiseSymbRefs(){
         return this->pairwiseSymbRefs;
     }
 
@@ -84,7 +84,7 @@ namespace PharmML
         return this->pairwiseType;
     }
 
-    PharmML::AstNode *Correlation::getPairwiseAssignment() {
+    pharmmlcpp::AstNode *Correlation::getPairwiseAssignment() {
         return this->pairwiseAssignment;
     }
 
@@ -97,7 +97,7 @@ namespace PharmML
         this->variabilityReference->setupSymbRefs(gathering, blkId);
         if (this->pairwiseAssignment) {
             this->setupAstSymbRefs(this->pairwiseAssignment, gathering, blkId);
-            for (PharmML::SymbRef *symbRef : this->pairwiseSymbRefs) {
+            for (pharmmlcpp::SymbRef *symbRef : this->pairwiseSymbRefs) {
                 // Separation of correlated random variables seem like a good idea
                 this->correlatedSymbols.addSymbol(this->addSymbRef(symbRef, gathering, blkId));
             }

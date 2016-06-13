@@ -30,15 +30,15 @@
 #include <PharmML/Block.h>
 #include <helpers/SymbolNamer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
     class PharmMLContext;
     class Referer
     {
         public:
-            PharmML::SymbolSet referencedSymbols;
-            PharmML::Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
+            pharmmlcpp::SymbolSet referencedSymbols;
+            pharmmlcpp::Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
             void addReference(Symbol *symbol);
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);

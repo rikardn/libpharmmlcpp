@@ -23,7 +23,7 @@
 #include <symbols/PopulationParameter.h>
 #include <generators/MDL/MDLGenerator.h>
 
-using namespace PharmML;
+using namespace pharmmlcpp;
 
 int main(int argc, char **argv)
 {

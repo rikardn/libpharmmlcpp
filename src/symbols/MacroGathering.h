@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <PharmML/PKMacro.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Block;
 

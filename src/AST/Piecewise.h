@@ -23,7 +23,7 @@
 #include <xml/xml.h>
 #include <visitors/AstNodeVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Piece : public AstNode
     {

@@ -17,6 +17,6 @@
 
 #include <generators/R/RSymbolNamer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
 }

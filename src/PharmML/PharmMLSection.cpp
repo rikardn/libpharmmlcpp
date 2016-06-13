@@ -17,7 +17,7 @@
 
 #include "PharmMLSection.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     PharmMLSection::PharmMLSection() {
 

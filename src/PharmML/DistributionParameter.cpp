@@ -18,7 +18,7 @@
 #include "DistributionParameter.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     DistributionParameter::DistributionParameter(PharmMLContext *context, xml::Node node) {
         this->context = context;

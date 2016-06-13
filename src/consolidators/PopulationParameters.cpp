@@ -20,49 +20,49 @@
 namespace CPharmML
 {
     // Construct with PopulationParameter/Correlation as base
-    PopulationParameter::PopulationParameter(PharmML::PopulationParameter *populationParameter) {
+    PopulationParameter::PopulationParameter(pharmmlcpp::PopulationParameter *populationParameter) {
         this->populationParameter = populationParameter;
     }
 
-    PopulationParameter::PopulationParameter(PharmML::Correlation *correlation) {
+    PopulationParameter::PopulationParameter(pharmmlcpp::Correlation *correlation) {
         // Construct name for the (normally unnamed) correlation parameter
         this->correlation = correlation;
         this->name = "";
     }
 
     // Add PharmML objects for consolidation with PopulationParameter
-    void PopulationParameter::addCorrelation(PharmML::Correlation *corr) {
+    void PopulationParameter::addCorrelation(pharmmlcpp::Correlation *corr) {
         this->correlation = corr;
         this->name = this->populationParameter->getSymbId();
     }
 
-    void PopulationParameter::addRandomVariable(PharmML::RandomVariable *randomVariable) {
+    void PopulationParameter::addRandomVariable(pharmmlcpp::RandomVariable *randomVariable) {
         this->randomVariables.push_back(randomVariable);
         this->variabilityParameter = true; // Are we sure? What if used as 'mean' in 'Normal1' for example?
     }
 
-    void PopulationParameter::addIndividualParameter(PharmML::IndividualParameter *individualParameter) {
+    void PopulationParameter::addIndividualParameter(pharmmlcpp::IndividualParameter *individualParameter) {
         this->individualParameters.push_back(individualParameter);
     }
 
-    void PopulationParameter::addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation) {
+    void PopulationParameter::addParameterEstimation(pharmmlcpp::ParameterEstimation *parameterEstimation) {
         this->parameterEstimation = parameterEstimation;
     }
 
     // Get PharmML objects used to consolidate
-    PharmML::PopulationParameter *PopulationParameter::getPopulationParameter() {
+    pharmmlcpp::PopulationParameter *PopulationParameter::getPopulationParameter() {
         return this->populationParameter;
     }
 
-    std::vector<PharmML::RandomVariable *> PopulationParameter::getRandomVariables() {
+    std::vector<pharmmlcpp::RandomVariable *> PopulationParameter::getRandomVariables() {
         return this->randomVariables;
     }
 
-    std::vector<PharmML::IndividualParameter *> PopulationParameter::getIndividualParameters() {
+    std::vector<pharmmlcpp::IndividualParameter *> PopulationParameter::getIndividualParameters() {
         return this->individualParameters;
     }
 
-    PharmML::Correlation *PopulationParameter::getCorrelation() {
+    pharmmlcpp::Correlation *PopulationParameter::getCorrelation() {
         return this->correlation;
     }
 
@@ -84,7 +84,7 @@ namespace CPharmML
     }
 
     // Get attributes
-    PharmML::ParameterEstimation *PopulationParameter::getParameterEstimation() {
+    pharmmlcpp::ParameterEstimation *PopulationParameter::getParameterEstimation() {
         return this->parameterEstimation;
     }
 
@@ -123,21 +123,21 @@ namespace CPharmML
     }
 
     // Wrapper class containing all CPharmML::PopulationParameter for a parameter model
-    PopulationParameters::PopulationParameters(std::vector<PharmML::PopulationParameter *> populationParameters, std::vector<PharmML::Correlation *> correlations) {
+    PopulationParameters::PopulationParameters(std::vector<pharmmlcpp::PopulationParameter *> populationParameters, std::vector<pharmmlcpp::Correlation *> correlations) {
          // Consolidate PharmML PopulationParameter's (e.g. for init statement generation)
-        for (PharmML::PopulationParameter *pop_param : populationParameters) {
+        for (pharmmlcpp::PopulationParameter *pop_param : populationParameters) {
             // Create new consolidated population parameter
             CPharmML::PopulationParameter *cpop_param = new PopulationParameter(pop_param);
             this->populationParameters.push_back(cpop_param);
         }
 
         // Consolidate PharmML Correlation's (not always an associated PopulationParameter)
-        for (PharmML::Correlation *corr : correlations) {
+        for (pharmmlcpp::Correlation *corr : correlations) {
             bool nameless = true;
             if (corr->isPairwise() && corr->hasPureSymbRefAssigment()) {
                 // Correlation refers purely to PopulationParameter for its assignment, i.e. it's not nameless
                 for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
-                    PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+                    pharmmlcpp::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
                     bool depends_on_pop = corr->referencedSymbols.hasSymbol(pop_param);
                     if (depends_on_pop) {
                         cpop_param->addCorrelation(corr);
@@ -153,22 +153,22 @@ namespace CPharmML
         }
     }
 
-    void PopulationParameters::addRandomVariables(std::vector<PharmML::RandomVariable *> randomVariables) {
+    void PopulationParameters::addRandomVariables(std::vector<pharmmlcpp::RandomVariable *> randomVariables) {
         for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
             if (!cpop_param->isCorrelation()) {
-                PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+                pharmmlcpp::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
                 // Find RandomVariable's referencing this PopulationParameter
-                for (PharmML::RandomVariable *random_var : randomVariables) {
+                for (pharmmlcpp::RandomVariable *random_var : randomVariables) {
                     bool depends_on_pop = random_var->referencedSymbols.hasSymbol(pop_param);
                     if (depends_on_pop) {
                         cpop_param->addRandomVariable(random_var);
 
                         // Get distribution for variable
-                        PharmML::Distribution *dist = random_var->getDistribution();
+                        pharmmlcpp::Distribution *dist = random_var->getDistribution();
                         cpop_param->addDistributionName(dist->getName());
 
                         // Find DistributionParameter's referencing this PopulationParameter
-                        for (PharmML::DistributionParameter *dist_param: dist->getDistributionParameters()) {
+                        for (pharmmlcpp::DistributionParameter *dist_param: dist->getDistributionParameters()) {
                             bool depends_on_pop = dist_param->refersIndirectlyTo(pop_param); // Try out the new Referer system
                             if (depends_on_pop) {
                                 cpop_param->addDistributionParameterType(dist_param->getName());
@@ -178,10 +178,10 @@ namespace CPharmML
                     }
                 }
             } else if (cpop_param->getName() == "") { // If nameless correlation, give it a name
-                PharmML::Correlation *corr = cpop_param->getCorrelation();
+                pharmmlcpp::Correlation *corr = cpop_param->getCorrelation();
                 // Find RandomVariable's referenced by this Correlation
                 std::vector<std::string> names;
-                for (PharmML::RandomVariable *random_var : randomVariables) {
+                for (pharmmlcpp::RandomVariable *random_var : randomVariables) {
                     if (corr->referencedSymbols.hasSymbol(random_var)) {
                         cpop_param->addRandomVariable(random_var);
                         names.push_back(random_var->getSymbId());
@@ -212,11 +212,11 @@ namespace CPharmML
         }
     }
 
-    void PopulationParameters::addIndividualParameters(std::vector<PharmML::IndividualParameter *> individualParameters) {
+    void PopulationParameters::addIndividualParameters(std::vector<pharmmlcpp::IndividualParameter *> individualParameters) {
         for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
-            PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+            pharmmlcpp::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
             // Find IndividualParameter's refering this PopulationParameter
-            for (PharmML::IndividualParameter *indiv_param : individualParameters) {
+            for (pharmmlcpp::IndividualParameter *indiv_param : individualParameters) {
                 bool depends_on_pop = indiv_param->referencedSymbols.hasSymbol(pop_param);
                 if (depends_on_pop) {
                     cpop_param->addIndividualParameter(indiv_param);
@@ -225,11 +225,11 @@ namespace CPharmML
         }
     }
 
-    void PopulationParameters::addParameterEstimation(std::vector<PharmML::ParameterEstimation *> params_est) {
+    void PopulationParameters::addParameterEstimation(std::vector<pharmmlcpp::ParameterEstimation *> params_est) {
         for (CPharmML::PopulationParameter *cpop_param : this->populationParameters) {
-            PharmML::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
+            pharmmlcpp::PopulationParameter *pop_param = cpop_param->getPopulationParameter();
             // Find ParameterEstimation for this PopulationParameter
-            for (PharmML::ParameterEstimation *est_param : params_est) {
+            for (pharmmlcpp::ParameterEstimation *est_param : params_est) {
                 bool depends_on_pop = est_param->refersIndirectlyTo(pop_param);
                 if (depends_on_pop) {
                     cpop_param->addParameterEstimation(est_param);
@@ -239,11 +239,11 @@ namespace CPharmML
         }
     }
 
-    void PopulationParameters::addOptimalDesignStep(PharmML::OptimalDesignStep *optimalDesignStep) {
+    void PopulationParameters::addOptimalDesignStep(pharmmlcpp::OptimalDesignStep *optimalDesignStep) {
         this->addParameterEstimation(optimalDesignStep->getParameters());
     }
 
-    void PopulationParameters::addEstimationStep(PharmML::EstimationStep *estimationStep) {
+    void PopulationParameters::addEstimationStep(pharmmlcpp::EstimationStep *estimationStep) {
         this->addParameterEstimation(estimationStep->getParameters());
     }
 
@@ -253,9 +253,9 @@ namespace CPharmML
     }
 
     // Only get those that correspond to the correlations supplied (used for variability level sorting in MDL; don't know if optimal)
-    std::vector<PopulationParameter *> PopulationParameters::getPopulationParameters(std::vector<PharmML::Correlation *> correlations) {
+    std::vector<PopulationParameter *> PopulationParameters::getPopulationParameters(std::vector<pharmmlcpp::Correlation *> correlations) {
         std::vector<CPharmML::PopulationParameter *> result;
-        for (PharmML::Correlation *corr : correlations) {
+        for (pharmmlcpp::Correlation *corr : correlations) {
             for (PopulationParameter *cpop_param : this->populationParameters) {
                 if (cpop_param->isCorrelation()) {
                     if (cpop_param->getCorrelation() == corr) {

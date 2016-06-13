@@ -27,7 +27,7 @@
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Correlation : public Referer, public PharmMLSection
     {
@@ -35,26 +35,26 @@ namespace PharmML
             Correlation(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
 
-            PharmML::VariabilityReference *getVariabilityReference();
+            pharmmlcpp::VariabilityReference *getVariabilityReference();
             bool isPairwise();
-            std::vector<PharmML::SymbRef *> getPairwiseSymbRefs();
+            std::vector<pharmmlcpp::SymbRef *> getPairwiseSymbRefs();
             std::string getPairwiseType();
-            PharmML::AstNode *getPairwiseAssignment();
+            pharmmlcpp::AstNode *getPairwiseAssignment();
             bool hasPureSymbRefAssigment();
 
             /* Referer base class (referencedSymbols) contains all symbols while correlatedSymbols
              * below only those that refer to the correlated random variables (to not mix them up): */
-            PharmML::SymbolSet correlatedSymbols;
+            pharmmlcpp::SymbolSet correlatedSymbols;
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
-            PharmML::VariabilityReference *variabilityReference;
-            std::vector<PharmML::SymbRef *> pairwiseSymbRefs;
+            pharmmlcpp::PharmMLContext *context;
+            pharmmlcpp::VariabilityReference *variabilityReference;
+            std::vector<pharmmlcpp::SymbRef *> pairwiseSymbRefs;
             std::string pairwiseType;
-            PharmML::AstNode *pairwiseAssignment = nullptr;
+            pharmmlcpp::AstNode *pairwiseAssignment = nullptr;
             bool pure_symbref_assignment;
             std::string matrixType;
     };

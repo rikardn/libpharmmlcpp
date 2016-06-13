@@ -17,7 +17,7 @@
 
 #include "AstAnalyzer.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     std::string AstAnalyzer::infix(Binop *binop, std::string op) {
@@ -110,7 +110,7 @@ namespace PharmML
             return false;
         }
         node->accept(this);
-        PharmML::ScalarInt *scint = this->getPureScalarInt();
+        pharmmlcpp::ScalarInt *scint = this->getPureScalarInt();
         if (!scint) {
             return false;
         }

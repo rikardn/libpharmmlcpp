@@ -38,7 +38,7 @@
 #include <generators/TextFormatter.h>
 #include <helpers/Logger.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class MDLAstGenerator : public AstNodeVisitor
     {

@@ -20,7 +20,7 @@
 
 #include <string>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class StringVisitor
     {

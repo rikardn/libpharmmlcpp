@@ -26,7 +26,7 @@
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/Block.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class VariabilityModel : public Block
     {
@@ -36,14 +36,14 @@ namespace PharmML
             std::string getName();
             bool onResidualError();
             bool onParameter();
-            std::vector<PharmML::VariabilityLevel *> getVariabilityLevels();
+            std::vector<pharmmlcpp::VariabilityLevel *> getVariabilityLevels();
             void gatherSymbols(SymbolGathering &gathering);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string name;
             std::string type;
-            std::vector<PharmML::VariabilityLevel *> variabilityLevels;
+            std::vector<pharmmlcpp::VariabilityLevel *> variabilityLevels;
     };
 }
 

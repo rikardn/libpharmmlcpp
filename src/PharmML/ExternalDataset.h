@@ -26,7 +26,7 @@
 #include <symbols/MacroGathering.h>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Note that type design:DatasetMappingType (used by TrialDesign->Observations->IndividualObservations)
     // and type design:ExternalDataSetType (used by TrialDesign->ExternalDataset) are extremely similar.
@@ -36,9 +36,9 @@ namespace PharmML
     class ExternalDataset : public PharmMLSection
     {
         public:
-            ExternalDataset(PharmML::PharmMLContext *context, xml::Node node);
+            ExternalDataset(pharmmlcpp::PharmMLContext *context, xml::Node node);
             std::string getOid();
-            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
             Dataset *getDataset();
             std::string getToolName();
             void parse(xml::Node node);
@@ -52,9 +52,9 @@ namespace PharmML
             
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
-            std::vector<PharmML::ColumnMapping *> col_maps;
+            std::vector<pharmmlcpp::ColumnMapping *> col_maps;
             Dataset *dataset = nullptr;
             // Why don't we even have an accept for this?
             std::string toolName;

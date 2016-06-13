@@ -23,7 +23,7 @@
 #include <symbols/Symbol.h>
 #include <generators/PopED/PopEDSymbols.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ObservationModel;
     class PopulationParameter;

@@ -22,7 +22,7 @@
 #include <AST/AstNode.h>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Interval : public AstNode
     {

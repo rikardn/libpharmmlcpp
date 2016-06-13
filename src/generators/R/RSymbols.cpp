@@ -27,7 +27,7 @@
 #include <generators/R/RSymbols.h>
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     RSymbols::RSymbols() {
         // Create a default R AST generator

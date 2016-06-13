@@ -18,7 +18,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <PharmML/Model.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     std::string PharmMLContext::buildNamespace(std::string name, std::string namespace_version) {
         return "http://www.pharmml.org/pharmml/" + namespace_version + "/" + name;

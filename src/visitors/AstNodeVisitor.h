@@ -18,7 +18,7 @@
 #ifndef PHARMML_ASTNODEVISITOR_H_
 #define PHARMML_ASTNODEVISITOR_H_
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class UniopLog;
     class UniopLog2;

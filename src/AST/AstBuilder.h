@@ -21,7 +21,7 @@
 #include <vector>
 #include <AST/AstNode.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     namespace AstBuilder
     {

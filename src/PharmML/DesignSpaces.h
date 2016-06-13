@@ -24,7 +24,7 @@
 #include <AST/AstNode.h>
 #include <visitors/XMLAstVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class DesignSpace
     {
@@ -40,7 +40,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::vector<ObjectRef *> interventionRefs;
             std::vector<ObjectRef *> observationRefs;
@@ -54,14 +54,14 @@ namespace PharmML
             DesignSpaces(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
-            std::vector<PharmML::Variable *> getDesignParameters();
-            std::vector<PharmML::DesignSpace *> getDesignSpaces();
+            std::vector<pharmmlcpp::Variable *> getDesignParameters();
+            std::vector<pharmmlcpp::DesignSpace *> getDesignSpaces();
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::Variable *> designParameters;
-            std::vector<PharmML::DesignSpace *> designSpaces;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::Variable *> designParameters;
+            std::vector<pharmmlcpp::DesignSpace *> designSpaces;
 
     };
 }

@@ -30,16 +30,16 @@
 #include <helpers/StringTools.h>
 #include <visitors/AstAnalyzer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class TargetTool
     {
         public:
-            TargetTool(PharmML::PharmMLContext *context, xml::Node node);
+            TargetTool(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
         
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::string name;
             std::vector<ColumnMapping *> columnMappings;
@@ -54,7 +54,7 @@ namespace PharmML
             AstNode *getAssignment();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             SymbRef *symbRef;
             AstNode *assignment;
     };
@@ -62,35 +62,35 @@ namespace PharmML
     class CommonStepType
     {
         public:
-            CommonStepType(PharmML::PharmMLContext *context, xml::Node node);
+            CommonStepType(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getOid();
-            std::vector<PharmML::ExternalFile *> getSoftwareSettingsFiles();
-            std::vector<PharmML::ExternalFile *> getOutputFiles();
+            std::vector<pharmmlcpp::ExternalFile *> getSoftwareSettingsFiles();
+            std::vector<pharmmlcpp::ExternalFile *> getOutputFiles();
             std::string getTargetToolRef();
             std::string getExternalDatasetRef();
             std::vector<std::string> getInterventionsRefs();
             std::vector<std::string> getObservationsRefs();
-            std::vector<PharmML::VariableAssignment *> getVariableAssignments();
+            std::vector<pharmmlcpp::VariableAssignment *> getVariableAssignments();
 
         protected:
             std::string oid;
-            std::vector<PharmML::ExternalFile *> softwareSettings;
-            std::vector<PharmML::ExternalFile *> outputFiles;
+            std::vector<pharmmlcpp::ExternalFile *> softwareSettings;
+            std::vector<pharmmlcpp::ExternalFile *> outputFiles;
             std::string targetToolRef;
             std::string extDatasetRef;
             std::vector<std::string> interventionsRefs;
             std::vector<std::string> observationsRefs;
-            std::vector<PharmML::VariableAssignment *> varAssignments;
+            std::vector<pharmmlcpp::VariableAssignment *> varAssignments;
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
     };
 
     class ParameterEstimation : public Referer
     {
         public:
-            ParameterEstimation(PharmML::PharmMLContext *context, xml::Node node);
+            ParameterEstimation(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             SymbRef *getSymbRef();
             bool isFixed();
@@ -104,7 +104,7 @@ namespace PharmML
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             SymbRef *symbRef;
             bool fixed = false;
             AstNode *init = nullptr;
@@ -115,7 +115,7 @@ namespace PharmML
     class OperationProperty : public PharmMLSection
     {
         public:
-            OperationProperty(PharmML::PharmMLContext *context, xml::Node node);
+            OperationProperty(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getName();
             AstNode *getAssignment();
@@ -134,7 +134,7 @@ namespace PharmML
             bool isFoldedCaseString(std::string case_insensitive);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string name;
             AstNode *assignment;
 
@@ -149,7 +149,7 @@ namespace PharmML
     class Algorithm : public PharmMLSection
     {
         public:
-            Algorithm(PharmML::PharmMLContext *context, xml::Node node);
+            Algorithm(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getName();
             std::string getDefinition();
@@ -159,7 +159,7 @@ namespace PharmML
             bool isDefinedAs(std::string case_insensitive_def);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string name;
             std::string definition;
             std::vector<OperationProperty *> properties;
@@ -168,7 +168,7 @@ namespace PharmML
     class Operation : public PharmMLSection
     {
         public:
-            Operation(PharmML::PharmMLContext *context, xml::Node node);
+            Operation(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             int getOrder();
             std::string getType();
@@ -177,7 +177,7 @@ namespace PharmML
             Algorithm *getAlgorithm();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string name;
             int order;
             std::string type;
@@ -188,13 +188,13 @@ namespace PharmML
     class EstimationStep : CommonStepType
     {
         public:
-            EstimationStep(PharmML::PharmMLContext *context, xml::Node node);
+            EstimationStep(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
             std::vector<Operation *> getOperations();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<ParameterEstimation *> parameterEstimations;
             std::vector<Operation *> operations;
 
@@ -203,23 +203,23 @@ namespace PharmML
     class SimulationStep : CommonStepType
     {
         public:
-            SimulationStep(PharmML::PharmMLContext *context, xml::Node node);
+            SimulationStep(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<Operation *> getOperations();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<Operation *> operations;
     };
 
     class OptimiseOn
     {
         public:
-            OptimiseOn(PharmML::PharmMLContext *context, xml::Node node);
+            OptimiseOn(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             bool armSize = false;
             bool doseAmount = false;
             bool dosingTimes = false;
@@ -234,13 +234,13 @@ namespace PharmML
     class OptimalDesignStep : public PharmMLSection
     {
         public:
-            OptimalDesignStep(PharmML::PharmMLContext *context, xml::Node node);
+            OptimalDesignStep(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<ParameterEstimation *> getParameters();
             std::vector<Operation *> getOperations();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             OptimiseOn *optOn = nullptr;
             std::vector<ParameterEstimation *> parameterEstimations;
@@ -250,7 +250,7 @@ namespace PharmML
     class ModellingSteps : public PharmMLSection
     {
         public:
-            ModellingSteps(PharmML::PharmMLContext *context, xml::Node node);
+            ModellingSteps(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             std::vector<EstimationStep *> getEstimationSteps();
@@ -259,7 +259,7 @@ namespace PharmML
             void update();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             xml::Node xml_node;
             std::vector<TargetTool *> tools;
             std::vector<EstimationStep *> estSteps;

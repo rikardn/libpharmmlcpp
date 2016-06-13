@@ -23,7 +23,7 @@
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class PopulationParameter : public Symbol
     {

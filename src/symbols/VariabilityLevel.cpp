@@ -17,7 +17,7 @@
 
 #include "VariabilityLevel.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     VariabilityLevel::VariabilityLevel(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -68,7 +68,7 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    VariabilityReference::VariabilityReference(PharmML::PharmMLContext *context, xml::Node node) {
+    VariabilityReference::VariabilityReference(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }

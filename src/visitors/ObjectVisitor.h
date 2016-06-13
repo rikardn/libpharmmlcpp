@@ -18,7 +18,7 @@
 #ifndef PHARMML_OBJECTVISITOR_H_
 #define PHARMML_OBJECTVISITOR_H_
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Arm;
     class Administration;

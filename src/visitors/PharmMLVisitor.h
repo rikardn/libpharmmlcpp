@@ -18,7 +18,7 @@
 #ifndef PHARMML_PHARMMLVISITOR_H_
 #define PHARMML_PHARMMLVISITOR_H_
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class FunctionDefinition;
     class FunctionArgumentDefinition;

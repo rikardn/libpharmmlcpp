@@ -19,7 +19,7 @@
 #include <AST/Binop.h>
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     AstNode *AstBuilder::multiplyMany(std::vector<AstNode *> list) {
         BinopTimes *prev = new BinopTimes();

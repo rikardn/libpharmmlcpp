@@ -19,7 +19,7 @@
 #include <PharmML/Block.h>
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void SymbolGathering::newBlock(Block *block) {
         this->current_block = block;

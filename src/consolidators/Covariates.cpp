@@ -19,8 +19,8 @@
 
 namespace CPharmML
 {
-    // Construct with PharmML::Covariate as base
-    Covariate::Covariate(PharmML::Covariate *covariate) {
+    // Construct with pharmmlcpp::Covariate as base
+    Covariate::Covariate(pharmmlcpp::Covariate *covariate) {
         this->covariate = covariate;
 
         this->name = covariate->getSymbId();
@@ -32,26 +32,26 @@ namespace CPharmML
     }
 
     // Add PharmML objects for consolidation (in this order)
-    void Covariate::addColumnMapping(PharmML::ColumnMapping *columnMapping) {
+    void Covariate::addColumnMapping(pharmmlcpp::ColumnMapping *columnMapping) {
         this->columnMapping = columnMapping;
 
         this->columnId = columnMapping->getColumnIdRef();
     }
 
-    void Covariate::addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef) {
+    void Covariate::addColumnDefinition(pharmmlcpp::ColumnDefinition *covariateColumnDef) {
         this->columnDef = covariateColumnDef;
     }
 
     // Get attributes
-    PharmML::Covariate *Covariate::getCovariate() {
+    pharmmlcpp::Covariate *Covariate::getCovariate() {
         return this->covariate;
     }
 
-    PharmML::ColumnMapping *Covariate::getColumnMapping() {
+    pharmmlcpp::ColumnMapping *Covariate::getColumnMapping() {
         return this->columnMapping;
     }
 
-    PharmML::ColumnDefinition *Covariate::getColumnDefinition() {
+    pharmmlcpp::ColumnDefinition *Covariate::getColumnDefinition() {
         return this->columnDef;
     }
 
@@ -71,11 +71,11 @@ namespace CPharmML
         return this->type;
     }
 
-    PharmML::Distribution *Covariate::getDistribution() {
+    pharmmlcpp::Distribution *Covariate::getDistribution() {
         return this->distribution;
     }
 
-    PharmML::AstNode *Covariate::getDefinition() {
+    pharmmlcpp::AstNode *Covariate::getDefinition() {
         return this->definition;
     }
 

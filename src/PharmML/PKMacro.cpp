@@ -17,7 +17,7 @@
 
 #include "PKMacro.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     PKMacro::PKMacro(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
@@ -100,12 +100,12 @@ namespace PharmML
 
         // Get integer attributes
         int from_int, to_int, target_int, cmt_int, adm_int;
-        PharmML::AstAnalyzer ast_analyzer;
+        pharmmlcpp::AstAnalyzer ast_analyzer;
         for (MacroValue value : this->values) {
             auto get_int = [&](AstNode *x) -> int {
                 ast_analyzer.reset();
                 x->accept(&ast_analyzer);
-                PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                 return scalar_int->toInt();
             };
             if (value.first == "from") {
@@ -177,20 +177,20 @@ namespace PharmML
 
     // Generate a name for this macro via using the symbol attributes
     std::string PKMacro::generateName() {
-        PharmML::AstAnalyzer ast_analyzer;
+        pharmmlcpp::AstAnalyzer ast_analyzer;
         if (this->sub_type == MacroType::Absorption || this->sub_type == MacroType::Depot) {
             // Try to name in order: ka, Tlag, p
-            std::vector<PharmML::AstNode *> nodes;
+            std::vector<pharmmlcpp::AstNode *> nodes;
             nodes.push_back( this->getAssignment("ka") );
             nodes.push_back( this->getAssignment("Tlag") );
             nodes.push_back( this->getAssignment("p") );
-            for (PharmML::AstNode *node : nodes) {
+            for (pharmmlcpp::AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
                     if (ref) {
-                        PharmML::Symbol *symbol = ref->getSymbol();
+                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return("INPUT_" + symbol->getSymbId());
                         }
@@ -203,17 +203,17 @@ namespace PharmML
             return("INPUT_IV");
         } else if (this->sub_type == MacroType::Compartment || this->sub_type == MacroType::Peripheral) {
             // Try to name in order: amount, cmt
-            std::vector<PharmML::AstNode *> nodes;
+            std::vector<pharmmlcpp::AstNode *> nodes;
             nodes.push_back( this->getAssignment("amount") );
             nodes.push_back( this->getAssignment("cmt") );
-            for (PharmML::AstNode *node : nodes) {
+            for (pharmmlcpp::AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                    PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
-                        PharmML::Symbol *symbol = ref->getSymbol();
+                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return(symbol->getSymbId());
                         }
@@ -224,17 +224,17 @@ namespace PharmML
             }
         } else if (this->sub_type == MacroType::Elimination || this->sub_type == MacroType::Transfer) {
             // Try to name in order: from, cmt
-            std::vector<PharmML::AstNode *> nodes;
+            std::vector<pharmmlcpp::AstNode *> nodes;
             nodes.push_back( this->getAssignment("from") );
             nodes.push_back( this->getAssignment("cmt") );
-            for (PharmML::AstNode *node : nodes) {
+            for (pharmmlcpp::AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                    PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
-                        PharmML::Symbol *symbol = ref->getSymbol();
+                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return("FROM_" + symbol->getSymbId());
                         }
@@ -245,14 +245,14 @@ namespace PharmML
             }
         } else if (this->sub_type == MacroType::Effect) {
             // Try to name in order: cmt
-            PharmML::AstNode *cmt = this->getAssignment("cmt");
+            pharmmlcpp::AstNode *cmt = this->getAssignment("cmt");
             if (cmt) {
                 ast_analyzer.reset();
                 cmt->accept(&ast_analyzer);
-                PharmML::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                PharmML::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
                 if (ref) {
-                    PharmML::Symbol *symbol = ref->getSymbol();
+                    pharmmlcpp::Symbol *symbol = ref->getSymbol();
                     if (symbol) { // FIXME: Shouldn't be necessary
                         return("EFF_" + symbol->getSymbId());
                     }
@@ -345,7 +345,7 @@ namespace PharmML
 
         // Construct one PKMacro object for each macro
         for (xml::Node macro_node : macro_nodes) {
-            PharmML::PKMacro *macro = new PharmML::PKMacro(this->context, macro_node);
+            pharmmlcpp::PKMacro *macro = new pharmmlcpp::PKMacro(this->context, macro_node);
             this->macros.push_back(macro);
         }
     }
@@ -364,7 +364,7 @@ namespace PharmML
     // Perform post-parse functions to enable higher-level abstraction/consolidation
     void PKMacros::postParse() {
         std::unordered_set<std::string> picked_names;
-        for (PharmML::PKMacro *macro : this->macros) {
+        for (pharmmlcpp::PKMacro *macro : this->macros) {
             // Auto-generate a fitting name (hopefully useful for many end-tools but in particular, MDL)
             std::string name = macro->generateName();
             std::string uniq_name = name;
@@ -381,7 +381,7 @@ namespace PharmML
 
     // Validate the macros (where the schema won't help)
     void PKMacros::validate() { // FIXME: Who should call this now that consolidator is gone?
-        PharmML::AstAnalyzer ast_analyzer;
+        pharmmlcpp::AstAnalyzer ast_analyzer;
         // Map from compartment/administration to (referable) integer codes (and the referees themselves)
         std::unordered_map<std::string, std::unordered_map<int, PKMacro *>> int_codes = {
             { "cmt", std::unordered_map<int, PKMacro *>() },
@@ -394,10 +394,10 @@ namespace PharmML
             std::string type = macro->getType();
 
             // Check all attributes in macro
-            for (PharmML::MacroValue value : macro->getValues()) {
+            for (pharmmlcpp::MacroValue value : macro->getValues()) {
                 // Get attribute type and assignment ("cmt" and 1, etc.)
                 std::string attribute = value.first;
-                PharmML::AstNode *assignment = value.second;
+                pharmmlcpp::AstNode *assignment = value.second;
 
                 if (!assignment) {
                     // Attribute without assignment
@@ -409,7 +409,7 @@ namespace PharmML
                     // Check "cmt" and "adm" attributes
                     ast_analyzer.reset();
                     assignment->accept(&ast_analyzer);
-                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     if (!scalar_int) {
                         // No ScalarInt child on "cmt" or "adm" attribute
                         this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
@@ -471,16 +471,16 @@ namespace PharmML
 
     // Find and return an administration from administration number
     PKMacro *PKMacros::getAdministration(int adm_num) {
-        PharmML::AstAnalyzer ast_analyzer;
+        pharmmlcpp::AstAnalyzer ast_analyzer;
         for (PKMacro *macro : this->getAdministrations()) {
             // Find 'adm' attribute
-            for (PharmML::MacroValue value : macro->getValues()) {
+            for (pharmmlcpp::MacroValue value : macro->getValues()) {
                 if (value.first == "adm") {
                     // Get 'adm' code and resolve it
                     ast_analyzer.reset();
-                    PharmML::AstNode *assignment = value.second;
+                    pharmmlcpp::AstNode *assignment = value.second;
                     assignment->accept(&ast_analyzer);
-                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     // Compare and return
                     if (scalar_int->toInt() == adm_num) {
                         return macro;
@@ -493,16 +493,16 @@ namespace PharmML
 
     // Find and return a compartment from compartment number
     PKMacro *PKMacros::getCompartment(int cmt_num) {
-        PharmML::AstAnalyzer ast_analyzer;
+        pharmmlcpp::AstAnalyzer ast_analyzer;
         for (PKMacro *macro : this->getCompartments()) {
             // Find 'cmt' attribute
-            for (PharmML::MacroValue value : macro->getValues()) {
+            for (pharmmlcpp::MacroValue value : macro->getValues()) {
                 if (value.first == "cmt") {
                     // Get 'cmt' code and resolve it
                     ast_analyzer.reset();
-                    PharmML::AstNode *assignment = value.second;
+                    pharmmlcpp::AstNode *assignment = value.second;
                     assignment->accept(&ast_analyzer);
-                    PharmML::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     // Compare and return
                     if (scalar_int->toInt() == cmt_num) {
                         return macro;

@@ -18,7 +18,7 @@
 #ifndef PHARMML_SYMBOLVISITOR_H_
 #define PHARMML_SYMBOLVISITOR_H_
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ObservationModel;
     class Parameter;

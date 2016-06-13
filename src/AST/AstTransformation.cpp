@@ -18,7 +18,7 @@
 #include "AstTransformation.h"
 #include <visitors/AstAnalyzer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Transform an AstNode into a vector of AstNodes
     // If the AstNode is a pure Vector the elements will be returned

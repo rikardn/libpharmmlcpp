@@ -22,7 +22,7 @@
 #include <vector>
 #include <string>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Symbol;
     class SymbolSet {

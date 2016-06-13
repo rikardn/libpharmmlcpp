@@ -27,7 +27,7 @@
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Block.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ObservationModel : public Block, public Symbol, public PharmMLSection
     {
@@ -59,7 +59,7 @@ namespace PharmML
             AstNode *getAssignment();
 
             // Distributional error model
-            std::vector<PharmML::VariabilityReference *> getVariabilityReferences();
+            std::vector<pharmmlcpp::VariabilityReference *> getVariabilityReferences();
 
             // Convenience methods
             SymbolSet getNeededSymbols();
@@ -86,7 +86,7 @@ namespace PharmML
 
             // Transformations (on LHS or both)
             std::string transformation;
-            std::vector<PharmML::AstNode *> transformationParameters;
+            std::vector<pharmmlcpp::AstNode *> transformationParameters;
 
             // Standard error model
             SymbRef *output = nullptr;
@@ -97,7 +97,7 @@ namespace PharmML
             AstNode *generalAssignment = nullptr;
 
             // Distributional error model
-            std::vector<PharmML::VariabilityReference *> variabilityReferences;
+            std::vector<pharmmlcpp::VariabilityReference *> variabilityReferences;
     };
 }
 

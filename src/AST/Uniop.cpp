@@ -17,7 +17,7 @@
 
 #include "Uniop.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     AstNode *Uniop::getChild() {
         return this->child;

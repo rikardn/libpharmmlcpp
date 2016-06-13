@@ -31,7 +31,7 @@
 #include <AST/FunctionCall.h>
 #include <AST/Interval.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     AstNode *AstNodeFactory::create(xml::Node node) {
         AstNode *instance = nullptr;

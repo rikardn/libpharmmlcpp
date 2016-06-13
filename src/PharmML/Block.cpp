@@ -17,7 +17,7 @@
 
 #include <PharmML/Block.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     std::string Block::getBlkId() {
         return this->blkId;

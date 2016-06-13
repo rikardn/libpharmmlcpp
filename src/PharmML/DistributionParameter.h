@@ -22,7 +22,7 @@
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h> // Why? Because it's a referer!
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class DistributionParameter : public Referer
     {

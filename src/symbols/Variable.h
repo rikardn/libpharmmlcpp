@@ -21,7 +21,7 @@
 #include <PharmML/PharmMLContext.h>
 #include <visitors/PharmMLVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class CommonVariable : public Symbol
     {

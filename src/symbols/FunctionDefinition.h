@@ -25,7 +25,7 @@
 #include <visitors/AstAnalyzer.h>
 #include <helpers/StringTools.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class FunctionArgumentDefinition : public Symbol
     {
@@ -69,7 +69,7 @@ namespace PharmML
             // POSTPARSE/CONSOLIDATION
             bool isStandardFunction();
             StandardFunction getStandardFunction();
-            std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> getStandardFunctionArgumentMap();
+            std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> getStandardFunctionArgumentMap();
 
         private:
             AstNode *definition = nullptr;
@@ -81,7 +81,7 @@ namespace PharmML
             // POSTPARSE/CONSOLIDATION
             std::string linear_form;
             StandardFunction std_func;
-            std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> std_arg_map;
+            std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> std_arg_map;
     };
 }
 

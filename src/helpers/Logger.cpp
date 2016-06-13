@@ -18,7 +18,7 @@
 #include "Logger.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     Logger::Logger() {
 

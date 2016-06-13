@@ -37,7 +37,7 @@
 #include <generators/PopED/PopEDSymbols.h>
 
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class PopEDAstGenerator : public RAstGenerator
     {

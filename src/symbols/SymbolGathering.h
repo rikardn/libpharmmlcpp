@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Block;
 

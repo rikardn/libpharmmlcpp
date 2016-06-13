@@ -18,7 +18,7 @@
 #include "DerivativeVariable.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void DerivativeVariable::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, ".//ct:IndependentVariable");

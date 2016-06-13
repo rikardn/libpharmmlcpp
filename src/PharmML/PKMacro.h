@@ -28,7 +28,7 @@
 #include <symbols/Symbol.h>
 #include <AST/AstNode.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     typedef std::pair<std::string, AstNode *> MacroValue;
     enum class MacroType {Compartment, Peripheral, Effect, Depot, IV, Absorption, Oral, Elimination, Transfer};
@@ -59,7 +59,7 @@ namespace PharmML
             int getTargetNum();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             void parse(xml::Node node);
 
             std::string type;
@@ -96,7 +96,7 @@ namespace PharmML
             PKMacro *getCompartment(int cmt_num);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
 
             std::vector<PKMacro *> macros;
             

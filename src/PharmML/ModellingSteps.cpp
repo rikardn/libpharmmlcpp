@@ -21,7 +21,7 @@
 #include <libxml/tree.h>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     TargetTool::TargetTool(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -37,7 +37,7 @@ namespace PharmML
         // Get column mappings
         std::vector<xml::Node> col_maps = this->context->getElements(node, "./ds:ColumnMapping");
         for (xml::Node col_map : col_maps) {
-            PharmML::ColumnMapping *col = new PharmML::ColumnMapping(this->context, col_map);
+            pharmmlcpp::ColumnMapping *col = new pharmmlcpp::ColumnMapping(this->context, col_map);
             this->columnMappings.push_back(col);
         }
 
@@ -85,14 +85,14 @@ namespace PharmML
         std::vector<xml::Node> sw_set_nodes = this->context->getElements(node, "./msteps:SoftwareSettings");
         for (xml::Node sw_set_node : sw_set_nodes) {
             xml::Node ext_file_node = this->context->getSingleElement(sw_set_node, "./ds:File");
-            PharmML::ExternalFile *ext_file = new ExternalFile(this->context, ext_file_node);
+            pharmmlcpp::ExternalFile *ext_file = new ExternalFile(this->context, ext_file_node);
             this->softwareSettings.push_back(ext_file);
         }
 
         // Get output files
         std::vector<xml::Node> out_nodes = this->context->getElements(node, "./ds:OutputFiles");
         for (xml::Node out_node : out_nodes) {
-            PharmML::ExternalFile *ext_file = new ExternalFile(this->context, out_node);
+            pharmmlcpp::ExternalFile *ext_file = new ExternalFile(this->context, out_node);
             this->outputFiles.push_back(ext_file);
         }
 
@@ -131,7 +131,7 @@ namespace PharmML
         // Get variable assignments
         std::vector<xml::Node> assign_nodes = this->context->getElements(node, "./ct:VariableAssignment");
         for (xml::Node assign_node : assign_nodes) {
-            PharmML::VariableAssignment *var_assign = new VariableAssignment(this->context, assign_node);
+            pharmmlcpp::VariableAssignment *var_assign = new VariableAssignment(this->context, assign_node);
             this->varAssignments.push_back(var_assign);
         }
     }
@@ -140,11 +140,11 @@ namespace PharmML
         return this->oid;
     }
 
-    std::vector<PharmML::ExternalFile *> CommonStepType::getSoftwareSettingsFiles() {
+    std::vector<pharmmlcpp::ExternalFile *> CommonStepType::getSoftwareSettingsFiles() {
         return this->softwareSettings;
     }
 
-    std::vector<PharmML::ExternalFile *> CommonStepType::getOutputFiles() {
+    std::vector<pharmmlcpp::ExternalFile *> CommonStepType::getOutputFiles() {
         return this->outputFiles;
     }
 
@@ -164,7 +164,7 @@ namespace PharmML
         return this->observationsRefs;
     }
 
-    std::vector<PharmML::VariableAssignment *> CommonStepType::getVariableAssignments() {
+    std::vector<pharmmlcpp::VariableAssignment *> CommonStepType::getVariableAssignments() {
         return this->varAssignments;
     }
 
@@ -264,7 +264,7 @@ namespace PharmML
     // Convenience functions for simply accessing simple property values
     // FIXME: Below is properly setup by a postParse method (instead of AstAnalyzer usage each method)!
     bool OperationProperty::isInt() {
-        PharmML::AstAnalyzer aa;
+        pharmmlcpp::AstAnalyzer aa;
         this->assignment->accept(&aa);
         if (aa.getPureScalarInt()) {
             this->int_val = new int(aa.getPureScalarInt()->toInt());
@@ -275,7 +275,7 @@ namespace PharmML
     }
 
     bool OperationProperty::isReal() {
-        PharmML::AstAnalyzer aa;
+        pharmmlcpp::AstAnalyzer aa;
         this->assignment->accept(&aa);
         if (aa.getPureScalarReal()) {
             this->real_val = new double(aa.getPureScalarReal()->toDouble());
@@ -286,7 +286,7 @@ namespace PharmML
     }
 
     bool OperationProperty::isBool() {
-        PharmML::AstAnalyzer aa;
+        pharmmlcpp::AstAnalyzer aa;
         this->assignment->accept(&aa);
         if (aa.getPureScalarBool()) {
             this->bool_val = new bool(aa.getPureScalarBool()->toBool());
@@ -297,7 +297,7 @@ namespace PharmML
     }
 
     bool OperationProperty::isString() {
-        PharmML::AstAnalyzer aa;
+        pharmmlcpp::AstAnalyzer aa;
         this->assignment->accept(&aa);
         if (aa.getPureScalarString()) {
             this->string_val = new std::string(aa.getPureScalarString()->toString());
@@ -311,7 +311,7 @@ namespace PharmML
         if (this->int_val) {
             return *(this->int_val);
         } else {
-            PharmML::AstAnalyzer aa;
+            pharmmlcpp::AstAnalyzer aa;
             this->assignment->accept(&aa);
             return aa.getPureScalarInt()->toInt();
         }
@@ -321,7 +321,7 @@ namespace PharmML
         if (this->real_val) {
             return *(this->real_val);
         } else {
-            PharmML::AstAnalyzer aa;
+            pharmmlcpp::AstAnalyzer aa;
             this->assignment->accept(&aa);
             return aa.getPureScalarReal()->toDouble();
         }
@@ -331,7 +331,7 @@ namespace PharmML
         if (this->bool_val) {
             return *(this->bool_val);
         } else {
-            PharmML::AstAnalyzer aa;
+            pharmmlcpp::AstAnalyzer aa;
             this->assignment->accept(&aa);
             return aa.getPureScalarBool()->toBool();
         }
@@ -341,7 +341,7 @@ namespace PharmML
         if (this->string_val) {
             return *(this->string_val);
         } else {
-            PharmML::AstAnalyzer aa;
+            pharmmlcpp::AstAnalyzer aa;
             this->assignment->accept(&aa);
             return aa.getPureScalarString()->toString();
         }
@@ -523,7 +523,7 @@ namespace PharmML
         // Get symbol references
         std::vector<xml::Node> symb_nodes = this->context->getElements(node, "./ct:SymbRef");
         for (xml::Node symb_node : symb_nodes) {
-            PharmML::SymbRef *symbRef = new PharmML::SymbRef(symb_node);
+            pharmmlcpp::SymbRef *symbRef = new pharmmlcpp::SymbRef(symb_node);
             this->symbols.push_back(symbRef);
         }
 
@@ -610,20 +610,20 @@ namespace PharmML
     }
 
     void ModellingSteps::setupRefererSymbRefs(SymbolGathering &gathering) {
-        for (PharmML::EstimationStep *est_step : this->getEstimationSteps()) {
+        for (pharmmlcpp::EstimationStep *est_step : this->getEstimationSteps()) {
             std::vector<ParameterEstimation *> est_params = est_step->getParameters();
-            for (PharmML::ParameterEstimation *est_param : est_params) {
+            for (pharmmlcpp::ParameterEstimation *est_param : est_params) {
                 Symbol *found_symbol = gathering.getSymbol(est_param->getSymbRef()->getBlkIdRef(), est_param->getSymbRef()->getSymbIdRef());
                 est_param->addReference(found_symbol);
                 est_param->getSymbRef()->setSymbol(found_symbol);
             }
         }
-        //for (PharmML::SimulationStep *sim_step : this->getSimulationSteps()) {
+        //for (pharmmlcpp::SimulationStep *sim_step : this->getSimulationSteps()) {
             // TODO: Fill SimulationSteps
         //}
-        for (PharmML::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
+        for (pharmmlcpp::OptimalDesignStep *opt_step : this->getOptimalDesignSteps()) {
             std::vector<ParameterEstimation *> opt_params = opt_step->getParameters();
-            for (PharmML::ParameterEstimation *opt_param : opt_params) {
+            for (pharmmlcpp::ParameterEstimation *opt_param : opt_params) {
                 Symbol *found_symbol = gathering.getSymbol(opt_param->getSymbRef()->getBlkIdRef(), opt_param->getSymbRef()->getSymbIdRef());
                 opt_param->addReference(found_symbol);
                 opt_param->getSymbRef()->setSymbol(found_symbol);

@@ -17,7 +17,7 @@
 
 #include "PopulationParameter.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // FIXME: How to get context when created like this
     PopulationParameter::PopulationParameter(std::string symbId) {

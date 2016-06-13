@@ -17,7 +17,7 @@
 
 #include "MDLGenerator.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     void MDLGenerator::setValue(std::string str) {
@@ -245,7 +245,7 @@ namespace PharmML
         form.indentAdd("STRUCTURAL {");
 
         for (CPharmML::PopulationParameter *structuralParameter : structuralParameters) {
-            // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
+            // TODO: Implement CPharmMLVisitor (instead of visiting the pharmmlcpp::PopulationParameter objects, which is better suited for model object)
             structuralParameter->getPopulationParameter()->accept(this);
             std::string name = this->getValue();
             this->structuralParameterNames.push_back(name);
@@ -269,10 +269,10 @@ namespace PharmML
         form.indentAdd("VARIABILITY {");
 
         for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
-            // TODO: Implement CPharmMLVisitor (instead of visiting the PharmML::PopulationParameter objects, which is better suited for model object)
+            // TODO: Implement CPharmMLVisitor (instead of visiting the pharmmlcpp::PopulationParameter objects, which is better suited for model object)
             if (variabilityParameter->isCorrelation()) {
                 // Correlations
-                PharmML::Correlation *corr = variabilityParameter->getCorrelation();
+                pharmmlcpp::Correlation *corr = variabilityParameter->getCorrelation();
                 std::string name = variabilityParameter->getName();
                 if (corr->isPairwise()) {
                     std::string value = this->accept(corr->getPairwiseAssignment());
@@ -323,7 +323,7 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genMdlObj(PharmML::Model *model) {
+    std::string MDLGenerator::genMdlObj(pharmmlcpp::Model *model) {
         TextFormatter form;
 
         form.indentAdd("mdlObj {");
@@ -349,8 +349,8 @@ namespace PharmML
 
         // Generate VARIABILITY_LEVELS block
         form.openVector("VARIABILITY_LEVELS {}", 1, "");
-        std::vector<PharmML::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
-        std::vector<PharmML::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
+        std::vector<pharmmlcpp::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
+        std::vector<pharmmlcpp::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
         std::vector<int>::size_type level = par_levels.size() + err_levels.size();
         for (; level - err_levels.size() > 0; level--) {
             std::string name = par_levels[level - err_levels.size() - 1]->getSymbId();
@@ -383,8 +383,8 @@ namespace PharmML
 
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for parameter variability)
         for (auto it = par_levels.rbegin(); it != par_levels.rend(); ++it) {
-            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::vector<PharmML::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
+            std::vector<pharmmlcpp::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
+            std::vector<pharmmlcpp::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
             std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
             std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
             form.addMany(block);
@@ -392,7 +392,7 @@ namespace PharmML
         }
 
         // Generate INDIVIDUAL_VARIABLES block
-        std::vector<PharmML::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        std::vector<pharmmlcpp::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         form.addMany(this->genIndividualVariablesBlock(indiv_params));
         form.emptyLine();
 
@@ -403,8 +403,8 @@ namespace PharmML
 
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
         for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
-            std::vector<PharmML::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::vector<PharmML::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
+            std::vector<pharmmlcpp::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
+            std::vector<pharmmlcpp::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
             std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
             std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
             form.addMany(block);
@@ -422,20 +422,20 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs) {
+    std::string MDLGenerator::genRandomVariableDefinitionBlock(pharmmlcpp::VariabilityLevel *level, std::vector<pharmmlcpp::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs) {
         TextFormatter form;
         this->visit(level);
         std::string name = getValue();
         form.openVector("RANDOM_VARIABLE_DEFINITION(level=" + name + ") {}", 1, "");
 
-        for (PharmML::RandomVariable *random_var : random_vars) {
+        for (pharmmlcpp::RandomVariable *random_var : random_vars) {
             this->visit(random_var);
             form.add(this->getValue());
         }
         for (CPharmML::PopulationParameter *cpop_corr : cpop_corrs) {
             std::string name = cpop_corr->getName();
 
-            PharmML::Correlation *corr = cpop_corr->getCorrelation();
+            pharmmlcpp::Correlation *corr = cpop_corr->getCorrelation();
             if (corr->isPairwise()) {
                 form.openVector(":: {}", 0, ", ");
 
@@ -459,11 +459,11 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters) {
+    std::string MDLGenerator::genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters) {
         TextFormatter form;
 
         form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
-        for (PharmML::IndividualParameter *ind_par : individualParameters) {
+        for (pharmmlcpp::IndividualParameter *ind_par : individualParameters) {
             this->visit(ind_par);
             form.add(this->getValue());
         }
@@ -472,13 +472,13 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genModelPredictionBlock(PharmML::StructuralModel *structuralModel) {
+    std::string MDLGenerator::genModelPredictionBlock(pharmmlcpp::StructuralModel *structuralModel) {
         // TODO: Consolidator for CommonVariable (Variable and DerivativeVariable)!
         TextFormatter form;
         form.openVector("MODEL_PREDICTION {}", 1, "");
 
         // Generate MDL COMPARTMENT block (if there's PKMacro's)
-        PharmML::PKMacros *pk_macros = structuralModel->getPKMacros();
+        pharmmlcpp::PKMacros *pk_macros = structuralModel->getPKMacros();
         if (pk_macros) {
             form.addMany(this->genCompartmentBlock(pk_macros));
         }
@@ -497,7 +497,7 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genCompartmentBlock(PharmML::PKMacros *pk_macros) {
+    std::string MDLGenerator::genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros) {
         TextFormatter form;
 
         // Get PKMacro's, sort and generate
@@ -505,16 +505,16 @@ namespace PharmML
 
         // Figure out max length to copy MDL spacing standard
         int max_length = 0;
-        for (PharmML::PKMacro *macro : pk_macros->getMacros()) {
+        for (pharmmlcpp::PKMacro *macro : pk_macros->getMacros()) {
             int length = macro->getName().length();
             max_length = (length > max_length) ? length : max_length;
         }
 
         // Number administrations consecutively (depreceated MDL 'modelCmt' argument)
         int mdl_cmt_iterator = 1;
-        std::unordered_map<PharmML::PKMacro *, int> mdl_cmt;
-        std::vector<PharmML::PKMacro *> adm_macros = pk_macros->getAdministrations();
-        for (PharmML::PKMacro *adm_macro : adm_macros) {
+        std::unordered_map<pharmmlcpp::PKMacro *, int> mdl_cmt;
+        std::vector<pharmmlcpp::PKMacro *> adm_macros = pk_macros->getAdministrations();
+        for (pharmmlcpp::PKMacro *adm_macro : adm_macros) {
             if (adm_macro->getSubType() != MacroType::IV) {
                 // IV are called "direct" in MDL and gets no number
                 mdl_cmt[adm_macro] = mdl_cmt_iterator++;
@@ -522,15 +522,15 @@ namespace PharmML
         }
         
         // Number compartments consecutively and build ordered list of compartments and mass transfers
-        std::vector<PharmML::PKMacro *> cmt_macros = pk_macros->getCompartments();
-        std::vector<PharmML::PKMacro *> trans_macros = pk_macros->getTransfers();
-        std::vector<PharmML::PKMacro *> cmt_trans_macros; // To contain both of the above in good order
-        for (PharmML::PKMacro *cmt_macro : cmt_macros) {
+        std::vector<pharmmlcpp::PKMacro *> cmt_macros = pk_macros->getCompartments();
+        std::vector<pharmmlcpp::PKMacro *> trans_macros = pk_macros->getTransfers();
+        std::vector<pharmmlcpp::PKMacro *> cmt_trans_macros; // To contain both of the above in good order
+        for (pharmmlcpp::PKMacro *cmt_macro : cmt_macros) {
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
             
             // Find transfers FROM this compartment
             int cmt_num = cmt_macro->getCmtNum();
-            for (PharmML::PKMacro *trans_macro : trans_macros) {
+            for (pharmmlcpp::PKMacro *trans_macro : trans_macros) {
                 cmt_trans_macros.push_back(cmt_macro);
                 if (cmt_num == trans_macro->getSourceNum()) {
                     cmt_trans_macros.push_back(trans_macro);
@@ -539,7 +539,7 @@ namespace PharmML
         }
 
         // Output administrations before all else
-        for (PharmML::PKMacro *macro : adm_macros) {
+        for (pharmmlcpp::PKMacro *macro : adm_macros) {
             // Construct enclosure
             std::string name = macro->getName();
             std::string pad = std::string(max_length - name.length(), ' ');
@@ -603,7 +603,7 @@ namespace PharmML
         }
         
         // Output compartments and mass transfers (in a order of transfers directly following associated compartment)
-        for (PharmML::PKMacro *macro : cmt_trans_macros) {
+        for (pharmmlcpp::PKMacro *macro : cmt_trans_macros) {
             if (macro->isCompartment()) { // Treat all compartments similarly
                 // Construct enclosure
                 std::string name = macro->getName();
@@ -653,7 +653,7 @@ namespace PharmML
 
                 // In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from
                 int source_num = macro->getSourceNum();
-                PharmML::PKMacro *from_macro = pk_macros->getCompartment(source_num);
+                pharmmlcpp::PKMacro *from_macro = pk_macros->getCompartment(source_num);
                 form.add("modelCmt=" + std::to_string(mdl_cmt[from_macro]));
 
                 // Output source compartment
@@ -717,9 +717,9 @@ namespace PharmML
         return form.createString();
     }
 
-    std::string MDLGenerator::genObservationBlock(PharmML::Model *model) {
-        PharmML::ObservationModel *om = model->getModelDefinition()->getObservationModel();
-        std::vector<PharmML::FunctionDefinition *> funcs = model->getFunctionDefinitions();
+    std::string MDLGenerator::genObservationBlock(pharmmlcpp::Model *model) {
+        pharmmlcpp::ObservationModel *om = model->getModelDefinition()->getObservationModel();
+        std::vector<pharmmlcpp::FunctionDefinition *> funcs = model->getFunctionDefinitions();
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
 
@@ -997,15 +997,15 @@ namespace PharmML
 
         // Get name of random variable and associated distribution
         std::string name = node->getSymbId();
-        PharmML::Distribution *dist = node->getDistribution();
+        pharmmlcpp::Distribution *dist = node->getDistribution();
 
         // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
         std::string dist_name = dist->getName();
-        std::vector<PharmML::DistributionParameter *> dist_params = dist->getDistributionParameters();
+        std::vector<pharmmlcpp::DistributionParameter *> dist_params = dist->getDistributionParameters();
         if (dist_name == "Normal1" || dist_name == "Normal2") {
             form.openVector(name + " ~ Normal()", 0, ", ");
             std::vector<std::string> unknown_param_types;
-            for (PharmML::DistributionParameter *dist_param : dist_params) {
+            for (pharmmlcpp::DistributionParameter *dist_param : dist_params) {
                 std::string name = dist_param->getName();
                 std::string assign = this->accept(dist_param->getAssignment());
                 if (name == "mean") {

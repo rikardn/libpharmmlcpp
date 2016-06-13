@@ -18,7 +18,7 @@
 #include "RPharmMLConsolidator.h"
 #include "RPharmMLGenerator.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Derivatives consolidator (visits to DerivativeVariable builds)
     void DerivativesConsolidator::addDerivative(std::string y, std::string x, std::string y0, std::string x0) {

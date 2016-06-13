@@ -25,7 +25,7 @@
 #include <symbols/DerivativeVariable.h>
 #include <symbols/FunctionDefinition.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void PopEDPastDerivativesSymbols::visit(ObservationModel *node) {
         this->setValue(node->getName());

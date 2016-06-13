@@ -29,28 +29,28 @@
 #include <PharmML/ModellingSteps.h>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ModelDefinition
     {
         public:
-            std::vector<PharmML::VariabilityModel *> getVariabilityModels();
-            PharmML::CovariateModel *getCovariateModel();
-            PharmML::ParameterModel *getParameterModel();
-            PharmML::StructuralModel *getStructuralModel();
-            PharmML::ObservationModel *getObservationModel();
-            ModelDefinition(PharmML::PharmMLContext *context, xml::Node node);
+            std::vector<pharmmlcpp::VariabilityModel *> getVariabilityModels();
+            pharmmlcpp::CovariateModel *getCovariateModel();
+            pharmmlcpp::ParameterModel *getParameterModel();
+            pharmmlcpp::StructuralModel *getStructuralModel();
+            pharmmlcpp::ObservationModel *getObservationModel();
+            ModelDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::VariabilityModel *> VariabilityModels;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::VariabilityModel *> VariabilityModels;
             // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
-            PharmML::CovariateModel *CovariateModel = nullptr;
-            PharmML::ParameterModel *ParameterModel = nullptr;
-            PharmML::StructuralModel *StructuralModel = nullptr;
-            PharmML::ObservationModel *ObservationModel = nullptr;
+            pharmmlcpp::CovariateModel *CovariateModel = nullptr;
+            pharmmlcpp::ParameterModel *ParameterModel = nullptr;
+            pharmmlcpp::StructuralModel *StructuralModel = nullptr;
+            pharmmlcpp::ObservationModel *ObservationModel = nullptr;
 
     };
 }

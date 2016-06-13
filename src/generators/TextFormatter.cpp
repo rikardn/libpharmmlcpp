@@ -18,7 +18,7 @@
 #include <iostream>
 #include "TextFormatter.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // [[deprecated("Replaced by TextFormatter::createInlineVector/createIndentedVector")]]
     // Pretend you're a C++14 compiler and parse above line in your mind

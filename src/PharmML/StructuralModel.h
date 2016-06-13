@@ -29,25 +29,25 @@
 #include <PharmML/PKMacro.h>
 #include <PharmML/Block.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class StructuralModel : public Block
     {
         public:
             StructuralModel(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
-            std::vector<PharmML::CommonVariable *> getVariables();
+            std::vector<pharmmlcpp::CommonVariable *> getVariables();
             bool hasDerivatives();
-            std::vector<PharmML::CommonVariable *> getDerivatives();
-            PharmML::PKMacros *getPKMacros();
+            std::vector<pharmmlcpp::CommonVariable *> getDerivatives();
+            pharmmlcpp::PKMacros *getPKMacros();
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gathering) override;
             void gatherMacros(MacroGathering &gatherer);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::CommonVariable *> variables;
-            PharmML::PKMacros *pk_macros = nullptr;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::CommonVariable *> variables;
+            pharmmlcpp::PKMacros *pk_macros = nullptr;
     };
 }
 

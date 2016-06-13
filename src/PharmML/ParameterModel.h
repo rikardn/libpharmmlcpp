@@ -28,7 +28,7 @@
 #include <PharmML/Block.h>
 #include <symbols/SymbolGathering.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ParameterModel : public Block
     {
@@ -38,7 +38,7 @@ namespace PharmML
             std::vector<IndividualParameter *> getIndividualParameters();
             std::vector<RandomVariable *> getRandomVariables();
             std::vector<Correlation *> getCorrelations();
-            ParameterModel(PharmML::PharmMLContext *context, xml::Node node);
+            ParameterModel(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gatherer) override;
@@ -46,7 +46,7 @@ namespace PharmML
             AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<Parameter *> parameters;
             std::vector<PopulationParameter *> populationParameters;
             std::vector<IndividualParameter *> individualParameters;

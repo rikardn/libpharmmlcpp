@@ -23,7 +23,7 @@
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class SymbRef : public AstNode
     {

@@ -17,7 +17,7 @@
 
 #include "Piecewise.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     Piece::Piece() {
 

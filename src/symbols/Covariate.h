@@ -24,7 +24,7 @@
 #include <symbols/Symbol.h>
 #include <visitors/PharmMLVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Covariate : public Symbol
     {
@@ -36,7 +36,7 @@ namespace PharmML
             bool isTransformed();
             bool isContinuous();
             std::string getType();
-            PharmML::Distribution *getDistribution();
+            pharmmlcpp::Distribution *getDistribution();
             std::vector<Covariate *> getTransformations();
             AstNode *getAssignment();
 
@@ -48,7 +48,7 @@ namespace PharmML
             bool transformed = false;
             bool continuous;
             std::string type;
-            PharmML::Distribution *distribution = nullptr;
+            pharmmlcpp::Distribution *distribution = nullptr;
             std::vector<Covariate *> transformations;
             AstNode *assignment = nullptr;
     };

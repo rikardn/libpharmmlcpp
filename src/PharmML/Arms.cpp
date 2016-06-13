@@ -17,11 +17,11 @@
 
 #include "Arms.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // OccasionType class (for OccasionSequence class)
     // TODO: Occasion is also used on top-level of TrialDesign
-    OccasionType::OccasionType(PharmML::PharmMLContext *context, xml::Node node) {
+    OccasionType::OccasionType(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -45,7 +45,7 @@ namespace PharmML
     }
 
     // InterventionSequence class
-    InterventionSequence::InterventionSequence(PharmML::PharmMLContext *context, xml::Node node) {
+    InterventionSequence::InterventionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -89,7 +89,7 @@ namespace PharmML
     }
 
     // ObservationSequence class
-    ObservationSequence::ObservationSequence(PharmML::PharmMLContext *context, xml::Node node) {
+    ObservationSequence::ObservationSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -133,7 +133,7 @@ namespace PharmML
     }
 
     // OccassionSequence class
-    OccasionSequence::OccasionSequence(PharmML::PharmMLContext *context, xml::Node node) {
+    OccasionSequence::OccasionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }

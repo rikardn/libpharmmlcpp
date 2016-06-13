@@ -23,7 +23,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     CovariateModel::CovariateModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -34,12 +34,12 @@ namespace PharmML
     void CovariateModel::parse(xml::Node node) {
         std::vector<xml::Node> cov_nodes = this->context->getElements(node, "./mdef:Covariate");
         for (xml::Node cov_node : cov_nodes) {
-            PharmML::Covariate *cov = new PharmML::Covariate(this->context, cov_node);
+            pharmmlcpp::Covariate *cov = new pharmmlcpp::Covariate(this->context, cov_node);
             this->covariates.push_back(cov);
         }
     }
 
-    std::vector<PharmML::Covariate *> CovariateModel::getCovariates() {
+    std::vector<pharmmlcpp::Covariate *> CovariateModel::getCovariates() {
         return this->covariates;
     }
 

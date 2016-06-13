@@ -43,7 +43,7 @@
 #include <generators/TextFormatter.h>
 #include "RPharmMLConsolidator.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class RPharmMLGenerator : public PharmMLVisitor
     {

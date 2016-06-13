@@ -17,7 +17,7 @@
 
 #include "Vector.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     VectorCell::VectorCell(int index, AstNode *content) {
         this->index = index;

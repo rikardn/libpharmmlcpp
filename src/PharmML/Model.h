@@ -32,7 +32,7 @@
 #include <symbols/MacroGathering.h>
 #include <helpers/SymbolNamer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Model
     {
@@ -40,12 +40,12 @@ namespace PharmML
             Model(const char *filename);
             ~Model();
             void write(std::string filename);
-            PharmML::IndependentVariable *getIndependentVariable();
-            std::vector<PharmML::FunctionDefinition *> getFunctionDefinitions();
-            FunctionDefinition *resolveFunctionCall(PharmML::FunctionCall *functionCall);
-            PharmML::ModelDefinition *getModelDefinition();
-            PharmML::TrialDesign *getTrialDesign();
-            PharmML::ModellingSteps *getModellingSteps();
+            pharmmlcpp::IndependentVariable *getIndependentVariable();
+            std::vector<pharmmlcpp::FunctionDefinition *> getFunctionDefinitions();
+            FunctionDefinition *resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall);
+            pharmmlcpp::ModelDefinition *getModelDefinition();
+            pharmmlcpp::TrialDesign *getTrialDesign();
+            pharmmlcpp::ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
             SymbolNamer *getSymbolNamer();
@@ -54,14 +54,14 @@ namespace PharmML
 
         private:
             PharmMLContext *context;
-            PharmML::IndependentVariable *IndependentVariable = nullptr;
-            std::vector<PharmML::FunctionDefinition *> FunctionDefinitions;
-            PharmML::ModelDefinition *ModelDefinition;
-            PharmML::TrialDesign *TrialDesign = nullptr;
-            PharmML::ModellingSteps *ModellingSteps = nullptr;
+            pharmmlcpp::IndependentVariable *IndependentVariable = nullptr;
+            std::vector<pharmmlcpp::FunctionDefinition *> FunctionDefinitions;
+            pharmmlcpp::ModelDefinition *ModelDefinition;
+            pharmmlcpp::TrialDesign *TrialDesign = nullptr;
+            pharmmlcpp::ModellingSteps *ModellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
-            PharmML::SymbolSet allSymbols;
-            std::unordered_set<PharmML::Object *> allObjects;
+            pharmmlcpp::SymbolSet allSymbols;
+            std::unordered_set<pharmmlcpp::Object *> allObjects;
             SymbolNamer *symbolNamer;
             void parse(xml::Node node);
             void postParse();

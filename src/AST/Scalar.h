@@ -21,7 +21,7 @@
 #include <AST/AstNode.h>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Scalar : public AstNode
     {

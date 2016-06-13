@@ -18,7 +18,7 @@
 #include "symbols.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     SymbRef::SymbRef(std::string ref) {
         this->symbIdRef = ref;

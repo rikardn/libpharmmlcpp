@@ -22,7 +22,7 @@
 #include <visitors/AstNodeVisitor.h>
 #include <PharmML/PharmMLSection.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class AstNode : public PharmMLSection
     {

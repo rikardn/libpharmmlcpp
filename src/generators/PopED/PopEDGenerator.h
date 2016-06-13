@@ -38,7 +38,7 @@
 #include <generators/PopED/PopEDObjects.h>
 #include <generators/R/RSymbolNamer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class PopEDGenerator
     {

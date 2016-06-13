@@ -18,7 +18,7 @@
 #include "MDLAstGenerator.h"
 #include <generators/TextFormatter.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     void MDLAstGenerator::setValue(std::string str) {

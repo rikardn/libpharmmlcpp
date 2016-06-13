@@ -21,7 +21,7 @@
 #include <visitors/SymbolVisitor.h>
 #include <symbols/SymbolSet.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ObservationModel;
     class PopulationParameter;

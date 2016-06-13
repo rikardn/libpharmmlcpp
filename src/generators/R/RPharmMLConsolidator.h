@@ -22,7 +22,7 @@
 #include <vector>
 #include <generators/TextFormatter.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class DerivativesConsolidator
     {

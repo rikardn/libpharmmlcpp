@@ -21,7 +21,7 @@
 #include <string>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class SymbolGathering;
 

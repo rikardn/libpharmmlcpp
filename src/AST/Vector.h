@@ -22,7 +22,7 @@
 #include <AST/Scalar.h>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class VectorCell
     {

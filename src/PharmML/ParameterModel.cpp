@@ -20,7 +20,7 @@
 #include <AST/AstBuilder.h>
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     ParameterModel::ParameterModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -31,38 +31,38 @@ namespace PharmML
         this->Block::parse(node);
         std::vector<xml::Node> param_nodes = this->context->getElements(node, "./mdef:Parameter");
         for (xml::Node n : param_nodes) {
-            PharmML::Parameter *param = new PharmML::Parameter(this->context, n);
+            pharmmlcpp::Parameter *param = new pharmmlcpp::Parameter(this->context, n);
             this->parameters.push_back(param);
         }
 
         std::vector<xml::Node> pop_nodes = this->context->getElements(node, "./mdef:PopulationParameter");
         for (xml::Node n : pop_nodes) {
-            PharmML::PopulationParameter *pop = new PharmML::PopulationParameter(this->context, n);
+            pharmmlcpp::PopulationParameter *pop = new pharmmlcpp::PopulationParameter(this->context, n);
             this->populationParameters.push_back(pop);
         }
 
         std::vector<xml::Node> ind_nodes = this->context->getElements(node, "./mdef:IndividualParameter");
         for (xml::Node n : ind_nodes) {
-            PharmML::IndividualParameter *ind = new PharmML::IndividualParameter(this->context, n);
+            pharmmlcpp::IndividualParameter *ind = new pharmmlcpp::IndividualParameter(this->context, n);
             this->individualParameters.push_back(ind);
         }
 
         std::vector<xml::Node> rand_nodes = this->context->getElements(node, "./mdef:RandomVariable");
         for (xml::Node n : rand_nodes) {
-            PharmML::RandomVariable *ind = new PharmML::RandomVariable(this->context, n);
+            pharmmlcpp::RandomVariable *ind = new pharmmlcpp::RandomVariable(this->context, n);
             this->randomVariables.push_back(ind);
         }
 
         std::vector<xml::Node> corr_nodes = this->context->getElements(node, "./mdef:Correlation");
         for (xml::Node n : corr_nodes) {
-            PharmML::Correlation *ind = new PharmML::Correlation(this->context, n);
+            pharmmlcpp::Correlation *ind = new pharmmlcpp::Correlation(this->context, n);
             this->correlations.push_back(ind);
         }
     }
 
     void ParameterModel::setupRefererSymbRefs(SymbolGathering &gathering) {
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
-        for (PharmML::Correlation *corr : this->getCorrelations()) {
+        for (pharmmlcpp::Correlation *corr : this->getCorrelations()) {
             corr->setupSymbRefs(gathering, this->getBlkId());
         }
     }

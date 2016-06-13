@@ -24,7 +24,7 @@
 #include <libxml/tree.h>
 #include <symbols/SymbolGathering.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     VariabilityModel::VariabilityModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -43,7 +43,7 @@ namespace PharmML
         // Get variability levels
         std::vector<xml::Node> var_level_nodes = this->context->getElements(node, "./mdef:Level");
         for (xml::Node var_level_node : var_level_nodes) {
-            PharmML::VariabilityLevel *var_level = new PharmML::VariabilityLevel(this->context, var_level_node);
+            pharmmlcpp::VariabilityLevel *var_level = new pharmmlcpp::VariabilityLevel(this->context, var_level_node);
             this->variabilityLevels.push_back(var_level);
         }
     }
@@ -60,7 +60,7 @@ namespace PharmML
         return (this->type == "parameterVariability");
     }
 
-    std::vector<PharmML::VariabilityLevel *> VariabilityModel::getVariabilityLevels() {
+    std::vector<pharmmlcpp::VariabilityLevel *> VariabilityModel::getVariabilityLevels() {
         return this->variabilityLevels;
     }
             

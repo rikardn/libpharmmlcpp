@@ -20,7 +20,7 @@
 #include "StructuralModel.h"
 #include <symbols/SymbolGathering.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     StructuralModel::StructuralModel(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -31,23 +31,23 @@ namespace PharmML
     void StructuralModel::parse(xml::Node node) {
         std::vector<xml::Node> array = this->context->getElements(node, ".//ct:Variable");
         for (xml::Node n : array) {
-            PharmML::Variable *var = new PharmML::Variable(this->context, n);
+            pharmmlcpp::Variable *var = new pharmmlcpp::Variable(this->context, n);
             this->variables.push_back(var);
         }
         std::vector<xml::Node> derivs = this->context->getElements(node, ".//ct:DerivativeVariable");
         for (xml::Node n : derivs) {
-            PharmML::DerivativeVariable *var = new PharmML::DerivativeVariable(this->context, n);
+            pharmmlcpp::DerivativeVariable *var = new pharmmlcpp::DerivativeVariable(this->context, n);
             this->variables.push_back(var);
         }
         // Construct PKMacros object if macros are available
         xml::Node macros_node = this->context->getSingleElement(node, "./mdef:PKmacros");
         if (macros_node.exists()) {
-            PharmML::PKMacros *macros = new PharmML::PKMacros(this->context, macros_node);
+            pharmmlcpp::PKMacros *macros = new pharmmlcpp::PKMacros(this->context, macros_node);
             this->pk_macros = macros;
         }
     }
 
-    std::vector<PharmML::CommonVariable *> StructuralModel::getVariables() {
+    std::vector<pharmmlcpp::CommonVariable *> StructuralModel::getVariables() {
         return this->variables;
     }
 
@@ -56,8 +56,8 @@ namespace PharmML
     }
 
     // Return all derivative variables
-    std::vector<PharmML::CommonVariable *> StructuralModel::getDerivatives() {
-        std::vector<PharmML::CommonVariable *> derivs;
+    std::vector<pharmmlcpp::CommonVariable *> StructuralModel::getDerivatives() {
+        std::vector<pharmmlcpp::CommonVariable *> derivs;
         for (CommonVariable *var : this->variables) {
             if (var->isDerivative()) {
                 derivs.push_back(var);
@@ -67,7 +67,7 @@ namespace PharmML
         return derivs;
     }
 
-    PharmML::PKMacros *StructuralModel::getPKMacros() {
+    pharmmlcpp::PKMacros *StructuralModel::getPKMacros() {
         return this->pk_macros;
     }
 

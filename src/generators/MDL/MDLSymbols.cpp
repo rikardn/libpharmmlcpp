@@ -29,7 +29,7 @@
 
 #include <generators/MDL/MDLAstGenerator.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     MDLSymbols::MDLSymbols(std::shared_ptr<Logger> logger) {
         this->logger = logger;

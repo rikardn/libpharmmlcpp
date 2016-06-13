@@ -18,7 +18,7 @@
 #include "DesignSpaces.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     DesignSpace::DesignSpace(PharmMLContext *context, xml::Node node) {
         this->context = context;

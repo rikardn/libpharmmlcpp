@@ -21,7 +21,7 @@
 #include <vector>
 #include <AST/AstNode.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     namespace AstTransformation         // Using namespace instead of static class
     {

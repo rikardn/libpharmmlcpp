@@ -18,7 +18,7 @@
 #include "Scalar.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     ScalarInt::ScalarInt(int value) {
         this->value = value;

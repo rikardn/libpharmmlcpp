@@ -22,7 +22,7 @@
 #include <visitors/SymbolNameVisitor.h>
 #include <visitors/SymbRefFinder.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     std::string PopEDGenerator::accept(AstNode *node) {
@@ -380,7 +380,7 @@ namespace PharmML
 
         // Try to get PopED algorithm (containing settings) from PharmML
         Algorithm *algo = nullptr;
-        PharmML::ModellingSteps *msteps = this->model->getModellingSteps();
+        pharmmlcpp::ModellingSteps *msteps = this->model->getModellingSteps();
         if (msteps) {
             std::vector<OptimalDesignStep *> od_steps = msteps->getOptimalDesignSteps();
             for (OptimalDesignStep *od_step : od_steps) {

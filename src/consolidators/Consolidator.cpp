@@ -21,9 +21,9 @@
 
 namespace CPharmML
 {
-    Consolidator::Consolidator(PharmML::PharmMLContext *context, PharmML::Model *model) {
+    Consolidator::Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::Model *model) {
         this->context = context;
-        this->logger = std::make_shared<PharmML::Logger>("Post");
+        this->logger = std::make_shared<pharmmlcpp::Logger>("Post");
 
         // Consolidate the different aspects of the model
         this->consolidatePopulationParameters(model);
@@ -31,25 +31,25 @@ namespace CPharmML
         this->consolidateVariabilityModels(model);
     }
 
-    void Consolidator::consolidatePopulationParameters(PharmML::Model *model) {
+    void Consolidator::consolidatePopulationParameters(pharmmlcpp::Model *model) {
         // Consolidate PharmML PopulationParameter's and Correlation's into a wrapping object (with convenience functions)
         if (!model->getModelDefinition()->getParameterModel()) {
             return;
         }
-        std::vector<PharmML::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        std::vector<pharmmlcpp::PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
         // FIXME: This will soon be cleaned
         for (auto param : model->getModelDefinition()->getParameterModel()->getParameters()) {
             pop_params.push_back(param);
         }
 
-        std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
+        std::vector<pharmmlcpp::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
         CPharmML::PopulationParameters *cpop_params = new PopulationParameters(pop_params, corrs);
 
         // Merge in information from PharmML RandomVariable's, IndividualParameter's and EstimationStep's
-        std::vector<PharmML::RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-        std::vector<PharmML::IndividualParameter *> ind_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
-        std::vector<PharmML::EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
-        std::vector<PharmML::OptimalDesignStep *> od_steps = model->getModellingSteps()->getOptimalDesignSteps();
+        std::vector<pharmmlcpp::RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        std::vector<pharmmlcpp::IndividualParameter *> ind_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
+        std::vector<pharmmlcpp::EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
+        std::vector<pharmmlcpp::OptimalDesignStep *> od_steps = model->getModellingSteps()->getOptimalDesignSteps();
         cpop_params->addRandomVariables(rand_vars);
         cpop_params->addIndividualParameters(ind_params);
         if (est_steps.size() > 0) {     // No estimation steps
@@ -63,15 +63,15 @@ namespace CPharmML
         this->populationParameters.push_back(cpop_params);
     }
 
-    void Consolidator::consolidateCovariates(PharmML::Model *model) {
+    void Consolidator::consolidateCovariates(pharmmlcpp::Model *model) {
         if (!model->getModelDefinition()->getCovariateModel()) {
             return;
         }
         // Get ExternalDataset's (holding both ColumnMapping's and ColumnDefinition's)
-        std::vector<PharmML::ColumnMapping *> col_maps;
-        std::vector<PharmML::ColumnDefinition *> col_defs;
-        PharmML::ExternalDataset *first_ext_dataset;
-        std::vector<PharmML::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
+        std::vector<pharmmlcpp::ColumnMapping *> col_maps;
+        std::vector<pharmmlcpp::ColumnDefinition *> col_defs;
+        pharmmlcpp::ExternalDataset *first_ext_dataset;
+        std::vector<pharmmlcpp::ExternalDataset *> ext_datasets = model->getTrialDesign()->getExternalDatasets();
         if (!ext_datasets.empty()) {
             // FIXME: This is a common pattern. Pluralness MUST be handled everywhere!
             // (In this case, it's the reference to the oid of the ExternalDataset from EstimationStep that decides)
@@ -83,27 +83,27 @@ namespace CPharmML
         }
 
         // Consolidate PharmML Covariate's (e.g. for collected output as in MDL)
-        PharmML::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
+        pharmmlcpp::CovariateModel *cov_model = model->getModelDefinition()->getCovariateModel();
         if (cov_model) {
-            std::vector<PharmML::Covariate *> top_covs = cov_model->getCovariates();
-            for (PharmML::Covariate *top_cov : top_covs) {
+            std::vector<pharmmlcpp::Covariate *> top_covs = cov_model->getCovariates();
+            for (pharmmlcpp::Covariate *top_cov : top_covs) {
                 // Create list of this covariate and transformed covariates contained within it
-                std::vector<PharmML::Covariate *> covs = top_cov->getTransformations();
+                std::vector<pharmmlcpp::Covariate *> covs = top_cov->getTransformations();
                 covs.insert(covs.begin(), top_cov);
-                for (PharmML::Covariate *cov : covs) {
+                for (pharmmlcpp::Covariate *cov : covs) {
                     // Create new consolidated covariate
                     CPharmML::Covariate *ccov = new Covariate(cov);
 
                     // Find ColumnMapping's refering this Covariate
-                    for (PharmML::ColumnMapping *col_map : col_maps) {
-                        PharmML::Symbol *cov_symbol = ccov->getCovariate();
+                    for (pharmmlcpp::ColumnMapping *col_map : col_maps) {
+                        pharmmlcpp::Symbol *cov_symbol = ccov->getCovariate();
                         if (col_map->referencedSymbols.hasSymbol(cov_symbol)) {
                             ccov->addColumnMapping(col_map);
                         }
                     }
 
                     // Find ColumnDefinition's refering earlier added ColumnMapping
-                    for (PharmML::ColumnDefinition *col_def : col_defs) {
+                    for (pharmmlcpp::ColumnDefinition *col_def : col_defs) {
                         std::string id = ccov->getColumnId();
                         if (col_def->getId() == id) {
                             ccov->addColumnDefinition(col_def);
@@ -117,25 +117,25 @@ namespace CPharmML
         }
     }
 
-    void Consolidator::consolidateVariabilityModels(PharmML::Model *model) {
+    void Consolidator::consolidateVariabilityModels(pharmmlcpp::Model *model) {
         if (model->getModelDefinition()->getVariabilityModels().empty()) {
             return;
         }
 
         this->variabilityModels = new VariabilityModels();
         // VariabilityModels assumes a maximum of one model of each type (parameter/residual error)
-        std::vector<PharmML::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();
-        for (PharmML::VariabilityModel *vmod : vmods) {
+        std::vector<pharmmlcpp::VariabilityModel *> vmods = model->getModelDefinition()->getVariabilityModels();
+        for (pharmmlcpp::VariabilityModel *vmod : vmods) {
             this->variabilityModels->addVariabilityModel(vmod);
         }
         // Add RandomVariable's
-        std::vector<PharmML::RandomVariable *> rvars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
-        for (PharmML::RandomVariable *rvar : rvars) {
+        std::vector<pharmmlcpp::RandomVariable *> rvars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+        for (pharmmlcpp::RandomVariable *rvar : rvars) {
             this->variabilityModels->addRandomVariable(rvar);
         }
         // Add Correlation's (consolidated, because they know their generated name)
-        std::vector<PharmML::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
-        for (PharmML::Correlation *corr : corrs) {
+        std::vector<pharmmlcpp::Correlation *> corrs = model->getModelDefinition()->getParameterModel()->getCorrelations();
+        for (pharmmlcpp::Correlation *corr : corrs) {
             this->variabilityModels->addCorrelation(corr);
         }
     }

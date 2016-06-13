@@ -27,7 +27,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/FunctionDefinition.h>
 
-namespace PharmML {
+namespace pharmmlcpp {
 
     void SymbolNameVisitor::visit(ObservationModel *node) { 
         this->setValue(node->getSymbId());

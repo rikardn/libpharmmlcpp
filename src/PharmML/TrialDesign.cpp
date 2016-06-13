@@ -21,7 +21,7 @@
 #include <libxml/tree.h>
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     TrialDesign::TrialDesign(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -32,27 +32,27 @@ namespace PharmML
     void TrialDesign::parse(xml::Node node) {
         std::vector<xml::Node> ext_dataset_nodes = this->context->getElements(node, "./design:ExternalDataSet");
         for (xml::Node ext_dataset_node : ext_dataset_nodes) {
-            ExternalDataset* ds = new PharmML::ExternalDataset(this->context, ext_dataset_node);
+            ExternalDataset* ds = new pharmmlcpp::ExternalDataset(this->context, ext_dataset_node);
             this->ExternalDatasets.push_back(ds);
         }
         xml::Node interventions_node = this->context->getSingleElement(node, "./design:Interventions");
         if (interventions_node.exists()) {
-            this->Interventions = new PharmML::Interventions(this->context, interventions_node);
+            this->Interventions = new pharmmlcpp::Interventions(this->context, interventions_node);
         }
 
         xml::Node observations_node = this->context->getSingleElement(node, "./design:Observations");
         if (observations_node.exists()) {
-            this->Observations = new PharmML::Observations(this->context, observations_node);
+            this->Observations = new pharmmlcpp::Observations(this->context, observations_node);
         }
 
         xml::Node arms_node = this->context->getSingleElement(node, "./design:Arms");
         if (arms_node.exists()) {
-            this->Arms = new PharmML::Arms(this->context, arms_node);
+            this->Arms = new pharmmlcpp::Arms(this->context, arms_node);
         }
 
         xml::Node ds_node = this->context->getSingleElement(node, "./design:DesignSpaces");
         if (ds_node.exists()) {
-            this->DesignSpaces = new PharmML::DesignSpaces(this->context, ds_node);
+            this->DesignSpaces = new pharmmlcpp::DesignSpaces(this->context, ds_node);
         }
     }
 
@@ -71,23 +71,23 @@ namespace PharmML
         this->xml_node.replaceNode(td);
     }
 
-    std::vector<PharmML::ExternalDataset *> TrialDesign::getExternalDatasets() {
+    std::vector<pharmmlcpp::ExternalDataset *> TrialDesign::getExternalDatasets() {
         return this->ExternalDatasets;
     }
 
-    PharmML::Interventions *TrialDesign::getInterventions() {
+    pharmmlcpp::Interventions *TrialDesign::getInterventions() {
         return this->Interventions;
     }
 
-    PharmML::Observations *TrialDesign::getObservations() {
+    pharmmlcpp::Observations *TrialDesign::getObservations() {
         return this->Observations;
     }
 
-    PharmML::Arms *TrialDesign::getArms() {
+    pharmmlcpp::Arms *TrialDesign::getArms() {
         return this->Arms;
     }
 
-    PharmML::DesignSpaces *TrialDesign::getDesignSpaces() {
+    pharmmlcpp::DesignSpaces *TrialDesign::getDesignSpaces() {
         return this->DesignSpaces;
     }
 
@@ -105,13 +105,13 @@ namespace PharmML
     }
 
     void TrialDesign::setupTargetMappings(SymbolGathering &gathering) {
-        for (PharmML::ExternalDataset *ext_ds : this->ExternalDatasets) {
+        for (pharmmlcpp::ExternalDataset *ext_ds : this->ExternalDatasets) {
             ext_ds->setupTargetMappings(gathering);
         }
     }
 
     void TrialDesign::setupTargetMappings(MacroGathering &gathering) {
-        for (PharmML::ExternalDataset *ext_ds : this->ExternalDatasets) {
+        for (pharmmlcpp::ExternalDataset *ext_ds : this->ExternalDatasets) {
             ext_ds->setupTargetMappings(gathering);
         }
     }

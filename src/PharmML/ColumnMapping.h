@@ -32,7 +32,7 @@
 #include <symbols/SymbolGathering.h>
 #include <symbols/MacroGathering.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class MacroGathering; // FIXME: Inclusion problems!
     struct MapType {
@@ -58,15 +58,15 @@ namespace PharmML
 
             std::unordered_set<std::string> getSymbolStrings();
             std::unordered_set<int> getAdmNumbers();
-            std::unordered_map<std::string, PharmML::Symbol *> getDataSymbolMap();
-            std::unordered_map<std::string, PharmML::PKMacro *> getDataMacroMap();
+            std::unordered_map<std::string, pharmmlcpp::Symbol *> getDataSymbolMap();
+            std::unordered_map<std::string, pharmmlcpp::PKMacro *> getDataMacroMap();
 
-            void setupSymbolRefs(PharmML::SymbolGathering &gathering);
-            void setupMacroRefs(PharmML::MacroGathering &gathering);
+            void setupSymbolRefs(pharmmlcpp::SymbolGathering &gathering);
+            void setupMacroRefs(pharmmlcpp::MacroGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string blkIdRef;
             std::vector<MapType> maps;
     };
@@ -74,7 +74,7 @@ namespace PharmML
     class ColumnMapping : public Referer
     {
         public:
-            ColumnMapping(PharmML::PharmMLContext *context, xml::Node node);
+            ColumnMapping(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             
@@ -89,7 +89,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
 
             std::string columnIdRef;
             AstNode *assignment = nullptr;

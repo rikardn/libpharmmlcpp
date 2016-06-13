@@ -27,7 +27,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/FunctionDefinition.h>
 
-namespace PharmML {
+namespace pharmmlcpp {
 
     SymbolSet SymbolSortVisitor::getDerivatives() {
         return this->derivatives;

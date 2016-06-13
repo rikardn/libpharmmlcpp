@@ -26,7 +26,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/FunctionDefinition.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void PopEDSymbols::visit(ObservationModel *node) {
         this->setValue(node->getName());

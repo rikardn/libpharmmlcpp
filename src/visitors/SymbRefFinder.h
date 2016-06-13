@@ -37,7 +37,7 @@
 #include <PharmML/Interventions.h>
 #include <symbols/Symbol.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class SymbRefFinder : public AstNodeVisitor
     {

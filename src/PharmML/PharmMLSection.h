@@ -20,7 +20,7 @@
 
 #include <xml/xml.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class PharmMLSection
     {

@@ -20,7 +20,7 @@
 
 #include <helpers/SymbolNamer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class RSymbolNamer : public SymbolNamer
     {
@@ -28,8 +28,8 @@ namespace PharmML
             RSymbolNamer() : SymbolNamer(std::unordered_set<std::string>(
                         {"if", "else", "repeat", "while", "function", "for", "in", "next", "break",
                          "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA", "NA_integer_", "NA_real_", "NA_complex_", "NA_character_" })) {
-                addCharSet(std::unordered_set<char32_t>(PharmML::LatinChars::ALL_EN.begin(), PharmML::LatinChars::ALL_EN.end())); 
-                subInitialCharSet(std::unordered_set<char32_t>(PharmML::LatinChars::DIGITS.begin(), PharmML::LatinChars::DIGITS.end())); 
+                addCharSet(std::unordered_set<char32_t>(pharmmlcpp::LatinChars::ALL_EN.begin(), pharmmlcpp::LatinChars::ALL_EN.end())); 
+                subInitialCharSet(std::unordered_set<char32_t>(pharmmlcpp::LatinChars::DIGITS.begin(), pharmmlcpp::LatinChars::DIGITS.end())); 
             };
     };
 }

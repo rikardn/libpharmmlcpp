@@ -17,7 +17,7 @@
 
 #include "SymbRefFinder.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // public
     SymbRefFinder::SymbRefFinder() {

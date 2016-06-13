@@ -22,7 +22,7 @@
 #include <symbols/Variable.h>
 #include <visitors/PharmMLVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class DerivativeVariable : public CommonVariable
     {

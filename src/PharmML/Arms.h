@@ -26,18 +26,18 @@
 #include <objects/Object.h>
 #include <PharmML/PharmMLSection.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class OccasionType
     {
         public:
-            OccasionType(PharmML::PharmMLContext *context, xml::Node node);
+            OccasionType(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             AstNode *getStart();
             AstNode *getEnd();
  
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             AstNode *start = nullptr;
             AstNode *end = nullptr;
             //~ void accept(AstNodeVisitor *visitor);
@@ -46,7 +46,7 @@ namespace PharmML
     class InterventionSequence
     {
         public:
-            InterventionSequence(PharmML::PharmMLContext *context, xml::Node node);
+            InterventionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
@@ -54,7 +54,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<ObjectRef *> oidRefs;
             AstNode *start = nullptr;
     };
@@ -62,7 +62,7 @@ namespace PharmML
     class ObservationSequence
     {
         public:
-            ObservationSequence(PharmML::PharmMLContext *context, xml::Node node);
+            ObservationSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
@@ -70,7 +70,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<ObjectRef *> oidRefs;
             AstNode *start = nullptr;
     };
@@ -78,14 +78,14 @@ namespace PharmML
     class OccasionSequence
     {
         public:
-            OccasionSequence(PharmML::PharmMLContext *context, xml::Node node);
+            OccasionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             VariabilityReference *getVariabilityReference();
             std::vector<OccasionType *> getOccasions();
             void accept(PharmMLVisitor *visitor);
         
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             VariabilityReference *variabilityReference;
             std::vector<OccasionType *> occasions;
     };
@@ -93,7 +93,7 @@ namespace PharmML
     class Arm : public Object, public PharmMLSection
     {
         public:
-            Arm(PharmML::PharmMLContext *context, xml::Node node);
+            Arm(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
@@ -108,7 +108,7 @@ namespace PharmML
             void accept(ObjectVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oidRef;
             AstNode *armSize = nullptr;
             AstNode *numSamples = nullptr;
@@ -122,8 +122,8 @@ namespace PharmML
     class Arms
     {
         public:
-            Arms(PharmML::PharmMLContext *context, xml::Node node);
-            std::vector<PharmML::Variable *> getDesignParameters();
+            Arms(pharmmlcpp::PharmMLContext *context, xml::Node node);
+            std::vector<pharmmlcpp::Variable *> getDesignParameters();
             AstNode *getArmSize();
             AstNode *getCostFunction();
             AstNode *getNumArms();
@@ -138,8 +138,8 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::Variable *> designParameters;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::Variable *> designParameters;
             AstNode *armSize = nullptr;
             AstNode *costFunction = nullptr;
             AstNode *numArms = nullptr;

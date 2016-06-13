@@ -17,7 +17,7 @@
 
 #include <visitors/StringVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void StringVisitor::setValue(std::string value) {
         this->value = value;

@@ -21,7 +21,7 @@
 #include <AST/Binop.h>
 #include <AST/AstBuilder.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     FixedEffect::FixedEffect(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -32,11 +32,11 @@ namespace PharmML
         // Get either SymbRef or Scalar
         xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
         if (symbref_node.exists()) {
-            PharmML::SymbRef *symbRef = new PharmML::SymbRef(symbref_node);
+            pharmmlcpp::SymbRef *symbRef = new pharmmlcpp::SymbRef(symbref_node);
             this->symbRef = symbRef;
         } else {
             xml::Node scalar_node = this->context->getSingleElement(node, "./ct:Scalar");
-            PharmML::AstNode *scalar = this->context->factory.create(scalar_node);
+            pharmmlcpp::AstNode *scalar = this->context->factory.create(scalar_node);
             this->scalar = scalar;
         }
 
@@ -47,11 +47,11 @@ namespace PharmML
         }
     }
 
-    PharmML::SymbRef *FixedEffect::getReference() {
+    pharmmlcpp::SymbRef *FixedEffect::getReference() {
         return this->symbRef;
     }
 
-    PharmML::AstNode *FixedEffect::getScalar() {
+    pharmmlcpp::AstNode *FixedEffect::getScalar() {
         return this->scalar;
     }
 
@@ -88,7 +88,7 @@ namespace PharmML
                 // Get transformation parameters (if available)
                 std::vector<xml::Node> trans_params = this->context->getElements(trans, "./ct:Parameter");
                 for (xml::Node trans_param : trans_params) {
-                    PharmML::AstNode *param = this->context->factory.create(trans_param.getChild());
+                    pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
                     this->transformationParameters.push_back(param);
                 }
             }
@@ -117,7 +117,7 @@ namespace PharmML
                 for (xml::Node cov_node : cov_nodes) {
                     // Get SymbRef (to the covariate)
                     xml::Node symbref_node = this->context->getSingleElement(cov_node, "./ct:SymbRef");
-                    PharmML::SymbRef *cov_symbref = new PharmML::SymbRef(symbref_node);
+                    pharmmlcpp::SymbRef *cov_symbref = new pharmmlcpp::SymbRef(symbref_node);
                     this->covariates.push_back(cov_symbref);
 
                     // Get fixed effects (unlimited amount per covariate)
@@ -148,7 +148,7 @@ namespace PharmML
             for (xml::Node rand_node : rand_nodes) {
                 // Get SymbRef (to the covariate)
                 xml::Node symbref_node = this->context->getSingleElement(rand_node, "./ct:SymbRef");
-                PharmML::SymbRef *symbRef = new PharmML::SymbRef(symbref_node);
+                pharmmlcpp::SymbRef *symbRef = new pharmmlcpp::SymbRef(symbref_node);
                 this->randomEffects.push_back(symbRef);
             }
         } else {
@@ -195,11 +195,11 @@ namespace PharmML
         return this->transformation;
     }
 
-    PharmML::AstNode *IndividualParameter::getPopulationValue() {
+    pharmmlcpp::AstNode *IndividualParameter::getPopulationValue() {
         return this->populationValue;
     }
 
-    std::vector<PharmML::SymbRef *> IndividualParameter::getCovariates() {
+    std::vector<pharmmlcpp::SymbRef *> IndividualParameter::getCovariates() {
         return this->covariates;
     }
 
@@ -208,7 +208,7 @@ namespace PharmML
     }
 
     std::vector<FixedEffect *> IndividualParameter::getFixedEffects(Symbol *covariate) {
-        PharmML::SymbRef *symbRef = nullptr;
+        pharmmlcpp::SymbRef *symbRef = nullptr;
         for (SymbRef *cov : this->covariates) {
             if (cov->getSymbol() == covariate) {
                 symbRef = cov;
@@ -217,11 +217,11 @@ namespace PharmML
         return this->fixedEffects[symbRef];
     }
 
-    std::vector<PharmML::SymbRef *> IndividualParameter::getRandomEffects() {
+    std::vector<pharmmlcpp::SymbRef *> IndividualParameter::getRandomEffects() {
         return this->randomEffects;
     }
 
-    PharmML::AstNode *IndividualParameter::getAssignment() {
+    pharmmlcpp::AstNode *IndividualParameter::getAssignment() {
         if (this->is_general_cov) {
             return this->generalAssignment;
         } else if (this->is_explicit_cov) {
@@ -269,7 +269,7 @@ namespace PharmML
     }
 
     void IndividualParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
-        for (PharmML::AstNode *trans_param : this->transformationParameters) {
+        for (pharmmlcpp::AstNode *trans_param : this->transformationParameters) {
             this->setupAstSymbRefs(trans_param, gathering, blkId);
         }
         if (this->populationValue) {

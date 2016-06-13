@@ -30,38 +30,38 @@ namespace CPharmML
     class Covariate
     {
         public:
-            // Construct with PharmML::Covariate as base
-            Covariate(PharmML::Covariate *covariate);
+            // Construct with pharmmlcpp::Covariate as base
+            Covariate(pharmmlcpp::Covariate *covariate);
 
             // Add PharmML objects for consolidation (in this order)
-            void addColumnMapping(PharmML::ColumnMapping *columnMapping);
-            void addColumnDefinition(PharmML::ColumnDefinition *covariateColumnDef);
+            void addColumnMapping(pharmmlcpp::ColumnMapping *columnMapping);
+            void addColumnDefinition(pharmmlcpp::ColumnDefinition *covariateColumnDef);
 
             // Get attributes
-            PharmML::Covariate *getCovariate();
-            PharmML::ColumnMapping *getColumnMapping();
-            PharmML::ColumnDefinition *getColumnDefinition();
+            pharmmlcpp::Covariate *getCovariate();
+            pharmmlcpp::ColumnMapping *getColumnMapping();
+            pharmmlcpp::ColumnDefinition *getColumnDefinition();
 
             std::string getName();
             bool isDerived();
             bool isContinuous();
             std::string getType();
-            PharmML::Distribution *getDistribution();
-            PharmML::AstNode *getDefinition();
+            pharmmlcpp::Distribution *getDistribution();
+            pharmmlcpp::AstNode *getDefinition();
             std::string getColumnId();
 
         private:
             // PharmML objects used to consolidate
-            PharmML::Covariate *covariate;
-            PharmML::ColumnMapping *columnMapping = nullptr;
-            PharmML::ColumnDefinition *columnDef = nullptr;
+            pharmmlcpp::Covariate *covariate;
+            pharmmlcpp::ColumnMapping *columnMapping = nullptr;
+            pharmmlcpp::ColumnDefinition *columnDef = nullptr;
 
             std::string name;
             bool derived;
             bool continuous;
             std::string type;
-            PharmML::Distribution *distribution;
-            PharmML::AstNode *definition;
+            pharmmlcpp::Distribution *distribution;
+            pharmmlcpp::AstNode *definition;
             std::string columnId;
     };
 }

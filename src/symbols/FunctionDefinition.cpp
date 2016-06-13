@@ -17,7 +17,7 @@
 
 #include "FunctionDefinition.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     FunctionArgumentDefinition::FunctionArgumentDefinition(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -101,7 +101,7 @@ namespace PharmML
         // TODO: Might want to call this from postParse
         if (this->definition) {
             // Linearize the AST first with the AstAnalyzer
-            PharmML::AstAnalyzer analyzer;
+            pharmmlcpp::AstAnalyzer analyzer;
             this->definition->accept(&analyzer);
             std::string linear = analyzer.getValue();
 
@@ -110,7 +110,7 @@ namespace PharmML
 
             // Map the function arguments to generic numbers (and generate anonymous function signature)
             std::string anon_sig = linear;
-            std::unordered_map<std::string, PharmML::FunctionArgumentDefinition *> num_to_arg;
+            std::unordered_map<std::string, pharmmlcpp::FunctionArgumentDefinition *> num_to_arg;
             for (auto it = this->arguments.begin(); it != this->arguments.end(); ++it) {
                 std::string name_code = ":" + (*it)->getSymbId() + ":";
                 std::string num_code = ":" + std::to_string(std::distance(this->arguments.begin(), it) + 1) + ":";
@@ -166,7 +166,7 @@ namespace PharmML
     }
 
     // Get standard function argument map (call after isStandardFunction)
-    std::unordered_map<StandardFunctionArgument, PharmML::FunctionArgumentDefinition *, EnumClassHash> FunctionDefinition::getStandardFunctionArgumentMap() {
+    std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> FunctionDefinition::getStandardFunctionArgumentMap() {
         return this->std_arg_map;
     }
 }

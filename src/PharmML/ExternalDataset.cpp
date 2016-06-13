@@ -17,9 +17,9 @@
 
 #include "ExternalDataset.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
-    ExternalDataset::ExternalDataset(PharmML::PharmMLContext *context, xml::Node node) {
+    ExternalDataset::ExternalDataset(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
@@ -29,14 +29,14 @@ namespace PharmML
         this->oid = node.getAttribute("oid").getValue();
         std::vector<xml::Node> array = this->context->getElements(node, "./design:ColumnMapping");
         for (xml::Node n : array) {
-            PharmML::ColumnMapping *col = new PharmML::ColumnMapping(this->context, n);
+            pharmmlcpp::ColumnMapping *col = new pharmmlcpp::ColumnMapping(this->context, n);
             this->col_maps.push_back(col);
         }
         // TODO: Support ColumnTransformation
         // TODO: Support MultipleDVMapping
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
         if (ds_node.exists()) {
-            this->dataset = new PharmML::Dataset(this->context, ds_node);
+            this->dataset = new pharmmlcpp::Dataset(this->context, ds_node);
         } else {
             // TODO: Support CodeInjection
         }
@@ -47,7 +47,7 @@ namespace PharmML
         return this->oid;
     }
 
-    std::vector<PharmML::ColumnMapping *> ExternalDataset::getColumnMappings() {
+    std::vector<pharmmlcpp::ColumnMapping *> ExternalDataset::getColumnMappings() {
         return this->col_maps;
     }
 
@@ -60,14 +60,14 @@ namespace PharmML
     }
 
     void ExternalDataset::setupRefererSymbRefs(SymbolGathering &gathering) {
-        for (PharmML::ColumnMapping *col_map : this->col_maps) {
+        for (pharmmlcpp::ColumnMapping *col_map : this->col_maps) {
             col_map->setupSymbRefs(gathering, "");
         }
     }
 
     void ExternalDataset::setupTargetMappings(SymbolGathering &gathering) {
-        for (PharmML::ColumnMapping *col_map : this->col_maps) {
-            PharmML::TargetMapping *target_map = col_map->getTargetMapping();
+        for (pharmmlcpp::ColumnMapping *col_map : this->col_maps) {
+            pharmmlcpp::TargetMapping *target_map = col_map->getTargetMapping();
             if (target_map) {
                 target_map->setupSymbolRefs(gathering);
             }
@@ -75,8 +75,8 @@ namespace PharmML
     }
 
     void ExternalDataset::setupTargetMappings(MacroGathering &gathering) {
-        for (PharmML::ColumnMapping *col_map : this->col_maps) {
-            PharmML::TargetMapping *target_map = col_map->getTargetMapping();
+        for (pharmmlcpp::ColumnMapping *col_map : this->col_maps) {
+            pharmmlcpp::TargetMapping *target_map = col_map->getTargetMapping();
             if (target_map) {
                 target_map->setupMacroRefs(gathering);
             }

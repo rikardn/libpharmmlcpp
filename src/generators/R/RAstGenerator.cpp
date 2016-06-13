@@ -17,7 +17,7 @@
 
 #include "RAstGenerator.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     void RAstGenerator::setValue(std::string str) {

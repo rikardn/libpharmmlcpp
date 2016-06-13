@@ -28,31 +28,31 @@
 #include "Arms.h"
 #include "DesignSpaces.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class TrialDesign
     {
         public:
-            TrialDesign(PharmML::PharmMLContext *context, xml::Node node);
+            TrialDesign(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void update();
-            std::vector<PharmML::ExternalDataset *> getExternalDatasets();
-            PharmML::Interventions *getInterventions();
-            PharmML::Observations *getObservations();
-            PharmML::Arms *getArms();
-            PharmML::DesignSpaces *getDesignSpaces();
+            std::vector<pharmmlcpp::ExternalDataset *> getExternalDatasets();
+            pharmmlcpp::Interventions *getInterventions();
+            pharmmlcpp::Observations *getObservations();
+            pharmmlcpp::Arms *getArms();
+            pharmmlcpp::DesignSpaces *getDesignSpaces();
             void setupRefererSymbRefs(SymbolGathering &gatherer);
             void setupTargetMappings(SymbolGathering &gatherer);
             void setupTargetMappings(MacroGathering &gatherer);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             xml::Node xml_node;
-            PharmML::Interventions *Interventions = nullptr;
-            std::vector<PharmML::ExternalDataset *> ExternalDatasets;
-            PharmML::Observations *Observations = nullptr;
-            PharmML::Arms *Arms = nullptr;
-            PharmML::DesignSpaces *DesignSpaces = nullptr;
+            pharmmlcpp::Interventions *Interventions = nullptr;
+            std::vector<pharmmlcpp::ExternalDataset *> ExternalDatasets;
+            pharmmlcpp::Observations *Observations = nullptr;
+            pharmmlcpp::Arms *Arms = nullptr;
+            pharmmlcpp::DesignSpaces *DesignSpaces = nullptr;
     };
 }
 

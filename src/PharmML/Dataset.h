@@ -26,13 +26,13 @@
 #include <visitors/XMLAstVisitor.h>
 #include <AST/Scalar.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Class HeaderDefinition (single header specification of dataset)
     class HeaderDefinition
     {
         public:
-            HeaderDefinition(PharmML::PharmMLContext *context, xml::Node node);
+            HeaderDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             void addHeaderRow(xml::Node node);
@@ -40,7 +40,7 @@ namespace PharmML
             int getRowNumber();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string name;
             int rowNumber;
     };
@@ -49,7 +49,7 @@ namespace PharmML
     class ColumnDefinition
     {
         public:
-            ColumnDefinition(PharmML::PharmMLContext *context, xml::Node node);
+            ColumnDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             std::string getId();
@@ -59,7 +59,7 @@ namespace PharmML
             int getNum();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string id;
             std::string type;
             std::string level;
@@ -71,7 +71,7 @@ namespace PharmML
     class DatasetDefinition
     {
         public:
-            DatasetDefinition(PharmML::PharmMLContext *context, xml::Node node);
+            DatasetDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             ColumnDefinition *getColumnDefinition(int colNum);
@@ -79,7 +79,7 @@ namespace PharmML
             int getNumColumns();
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<HeaderDefinition *> headers;
             std::vector<ColumnDefinition *> columns;
             AstNode *ignoreCondition = nullptr;
@@ -90,7 +90,7 @@ namespace PharmML
     class ExternalFile
     {
         public:
-            ExternalFile(PharmML::PharmMLContext *context, xml::Node node);
+            ExternalFile(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getOid();
             std::string getPath();
@@ -99,7 +99,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::string path;
             std::string format;
@@ -111,7 +111,7 @@ namespace PharmML
     class DataColumn
     {
         public:
-            DataColumn(PharmML::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition);
+            DataColumn(pharmmlcpp::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition);
             void parse(xml::Node table_node);
             std::vector<AstNode *> getData();
             ColumnDefinition *getDefinition();
@@ -120,7 +120,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             ColumnDefinition *definition;
             std::vector<AstNode *> column;
             int numRows;
@@ -130,7 +130,7 @@ namespace PharmML
     class Dataset : public PharmMLSection
     {
         public:
-            Dataset(PharmML::PharmMLContext *context, xml::Node node);
+            Dataset(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             xml::Node xml();
             std::string getOid();
@@ -145,7 +145,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             DatasetDefinition *definition = nullptr;
             ExternalFile *externalFile = nullptr;

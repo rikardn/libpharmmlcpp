@@ -24,7 +24,7 @@
 #include <symbols/Symbol.h>
 #include <generators/R/RAstGenerator.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class ObservationModel;
     class Parameter;

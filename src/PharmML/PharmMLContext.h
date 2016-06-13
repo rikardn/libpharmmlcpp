@@ -24,7 +24,7 @@
 #include <AST/symbols.h>
 #include <helpers/Logger.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Model;
     class PharmMLContext

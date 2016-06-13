@@ -17,7 +17,7 @@
 
 #include "Interval.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     Interval::Interval(xml::Node node) {
         xml::Node left_endpoint = node.getChild();

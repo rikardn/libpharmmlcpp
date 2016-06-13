@@ -17,7 +17,7 @@
 
 #include "SymbolNamer.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Initialize new SymbolNamer (without illegal word set)
     SymbolNamer::SymbolNamer() {

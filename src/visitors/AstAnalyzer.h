@@ -39,7 +39,7 @@
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class AstAnalyzer : public AstNodeVisitor, public StringVisitor
     {

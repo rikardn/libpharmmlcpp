@@ -20,7 +20,7 @@
 #include <symbols/PopulationParameter.h>
 #include <generators/PopED/PopEDSymbols.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     PopEDAstGenerator::PopEDAstGenerator() {
         this->symbgen = new PopEDSymbols();

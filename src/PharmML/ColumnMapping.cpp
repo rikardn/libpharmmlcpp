@@ -17,7 +17,7 @@
 
 #include "ColumnMapping.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // TODO: Move elsewhere (Dataset.h?)
     TargetMapping::TargetMapping(PharmMLContext *context, xml::Node node) {
@@ -75,10 +75,10 @@ namespace PharmML
     }
 
     // Get a (resolved) complete map from data symbol strings to the Symbol objects
-    std::unordered_map<std::string, PharmML::Symbol *> TargetMapping::getDataSymbolMap() {
+    std::unordered_map<std::string, pharmmlcpp::Symbol *> TargetMapping::getDataSymbolMap() {
         // Create associative array
-        std::unordered_map<std::string, PharmML::Symbol *> data_to_symbol;
-        for (PharmML::MapType map : this->maps) {
+        std::unordered_map<std::string, pharmmlcpp::Symbol *> data_to_symbol;
+        for (pharmmlcpp::MapType map : this->maps) {
             if (!map.modelSymbol.empty()) {
                 data_to_symbol[map.dataSymbol] = map.symbol;
             }
@@ -87,10 +87,10 @@ namespace PharmML
     }
 
     // Get a (resolved) complete map from data symbol strings to (administration) PKMacro objects
-    std::unordered_map<std::string, PharmML::PKMacro *> TargetMapping::getDataMacroMap() {
+    std::unordered_map<std::string, pharmmlcpp::PKMacro *> TargetMapping::getDataMacroMap() {
         // Create associative array
-        std::unordered_map<std::string, PharmML::PKMacro *> data_to_macro;
-        for (PharmML::MapType map : this->maps) {
+        std::unordered_map<std::string, pharmmlcpp::PKMacro *> data_to_macro;
+        for (pharmmlcpp::MapType map : this->maps) {
             if (!map.admNumber.empty()) {
                 data_to_macro[map.dataSymbol] = map.macro;
             }
@@ -102,7 +102,7 @@ namespace PharmML
     void TargetMapping::setupSymbolRefs(SymbolGathering &gathering) {
         for (MapType map : this->maps) {
             if (!map.modelSymbol.empty()) {
-                PharmML::Symbol *symbol = gathering.getSymbol(this->blkIdRef, map.modelSymbol);
+                pharmmlcpp::Symbol *symbol = gathering.getSymbol(this->blkIdRef, map.modelSymbol);
                 if (symbol) {
                     map.symbol = symbol;
                 } else {
@@ -116,7 +116,7 @@ namespace PharmML
     void TargetMapping::setupMacroRefs(MacroGathering &gathering) {
         for (MapType map : this->maps) {
             if (!map.admNumber.empty()) {
-                PharmML::PKMacro *macro = gathering.getAdmMacro(this->blkIdRef, std::stoi(map.admNumber));
+                pharmmlcpp::PKMacro *macro = gathering.getAdmMacro(this->blkIdRef, std::stoi(map.admNumber));
                 if (macro) {
                     map.macro = macro;
                 } else {
@@ -130,7 +130,7 @@ namespace PharmML
         visitor->visit(this);
     }
 
-    ColumnMapping::ColumnMapping(PharmML::PharmMLContext *context, xml::Node node) {
+    ColumnMapping::ColumnMapping(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }

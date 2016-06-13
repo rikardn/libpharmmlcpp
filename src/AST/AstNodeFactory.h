@@ -21,7 +21,7 @@
 #include <xml/xml.h>
 #include <AST/AstNode.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class AstNodeFactory
     {

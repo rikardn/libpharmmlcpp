@@ -18,7 +18,7 @@
 #include "Variable.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     CommonVariable::CommonVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;

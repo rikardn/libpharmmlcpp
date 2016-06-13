@@ -28,7 +28,7 @@
 #include <AST/symbols.h>
 #include <visitors/ObjectVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Object;
     class ObjectReferer

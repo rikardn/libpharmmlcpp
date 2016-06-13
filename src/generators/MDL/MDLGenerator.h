@@ -51,7 +51,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 
 #include <helpers/Logger.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     struct MDLObject {
         std::string name;
@@ -83,13 +83,13 @@ namespace PharmML
             std::string genParObj(CPharmML::PopulationParameters *populationParameters);
             std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
             std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
-            std::string genRandomVariableDefinitionBlock(PharmML::VariabilityLevel *level, std::vector<PharmML::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
-            std::string genIndividualVariablesBlock(std::vector<PharmML::IndividualParameter *> individualParameters);
-            std::string genModelPredictionBlock(PharmML::StructuralModel *structuralModel);
-            std::string genCompartmentBlock(PharmML::PKMacros *pk_macros);
-            std::string genObservationBlock(PharmML::Model *model);
+            std::string genRandomVariableDefinitionBlock(pharmmlcpp::VariabilityLevel *level, std::vector<pharmmlcpp::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
+            std::string genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
+            std::string genModelPredictionBlock(pharmmlcpp::StructuralModel *structuralModel);
+            std::string genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros);
+            std::string genObservationBlock(pharmmlcpp::Model *model);
 
-            std::string genMdlObj(PharmML::Model *model);
+            std::string genMdlObj(pharmmlcpp::Model *model);
             std::string genTaskObj();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);

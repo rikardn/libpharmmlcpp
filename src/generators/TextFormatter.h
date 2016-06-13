@@ -22,7 +22,7 @@
 #include <sstream>
 #include <vector>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     std::string formatVector(std::vector<std::string> vector, std::string prefix, std::string quote = "'", int pre_indent = 0);
 

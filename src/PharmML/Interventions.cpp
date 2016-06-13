@@ -19,7 +19,7 @@
 #include <iostream>
 #include <AST/AstTransformation.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // TODO: Maybe move this somewhere? Variable.cpp (this is a reference, however)?
     // TODO: Maybe the name can be changed to something more general if needed
@@ -76,9 +76,9 @@ namespace PharmML
         xml::Node symbref = this->context->getSingleElement(dose, "./design:DoseAmount/ct:SymbRef");
         xml::Node mapping = this->context->getSingleElement(dose, "./design:DoseAmount/design:TargetMapping");
         if (symbref.exists()) {
-            this->target_symbref = new PharmML::SymbRef(symbref);
+            this->target_symbref = new pharmmlcpp::SymbRef(symbref);
         } else if (mapping.exists()) {
-            this->target_mapping = new PharmML::TargetMapping(this->context, mapping);
+            this->target_mapping = new pharmmlcpp::TargetMapping(this->context, mapping);
         }
 
         // Get dose times/steady state
@@ -187,7 +187,7 @@ namespace PharmML
     }
 
     // IndividualAdministration class
-    IndividualAdministration::IndividualAdministration(PharmML::PharmMLContext *context, xml::Node node) {
+    IndividualAdministration::IndividualAdministration(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
@@ -203,21 +203,21 @@ namespace PharmML
         // Get column mappings
         std::vector<xml::Node> map_nodes = this->context->getElements(node, "./design:ColumnMapping");
         for (xml::Node map_node : map_nodes) {
-            PharmML::ColumnMapping *map = new PharmML::ColumnMapping(this->context, map_node);
+            pharmmlcpp::ColumnMapping *map = new pharmmlcpp::ColumnMapping(this->context, map_node);
             this->columnMappings.push_back(map);
         }
 
         // Get dataset
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
-        PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
+        pharmmlcpp::Dataset *ds = new pharmmlcpp::Dataset(this->context, ds_node);
         this->dataset = ds;
 
         // Check that all individual administrations have an independent variable and a dose column
-        PharmML::DataColumn *idv_col = ds->getIdvColumn();
+        pharmmlcpp::DataColumn *idv_col = ds->getIdvColumn();
         if (!idv_col) {     // No idv column was found
             this->context->logger.error("Missing idv column in IndividualAdministration", this);
         }
-        PharmML::DataColumn *dose_col = ds->getColumnFromType("dose");
+        pharmmlcpp::DataColumn *dose_col = ds->getColumnFromType("dose");
         if (!dose_col) {
             this->context->logger.error("Missing dose column in IndividualAdministration", this);
         }
@@ -340,14 +340,14 @@ namespace PharmML
         // Get administrations (treatments)
         std::vector<xml::Node> adm_nodes = this->context->getElements(node, "./design:Administration");
         for (xml::Node node : adm_nodes) {
-            PharmML::Administration *adm = new PharmML::Administration(this->context, node);
+            pharmmlcpp::Administration *adm = new pharmmlcpp::Administration(this->context, node);
             this->administrations.push_back(adm);
         }
 
         // Get individual administrations (time-dependent administration information on subject level)
         std::vector<xml::Node> ind_adm_nodes = this->context->getElements(node, "./design:IndividualAdministration");
         for (xml::Node node : ind_adm_nodes) {
-            PharmML::IndividualAdministration *adm = new PharmML::IndividualAdministration(this->context, node);
+            pharmmlcpp::IndividualAdministration *adm = new pharmmlcpp::IndividualAdministration(this->context, node);
             this->individualAdministrations.push_back(adm);
         }
 

@@ -20,7 +20,7 @@
 #include <visitors/SymbolSortVisitor.h>
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     SymbolSet::SymbolSet() {
     }

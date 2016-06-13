@@ -33,21 +33,21 @@ namespace CPharmML
     {
         public:
             // Construct with PopulationParameter/Correlation as base
-            PopulationParameter(PharmML::PopulationParameter *populationParameter);
-            PopulationParameter(PharmML::Correlation *correlation);
+            PopulationParameter(pharmmlcpp::PopulationParameter *populationParameter);
+            PopulationParameter(pharmmlcpp::Correlation *correlation);
 
             // Add PharmML objects for consolidation with PopulationParameter
-            void addCorrelation(PharmML::Correlation *corr);
-            void addRandomVariable(PharmML::RandomVariable *randomVariable);
-            void addIndividualParameter(PharmML::IndividualParameter *individualParameter);
-            void addParameterEstimation(PharmML::ParameterEstimation *parameterEstimation);
+            void addCorrelation(pharmmlcpp::Correlation *corr);
+            void addRandomVariable(pharmmlcpp::RandomVariable *randomVariable);
+            void addIndividualParameter(pharmmlcpp::IndividualParameter *individualParameter);
+            void addParameterEstimation(pharmmlcpp::ParameterEstimation *parameterEstimation);
 
             // Get PharmML objects used to consolidate
-            PharmML::PopulationParameter *getPopulationParameter();
-            std::vector<PharmML::RandomVariable *> getRandomVariables();
-            std::vector<PharmML::IndividualParameter *> getIndividualParameters();
-            PharmML::ParameterEstimation *getParameterEstimation();
-            PharmML::Correlation *getCorrelation();
+            pharmmlcpp::PopulationParameter *getPopulationParameter();
+            std::vector<pharmmlcpp::RandomVariable *> getRandomVariables();
+            std::vector<pharmmlcpp::IndividualParameter *> getIndividualParameters();
+            pharmmlcpp::ParameterEstimation *getParameterEstimation();
+            pharmmlcpp::Correlation *getCorrelation();
 
             // Add attributes
             void addDistributionName(std::string name);
@@ -64,11 +64,11 @@ namespace CPharmML
 
         private:
             // PharmML objects used to consolidate
-            PharmML::PopulationParameter *populationParameter = nullptr;
-            PharmML::Correlation *correlation = nullptr;
-            std::vector<PharmML::RandomVariable *> randomVariables;
-            std::vector<PharmML::IndividualParameter *> individualParameters;
-            PharmML::ParameterEstimation *parameterEstimation = nullptr;
+            pharmmlcpp::PopulationParameter *populationParameter = nullptr;
+            pharmmlcpp::Correlation *correlation = nullptr;
+            std::vector<pharmmlcpp::RandomVariable *> randomVariables;
+            std::vector<pharmmlcpp::IndividualParameter *> individualParameters;
+            pharmmlcpp::ParameterEstimation *parameterEstimation = nullptr;
 
             bool variabilityParameter = false;
             std::unordered_set<std::string> distNames;
@@ -79,18 +79,18 @@ namespace CPharmML
     class PopulationParameters
     {
         public:
-            PopulationParameters(std::vector<PharmML::PopulationParameter *> populationParameters, std::vector<PharmML::Correlation *> correlations);
-            void addRandomVariables(std::vector<PharmML::RandomVariable *> randomVariables);
-            void addIndividualParameters(std::vector<PharmML::IndividualParameter *> individualParameters);
-            void addEstimationStep(PharmML::EstimationStep *estimationStep);
-            void addOptimalDesignStep(PharmML::OptimalDesignStep *optimalDesignStep);
+            PopulationParameters(std::vector<pharmmlcpp::PopulationParameter *> populationParameters, std::vector<pharmmlcpp::Correlation *> correlations);
+            void addRandomVariables(std::vector<pharmmlcpp::RandomVariable *> randomVariables);
+            void addIndividualParameters(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
+            void addEstimationStep(pharmmlcpp::EstimationStep *estimationStep);
+            void addOptimalDesignStep(pharmmlcpp::OptimalDesignStep *optimalDesignStep);
 
             std::vector<PopulationParameter *> getPopulationParameters();
-            std::vector<PopulationParameter *> getPopulationParameters(std::vector<PharmML::Correlation *> correlations);
+            std::vector<PopulationParameter *> getPopulationParameters(std::vector<pharmmlcpp::Correlation *> correlations);
 
         private:
             std::vector<PopulationParameter *> populationParameters;
-            void addParameterEstimation(std::vector<PharmML::ParameterEstimation *> params_est);
+            void addParameterEstimation(std::vector<pharmmlcpp::ParameterEstimation *> params_est);
     };
 }
 

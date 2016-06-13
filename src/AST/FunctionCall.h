@@ -23,7 +23,7 @@
 #include "AstNode.h"
 #include "symbols/Symbol.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class FunctionCall : public AstNode
     {

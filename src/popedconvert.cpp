@@ -23,7 +23,7 @@
 #include <symbols/PopulationParameter.h>
 #include <generators/PopED/PopEDGenerator.h>
 
-using namespace PharmML;
+using namespace pharmmlcpp;
 
 
 void convert_pharmml_poped(const char *filename)

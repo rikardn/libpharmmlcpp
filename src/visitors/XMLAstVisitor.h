@@ -34,7 +34,7 @@
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class XMLAstVisitor : public AstNodeVisitor
     {

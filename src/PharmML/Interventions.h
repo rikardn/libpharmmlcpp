@@ -33,7 +33,7 @@
 
 #include <PharmML/ColumnMapping.h> // TODO: Consider (for TargetMapping class; separate src file?)
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // TODO: Maybe move this somewhere?
     class SteadyStateParameter : public AstNode
@@ -46,7 +46,7 @@ namespace PharmML
             void accept(AstNodeVisitor *visitor);
 
         protected:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
 
         private:
             AstNode *assignment = nullptr;
@@ -64,8 +64,8 @@ namespace PharmML
             std::string getTargetType();
             AstNode *getAmount();
             std::vector<AstNode *> getAmountAsVector();
-            PharmML::TargetMapping *getTargetMapping();
-            PharmML::SymbRef *getTargetSymbRef();
+            pharmmlcpp::TargetMapping *getTargetMapping();
+            pharmmlcpp::SymbRef *getTargetSymbRef();
             AstNode *getTimes();
             std::vector<AstNode *> getTimesAsVector();
             AstNode *getSteady();
@@ -76,12 +76,12 @@ namespace PharmML
             void accept(ObjectVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string type;
             std::string target_type;
             AstNode *amount = nullptr;
-            PharmML::SymbRef *target_symbref = nullptr;
-            PharmML::TargetMapping *target_mapping = nullptr;
+            pharmmlcpp::SymbRef *target_symbref = nullptr;
+            pharmmlcpp::TargetMapping *target_mapping = nullptr;
             AstNode *times = nullptr;
             AstNode *steady = nullptr;
             AstNode *duration = nullptr;
@@ -96,14 +96,14 @@ namespace PharmML
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
             ObjectRef *getOidRef();
-            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
             Dataset *getDataset();
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             ObjectRef *oidRef;
-            std::vector<PharmML::ColumnMapping *> columnMappings;
+            std::vector<pharmmlcpp::ColumnMapping *> columnMappings;
             Dataset *dataset;
     };
 
@@ -152,9 +152,9 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::Administration *> administrations;
-            std::vector<PharmML::IndividualAdministration *> individualAdministrations;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::Administration *> administrations;
+            std::vector<pharmmlcpp::IndividualAdministration *> individualAdministrations;
             std::vector<InterventionsCombination *> interventionsCombinations;
     };
 }

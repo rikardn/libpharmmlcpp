@@ -17,7 +17,7 @@
 
 #include "XMLAstVisitor.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     void XMLAstVisitor::setValue(xml::Node node) {

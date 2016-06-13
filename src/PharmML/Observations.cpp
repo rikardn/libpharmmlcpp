@@ -18,7 +18,7 @@
 #include "Observations.h"
 #include <AST/AstTransformation.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Observation class
     Observation::Observation(PharmMLContext *context, xml::Node node) {
@@ -93,11 +93,11 @@ namespace PharmML
         return AstTransformation::toVector(this->times);
     }
 
-    std::vector<PharmML::SymbRef *> Observation::getContinuousVariables() {
+    std::vector<pharmmlcpp::SymbRef *> Observation::getContinuousVariables() {
         return this->continuousVariables;
     }
 
-    std::vector<PharmML::SymbRef *> Observation::getDiscreteVariables() {
+    std::vector<pharmmlcpp::SymbRef *> Observation::getDiscreteVariables() {
         return this->discreteVariables;
     }
 
@@ -110,7 +110,7 @@ namespace PharmML
     }
 
     // IndividualObservations class
-    IndividualObservations::IndividualObservations(PharmML::PharmMLContext *context, xml::Node node) {
+    IndividualObservations::IndividualObservations(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);
@@ -127,11 +127,11 @@ namespace PharmML
 
         // Get dataset
         xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
-        PharmML::Dataset *ds = new PharmML::Dataset(this->context, ds_node);
+        pharmmlcpp::Dataset *ds = new pharmmlcpp::Dataset(this->context, ds_node);
         this->dataset = ds;
 
         // Check that the individual observation has an independent variable
-        PharmML::DataColumn *col = ds->getIdvColumn();
+        pharmmlcpp::DataColumn *col = ds->getIdvColumn();
         if (!col) {     // No idv column was found
             this->context->logger.error("Missing idv column in IndividualObservations", this);
             // FIXME: What to do here?

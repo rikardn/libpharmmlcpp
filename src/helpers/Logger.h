@@ -21,7 +21,7 @@
 #include <string>
 #include <PharmML/PharmMLSection.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Logger
     {

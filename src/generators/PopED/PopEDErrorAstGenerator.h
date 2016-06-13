@@ -37,7 +37,7 @@
 #include <generators/PopED/PopEDSymbols.h>
 
 
-namespace PharmML
+namespace pharmmlcpp
 {
     /*  A special PopED generator to generate the special MDL error models separately.
      *  proportionalError needs to have the proportional argument set to one.

@@ -17,7 +17,7 @@
 
 #include "Constant.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Null value (example usage: missing otherwise piece)
     void NullValue::accept(AstNodeVisitor *visitor) {

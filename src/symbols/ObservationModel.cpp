@@ -18,7 +18,7 @@
 #include "ObservationModel.h"
 #include <symbols/SymbolGathering.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     ObservationModel::ObservationModel(PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
@@ -61,7 +61,7 @@ namespace PharmML
                     // Get transformation parameters (if available)
                     std::vector<xml::Node> trans_params = this->context->getElements(trans_node, "./ct:Parameter");
                     for (xml::Node trans_param : trans_params) {
-                        PharmML::AstNode *param = this->context->factory.create(trans_param.getChild());
+                        pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
                         this->transformationParameters.push_back(param);
                     }
                 }
@@ -101,7 +101,7 @@ namespace PharmML
                         // Get transformation parameters (if available)
                         std::vector<xml::Node> trans_params = this->context->getElements(trans_node, "./ct:Parameter");
                         for (xml::Node trans_param : trans_params) {
-                            PharmML::AstNode *param = this->context->factory.create(trans_param.getChild());
+                            pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
                             this->transformationParameters.push_back(param);
                         }
                     }
@@ -112,7 +112,7 @@ namespace PharmML
                     // Get variablitiy references
                     std::vector<xml::Node> var_ref_nodes = this->context->getElements(general_node, "./ct:VariabilityReference");
                     for (xml::Node var_ref_node : var_ref_nodes) {
-                        PharmML::VariabilityReference *varRef = new VariabilityReference(this->context, var_ref_node);
+                        pharmmlcpp::VariabilityReference *varRef = new VariabilityReference(this->context, var_ref_node);
                         this->variabilityReferences.push_back(varRef);
                     }
 
@@ -193,7 +193,7 @@ namespace PharmML
         return this->generalAssignment;
     }
 
-    std::vector<PharmML::VariabilityReference *> ObservationModel::getVariabilityReferences() {
+    std::vector<pharmmlcpp::VariabilityReference *> ObservationModel::getVariabilityReferences() {
         return this->variabilityReferences;
     }
 

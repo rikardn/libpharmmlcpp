@@ -17,7 +17,7 @@
 
 #include "FunctionCall.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void FunctionCall::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);

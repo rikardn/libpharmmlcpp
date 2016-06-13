@@ -17,7 +17,7 @@
 
 #include "IndependentVariable.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     IndependentVariable::IndependentVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;

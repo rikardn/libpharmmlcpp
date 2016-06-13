@@ -17,7 +17,7 @@
 
 #include "RPharmMLGenerator.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // private
     void RPharmMLGenerator::setValue(std::string str) {
@@ -135,9 +135,9 @@ namespace PharmML
         TextFormatter form;
         form.openVector(node->getSymbId() + " <- list()", 0, ", ");
 
-        std::vector<PharmML::VariabilityReference *> var_refs = node->getVariabilityReferences();
+        std::vector<pharmmlcpp::VariabilityReference *> var_refs = node->getVariabilityReferences();
         form.openVector("variability_references=c()", 0, ", ");
-        for (PharmML::VariabilityReference *var_ref : var_refs) {
+        for (pharmmlcpp::VariabilityReference *var_ref : var_refs) {
             form.add("'" + this->accept(var_ref->getLevelReference()) + "'");
         }
         form.closeVector();

@@ -25,15 +25,15 @@
 #include "VariabilityLevel.h"
 #include <PharmML/ModellingSteps.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class RandomVariable : public Symbol
     {
         public:
-            RandomVariable(PharmML::PharmMLContext *context, xml::Node node);
+            RandomVariable(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::vector<VariabilityReference *> getVariabilityReferences();
-            PharmML::Distribution *getDistribution();
+            pharmmlcpp::Distribution *getDistribution();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
@@ -42,7 +42,7 @@ namespace PharmML
         
         private:
             std::vector<VariabilityReference *> variabilityReferences;
-            PharmML::Distribution *Distribution;
+            pharmmlcpp::Distribution *Distribution;
     };
 }
 

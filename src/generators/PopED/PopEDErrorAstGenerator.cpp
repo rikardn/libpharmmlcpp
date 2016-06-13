@@ -21,7 +21,7 @@
 #include <generators/PopED/PopEDSymbols.h>
 #include <generators/PopED/PopEDErrorAstGenerator.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void PopEDErrorAstGenerator::visit(FunctionCall *node) {
         node->getFunction()->accept(this);

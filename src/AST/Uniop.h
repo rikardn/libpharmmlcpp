@@ -22,7 +22,7 @@
 #include <AST/AstNode.h>
 #include <visitors/AstNodeVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Uniop : public AstNode
     {

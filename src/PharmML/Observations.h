@@ -30,7 +30,7 @@
 #include <visitors/ObjectVisitor.h>
 //~ #include "ExternalDataset.h" // Check comments in this file
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Observation : public Object, public PharmMLSection
     {
@@ -42,36 +42,36 @@ namespace PharmML
             AstNode *getNumber();
             AstNode *getTimes();
             std::vector<AstNode *> getTimesAsVector();
-            std::vector<PharmML::SymbRef *> getContinuousVariables();
-            std::vector<PharmML::SymbRef *> getDiscreteVariables();
+            std::vector<pharmmlcpp::SymbRef *> getContinuousVariables();
+            std::vector<pharmmlcpp::SymbRef *> getDiscreteVariables();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             ObjectRef *oidRef = nullptr;
             AstNode *number = nullptr;
             AstNode *times = nullptr;
-            std::vector<PharmML::SymbRef *> continuousVariables;
-            std::vector<PharmML::SymbRef *> discreteVariables;
+            std::vector<pharmmlcpp::SymbRef *> continuousVariables;
+            std::vector<pharmmlcpp::SymbRef *> discreteVariables;
     };
 
     // IndividualObservations class
     class IndividualObservations : public Object, public PharmMLSection
     {
         public:
-            IndividualObservations(PharmML::PharmMLContext *context, xml::Node node);
+            IndividualObservations(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
             xml::Node xml();
-            std::vector<PharmML::ColumnMapping *> getColumnMappings();
+            std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
             Dataset *getDataset();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
-            std::vector<PharmML::ColumnMapping *> columnMappings;
+            pharmmlcpp::PharmMLContext *context;
+            std::vector<pharmmlcpp::ColumnMapping *> columnMappings;
             Dataset *dataset;
     };
 
@@ -87,7 +87,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::vector<std::string> oidRefs;
             AstNode *relative = nullptr;
@@ -107,7 +107,7 @@ namespace PharmML
             void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             std::vector<Variable *> designParameters;
             std::vector<Observation *> simulationObservations;
             std::vector<IndividualObservations *> datasetObservations;

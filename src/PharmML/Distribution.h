@@ -24,7 +24,7 @@
 #include <AST/symbols.h>
 #include <visitors/PharmMLVisitor.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class Distribution
     {
@@ -32,13 +32,13 @@ namespace PharmML
             Distribution(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getName();
-            std::vector<PharmML::DistributionParameter *> getDistributionParameters();
-            void accept(PharmML::PharmMLVisitor *visitor);
+            std::vector<pharmmlcpp::DistributionParameter *> getDistributionParameters();
+            void accept(pharmmlcpp::PharmMLVisitor *visitor);
 
         private:
             PharmMLContext *context;
             std::string name;
-            std::vector<PharmML::DistributionParameter *> parameters;
+            std::vector<pharmmlcpp::DistributionParameter *> parameters;
     };
 }
 

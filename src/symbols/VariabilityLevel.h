@@ -23,12 +23,12 @@
 #include <symbols/Symbol.h>
 #include <AST/symbols.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     class VariabilityLevel : public Symbol
     {
         public:
-            VariabilityLevel(PharmML::PharmMLContext *context, xml::Node node);
+            VariabilityLevel(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             std::string getName();
             bool isReferenceLevel();
@@ -46,7 +46,7 @@ namespace PharmML
     class VariabilityReference : public Referer
     {
         public:
-            VariabilityReference(PharmML::PharmMLContext *context, xml::Node node);
+            VariabilityReference(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             SymbRef *getLevelReference();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
@@ -54,7 +54,7 @@ namespace PharmML
             //~ void accept(AstNodeVisitor *visitor);
         
         private:
-            PharmML::PharmMLContext *context;
+            pharmmlcpp::PharmMLContext *context;
             SymbRef *levelReference;
             AstNode *randomEffectsMapping = nullptr;
     };

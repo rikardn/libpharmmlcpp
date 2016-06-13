@@ -18,7 +18,7 @@
 #include <iostream>
 #include "Binop.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     void Binop::setLeft(AstNode *child) {
         this->left = child;

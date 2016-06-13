@@ -17,10 +17,10 @@
 
 #include "Dataset.h"
 
-namespace PharmML
+namespace pharmmlcpp
 {
     // Class HeaderDefinition (single header specification of dataset)
-    HeaderDefinition::HeaderDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+    HeaderDefinition::HeaderDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -53,7 +53,7 @@ namespace PharmML
     }
 
     // Class ColumnDefinition (single column specification of dataset)
-    ColumnDefinition::ColumnDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+    ColumnDefinition::ColumnDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -102,7 +102,7 @@ namespace PharmML
     }
 
     // Class DatasetDefinition (header/column specifications of dataset)
-    DatasetDefinition::DatasetDefinition(PharmML::PharmMLContext *context, xml::Node node) {
+    DatasetDefinition::DatasetDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -168,7 +168,7 @@ namespace PharmML
     }
 
     // class ExternalFile (data is stored externally)
-    ExternalFile::ExternalFile(PharmML::PharmMLContext *context, xml::Node node) {
+    ExternalFile::ExternalFile(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->context = context;
         this->parse(node);
     }
@@ -220,7 +220,7 @@ namespace PharmML
     // Class DataColumn (single column with its definition)
     // Preliminary class (forced conversion of all scalars into AstNode's)
     // TODO: Improve DataColumn data structure typing
-    DataColumn::DataColumn(PharmML::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition) {
+    DataColumn::DataColumn(pharmmlcpp::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition) {
         this->context = context;
         this->definition = definition;
         this->parse(table_node);
@@ -261,7 +261,7 @@ namespace PharmML
     }
 
     // Class Dataset (top-level of above)
-    Dataset::Dataset(PharmML::PharmMLContext *context, xml::Node node) {
+    Dataset::Dataset(pharmmlcpp::PharmMLContext *context, xml::Node node) {
         this->setXMLNode(node);
         this->context = context;
         this->parse(node);

@@ -18,7 +18,7 @@
 #include "RandomVariable.h"
 #include <visitors/AstAnalyzer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     RandomVariable::RandomVariable(PharmMLContext *context, xml::Node node) {
         this->context = context;
@@ -29,12 +29,12 @@ namespace PharmML
         this->Symbol::parse(node);
         std::vector<xml::Node> ref_nodes = this->context->getElements(node, "./ct:VariabilityReference");
         for (xml::Node ref_node : ref_nodes) {
-            PharmML::VariabilityReference *var_ref = new VariabilityReference(this->context, ref_node);
+            pharmmlcpp::VariabilityReference *var_ref = new VariabilityReference(this->context, ref_node);
             this->variabilityReferences.push_back(var_ref);
         }
         xml::Node dist_node = this->context->getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
-            PharmML::Distribution *distribution = new PharmML::Distribution(context, dist_node.getChild());
+            pharmmlcpp::Distribution *distribution = new pharmmlcpp::Distribution(context, dist_node.getChild());
             this->Distribution = distribution;
         }
     }
@@ -43,7 +43,7 @@ namespace PharmML
         return this->variabilityReferences;
     }
 
-    PharmML::Distribution *RandomVariable::getDistribution() {
+    pharmmlcpp::Distribution *RandomVariable::getDistribution() {
         return this->Distribution;
     }
 

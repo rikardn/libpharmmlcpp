@@ -22,7 +22,7 @@
 #include <iostream>
 #include <visitors/AstAnalyzer.h>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     PopEDObjects::PopEDObjects() {
         this->xt_formatter.openVector("xt = list()", 1, ", ");

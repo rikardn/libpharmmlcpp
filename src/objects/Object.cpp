@@ -18,7 +18,7 @@
 #include "Object.h"
 #include <iostream>
 
-namespace PharmML
+namespace pharmmlcpp
 {
     std::string Object::getOid() {
         return this->oid;

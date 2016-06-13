@@ -40,12 +40,12 @@ namespace pharmmlcpp
             PharmML(const char *filename);
             ~PharmML();
             void write(std::string filename);
-            pharmmlcpp::IndependentVariable *getIndependentVariable();
+            IndependentVariable *getIndependentVariable();
             std::vector<pharmmlcpp::FunctionDefinition *> getFunctionDefinitions();
-            FunctionDefinition *resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall);
-            pharmmlcpp::ModelDefinition *getModelDefinition();
-            pharmmlcpp::TrialDesign *getTrialDesign();
-            pharmmlcpp::ModellingSteps *getModellingSteps();
+            FunctionDefinition *resolveFunctionCall(FunctionCall *functionCall);
+            ModelDefinition *getModelDefinition();
+            TrialDesign *getTrialDesign();
+            ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
             SymbolNamer *getSymbolNamer();
@@ -54,13 +54,13 @@ namespace pharmmlcpp
 
         private:
             PharmMLContext *context;
-            pharmmlcpp::IndependentVariable *IndependentVariable = nullptr;
-            std::vector<pharmmlcpp::FunctionDefinition *> FunctionDefinitions;
-            pharmmlcpp::ModelDefinition *ModelDefinition;
-            pharmmlcpp::TrialDesign *TrialDesign = nullptr;
-            pharmmlcpp::ModellingSteps *ModellingSteps = nullptr;
+            pharmmlcpp::IndependentVariable *independentVariable = nullptr;
+            std::vector<FunctionDefinition *> functionDefinitions;
+            ModelDefinition *modelDefinition;
+            TrialDesign *trialDesign = nullptr;
+            ModellingSteps *modellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
-            pharmmlcpp::SymbolSet allSymbols;
+            SymbolSet allSymbols;
             std::unordered_set<pharmmlcpp::Object *> allObjects;
             SymbolNamer *symbolNamer;
             void parse(xml::Node node);

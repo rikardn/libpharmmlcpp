@@ -31,27 +31,27 @@ namespace pharmmlcpp
     void PharmML::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
-            this->IndependentVariable = new pharmmlcpp::IndependentVariable(this->context, iv);
+            this->independentVariable = new IndependentVariable(this->context, iv);
         }
 
         xml::Node mdef_node = this->context->getSingleElement(node, "/x:PharmML/mdef:ModelDefinition");
         if (mdef_node.exists()) {
-            this->ModelDefinition = new pharmmlcpp::ModelDefinition(this->context, mdef_node);
+            this->modelDefinition = new ModelDefinition(this->context, mdef_node);
         }
 
         std::vector<xml::Node> function_nodes = this->context->getElements(node, "/x:PharmML/ct:FunctionDefinition");
         for (xml::Node n : function_nodes) {
-            this->FunctionDefinitions.push_back(new pharmmlcpp::FunctionDefinition(this->context, n));
+            this->functionDefinitions.push_back(new FunctionDefinition(this->context, n));
         }
 
         xml::Node design_node = this->context->getSingleElement(node, "/x:PharmML/design:TrialDesign");
         if (design_node.exists()) {
-            this->TrialDesign = new pharmmlcpp::TrialDesign(this->context, design_node);
+            this->trialDesign = new TrialDesign(this->context, design_node);
         }
 
         xml::Node msteps_node = this->context->getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
         if (msteps_node.exists()) {
-            this->ModellingSteps = new pharmmlcpp::ModellingSteps(this->context, msteps_node);
+            this->modellingSteps = new ModellingSteps(this->context, msteps_node);
         }
 
         // TODO: This an be moved into postParse when the consolidator call below is removed
@@ -70,7 +70,7 @@ namespace pharmmlcpp
          * which in turn uses names of refered Symbol's. Guess who sets SymbRef's? The consolidator, after XML
          * read and object construction... I.e., postParse() CANNOT be called in constructor of PKMacros.
          * This needs a good solution. Quickly. */
-        pharmmlcpp::PKMacros *pk_macros = this->ModelDefinition->getStructuralModel()->getPKMacros();
+        PKMacros *pk_macros = this->modelDefinition->getStructuralModel()->getPKMacros();
         if (pk_macros) {
             pk_macros->postParse();
             this->setupPKMacros();
@@ -86,15 +86,15 @@ namespace pharmmlcpp
     }
 
     pharmmlcpp::IndependentVariable *PharmML::getIndependentVariable() {
-        return this->IndependentVariable;
+        return this->independentVariable;
     }
 
     std::vector<pharmmlcpp::FunctionDefinition *> PharmML::getFunctionDefinitions() {
-        return this->FunctionDefinitions;
+        return this->functionDefinitions;
     }
 
     pharmmlcpp::FunctionDefinition *PharmML::resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall) {
-        for (pharmmlcpp::FunctionDefinition *FunctionDefinition : this->FunctionDefinitions) {
+        for (FunctionDefinition *FunctionDefinition : this->functionDefinitions) {
             if (functionCall->getFunction()->getSymbol() == FunctionDefinition) {
                 return FunctionDefinition;
             }
@@ -103,15 +103,15 @@ namespace pharmmlcpp
     }
 
     pharmmlcpp::ModelDefinition *PharmML::getModelDefinition() {
-        return this->ModelDefinition;
+        return this->modelDefinition;
     }
 
     pharmmlcpp::TrialDesign *PharmML::getTrialDesign() {
-        return this->TrialDesign;
+        return this->trialDesign;
     }
 
     pharmmlcpp::ModellingSteps *PharmML::getModellingSteps() {
-        return this->ModellingSteps;
+        return this->modellingSteps;
     }
 
     CPharmML::Consolidator *PharmML::getConsolidator() {
@@ -145,8 +145,8 @@ namespace pharmmlcpp
         }
         mdef->getObservationModel()->gatherSymbols(gathering);
         gathering.globalBlock();
-        if (this->IndependentVariable) {
-            gathering.addSymbol(this->IndependentVariable);
+        if (this->independentVariable) {
+            gathering.addSymbol(this->independentVariable);
         }
         for (FunctionDefinition *fdef : this->getFunctionDefinitions()) {
             gathering.addSymbol(fdef);
@@ -232,24 +232,24 @@ namespace pharmmlcpp
     }
 
     void PharmML::setupRefererSymbRefs(SymbolGathering &gathering) {
-        if (this->ModellingSteps) {
-            this->ModellingSteps->setupRefererSymbRefs(gathering);
+        if (this->modellingSteps) {
+            this->modellingSteps->setupRefererSymbRefs(gathering);
         }
-        this->ModelDefinition->setupRefererSymbRefs(gathering);
-        if (this->TrialDesign) {
-            this->TrialDesign->setupRefererSymbRefs(gathering);
+        this->modelDefinition->setupRefererSymbRefs(gathering);
+        if (this->trialDesign) {
+            this->trialDesign->setupRefererSymbRefs(gathering);
         }
     }
 
     void PharmML::setupTargetMappings(SymbolGathering &gathering) {
-        if (this->TrialDesign) {
-            this->TrialDesign->setupTargetMappings(gathering);
+        if (this->trialDesign) {
+            this->trialDesign->setupTargetMappings(gathering);
         }
     }
 
     void PharmML::setupTargetMappings(MacroGathering &gathering) {
-        if (this->TrialDesign) {
-            this->TrialDesign->setupTargetMappings(gathering);
+        if (this->trialDesign) {
+            this->trialDesign->setupTargetMappings(gathering);
         }
     }
 

@@ -39,7 +39,7 @@
 #include <PharmML/Arms.h>
 #include <PharmML/DesignSpaces.h>
 #include "RAstGenerator.h"
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <generators/TextFormatter.h>
 #include "RPharmMLConsolidator.h"
 
@@ -52,7 +52,7 @@ namespace pharmmlcpp
 
             std::string getValue();
 
-            std::vector<std::string> genFunctionDefinitions(Model *model);
+            std::vector<std::string> genFunctionDefinitions(PharmML *model);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;

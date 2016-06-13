@@ -20,7 +20,7 @@
 #include <iostream>
 #include <symbols/SymbolGathering.h>
 #include <PharmML/PharmMLContext.h>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 
 namespace pharmmlcpp
 {

@@ -34,11 +34,11 @@
 
 namespace pharmmlcpp
 {
-    class Model
+    class PharmML
     {
         public:
-            Model(const char *filename);
-            ~Model();
+            PharmML(const char *filename);
+            ~PharmML();
             void write(std::string filename);
             pharmmlcpp::IndependentVariable *getIndependentVariable();
             std::vector<pharmmlcpp::FunctionDefinition *> getFunctionDefinitions();

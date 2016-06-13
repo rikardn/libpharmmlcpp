@@ -43,7 +43,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ModellingSteps.h>
 #include <generators/MDL/MDLSymbols.h>
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy)
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <generators/TextFormatter.h>
 
 #include <consolidators/Consolidator.h>
@@ -75,7 +75,7 @@ namespace pharmmlcpp
             stringpair getPairValue();
             stringmap getHashValue();
 
-            std::string generateModel(Model *model);
+            std::string generateModel(PharmML *model);
 
             std::string genDataObj(ExternalDataset *ext_ds);
             std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
@@ -87,9 +87,9 @@ namespace pharmmlcpp
             std::string genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(pharmmlcpp::StructuralModel *structuralModel);
             std::string genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros);
-            std::string genObservationBlock(pharmmlcpp::Model *model);
+            std::string genObservationBlock(pharmmlcpp::PharmML *model);
 
-            std::string genMdlObj(pharmmlcpp::Model *model);
+            std::string genMdlObj(pharmmlcpp::PharmML *model);
             std::string genTaskObj();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);

@@ -68,8 +68,8 @@ namespace pharmmlcpp
     }
 
     // Generators
-    std::string MDLGenerator::generateModel(Model *model) {
-        // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
+    std::string MDLGenerator::generateModel(PharmML *model) {
+        // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on PharmML level.
 
         // Store generated objects here
         MDLObjects objects;
@@ -323,7 +323,7 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genMdlObj(pharmmlcpp::Model *model) {
+    std::string MDLGenerator::genMdlObj(pharmmlcpp::PharmML *model) {
         TextFormatter form;
 
         form.indentAdd("mdlObj {");
@@ -717,7 +717,7 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genObservationBlock(pharmmlcpp::Model *model) {
+    std::string MDLGenerator::genObservationBlock(pharmmlcpp::PharmML *model) {
         pharmmlcpp::ObservationModel *om = model->getModelDefinition()->getObservationModel();
         std::vector<pharmmlcpp::FunctionDefinition *> funcs = model->getFunctionDefinitions();
         TextFormatter form;

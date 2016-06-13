@@ -16,12 +16,12 @@
  */
 
 #include <consolidators/Consolidator.h>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <iostream>
 
 namespace CPharmML
 {
-    Consolidator::Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::Model *model) {
+    Consolidator::Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::PharmML *model) {
         this->context = context;
         this->logger = std::make_shared<pharmmlcpp::Logger>("Post");
 
@@ -31,7 +31,7 @@ namespace CPharmML
         this->consolidateVariabilityModels(model);
     }
 
-    void Consolidator::consolidatePopulationParameters(pharmmlcpp::Model *model) {
+    void Consolidator::consolidatePopulationParameters(pharmmlcpp::PharmML *model) {
         // Consolidate PharmML PopulationParameter's and Correlation's into a wrapping object (with convenience functions)
         if (!model->getModelDefinition()->getParameterModel()) {
             return;
@@ -63,7 +63,7 @@ namespace CPharmML
         this->populationParameters.push_back(cpop_params);
     }
 
-    void Consolidator::consolidateCovariates(pharmmlcpp::Model *model) {
+    void Consolidator::consolidateCovariates(pharmmlcpp::PharmML *model) {
         if (!model->getModelDefinition()->getCovariateModel()) {
             return;
         }
@@ -117,7 +117,7 @@ namespace CPharmML
         }
     }
 
-    void Consolidator::consolidateVariabilityModels(pharmmlcpp::Model *model) {
+    void Consolidator::consolidateVariabilityModels(pharmmlcpp::PharmML *model) {
         if (model->getModelDefinition()->getVariabilityModels().empty()) {
             return;
         }

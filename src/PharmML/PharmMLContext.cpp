@@ -16,7 +16,7 @@
  */
 
 #include <PharmML/PharmMLContext.h>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 
 namespace pharmmlcpp
 {
@@ -35,7 +35,7 @@ namespace pharmmlcpp
         return version;
     }
 
-    PharmMLContext::PharmMLContext(std::string filename, Model *model) {
+    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) {
         this->model = model;
         this->doc.read(filename);
         this->doc.validate();

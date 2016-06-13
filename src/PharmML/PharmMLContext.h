@@ -26,19 +26,19 @@
 
 namespace pharmmlcpp
 {
-    class Model;
+    class PharmML;
     class PharmMLContext
     {
         public:
             xml::Document doc;
             Logger logger;
             AstNodeFactory factory;
-            Model *model;
+            PharmML *model;
             void validateDocument();
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
-            PharmMLContext(std::string filename, Model *model);
+            PharmMLContext(std::string filename, PharmML *model);
             ~PharmMLContext();
 
         private:

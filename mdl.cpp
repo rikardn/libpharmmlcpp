@@ -17,7 +17,7 @@
 
 #include <iostream>
 #include <exception>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <AST/Scalar.h>
 #include <symbols/Variable.h>
 #include <symbols/PopulationParameter.h>
@@ -34,9 +34,9 @@ int main(int argc, char **argv)
         filename = argv[1];
     }
 
-    Model *model;
+    PharmML *model;
     try {
-        model = new Model(filename);
+        model = new PharmML(filename);
     } 
     catch (std::exception& e) {
         std::cout << e.what() << std::endl;

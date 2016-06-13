@@ -28,7 +28,7 @@
 #include <generators/R/RPharmMLGenerator.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/ObservationModel.h>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <generators/PopED/PopEDAstGenerator.h>
 #include <generators/TextFormatter.h>
 #include <generators/R/RSymbols.h>
@@ -43,7 +43,7 @@ namespace pharmmlcpp
     class PopEDGenerator
     {
         public:
-            std::string generateModel(Model *model);
+            std::string generateModel(PharmML *model);
 
         private:
             Logger logger;
@@ -55,7 +55,7 @@ namespace pharmmlcpp
             PopEDObjects td_visitor;
             int nArms;          // Number of arms
 
-            Model *model;
+            PharmML *model;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
             std::vector<RandomVariable *> etas;
 

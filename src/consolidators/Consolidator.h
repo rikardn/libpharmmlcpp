@@ -39,7 +39,7 @@ namespace CPharmML
     class Consolidator
     {
         public:
-            Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::Model *model);
+            Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::PharmML *model);
             CPharmML::PopulationParameters *getPopulationParameters();
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
@@ -52,9 +52,9 @@ namespace CPharmML
             std::vector<CPharmML::Covariate *> covariates;
             CPharmML::VariabilityModels *variabilityModels;
 
-            void consolidatePopulationParameters(pharmmlcpp::Model *model);
-            void consolidateCovariates(pharmmlcpp::Model *model);
-            void consolidateVariabilityModels(pharmmlcpp::Model *model);
+            void consolidatePopulationParameters(pharmmlcpp::PharmML *model);
+            void consolidateCovariates(pharmmlcpp::PharmML *model);
+            void consolidateVariabilityModels(pharmmlcpp::PharmML *model);
     };
 }
 

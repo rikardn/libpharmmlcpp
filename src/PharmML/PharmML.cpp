@@ -16,19 +16,19 @@
  */
 
 #include <iostream>
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <PharmML/PharmMLContext.h>
 #include <xml/xml.h>
 #include <PharmML/TrialDesign.h>
 
 namespace pharmmlcpp
 {
-    Model::Model(const char *filename) {
+    PharmML::PharmML(const char *filename) {
         this->context = new PharmMLContext(filename, this);
         this->parse(this->context->doc.getRoot());
     }
 
-    void Model::parse(xml::Node node) {
+    void PharmML::parse(xml::Node node) {
         xml::Node iv = this->context->getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
             this->IndependentVariable = new pharmmlcpp::IndependentVariable(this->context, iv);
@@ -63,7 +63,7 @@ namespace pharmmlcpp
         this->postParse();
     }
 
-    void Model::postParse() {
+    void PharmML::postParse() {
         this->setupObjects();
 
         /* FIXME: Dirty hack to avoid crash because PKMacros::postParse() invokes name-generation of macros
@@ -77,23 +77,23 @@ namespace pharmmlcpp
         }
     }
 
-    Model::~Model() {
+    PharmML::~PharmML() {
         delete context;
     }
 
-    void Model::write(std::string filename) {
+    void PharmML::write(std::string filename) {
         this->context->doc.write(filename);
     }
 
-    pharmmlcpp::IndependentVariable *Model::getIndependentVariable() {
+    pharmmlcpp::IndependentVariable *PharmML::getIndependentVariable() {
         return this->IndependentVariable;
     }
 
-    std::vector<pharmmlcpp::FunctionDefinition *> Model::getFunctionDefinitions() {
+    std::vector<pharmmlcpp::FunctionDefinition *> PharmML::getFunctionDefinitions() {
         return this->FunctionDefinitions;
     }
 
-    pharmmlcpp::FunctionDefinition *Model::resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall) {
+    pharmmlcpp::FunctionDefinition *PharmML::resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall) {
         for (pharmmlcpp::FunctionDefinition *FunctionDefinition : this->FunctionDefinitions) {
             if (functionCall->getFunction()->getSymbol() == FunctionDefinition) {
                 return FunctionDefinition;
@@ -102,24 +102,24 @@ namespace pharmmlcpp
         return nullptr;
     }
 
-    pharmmlcpp::ModelDefinition *Model::getModelDefinition() {
+    pharmmlcpp::ModelDefinition *PharmML::getModelDefinition() {
         return this->ModelDefinition;
     }
 
-    pharmmlcpp::TrialDesign *Model::getTrialDesign() {
+    pharmmlcpp::TrialDesign *PharmML::getTrialDesign() {
         return this->TrialDesign;
     }
 
-    pharmmlcpp::ModellingSteps *Model::getModellingSteps() {
+    pharmmlcpp::ModellingSteps *PharmML::getModellingSteps() {
         return this->ModellingSteps;
     }
 
-    CPharmML::Consolidator *Model::getConsolidator() {
+    CPharmML::Consolidator *PharmML::getConsolidator() {
         return this->consolidator;
     }
 
     // Check if oid already exists
-    void Model::checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section) {
+    void PharmML::checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section) {
         if (allOids.count(object->getOid()) == 1) {
             this->context->logger.error("Duplicate oid '" + object->getOid() + "'", section);
         }
@@ -128,7 +128,7 @@ namespace pharmmlcpp
     }
 
     // Gater all Symbols and setup SymbolRefs and referencedSymbols
-    void Model::setupSymbols() {
+    void PharmML::setupSymbols() {
         SymbolGathering gathering;
         pharmmlcpp::ModelDefinition *mdef = this->getModelDefinition();
 
@@ -165,7 +165,7 @@ namespace pharmmlcpp
     }
 
     // Gather all Objects and setup ObjectRefs 
-    void Model::setupObjects() {
+    void PharmML::setupObjects() {
         std::unordered_set<std::string> allOids;
 
         pharmmlcpp::TrialDesign *td = this->getTrialDesign();
@@ -219,7 +219,7 @@ namespace pharmmlcpp
     }
 
     // Gather all referable PK macros and setup TargetMapping's mapping these
-    void Model::setupPKMacros() {
+    void PharmML::setupPKMacros() {
         // Gather all macros
         MacroGathering gathering;
         pharmmlcpp::StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
@@ -231,7 +231,7 @@ namespace pharmmlcpp
         this->setupTargetMappings(gathering);
     }
 
-    void Model::setupRefererSymbRefs(SymbolGathering &gathering) {
+    void PharmML::setupRefererSymbRefs(SymbolGathering &gathering) {
         if (this->ModellingSteps) {
             this->ModellingSteps->setupRefererSymbRefs(gathering);
         }
@@ -241,28 +241,28 @@ namespace pharmmlcpp
         }
     }
 
-    void Model::setupTargetMappings(SymbolGathering &gathering) {
+    void PharmML::setupTargetMappings(SymbolGathering &gathering) {
         if (this->TrialDesign) {
             this->TrialDesign->setupTargetMappings(gathering);
         }
     }
 
-    void Model::setupTargetMappings(MacroGathering &gathering) {
+    void PharmML::setupTargetMappings(MacroGathering &gathering) {
         if (this->TrialDesign) {
             this->TrialDesign->setupTargetMappings(gathering);
         }
     }
 
-    void Model::setSymbolNamer(SymbolNamer *namer) {
+    void PharmML::setSymbolNamer(SymbolNamer *namer) {
         this->symbolNamer = namer;
     }
             
-    SymbolNamer *Model::getSymbolNamer() {
+    SymbolNamer *PharmML::getSymbolNamer() {
         return this->symbolNamer;
     }
 
     // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
-    PharmMLContext *Model::getContext() {
+    PharmMLContext *PharmML::getContext() {
         return this->context;
     }
 }

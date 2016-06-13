@@ -32,11 +32,11 @@ namespace pharmmlcpp
 
     // public
     // Generators
-    std::string PopEDGenerator::generateModel(Model *model) {
+    std::string PopEDGenerator::generateModel(PharmML *model) {
         model->setSymbolNamer(&this->symbolNamer);      // Use the RSymbolNamer for symbol naming
         this->logger.setToolName("PopED");
         // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on Model level.
-        // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(Model *model); Maybe bad. Maybe not bad?
+        // Note that this is now also present in RPharmMLGenerator::genFunctionDefinitions(PharmML *model); Maybe bad. Maybe not bad?
         this->model = model;
         TextFormatter form(2, ' ');
 

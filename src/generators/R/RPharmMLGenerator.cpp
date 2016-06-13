@@ -35,7 +35,7 @@ namespace pharmmlcpp
     }
 
     // General R generators
-    std::vector<std::string> RPharmMLGenerator::genFunctionDefinitions(Model *model) {
+    std::vector<std::string> RPharmMLGenerator::genFunctionDefinitions(PharmML *model) {
         // Generate R code for each function definition in model
         std::vector<std::string> result;
         for (FunctionDefinition *f : model->getFunctionDefinitions()) {

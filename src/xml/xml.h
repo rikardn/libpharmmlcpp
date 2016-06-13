@@ -95,6 +95,18 @@ namespace xml
             xmlDoc *doc;        // FIXME: Move to private soon
         private:
     };
+
+    class XPathContext
+    {
+        friend class Document;
+
+        public:
+            XPathContext(Document &doc);
+            ~XPathContext();
+
+        private:
+            xmlXPathContext *xpath_context;
+    };
 }
 
 #endif

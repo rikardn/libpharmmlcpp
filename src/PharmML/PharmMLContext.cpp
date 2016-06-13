@@ -20,10 +20,6 @@
 
 namespace pharmmlcpp
 {
-    std::string PharmMLContext::buildNamespace(std::string name, std::string namespace_version) {
-        return "http://www.pharmml.org/pharmml/" + namespace_version + "/" + name;
-    }
-
     std::string PharmMLContext::getNamespaceVersion() {
         xml::Node root = this->doc.getRoot();
         std::string version = root.getAttribute("writtenVersion").getValue();
@@ -41,13 +37,13 @@ namespace pharmmlcpp
         this->doc.validate();
         this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
         std::string version = getNamespaceVersion();
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST buildNamespace("PharmML", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST buildNamespace("Maths", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST buildNamespace("CommonTypes", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST buildNamespace("Dataset", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST buildNamespace("ModelDefinition", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST buildNamespace("ModellingSteps", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST buildNamespace("TrialDesign", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST xml::buildNamespace("CommonTypes", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST xml::buildNamespace("Dataset", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST xml::buildNamespace("ModelDefinition", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST xml::buildNamespace("ModellingSteps", version).c_str());
+        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST xml::buildNamespace("TrialDesign", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 

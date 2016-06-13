@@ -33,6 +33,7 @@ namespace xml
 {
     enum class Namespace { ct, ds, math };
     std::string nsToPrefix(Namespace ns);
+    std::string buildNamespace(std::string name, std::string namespace_version);
 
     class Attribute
     {

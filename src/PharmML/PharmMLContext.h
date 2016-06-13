@@ -44,7 +44,6 @@ namespace pharmmlcpp
         private:
             xmlXPathContext *xpath_context;
 
-            std::string buildNamespace(std::string name, std::string namespace_version);
             std::string getNamespaceVersion();
     };
 }

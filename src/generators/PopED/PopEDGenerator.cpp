@@ -258,8 +258,14 @@ namespace pharmmlcpp
 
             // Dose times
             form.add("times_xt <- drop(xt)");
-            form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-            form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+            //~ form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getTimes(), "dose_times <- c()"));
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionTimes(), "infusion_dose_times <- c()"));
+            //~ form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getDoses(), "dose_amt <- c()"));
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
+            form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionDoses(), "infusion_dose_amt <- c()"));
 
             form.add("integration_start_time <- 0");
 

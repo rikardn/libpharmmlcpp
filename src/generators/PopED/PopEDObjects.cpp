@@ -100,8 +100,32 @@ namespace pharmmlcpp
         return this->doseNames;
     }
 
+    std::vector<std::string> PopEDObjects::getDoses() {
+        return this->doses;
+    }
+
+    std::vector<std::string> PopEDObjects::getBolusDoses() {
+        return this->bolus_doses;
+    }
+
+    std::vector<std::string> PopEDObjects::getInfusionDoses() {
+        return this->infusion_doses;
+    }
+
     std::vector<std::string> PopEDObjects::getTimeNames() {
         return this->timeNames;
+    }
+
+    std::vector<std::string> PopEDObjects::getTimes() {
+        return this->times;
+    }
+
+    std::vector<std::string> PopEDObjects::getBolusTimes() {
+        return this->bolus_times;
+    }
+
+    std::vector<std::string> PopEDObjects::getInfusionTimes() {
+        return this->infusion_times;
     }
 
     bool PopEDObjects::hasInfusions() {

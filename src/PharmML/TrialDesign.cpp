@@ -55,7 +55,7 @@ namespace pharmmlcpp
             this->designSpaces = new DesignSpaces(this->context, ds_node);
         }
         
-        std::vector<xml::Node> dspar_nodes = this->context->getElements(node, "./design:DesignParameter");
+        std::vector<xml::Node> dspar_nodes = this->context->getElements(node, "./mdef:DesignParameter");
         for (xml::Node dspar_node : dspar_nodes) {
             DesignParameter *dspar = new DesignParameter(this->context, dspar_node);
             this->designParameters.push_back(dspar);
@@ -101,6 +101,19 @@ namespace pharmmlcpp
         return this->designParameters;
     }
 
+    // Look through all DesignSpaces to find all parameters to be optimized
+    SymbolSet TrialDesign::getOptimizationParameters() {
+        SymbolSet parameters;
+        if (this->designSpaces) {
+            for (DesignSpace *ds : designSpaces->getDesignSpaces()) {
+                for (SymbRef *symbref : ds->getSymbRefs()) {
+                    parameters.addSymbol(symbref->getSymbol());
+                }
+            }
+        }
+        return parameters;
+    }
+
     void TrialDesign::gatherSymbols(SymbolGathering &gathering) {
         for (DesignParameter *dpar : this->designParameters) {
             gathering.addSymbol(dpar);
@@ -115,9 +128,11 @@ namespace pharmmlcpp
         if (this->getInterventions()) {
             this->getInterventions()->setupRefererSymbRefs(gathering);
         }
+        if (this->getDesignSpaces()) {
+            this->getDesignSpaces()->setupRefererSymbRefs(gathering);
+        }
         //~ this->getObservations()->gatherSymbRefs(symbolMap);
         //~ this->getArms()->gatherSymbRefs(symbolMap);
-        //~ this->getDesignSpaces()->gatherSymbRefs(symbolMap);
     }
 
     void TrialDesign::setupTargetMappings(SymbolGathering &gathering) {

@@ -43,6 +43,9 @@ namespace pharmmlcpp
             Arms *getArms();
             DesignSpaces *getDesignSpaces();
             std::vector<DesignParameter *> getDesignParameters();
+
+            SymbolSet getOptimizationParameters();
+
             void gatherSymbols(SymbolGathering &gatherer);
             void setupRefererSymbRefs(SymbolGathering &gatherer);
             void setupTargetMappings(SymbolGathering &gatherer);

@@ -45,6 +45,10 @@ namespace pharmmlcpp
         if (dosing_times.exists()) {
             this->dosingTimes = this->context->factory.create(dosing_times.getChild().getChild());
         }
+        std::vector<xml::Node> symbref_nodes = this->context->getElements(node, "./ct:SymbRef");
+        for (xml::Node symbref_node : symbref_nodes) {
+            this->symbRefs.push_back(new SymbRef(symbref_node));
+        }
     }
 
     xml::Node DesignSpace::xml() {
@@ -80,8 +84,18 @@ namespace pharmmlcpp
         return this->armRefs;
     }
 
+    std::vector<SymbRef *> DesignSpace::getSymbRefs() {
+        return this->symbRefs;
+    }
+
     AstNode *DesignSpace::getDosingTimes() {
         return this->dosingTimes;
+    }
+
+    void DesignSpace::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
+        for (SymbRef *ref : this->symbRefs) {
+            this->addSymbRef(ref, gathering, blkId);
+        }
     }
 
     void DesignSpace::accept(PharmMLVisitor *visitor) {
@@ -124,6 +138,12 @@ namespace pharmmlcpp
 
     std::vector<DesignSpace *> DesignSpaces::getDesignSpaces() {
         return this->designSpaces;
+    }
+
+    void DesignSpaces::setupRefererSymbRefs(SymbolGathering &gathering) {
+        for (DesignSpace *ds : this->designSpaces) {
+            ds->setupSymbRefs(gathering, "");
+        }
     }
 
     void DesignSpaces::accept(PharmMLVisitor *visitor) {

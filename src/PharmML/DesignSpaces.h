@@ -26,7 +26,7 @@
 
 namespace pharmmlcpp
 {
-    class DesignSpace
+    class DesignSpace : public Referer
     {
         public:
             DesignSpace(PharmMLContext *context, xml::Node node);
@@ -36,7 +36,9 @@ namespace pharmmlcpp
             std::vector<ObjectRef *> getInterventionRefs();
             std::vector<ObjectRef *> getObservationRefs();
             std::vector<ObjectRef *> getArmRefs();
+            std::vector<SymbRef *> getSymbRefs();
             AstNode *getDosingTimes();
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
         private:
@@ -45,6 +47,7 @@ namespace pharmmlcpp
             std::vector<ObjectRef *> interventionRefs;
             std::vector<ObjectRef *> observationRefs;
             std::vector<ObjectRef *> armRefs;
+            std::vector<SymbRef *> symbRefs;
             AstNode *dosingTimes = nullptr;
     };
 
@@ -56,6 +59,7 @@ namespace pharmmlcpp
             xml::Node xml();
             std::vector<pharmmlcpp::Variable *> getDesignParameters();
             std::vector<pharmmlcpp::DesignSpace *> getDesignSpaces();
+            void setupRefererSymbRefs(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:

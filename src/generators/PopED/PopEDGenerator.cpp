@@ -142,6 +142,15 @@ namespace pharmmlcpp
             }
         }
 
+        // DesignParameters used from DesignSpaces
+        TrialDesign *td = this->model->getTrialDesign();
+        if (td) {
+            SymbolSet design_params = td->getOptimizationParameters();
+            for (Symbol *symbol : design_params) {
+                form.add(symbol->getName() + "=a[" + std::to_string(index++) + "]");
+            }
+        }
+
         form.closeVector();
         form.add("return(parameters)");
         form.outdentAdd("}");

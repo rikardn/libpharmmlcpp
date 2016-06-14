@@ -80,6 +80,10 @@ namespace pharmmlcpp
         }
     }
 
+    void RSymbols::visit(DesignParameter *node) {
+        this->visit(static_cast<Variable *>(node));
+    }
+
     void RSymbols::visit(DerivativeVariable *node) {
         node->getAssignment()->accept(this->astgen);
         this->setValue("d" + node->getSymbId() + " <- " + this->astgen->getValue());

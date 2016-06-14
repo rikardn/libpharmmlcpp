@@ -53,6 +53,10 @@ namespace pharmmlcpp {
         return this->individualParameters;
     }
 
+    SymbolSet SymbolSortVisitor::getDesignParameters() {
+        return this->designParameters;
+    }
+
     void SymbolSortVisitor::visit(ObservationModel *node) { 
     }
 
@@ -79,6 +83,10 @@ namespace pharmmlcpp {
     }
 
     void SymbolSortVisitor::visit(Variable *node) {
+    }
+
+    void SymbolSortVisitor::visit(DesignParameter *node) {
+        this->designParameters.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(DerivativeVariable *node) {

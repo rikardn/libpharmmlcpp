@@ -33,6 +33,7 @@ namespace pharmmlcpp
     class RandomVariable;
     class VariabilityLevel;
     class Variable;
+    class DesignParameter;
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
@@ -54,6 +55,7 @@ namespace pharmmlcpp
             void visit(VariabilityLevel *node) override;
             void visit(IndependentVariable *node) override;
             void visit(Variable *node) override;
+            void visit(DesignParameter *node) override;
             void visit(DerivativeVariable *node) override;
             void visit(Covariate *node) override;
 

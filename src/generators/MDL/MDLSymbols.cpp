@@ -72,6 +72,11 @@ namespace pharmmlcpp
         }
     }
 
+    void MDLSymbols::visit(DesignParameter *node) {
+        this->visit(static_cast<Variable *>(node));
+    }
+
+
     void MDLSymbols::visit(DerivativeVariable *node) {
         TextFormatter form;
 

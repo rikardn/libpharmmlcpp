@@ -65,6 +65,10 @@ namespace pharmmlcpp
         this->setValue(node->getName());
     }
 
+    void PopEDSymbols::visit(DesignParameter *node) {
+        this->setValue(node->getName());
+    }
+
     void PopEDSymbols::visit(DerivativeVariable *node) {
         this->setValue(node->getName());
     }

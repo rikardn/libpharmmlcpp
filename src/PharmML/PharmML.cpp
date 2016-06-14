@@ -102,15 +102,15 @@ namespace pharmmlcpp
         return nullptr;
     }
 
-    pharmmlcpp::ModelDefinition *PharmML::getModelDefinition() {
+    ModelDefinition *PharmML::getModelDefinition() {
         return this->modelDefinition;
     }
 
-    pharmmlcpp::TrialDesign *PharmML::getTrialDesign() {
+    TrialDesign *PharmML::getTrialDesign() {
         return this->trialDesign;
     }
 
-    pharmmlcpp::ModellingSteps *PharmML::getModellingSteps() {
+    ModellingSteps *PharmML::getModellingSteps() {
         return this->modellingSteps;
     }
 
@@ -154,6 +154,10 @@ namespace pharmmlcpp
                 gathering.addSymbol(farg);
             }
         }
+        if (this->getTrialDesign()) {       // Assume global namespace for DesignParameters
+            this->getTrialDesign()->gatherSymbols(gathering);
+        }
+
 
         gathering.setupAllSymbRefs();
 

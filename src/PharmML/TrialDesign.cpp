@@ -101,6 +101,12 @@ namespace pharmmlcpp
         return this->designParameters;
     }
 
+    void TrialDesign::gatherSymbols(SymbolGathering &gathering) {
+        for (DesignParameter *dpar : this->designParameters) {
+            gathering.addSymbol(dpar);
+        }
+    }
+
     void TrialDesign::setupRefererSymbRefs(SymbolGathering &gathering) {
         std::vector<ExternalDataset *> ext_datasets = this->getExternalDatasets();
         for (ExternalDataset *ext_dataset : ext_datasets) {

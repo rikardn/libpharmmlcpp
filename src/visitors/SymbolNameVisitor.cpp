@@ -61,6 +61,10 @@ namespace pharmmlcpp {
         this->setValue(node->getSymbId());
     }
 
+    void SymbolNameVisitor::visit(DesignParameter *node) {
+        this->setValue(node->getSymbId());
+    }
+
     void SymbolNameVisitor::visit(DerivativeVariable *node) {
         this->setValue(node->getSymbId());
     }

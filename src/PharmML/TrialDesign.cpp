@@ -33,62 +33,62 @@ namespace pharmmlcpp
         std::vector<xml::Node> ext_dataset_nodes = this->context->getElements(node, "./design:ExternalDataSet");
         for (xml::Node ext_dataset_node : ext_dataset_nodes) {
             ExternalDataset* ds = new pharmmlcpp::ExternalDataset(this->context, ext_dataset_node);
-            this->ExternalDatasets.push_back(ds);
+            this->externalDatasets.push_back(ds);
         }
         xml::Node interventions_node = this->context->getSingleElement(node, "./design:Interventions");
         if (interventions_node.exists()) {
-            this->Interventions = new pharmmlcpp::Interventions(this->context, interventions_node);
+            this->interventions = new Interventions(this->context, interventions_node);
         }
 
         xml::Node observations_node = this->context->getSingleElement(node, "./design:Observations");
         if (observations_node.exists()) {
-            this->Observations = new pharmmlcpp::Observations(this->context, observations_node);
+            this->observations = new Observations(this->context, observations_node);
         }
 
         xml::Node arms_node = this->context->getSingleElement(node, "./design:Arms");
         if (arms_node.exists()) {
-            this->Arms = new pharmmlcpp::Arms(this->context, arms_node);
+            this->arms = new Arms(this->context, arms_node);
         }
 
         xml::Node ds_node = this->context->getSingleElement(node, "./design:DesignSpaces");
         if (ds_node.exists()) {
-            this->DesignSpaces = new pharmmlcpp::DesignSpaces(this->context, ds_node);
+            this->designSpaces = new DesignSpaces(this->context, ds_node);
         }
     }
 
     void TrialDesign::update() {
         xml::Node td("TrialDesign");
         td.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/TrialDesign");
-        if (this->Interventions)
-            td.addChild(this->Interventions->xml());
-        if (this->Observations)
-            td.addChild(this->Observations->xml());
-        if (this->DesignSpaces)
-            td.addChild(this->DesignSpaces->xml());
-        if (this->Arms)
-            td.addChild(this->Arms->xml());
+        if (this->interventions)
+            td.addChild(this->interventions->xml());
+        if (this->observations)
+            td.addChild(this->observations->xml());
+        if (this->designSpaces)
+            td.addChild(this->designSpaces->xml());
+        if (this->arms)
+            td.addChild(this->arms->xml());
 
         this->xml_node.replaceNode(td);
     }
 
-    std::vector<pharmmlcpp::ExternalDataset *> TrialDesign::getExternalDatasets() {
-        return this->ExternalDatasets;
+    std::vector<ExternalDataset *> TrialDesign::getExternalDatasets() {
+        return this->externalDatasets;
     }
 
-    pharmmlcpp::Interventions *TrialDesign::getInterventions() {
-        return this->Interventions;
+    Interventions *TrialDesign::getInterventions() {
+        return this->interventions;
     }
 
-    pharmmlcpp::Observations *TrialDesign::getObservations() {
-        return this->Observations;
+    Observations *TrialDesign::getObservations() {
+        return this->observations;
     }
 
-    pharmmlcpp::Arms *TrialDesign::getArms() {
-        return this->Arms;
+    Arms *TrialDesign::getArms() {
+        return this->arms;
     }
 
-    pharmmlcpp::DesignSpaces *TrialDesign::getDesignSpaces() {
-        return this->DesignSpaces;
+    DesignSpaces *TrialDesign::getDesignSpaces() {
+        return this->designSpaces;
     }
 
     void TrialDesign::setupRefererSymbRefs(SymbolGathering &gathering) {
@@ -105,13 +105,13 @@ namespace pharmmlcpp
     }
 
     void TrialDesign::setupTargetMappings(SymbolGathering &gathering) {
-        for (pharmmlcpp::ExternalDataset *ext_ds : this->ExternalDatasets) {
+        for (pharmmlcpp::ExternalDataset *ext_ds : this->externalDatasets) {
             ext_ds->setupTargetMappings(gathering);
         }
     }
 
     void TrialDesign::setupTargetMappings(MacroGathering &gathering) {
-        for (pharmmlcpp::ExternalDataset *ext_ds : this->ExternalDatasets) {
+        for (pharmmlcpp::ExternalDataset *ext_ds : this->externalDatasets) {
             ext_ds->setupTargetMappings(gathering);
         }
     }

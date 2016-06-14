@@ -36,11 +36,11 @@ namespace pharmmlcpp
             TrialDesign(pharmmlcpp::PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void update();
-            std::vector<pharmmlcpp::ExternalDataset *> getExternalDatasets();
-            pharmmlcpp::Interventions *getInterventions();
-            pharmmlcpp::Observations *getObservations();
-            pharmmlcpp::Arms *getArms();
-            pharmmlcpp::DesignSpaces *getDesignSpaces();
+            std::vector<ExternalDataset *> getExternalDatasets();
+            Interventions *getInterventions();
+            Observations *getObservations();
+            Arms *getArms();
+            DesignSpaces *getDesignSpaces();
             void setupRefererSymbRefs(SymbolGathering &gatherer);
             void setupTargetMappings(SymbolGathering &gatherer);
             void setupTargetMappings(MacroGathering &gatherer);
@@ -48,11 +48,11 @@ namespace pharmmlcpp
         private:
             pharmmlcpp::PharmMLContext *context;
             xml::Node xml_node;
-            pharmmlcpp::Interventions *Interventions = nullptr;
-            std::vector<pharmmlcpp::ExternalDataset *> ExternalDatasets;
-            pharmmlcpp::Observations *Observations = nullptr;
-            pharmmlcpp::Arms *Arms = nullptr;
-            pharmmlcpp::DesignSpaces *DesignSpaces = nullptr;
+            Interventions *interventions = nullptr;
+            std::vector<ExternalDataset *> externalDatasets;
+            Observations *observations = nullptr;
+            Arms *arms = nullptr;
+            DesignSpaces *designSpaces = nullptr;
     };
 }
 

@@ -169,6 +169,10 @@ namespace pharmmlcpp
         }
     }
 
+    void PopEDObjects::visit(InterventionCombination *object) {
+        
+    }
+
     void PopEDObjects::visit(Observation *object) {
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");

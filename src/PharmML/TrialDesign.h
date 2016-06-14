@@ -27,6 +27,7 @@
 #include "Observations.h"
 #include "Arms.h"
 #include "DesignSpaces.h"
+#include <symbols/Variable.h>
 
 namespace pharmmlcpp
 {
@@ -41,6 +42,7 @@ namespace pharmmlcpp
             Observations *getObservations();
             Arms *getArms();
             DesignSpaces *getDesignSpaces();
+            std::vector<DesignParameter *> getDesignParameters();
             void setupRefererSymbRefs(SymbolGathering &gatherer);
             void setupTargetMappings(SymbolGathering &gatherer);
             void setupTargetMappings(MacroGathering &gatherer);
@@ -53,6 +55,7 @@ namespace pharmmlcpp
             Observations *observations = nullptr;
             Arms *arms = nullptr;
             DesignSpaces *designSpaces = nullptr;
+            std::vector<DesignParameter *> designParameters;
     };
 }
 

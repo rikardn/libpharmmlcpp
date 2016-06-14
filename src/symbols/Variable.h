@@ -44,8 +44,14 @@ namespace pharmmlcpp
         public:
             Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
-            void accept(PharmMLVisitor *visitor);
-            void accept(SymbolVisitor *visitor);
+            void accept(PharmMLVisitor *visitor) override;
+            void accept(SymbolVisitor *visitor) override;
+    };
+
+    class DesignParameter : public Variable
+    {
+        public:
+            DesignParameter(PharmMLContext *context, xml::Node node) : Variable(context, node) {};
     };
 }
 

@@ -32,7 +32,7 @@ namespace pharmmlcpp
     void TrialDesign::parse(xml::Node node) {
         std::vector<xml::Node> ext_dataset_nodes = this->context->getElements(node, "./design:ExternalDataSet");
         for (xml::Node ext_dataset_node : ext_dataset_nodes) {
-            ExternalDataset* ds = new pharmmlcpp::ExternalDataset(this->context, ext_dataset_node);
+            ExternalDataset* ds = new ExternalDataset(this->context, ext_dataset_node);
             this->externalDatasets.push_back(ds);
         }
         xml::Node interventions_node = this->context->getSingleElement(node, "./design:Interventions");
@@ -53,6 +53,12 @@ namespace pharmmlcpp
         xml::Node ds_node = this->context->getSingleElement(node, "./design:DesignSpaces");
         if (ds_node.exists()) {
             this->designSpaces = new DesignSpaces(this->context, ds_node);
+        }
+        
+        std::vector<xml::Node> dspar_nodes = this->context->getElements(node, "./design:DesignParameter");
+        for (xml::Node dspar_node : dspar_nodes) {
+            DesignParameter *dspar = new DesignParameter(this->context, dspar_node);
+            this->designParameters.push_back(dspar);
         }
     }
 
@@ -89,6 +95,10 @@ namespace pharmmlcpp
 
     DesignSpaces *TrialDesign::getDesignSpaces() {
         return this->designSpaces;
+    }
+    
+    std::vector<DesignParameter *> TrialDesign::getDesignParameters() {
+        return this->designParameters;
     }
 
     void TrialDesign::setupRefererSymbRefs(SymbolGathering &gathering) {

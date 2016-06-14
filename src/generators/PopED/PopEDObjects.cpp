@@ -72,6 +72,7 @@ namespace pharmmlcpp
     std::string PopEDObjects::generateAdministration(Administration *administration) {
         std::vector<AstNode *> amounts = administration->getAmountAsVector();
         std::vector<AstNode *> times = administration->getTimesAsVector();
+        std::string type = administration->getType();
 
         if (this->doseNames.size() == 0) {      // First visit will get dose names
             for (std::vector<AstNode *>::size_type i = 1; i <= amounts.size(); i++) {
@@ -86,8 +87,21 @@ namespace pharmmlcpp
         for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
             amounts[i]->accept(&this->rast);
             formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
+            this->doses.push_back(this->rast.getValue());
+            if (type == "Bolus") {
+                this->bolus_doses.push_back(this->rast.getValue());
+            } else {
+                this->infusion_doses.push_back(this->rast.getValue());
+            }
+
             times[i]->accept(&this->rast);
             formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
+            this->times.push_back(this->rast.getValue());
+            if (type == "Bolus") {
+                this->bolus_times.push_back(this->rast.getValue());
+            } else {
+                this->infusion_times.push_back(this->rast.getValue());
+            }
         }
 
         formatter.closeVector();

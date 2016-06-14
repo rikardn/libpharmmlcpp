@@ -122,16 +122,16 @@ namespace pharmmlcpp
 
         // Declare dose/time
         int index = 1;
-        if (this->model->getTrialDesign()) {
-            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+        //~ if (this->model->getTrialDesign()) {
+            //~ std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+            //~ std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
-            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-                index += 2;
-            }
-        }
+            //~ for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                //~ form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                //~ form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                //~ index += 2;
+            //~ }
+        //~ }
 
         // Declare covariates
         SymbolSet covariates = needed_symbols.getCovariates();
@@ -260,12 +260,20 @@ namespace pharmmlcpp
             form.add("times_xt <- drop(xt)");
             //~ form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
             form.add(TextFormatter::createInlineVector(this->td_visitor.getTimes(), "dose_times <- c()"));
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionTimes(), "infusion_dose_times <- c()"));
+            if (!this->td_visitor.getBolusTimes().empty()) {
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
+            }
+            if (!this->td_visitor.getInfusionTimes().empty()) {
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionTimes(), "infusion_dose_times <- c()"));
+            }
             //~ form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
             form.add(TextFormatter::createInlineVector(this->td_visitor.getDoses(), "dose_amt <- c()"));
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionDoses(), "infusion_dose_amt <- c()"));
+            if (!this->td_visitor.getBolusDoses().empty()) {
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
+            }
+            if (!this->td_visitor.getInfusionDoses().empty()) {
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionDoses(), "infusion_dose_amt <- c()"));
+            }
 
             form.add("integration_start_time <- 0");
 
@@ -572,7 +580,7 @@ namespace pharmmlcpp
 
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
-        form.addMany(this->td_visitor.getDatabaseA());
+        //~ form.addMany(this->td_visitor.getDatabaseA());
 
 
         // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid

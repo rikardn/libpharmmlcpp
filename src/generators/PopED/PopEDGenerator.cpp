@@ -164,6 +164,24 @@ namespace pharmmlcpp
         form.indentAdd("ode_func <- function(Time, State, Pars) {");
         form.indentAdd("with(as.list(c(State, Pars)), {");
 
+        // Currently separate handling of DesignParameters
+        // Output all DesignParameters except those optimized on.
+        // FIXME: This could be reduced to only output those actually needed as per regular variables below
+        // FIXME: Currently only use DesignParametes on TrialDesign level. 
+        TrialDesign *td = this->model->getTrialDesign();
+        if (td) {
+            SymbolSet param_set;
+            SymbolSet design_params = td->getOptimizationParameters();
+            for (DesignParameter *param : td->getDesignParameters()) {
+                param_set.addSymbol(param);
+            }
+            param_set.remove(design_params);
+            for (Symbol *symbol : param_set.getOrdered()) {
+                symbol->accept(&this->r_symb);
+                form.add(this->r_symb.getValue());
+            }
+        }
+
         ObservationModel *observationModel = this->model->getModelDefinition()->getObservationModel();
 
         SymbolSet needed_symbols = observationModel->getNeededSymbols();

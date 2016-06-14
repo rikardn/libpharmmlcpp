@@ -44,6 +44,13 @@ namespace pharmmlcpp
         this->individualAdministrations = individualAdministrations;
     }
 
+    // Add an optimization parameter (to initialize in a= vector)
+    void PopEDObjects::addOptimizationParameter(DesignParameter *opt_param) {
+        // TODO: Group support? One row per group.
+        opt_param->getAssignment()->accept(&this->rast);
+        this->a_formatter.add(opt_param->getName() + "=" + this->rast.getValue());
+    }
+
     // Generates doseNames, timeNames and code from IndividualAdministration
     std::string PopEDObjects::generateIndividualAdministration(IndividualAdministration *individualAdministration) {
         Dataset *ds = individualAdministration->getDataset();
@@ -74,6 +81,7 @@ namespace pharmmlcpp
         std::vector<AstNode *> times = administration->getTimesAsVector();
         std::string type = administration->getType();
 
+        // TODO: To remove since dose amounts and names shouldn't necessarely be in a=
         if (this->doseNames.size() == 0) {      // First visit will get dose names
             for (std::vector<AstNode *>::size_type i = 1; i <= amounts.size(); i++) {
                 this->doseNames.push_back("DOSE_" + std::to_string(i) + "_AMT");
@@ -87,6 +95,7 @@ namespace pharmmlcpp
         for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
             amounts[i]->accept(&this->rast);
             formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
+            // Separate bolus and infusion doses
             this->doses.push_back(this->rast.getValue());
             if (type == "Bolus") {
                 this->bolus_doses.push_back(this->rast.getValue());
@@ -96,6 +105,7 @@ namespace pharmmlcpp
 
             times[i]->accept(&this->rast);
             formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
+            // Separate bolus and infusion times
             this->times.push_back(this->rast.getValue());
             if (type == "Bolus") {
                 this->bolus_times.push_back(this->rast.getValue());

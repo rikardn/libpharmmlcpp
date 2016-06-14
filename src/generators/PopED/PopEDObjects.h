@@ -34,6 +34,7 @@ namespace pharmmlcpp
             TextFormatter& getDatabaseXT();
             TextFormatter& getDatabaseA();
             void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
+            void addOptimizationParameter(DesignParameter *opt_param);
             std::vector<std::string> getDoseNames();
             std::vector<std::string> getDoses();
             std::vector<std::string> getBolusDoses();

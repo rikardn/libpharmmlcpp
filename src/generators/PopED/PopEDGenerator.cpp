@@ -122,6 +122,7 @@ namespace pharmmlcpp
 
         // Declare dose/time
         int index = 1;
+        // TODO: Remove since dose amounts and times shouldn't necessarily be in a=
         //~ if (this->model->getTrialDesign()) {
             //~ std::vector<std::string> time_names = this->td_visitor.getTimeNames();
             //~ std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
@@ -598,13 +599,22 @@ namespace pharmmlcpp
         // TrialDesign
         form.add("groupsize = 1");
 
+        // DesignParameters and their inits
+        // TODO: Is this the best place to add them?
+        TrialDesign *td = model->getTrialDesign();
+        if (td) {
+            SymbolSet design_params = td->getOptimizationParameters();
+            for (Symbol *symbol : design_params) {
+                this->td_visitor.addOptimizationParameter(static_cast<DesignParameter *>(symbol));
+            }
+        }
+
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
-        //~ form.addMany(this->td_visitor.getDatabaseA());
+        form.addMany(this->td_visitor.getDatabaseA());
 
 
         // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
-        TrialDesign *td = model->getTrialDesign();
         if (td) {
             DesignSpaces *ds = td->getDesignSpaces();
             if (ds) {

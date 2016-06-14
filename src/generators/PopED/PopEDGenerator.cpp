@@ -283,37 +283,30 @@ namespace pharmmlcpp
             dini_formatter.closeVector();
             form.add(dini_formatter.createString());
 
-            // Dose times
             form.add("times_xt <- drop(xt)");
-            //~ form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getTimes(), "dose_times <- c()"));
-            if (!this->td_visitor.getBolusTimes().empty()) {
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
-            }
-            if (!this->td_visitor.getInfusionTimes().empty()) {
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionTimes(), "infusion_dose_times <- c()"));
-            }
-            //~ form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
-            form.add(TextFormatter::createInlineVector(this->td_visitor.getDoses(), "dose_amt <- c()"));
-            if (!this->td_visitor.getBolusDoses().empty()) {
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
-            }
-            if (!this->td_visitor.getInfusionDoses().empty()) {
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getInfusionDoses(), "infusion_dose_amt <- c()"));
-            }
-
             form.add("integration_start_time <- 0");
 
-            // Event data
-            // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-            form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
-            form.add("time = dose_times,");
-            form.add("value = dose_amt, method = c('add'))");
-            form.closeIndent();
-            form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
+            // Only use events for bolus doses (TODO: DesignParameter names for non-fixed!)
+            if (!this->td_visitor.getBolusTimes().empty()) {
+                // Dose times
+                //~ form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
+                //~ form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
 
-            // ODE call
-            form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+                // Event data
+                // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
+                form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
+                form.add("time = bolus_dose_times,");
+                form.add("value = bolus_dose_amt, method = c('add'))");
+                form.closeIndent();
+                form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
+
+                // ODE call
+                form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+            } else {
+                form.add("out <- ode(d_ini, times, ode_func, parameters");
+            }
             form.emptyLine();
         }
 

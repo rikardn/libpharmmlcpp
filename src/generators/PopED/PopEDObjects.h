@@ -36,6 +36,7 @@ namespace pharmmlcpp
             void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
             std::vector<std::string> getDoseNames();
             std::vector<std::string> getTimeNames();
+            bool hasInfusions();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -49,6 +50,7 @@ namespace pharmmlcpp
             TextFormatter a_formatter;
             std::vector<std::string> doseNames;
             std::vector<std::string> timeNames;
+            bool has_infusions;
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
             std::string generateAdministration(Administration *administration);

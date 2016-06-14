@@ -175,7 +175,7 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Output infusion function if infusions are present
-        if (true) {
+        if (this->td_visitor.hasInfusions()) {
             form.addMany(this->InfusionFunction);
             form.emptyLine();
         }

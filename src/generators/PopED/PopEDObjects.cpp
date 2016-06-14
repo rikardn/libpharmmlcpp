@@ -27,6 +27,7 @@ namespace pharmmlcpp
     PopEDObjects::PopEDObjects() {
         this->xt_formatter.openVector("xt = list()", 1, ", ");
         this->a_formatter.openVector("a = list()", 1, ", ");
+        this->has_infusions = false;
     }
 
     TextFormatter& PopEDObjects::getDatabaseXT() {
@@ -103,6 +104,10 @@ namespace pharmmlcpp
         return this->timeNames;
     }
 
+    bool PopEDObjects::hasInfusions() {
+        return this->has_infusions;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -144,6 +149,11 @@ namespace pharmmlcpp
     }
 
     void PopEDObjects::visit(Administration *object) {
+        // Check if this contains infusion (requires infusion function output)
+        if (object->getType() == "Infusion") {
+            this->has_infusions = true;
+        }
+
         // Check if this is being refered to by an IndividualAdministration
         IndividualAdministration *found_ia = nullptr;
         for (IndividualAdministration *ia : this->individualAdministrations) {

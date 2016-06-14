@@ -74,6 +74,16 @@ namespace pharmmlcpp
             void warnOperationPropertyUnderflow(OperationProperty *prop, int min);
             void warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings);
             void warnOperationPropertyUnknown(OperationProperty *prop);
+
+            // Constants
+            const std::string InfusionFunction = R"(inf_func <- function(start,rate,amount,Time) {
+    duration = rate/amount
+    if(Time >= start && Time < (start+duration)) {
+        return(amount/duration)
+    } else {
+        return(0)
+    }
+})";
     };
 }
 

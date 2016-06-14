@@ -174,6 +174,12 @@ namespace pharmmlcpp
 
         form.emptyLine();
 
+        // Output infusion function if infusions are present
+        if (true) {
+            form.addMany(this->InfusionFunction);
+            form.emptyLine();
+        }
+
         // Derivative definitions
         std::vector<std::string> name_list;
 

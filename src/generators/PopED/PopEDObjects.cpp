@@ -169,7 +169,7 @@ namespace pharmmlcpp
         }
     }
 
-    void PopEDObjects::visit(InterventionCombination *object) {
+    void PopEDObjects::visit(InterventionsCombination *object) {
         
     }
 

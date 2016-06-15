@@ -28,6 +28,9 @@ namespace pharmmlcpp
     {
         public:
             virtual void accept(AstNodeVisitor *visitor) = 0;
+
+        private:
+            bool parenthesized = true;
     };
 }
 

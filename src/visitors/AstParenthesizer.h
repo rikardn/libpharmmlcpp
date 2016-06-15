@@ -18,8 +18,6 @@
 #ifndef PHARMMLCPP_ASTPARENTHESIZER_H_
 #define PHARMMLCPP_ASTPARENTHESIZER_H_
 
-#include <stdexcept>
-
 #include <string>
 #include <unordered_set>
 #include <helpers/StringTools.h>

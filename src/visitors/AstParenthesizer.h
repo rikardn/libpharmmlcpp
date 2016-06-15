@@ -149,6 +149,7 @@ namespace pharmmlcpp
     {
         public:
             NodePropertiesStack(AstNodeVisitor *visitor);
+            int size();
             void setProperties(NodeProperties properties);
             void acceptUniop(Uniop *node);
             void acceptBinop(Binop *node);
@@ -279,6 +280,7 @@ namespace pharmmlcpp
             };
 
             NodePropertiesStack parents{this};
+            bool requiresParentheses(const NodeProperties &properties);
     };
 }
 

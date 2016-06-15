@@ -24,6 +24,10 @@ namespace pharmmlcpp
         this->visitor = visitor;
     }
 
+    int NodePropertiesStack::size() {
+        return this->properties.size();
+    }
+
     void NodePropertiesStack::setProperties(NodeProperties properties) {
         this->set_properties = properties;
     }
@@ -55,6 +59,15 @@ namespace pharmmlcpp
     // public
     AstParenthesizer::AstParenthesizer() {
 
+    }
+
+    // private
+    bool AstParenthesizer::requiresParentheses(const NodeProperties &properties) {
+        // Root nodes never require parentheses
+        if (this->parents.size() == 0) {
+            return false;
+        }
+        return true;
     }
 
     // visitor methods
@@ -175,8 +188,9 @@ namespace pharmmlcpp
     void AstParenthesizer::visit(ScalarString *node) { }
 
     void AstParenthesizer::visit(BinopPlus *node) {
-        this->parents.setProperties(node_properties[AstOperator::BinopPlus]);
-
+        const NodeProperties &props = node_properties[AstOperator::BinopPlus];
+        this->parents.setProperties(props);
+        if (!this->requiresParentheses(props)) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 

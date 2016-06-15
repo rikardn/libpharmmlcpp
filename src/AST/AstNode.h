@@ -29,7 +29,7 @@ namespace pharmmlcpp
         public:
             virtual void accept(AstNodeVisitor *visitor) = 0;
             bool hasParentheses() { return this->parenthesized; };
-            void elideParantheses() { this->parenthesized = false; };
+            void elideParentheses() { this->parenthesized = false; };
 
         private:
             bool parenthesized = true;

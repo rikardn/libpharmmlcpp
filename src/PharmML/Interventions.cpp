@@ -94,14 +94,14 @@ namespace pharmmlcpp
 
         // Get duration/rate for infusion type
         if (this->type == "Infusion") {
-            xml::Node duration = this->context->getSingleElement(dose, "./design:duration");
-            xml::Node rate = this->context->getSingleElement(dose, "./design:rate");
+            xml::Node duration = this->context->getSingleElement(dose, "./design:Duration");
+            xml::Node rate = this->context->getSingleElement(dose, "./design:Rate");
             if (duration.exists()) {
                 // TODO: Support <Duration>
                 this->duration = nullptr;
             } else if (rate.exists()) {
                 // TODO: Support <Rate>
-                this->rate = nullptr;
+                this->rate = this->context->factory.create(rate.getChild().getChild());
             }
         }
     }
@@ -175,6 +175,9 @@ namespace pharmmlcpp
     void Administration::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->getTargetSymbRef()) {
             this->setupAstSymbRefs(this->getTargetSymbRef(), gathering, blkId);
+        }
+        if (this->amount) {
+            this->setupAstSymbRefs(this->amount, gathering, blkId);
         }
     }
 

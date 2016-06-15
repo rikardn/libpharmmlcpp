@@ -210,6 +210,9 @@ namespace pharmmlcpp
             form.add("offset <- " + this->ast_gen.getValue());
             this->td_visitor.getInterventionStart()->accept(&this->ast_gen);
             form.add("offset <- offset + " + this->ast_gen.getValue());
+            for (std::string row : this->td_visitor.getInfFuncCalls()) {
+                form.add(row);
+            }
         }
 
         // Derivative definitions

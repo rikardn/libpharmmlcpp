@@ -117,6 +117,10 @@ namespace pharmmlcpp
         return this->intseq_start;
     }
 
+    std::vector<std::string> PopEDObjects::getInfFuncCalls() {
+        return this->infFuncCalls;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -162,6 +166,18 @@ namespace pharmmlcpp
         // Check if this contains infusion (requires infusion function output)
         if (object->getType() == "Infusion") {
             this->has_infusions = true;
+            std::string inf_func_call;
+            inf_func_call = object->getOid() + " <- inf_func(offset + ";
+            object->getTimesAsVector()[0]->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", ";
+            object->getRate()->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", ";
+            object->getAmount()->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", Time)";
+            this->infFuncCalls.push_back(inf_func_call);
             return;
         }
 

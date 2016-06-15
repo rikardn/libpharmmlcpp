@@ -40,6 +40,7 @@ namespace pharmmlcpp
 
             AstNode *getCombinationStart();
             AstNode *getInterventionStart();
+            std::vector<std::string> getInfFuncCalls();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -60,6 +61,7 @@ namespace pharmmlcpp
             std::string generateAdministration(Administration *administration);
             AstNode *combination_start;
             AstNode *intseq_start;
+            std::vector<std::string> infFuncCalls;
     };
 }
 

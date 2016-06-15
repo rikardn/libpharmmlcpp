@@ -139,6 +139,9 @@ namespace pharmmlcpp
         for (pharmmlcpp::ExternalDataset *ext_ds : this->externalDatasets) {
             ext_ds->setupTargetMappings(gathering);
         }
+        if (this->getInterventions()) {
+            this->getInterventions()->setupTargetMappings(gathering);
+        }
     }
 
     void TrialDesign::setupTargetMappings(MacroGathering &gathering) {

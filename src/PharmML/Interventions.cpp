@@ -181,6 +181,14 @@ namespace pharmmlcpp
         }
     }
 
+    void Administration::setupTargetMappings(SymbolGathering &gathering) {
+        if (this->getTargetMapping()) {
+            for (MapType map : this->getTargetMapping()->getMaps()) {
+                map.symbol = gathering.getSymbol(this->getTargetMapping()->getBlkIdRef(), map.modelSymbol);
+            }
+        }
+    }
+
     void Administration::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }
@@ -388,6 +396,12 @@ namespace pharmmlcpp
     void Interventions::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (Administration *adm : this->getAdministrations()) {
             adm->setupSymbRefs(gathering, "");      // Default to global namespace
+        }
+    }
+
+    void Interventions::setupTargetMappings(SymbolGathering &gathering) {
+        for (Administration *adm : this->getAdministrations()) {
+            adm->setupTargetMappings(gathering);
         }
     }
 

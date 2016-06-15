@@ -72,6 +72,7 @@ namespace pharmmlcpp
             AstNode *getDuration();
             AstNode *getRate();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
+            void setupTargetMappings(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
@@ -149,6 +150,7 @@ namespace pharmmlcpp
             std::vector<IndividualAdministration *> getIndividualAdministrations();
             std::vector<InterventionsCombination *> getInterventionsCombinations();
             void setupRefererSymbRefs(SymbolGathering &gathering);
+            void setupTargetMappings(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:

@@ -213,11 +213,13 @@ namespace pharmmlcpp
             for (std::string row : this->td_visitor.getInfFuncCalls()) {
                 form.add(row);
             }
+            // Add infusions with same target together
             for (auto &pair : this->td_visitor.getInfusionMap()) {
                 std::string infadd = "inf_" + pair.first + " <- ";
                 infadd += TextFormatter::createInlineVector(pair.second, "", " + ");
                 form.add(infadd);
             }
+            // Add infusion rates to correct derivative
         }
 
         // Derivative definitions

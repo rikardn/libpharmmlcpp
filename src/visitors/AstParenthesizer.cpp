@@ -43,9 +43,8 @@ namespace pharmmlcpp
         this->properties.push_back(this->set_properties);
         this->directions.push_back(AcceptDirection::LeftChild);
         node->getLeft()->accept(this->visitor);
-        this->popStacks();
 
-        this->properties.push_back(this->set_properties);
+        this->directions.pop_back();
         this->directions.push_back(AcceptDirection::RightChild);
         node->getRight()->accept(this->visitor);
         this->popStacks();

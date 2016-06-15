@@ -277,8 +277,8 @@ namespace pharmmlcpp
                 {AstOperator::BinopPlus, {2, NodeAssociativity::Left, true}},
                 {AstOperator::BinopMinus, {2, NodeAssociativity::Left, false}},
                 {AstOperator::BinopDivide, {3, NodeAssociativity::Left, false}},
-                {AstOperator::BinopTimes, {3, NodeAssociativity::Left, false}},
-                {AstOperator::BinopPower, {5, NodeAssociativity::Right, true}},
+                {AstOperator::BinopTimes, {3, NodeAssociativity::Left, true}},
+                {AstOperator::BinopPower, {5, NodeAssociativity::Right, false}},
             };
 
             NodePropertiesStack parents{this};

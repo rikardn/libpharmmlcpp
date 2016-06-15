@@ -8,6 +8,52 @@
     <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
         <StructuralModel blkId="sm1">
             <ct:Variable symbolType="real" symbId="A"/>
+            <ct:Variable symbolType="real" symbId="add">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="plus">
+                            <math:Binop op="plus">
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <ct:Real>3</ct:Real>
+                                <ct:Real>4</ct:Real>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <ct:Real>5</ct:Real>
+                            <ct:Real>6</ct:Real>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="add_min">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="plus">
+                            <math:Binop op="minus">
+                                <ct:Real>1</ct:Real>
+                                <ct:Real>2</ct:Real>
+                            </math:Binop>
+                            <math:Binop op="minus">
+                                <ct:Real>3</ct:Real>
+                                <ct:Real>4</ct:Real>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Binop op="plus">
+                                <ct:Real>5</ct:Real>
+                                <ct:Real>6</ct:Real>
+                            </math:Binop>
+                            <math:Binop op="plus">
+                                <ct:Real>7</ct:Real>
+                                <ct:Real>8</ct:Real>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
             <ct:Variable symbolType="real" symbId="mul_add_div">
                 <ct:Assign>
                     <math:Binop op="plus">
@@ -18,6 +64,23 @@
                         <math:Binop op="divide">
                             <ct:Real>3</ct:Real>
                             <ct:Real>4</ct:Real>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="exp">
+                <ct:Assign>
+                    <math:Binop op="power">
+                        <math:Binop op="power">
+                            <math:Binop op="power">
+                              <ct:Real>1.1</ct:Real>
+                              <ct:Real>1.2</ct:Real>
+                            </math:Binop>
+                            <ct:Real>1.3</ct:Real>
+                        </math:Binop>
+                        <math:Binop op="power">
+                            <ct:Real>1.4</ct:Real>
+                            <ct:Real>1.5</ct:Real>
                         </math:Binop>
                     </math:Binop>
                 </ct:Assign>

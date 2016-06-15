@@ -152,6 +152,7 @@ namespace pharmmlcpp
         // Check if this contains infusion (requires infusion function output)
         if (object->getType() == "Infusion") {
             this->has_infusions = true;
+            return;
         }
 
         // Check if this is being refered to by an IndividualAdministration
@@ -170,7 +171,10 @@ namespace pharmmlcpp
     }
 
     void PopEDObjects::visit(InterventionsCombination *object) {
-        
+        SingleIntervention *singleIntervention = object->getSingleInterventions()[0];     // FIXME: Assume one and only one
+        for (ObjectRef *objectRef : singleIntervention->getOidRefs()) {
+            objectRef->getObject()->accept(this);
+        }
     }
 
     void PopEDObjects::visit(Observation *object) {

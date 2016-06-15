@@ -21,6 +21,7 @@
 #include <PharmML/Observations.h>
 #include <iostream>
 #include <visitors/AstAnalyzer.h>
+#include <AST/AstTransformation.h>
 
 namespace pharmmlcpp
 {
@@ -42,13 +43,6 @@ namespace pharmmlcpp
 
     void PopEDObjects::setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations) {
         this->individualAdministrations = individualAdministrations;
-    }
-
-    // Add an optimization parameter (to initialize in a= vector)
-    void PopEDObjects::addOptimizationParameter(DesignParameter *opt_param) {
-        // TODO: Group support? One row per group.
-        opt_param->getAssignment()->accept(&this->rast);
-        this->a_formatter.add(opt_param->getName() + "=" + this->rast.getValue());
     }
 
     // Generates doseNames, timeNames and code from IndividualAdministration
@@ -79,9 +73,7 @@ namespace pharmmlcpp
     std::string PopEDObjects::generateAdministration(Administration *administration) {
         std::vector<AstNode *> amounts = administration->getAmountAsVector();
         std::vector<AstNode *> times = administration->getTimesAsVector();
-        std::string type = administration->getType();
 
-        // TODO: To remove since dose amounts and names shouldn't necessarely be in a=
         if (this->doseNames.size() == 0) {      // First visit will get dose names
             for (std::vector<AstNode *>::size_type i = 1; i <= amounts.size(); i++) {
                 this->doseNames.push_back("DOSE_" + std::to_string(i) + "_AMT");
@@ -95,23 +87,8 @@ namespace pharmmlcpp
         for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
             amounts[i]->accept(&this->rast);
             formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
-            // Separate bolus and infusion doses
-            this->doses.push_back(this->rast.getValue());
-            if (type == "Bolus") {
-                this->bolus_doses.push_back(this->rast.getValue());
-            } else {
-                this->infusion_doses.push_back(this->rast.getValue());
-            }
-
             times[i]->accept(&this->rast);
             formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
-            // Separate bolus and infusion times
-            this->times.push_back(this->rast.getValue());
-            if (type == "Bolus") {
-                this->bolus_times.push_back(this->rast.getValue());
-            } else {
-                this->infusion_times.push_back(this->rast.getValue());
-            }
         }
 
         formatter.closeVector();
@@ -124,36 +101,28 @@ namespace pharmmlcpp
         return this->doseNames;
     }
 
-    std::vector<std::string> PopEDObjects::getDoses() {
-        return this->doses;
-    }
-
-    std::vector<std::string> PopEDObjects::getBolusDoses() {
-        return this->bolus_doses;
-    }
-
-    std::vector<std::string> PopEDObjects::getInfusionDoses() {
-        return this->infusion_doses;
-    }
-
     std::vector<std::string> PopEDObjects::getTimeNames() {
         return this->timeNames;
     }
 
-    std::vector<std::string> PopEDObjects::getTimes() {
-        return this->times;
-    }
-
-    std::vector<std::string> PopEDObjects::getBolusTimes() {
-        return this->bolus_times;
-    }
-
-    std::vector<std::string> PopEDObjects::getInfusionTimes() {
-        return this->infusion_times;
-    }
-
     bool PopEDObjects::hasInfusions() {
         return this->has_infusions;
+    }
+            
+    AstNode *PopEDObjects::getCombinationStart() {
+        return this->combination_start;
+    }
+
+    AstNode *PopEDObjects::getInterventionStart() {
+        return this->intseq_start;
+    }
+
+    std::vector<std::string> PopEDObjects::getInfFuncCalls() {
+        return this->infFuncCalls;
+    }
+
+    std::unordered_map<Symbol *, std::vector<std::string>> PopEDObjects::getInfusionMap() {
+        return this->infusionMap;
     }
 
     void PopEDObjects::visit(Arm *object) {
@@ -193,6 +162,7 @@ namespace pharmmlcpp
                     a_formatter.add(this->getValue());
                 }
             }
+            this->intseq_start = AstTransformation::toVector(int_seq->getStart())[0];
         }
     }
 
@@ -200,6 +170,24 @@ namespace pharmmlcpp
         // Check if this contains infusion (requires infusion function output)
         if (object->getType() == "Infusion") {
             this->has_infusions = true;
+            std::string inf_func_call;
+            inf_func_call = object->getOid() + " <- inf_func(offset + ";
+            object->getTimesAsVector()[0]->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", ";
+            object->getRate()->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", ";
+            object->getAmount()->accept(&this->rast);
+            inf_func_call += this->rast.getValue();
+            inf_func_call += ", Time)";
+            this->infFuncCalls.push_back(inf_func_call);
+
+            // Add to infusionMap for future sum of all infusions to same targets
+            // FIXME: The TargetMap retreival is so ugly that my eyes hurt! Also need convenience for case of pure SymbRef instead of TargetMapping
+            Symbol *target = object->getTargetMapping()->getMaps()[0].symbol;
+            this->infusionMap[target].push_back(object->getOid());
+            return;
         }
 
         // Check if this is being refered to by an IndividualAdministration
@@ -218,7 +206,16 @@ namespace pharmmlcpp
     }
 
     void PopEDObjects::visit(InterventionsCombination *object) {
-        
+        SingleIntervention *singleIntervention = object->getSingleInterventions()[0];     // FIXME: Assume one and only one
+
+        // Get the start offset for the combination
+        AstNode *start = AstTransformation::toVector(singleIntervention->getStart())[0];    // Assume only one. FIXME: What would more mean?
+        this->combination_start = start;
+
+        // Handle the first single intervention
+        for (ObjectRef *objectRef : singleIntervention->getOidRefs()) {
+            objectRef->getObject()->accept(this);
+        }
     }
 
     void PopEDObjects::visit(Observation *object) {

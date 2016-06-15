@@ -94,14 +94,14 @@ namespace pharmmlcpp
 
         // Get duration/rate for infusion type
         if (this->type == "Infusion") {
-            xml::Node duration = this->context->getSingleElement(dose, "./design:duration");
-            xml::Node rate = this->context->getSingleElement(dose, "./design:rate");
+            xml::Node duration = this->context->getSingleElement(dose, "./design:Duration");
+            xml::Node rate = this->context->getSingleElement(dose, "./design:Rate");
             if (duration.exists()) {
                 // TODO: Support <Duration>
                 this->duration = nullptr;
             } else if (rate.exists()) {
                 // TODO: Support <Rate>
-                this->rate = nullptr;
+                this->rate = this->context->factory.create(rate.getChild().getChild());
             }
         }
     }
@@ -175,6 +175,15 @@ namespace pharmmlcpp
     void Administration::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->getTargetSymbRef()) {
             this->setupAstSymbRefs(this->getTargetSymbRef(), gathering, blkId);
+        }
+        if (this->amount) {
+            this->setupAstSymbRefs(this->amount, gathering, blkId);
+        }
+    }
+
+    void Administration::setupTargetMappings(SymbolGathering &gathering) {
+        if (this->getTargetMapping()) {
+            this->getTargetMapping()->setupSymbolRefs(gathering);
         }
     }
 
@@ -270,11 +279,11 @@ namespace pharmmlcpp
         }
         xml::Node start_node = this->context->getSingleElement(node, "./design:Start");
         if (start_node.exists()) {
-            this->start = this->context->factory.create(start_node.getChild());
+            this->start = this->context->factory.create(start_node.getChild().getChild());
         }
         xml::Node end_node = this->context->getSingleElement(node, "./design:End");
         if (end_node.exists()) {
-            this->end = this->context->factory.create(end_node.getChild());
+            this->end = this->context->factory.create(end_node.getChild().getChild());
         }
     }
 
@@ -385,6 +394,12 @@ namespace pharmmlcpp
     void Interventions::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (Administration *adm : this->getAdministrations()) {
             adm->setupSymbRefs(gathering, "");      // Default to global namespace
+        }
+    }
+
+    void Interventions::setupTargetMappings(SymbolGathering &gathering) {
+        for (Administration *adm : this->getAdministrations()) {
+            adm->setupTargetMappings(gathering);
         }
     }
 

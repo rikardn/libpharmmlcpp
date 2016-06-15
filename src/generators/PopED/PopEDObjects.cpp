@@ -121,6 +121,10 @@ namespace pharmmlcpp
         return this->infFuncCalls;
     }
 
+    std::unordered_map<std::string, std::vector<std::string>> PopEDObjects::getInfusionMap() {
+        return this->infusionMap;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -178,6 +182,10 @@ namespace pharmmlcpp
             inf_func_call += this->rast.getValue();
             inf_func_call += ", Time)";
             this->infFuncCalls.push_back(inf_func_call);
+
+            // Add to infusionMap for future sum of all infusions to same targets
+            // FIXME: The TargetMap retreival is so ugly that my eyes hurt! Also need convenience for case of pure SymbRef instead of TargetMapping
+            this->infusionMap[object->getTargetMapping()->getMaps()[0].modelSymbol].push_back(object->getOid());
             return;
         }
 

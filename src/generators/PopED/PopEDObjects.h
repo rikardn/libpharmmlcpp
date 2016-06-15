@@ -38,9 +38,11 @@ namespace pharmmlcpp
             std::vector<std::string> getTimeNames();
             bool hasInfusions();
 
+            // FIXME: Rushed methods for combining stuff. Should probably be rethinked.
             AstNode *getCombinationStart();
             AstNode *getInterventionStart();
             std::vector<std::string> getInfFuncCalls();
+            std::unordered_map<std::string, std::vector<std::string>> getInfusionMap();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -62,6 +64,7 @@ namespace pharmmlcpp
             AstNode *combination_start;
             AstNode *intseq_start;
             std::vector<std::string> infFuncCalls;
+            std::unordered_map<std::string, std::vector<std::string>> infusionMap;
     };
 }
 

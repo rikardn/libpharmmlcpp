@@ -10,14 +10,14 @@
 #include <helpers/SymbolNamer.h>
 #include <symbols/PopulationParameter.h>
 
-PharmML::Symbol *symbolFromString(std::string name) {
-    return new PharmML::PopulationParameter(name);
+pharmmlcpp::Symbol *symbolFromString(std::string name) {
+    return new pharmmlcpp::PopulationParameter(name);
 }
 
-std::vector<PharmML::Symbol *> symbolsFromStrings(std::vector<std::string> names) {
-    std::vector<PharmML::Symbol *> symbols;
+std::vector<pharmmlcpp::Symbol *> symbolsFromStrings(std::vector<std::string> names) {
+    std::vector<pharmmlcpp::Symbol *> symbols;
     for (std::string name : names) {
-        PharmML::Symbol *param = new PharmML::PopulationParameter(name);
+        pharmmlcpp::Symbol *param = new pharmmlcpp::PopulationParameter(name);
         symbols.push_back(param);
     }
     return symbols;
@@ -36,19 +36,19 @@ std::string genRandomString(uint length, std::vector<char32_t> &legal_chars) {
 TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
     // Construct a collection of Symbol's from a test set of strings
     std::vector<std::string> test_names = {"CL", "CL", "cl", "cl", "Cl", "cL", "_CL", ".CL", " CL", "CLÅ", "CLå"};
-    std::vector<PharmML::Symbol *> test_symbols = symbolsFromStrings(test_names);
+    std::vector<pharmmlcpp::Symbol *> test_symbols = symbolsFromStrings(test_names);
 
     // Define sets of allowed symbols
-    std::unordered_set<char32_t> latin_upper(PharmML::LatinChars::UPPER_ALPHA.begin(), PharmML::LatinChars::UPPER_ALPHA.end());
-    std::unordered_set<char32_t> latin_lower(PharmML::LatinChars::LOWER_ALPHA.begin(), PharmML::LatinChars::LOWER_ALPHA.end());
-    std::unordered_set<char32_t> latin_english(PharmML::LatinChars::ALL_EN.begin(), PharmML::LatinChars::ALL_EN.end());
-    std::unordered_set<char32_t> latin_swedish_ext(PharmML::LatinChars::SE_EXT.begin(), PharmML::LatinChars::SE_EXT.end());
+    std::unordered_set<char32_t> latin_upper(pharmmlcpp::LatinChars::UPPER_ALPHA.begin(), pharmmlcpp::LatinChars::UPPER_ALPHA.end());
+    std::unordered_set<char32_t> latin_lower(pharmmlcpp::LatinChars::LOWER_ALPHA.begin(), pharmmlcpp::LatinChars::LOWER_ALPHA.end());
+    std::unordered_set<char32_t> latin_english(pharmmlcpp::LatinChars::ALL_EN.begin(), pharmmlcpp::LatinChars::ALL_EN.end());
+    std::unordered_set<char32_t> latin_swedish_ext(pharmmlcpp::LatinChars::SE_EXT.begin(), pharmmlcpp::LatinChars::SE_EXT.end());
 
     SECTION("Collisions") {
         SECTION("with reserved words") {
             // Setup with reserved words and with latin english charset
             std::unordered_set<std::string> illegals = {"B"};
-            PharmML::SymbolNamer namer(illegals);
+            pharmmlcpp::SymbolNamer namer(illegals);
             namer.addCharSet(latin_english);
 
             // Tests
@@ -57,14 +57,14 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
         }
         SECTION("with earlier symbols") {
             // Very basic character set
-            PharmML::SymbolNamer namer;
+            pharmmlcpp::SymbolNamer namer;
             namer.addCharSet(std::unordered_set<char32_t>{'A','B'});
             namer.addInitialCharSet(latin_english);
 
             // Tests
             std::vector<std::string> names = {"A","B","C","AA","BB","CC","A","B","C","AA","BB","CC"};
             std::unordered_set<std::string> gen_names;
-            for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+            for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
                 std::string name = namer.getNameString(symbol);
                 INFO(symbol->getSymbId() << " => " << name);
                 REQUIRE(gen_names.count(name) == 0);
@@ -76,14 +76,14 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
     SECTION("Iterations") {
         SECTION("with digits") {
             // Basic character set
-            PharmML::SymbolNamer namer;
+            pharmmlcpp::SymbolNamer namer;
             namer.addCharSet(latin_upper);
             namer.addInitialCharSet(latin_upper);
             namer.addCharSet(std::unordered_set<char32_t>{'0','1','2','3'});
             namer.addCharSet(std::unordered_set<char32_t>{'_'});
 
             // Test first symbol addition
-            PharmML::Symbol *first = symbolFromString("A");
+            pharmmlcpp::Symbol *first = symbolFromString("A");
             REQUIRE(namer.getNameString(first) == "A");
 
             // Test numeral collision avoidance with subsequent symbols
@@ -98,11 +98,11 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
         SECTION("with latin upper") {
             // Only latin upper character set
-            PharmML::SymbolNamer namer;
+            pharmmlcpp::SymbolNamer namer;
             namer.addCharSet(latin_upper);
 
             // Test first symbol addition
-            PharmML::Symbol *first = symbolFromString("A");
+            pharmmlcpp::Symbol *first = symbolFromString("A");
             REQUIRE(namer.getNameString(first) == "A");
 
             // Test numeral collision avoidance with subsequent symbols
@@ -118,14 +118,14 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
     SECTION("Case restrictions") {
         // Only lower case
-        PharmML::SymbolNamer lower_namer, upper_namer;
+        pharmmlcpp::SymbolNamer lower_namer, upper_namer;
         lower_namer.addCharSet(latin_lower);
         upper_namer.addCharSet(latin_upper);
 
         // Tests
         std::vector<std::string> names = {"cl","cL","Cl","CL","ClEaRaNcE","cLeArAnCe","clearance","CLEARANCE"};
         std::unordered_set<std::string> lower_names, upper_names;
-        for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+        for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
             std::string lo_name = lower_namer.getNameString(symbol);
             INFO(symbol->getSymbId() << " => " << lo_name);
             std::string up_name = upper_namer.getNameString(symbol);
@@ -144,7 +144,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
     SECTION("Character set") {
         SECTION("restrict initial character") {
             // Stringent restrictions on first character
-            PharmML::SymbolNamer namer;
+            pharmmlcpp::SymbolNamer namer;
             namer.addCharSet(latin_english);
             std::unordered_set<char32_t> init_chars = {'A','0'};
             namer.addInitialCharSet(init_chars);
@@ -158,7 +158,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
             // Tests
             std::unordered_set<std::string> gen_names;
-            for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+            for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
                 std::string name = namer.getNameString(symbol);
                 INFO(symbol->getSymbId() << " => " << name);
                 REQUIRE(init_chars.count(name.at(0)) == 1);
@@ -172,7 +172,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
         SECTION("restrict all characters") {
             // Stringent restrictions on all characters
-            PharmML::SymbolNamer namer;
+            pharmmlcpp::SymbolNamer namer;
             std::unordered_set<char32_t> legal_chars = {'A','a','B','b','C','c','D','d','E','e','F','f'};
             namer.addCharSet(legal_chars);
 
@@ -185,7 +185,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
             // Tests
             std::unordered_set<std::string> gen_names;
-            for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+            for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
                 std::string name = namer.getNameString(symbol);
                 INFO(symbol->getSymbId() << " => " << name);
                 for (auto it = name.begin(); it != name.end(); ++it) {
@@ -201,8 +201,8 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
         SECTION("swedish extensions") {
             // English/swedish test
-            PharmML::SymbolNamer eng_namer;
-            PharmML::SymbolNamer swe_namer;
+            pharmmlcpp::SymbolNamer eng_namer;
+            pharmmlcpp::SymbolNamer swe_namer;
             eng_namer.addCharSet(latin_english);
             swe_namer.addCharSet(latin_english);
             swe_namer.addCharSet(latin_swedish_ext);
@@ -212,7 +212,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
             // Tests
             std::unordered_set<std::string> eng_names, swe_names;
-            for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+            for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
                 // English
                 std::string eng_name = eng_namer.getNameString(symbol);
                 INFO(symbol->getSymbId() << " => " << eng_name << " (english)");
@@ -237,7 +237,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
     SECTION("Length restriction") {
         // Stringent restrictions
         std::unordered_set<std::string> illegals = {"if","then","else","NOT","OR","AND"};
-        PharmML::SymbolNamer namer(illegals);
+        pharmmlcpp::SymbolNamer namer(illegals);
         std::unordered_set<char32_t> legal_chars = {'A','a','D','d','E','e','F','f','I','i','N','n','O','o'};
         namer.addCharSet(legal_chars);
         uint max_length = 4;
@@ -249,7 +249,7 @@ TEST_CASE("SymbolNamer class", "[SymbolNamer]") {
 
         // Tests
         std::unordered_set<std::string> gen_names;
-        for (PharmML::Symbol *symbol : symbolsFromStrings(names)) {
+        for (pharmmlcpp::Symbol *symbol : symbolsFromStrings(names)) {
             std::string name = namer.getNameString(symbol);
             INFO(symbol->getSymbId() << " => " << name);
             REQUIRE(gen_names.count(name) == 0);

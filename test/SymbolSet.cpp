@@ -5,10 +5,10 @@
 #include <symbols/PopulationParameter.h>
 
 TEST_CASE("SymbolSet class", "[SymbolSet]") {
-    PharmML::SymbolSet ss;
+    pharmmlcpp::SymbolSet ss;
 
-    PharmML::PopulationParameter cl("CL");
-    PharmML::PopulationParameter v("V");
+    pharmmlcpp::PopulationParameter cl("CL");
+    pharmmlcpp::PopulationParameter v("V");
 
     REQUIRE(!ss.hasSymbol(&cl));
     REQUIRE(!ss.hasSymbol(&v));

@@ -1,13 +1,13 @@
 #include "catch.hpp"
 
-#include <PharmML/Model.h>
+#include <PharmML/PharmML.h>
 #include <PharmML/ModellingSteps.h>
 #include <visitors/AstAnalyzer.h>
 #include <helpers/StringTools.h>
 
 TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
-    PharmML::Model model("testfiles/minimal.xml");
-    PharmML::AstAnalyzer aa;
+    pharmmlcpp::PharmML model("testfiles/minimal.xml");
+    pharmmlcpp::AstAnalyzer aa;
     SECTION("Construct Operation") {
         SECTION("simple PopED example") {
             // Construct test node
@@ -33,7 +33,7 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
             xml::Node node = xml::nodeFromString(xml_string);
 
             // Root data
-            PharmML::Operation op(model.getContext(), node);
+            pharmmlcpp::Operation op(model.getContext(), node);
             REQUIRE(op.getOrder() == 1);
             REQUIRE(op.getType() == "optimization");
             REQUIRE(op.getName().empty());
@@ -42,11 +42,11 @@ TEST_CASE("ModellingSteps class", "[ModellingSteps]") {
             REQUIRE(op.getProperties().empty());
 
             // Algorithm
-            PharmML::Algorithm *algo = op.getAlgorithm();
+            pharmmlcpp::Algorithm *algo = op.getAlgorithm();
             REQUIRE(algo != nullptr);
             REQUIRE(algo->getName().empty());
             REQUIRE(algo->getDefinition() == "PopED");
-            std::vector<PharmML::OperationProperty *> properties = algo->getProperties();
+            std::vector<pharmmlcpp::OperationProperty *> properties = algo->getProperties();
             REQUIRE(properties.size() == 2);
 
             REQUIRE(properties.at(0)->getName() == "criterion");

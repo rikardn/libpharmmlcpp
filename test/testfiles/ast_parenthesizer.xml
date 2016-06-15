@@ -8,14 +8,14 @@
     <ModelDefinition xmlns="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
         <StructuralModel blkId="sm1">
             <ct:Variable symbolType="real" symbId="A"/>
-            <ct:Variable symbolType="real" symbId="mul_add">
+            <ct:Variable symbolType="real" symbId="mul_add_div">
                 <ct:Assign>
                     <math:Binop op="plus">
                         <math:Binop op="times">
                             <ct:Real>1</ct:Real>
                             <ct:Real>2</ct:Real>
                         </math:Binop>
-                        <math:Binop op="times">
+                        <math:Binop op="divide">
                             <ct:Real>3</ct:Real>
                             <ct:Real>4</ct:Real>
                         </math:Binop>

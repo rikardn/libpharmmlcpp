@@ -51,6 +51,32 @@ namespace pharmmlcpp
         this->popStacks();
     }
 
+    // Fetch properties of the first parent to the left in flattened AST
+    // (i.e., first parent whom not pushed node is a right child of)
+    NodeProperties *NodePropertiesStack::getParentLeft() {
+        for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
+            if ((*it) == AcceptDirection::RightChild) {
+                auto dir_index = std::distance(this->directions.begin(), it);
+                auto np_index = this->properties.begin() + dir_index;
+                return &(*np_index);
+            }
+        }
+        return nullptr;
+    }
+
+    // Fetch properties of the first parent to the right in flattened AST
+    // (i.e., first parent whom not pushed node is a left child of)
+    NodeProperties *NodePropertiesStack::getParentRight() {
+        for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
+            if ((*it) == AcceptDirection::LeftChild) {
+                auto dir_index = std::distance(this->directions.begin(), it);
+                auto np_index = this->properties.begin() + dir_index;
+                return &(*np_index);
+            }
+        }
+        return nullptr;
+    }
+
     void NodePropertiesStack::popStacks() {
         this->properties.pop_back();
         this->directions.pop_back();
@@ -67,7 +93,36 @@ namespace pharmmlcpp
         if (this->parents.size() == 0) {
             return false;
         }
-        return true;
+
+        // Require if higher priority to left OR (same but this node is left associative AND left is not commutative like + or *)
+        NodeProperties *left_prop = this->parents.getParentLeft();
+        if (left_prop) {
+            if (left_prop->priority > properties.priority) {
+                return true;
+            } else if (left_prop->priority == properties.priority) {
+                if (properties.associativity == NodeAssociativity::Left &&
+                    left_prop->commutative == false) {
+                    return true;
+                }
+            }
+            
+        }
+
+        // Require if higher priority to right OR (same but this node is right associative AND right is not commutative like + or *)
+        NodeProperties *right_prop = this->parents.getParentRight();
+        if (right_prop) {
+            if (right_prop->priority > properties.priority) {
+                return true;
+            } else if (right_prop->priority == properties.priority) {
+                if (properties.associativity == NodeAssociativity::Right &&
+                    right_prop->commutative == false) {
+                    return true;
+                }
+            }
+        }
+
+        // No rule left to require parentheses
+        return false;
     }
 
     // visitor methods
@@ -195,26 +250,30 @@ namespace pharmmlcpp
     }
 
     void AstParenthesizer::visit(BinopMinus *node) {
-        this->parents.setProperties(node_properties[AstOperator::BinopMinus]);
-
+        const NodeProperties &props = node_properties[AstOperator::BinopMinus];
+        this->parents.setProperties(props);
+        if (!this->requiresParentheses(props)) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopDivide *node) {
-        this->parents.setProperties(node_properties[AstOperator::BinopDivide]);
-
+        const NodeProperties &props = node_properties[AstOperator::BinopDivide];
+        this->parents.setProperties(props);
+        if (!this->requiresParentheses(props)) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopTimes *node) {
-        this->parents.setProperties(node_properties[AstOperator::BinopTimes]);
-
+        const NodeProperties &props = node_properties[AstOperator::BinopTimes];
+        this->parents.setProperties(props);
+        if (!this->requiresParentheses(props)) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopPower *node) {
-        this->parents.setProperties(node_properties[AstOperator::BinopPower]);
-
+        const NodeProperties &props = node_properties[AstOperator::BinopPower];
+        this->parents.setProperties(props);
+        if (!this->requiresParentheses(props)) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 

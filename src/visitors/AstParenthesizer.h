@@ -153,6 +153,8 @@ namespace pharmmlcpp
             void setProperties(NodeProperties properties);
             void acceptUniop(Uniop *node);
             void acceptBinop(Binop *node);
+            NodeProperties *getParentLeft();
+            NodeProperties *getParentRight();
             
         private:
             AstNodeVisitor *visitor;

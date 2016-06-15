@@ -17,7 +17,7 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
 
     SECTION("Simple binop tests") {
         {
-            auto var = vars["mul_add"]; // (1*2)+(3/4)
+            auto var = vars["mul_add_div"]; // (1*2)+(3/4)
             var->accept(&ap);
             Binop *add = static_cast<Binop *>( var );
             Binop *mul = static_cast<Binop *>( add->getLeft() );

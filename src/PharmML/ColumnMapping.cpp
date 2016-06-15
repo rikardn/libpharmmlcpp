@@ -100,7 +100,7 @@ namespace pharmmlcpp
 
     // Fill modelSymbol string containing maps data with gathered Symbol object
     void TargetMapping::setupSymbolRefs(SymbolGathering &gathering) {
-        for (MapType map : this->maps) {
+        for (MapType &map : this->maps) {
             if (!map.modelSymbol.empty()) {
                 pharmmlcpp::Symbol *symbol = gathering.getSymbol(this->blkIdRef, map.modelSymbol);
                 if (symbol) {

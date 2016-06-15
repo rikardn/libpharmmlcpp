@@ -114,7 +114,7 @@ namespace pharmmlcpp
 
    // Fill admNumber string containing maps with gathered (administration) PKMacro object
     void TargetMapping::setupMacroRefs(MacroGathering &gathering) {
-        for (MapType map : this->maps) {
+        for (MapType &map : this->maps) {
             if (!map.admNumber.empty()) {
                 pharmmlcpp::PKMacro *macro = gathering.getAdmMacro(this->blkIdRef, std::stoi(map.admNumber));
                 if (macro) {

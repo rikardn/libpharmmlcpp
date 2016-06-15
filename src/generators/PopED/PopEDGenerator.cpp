@@ -122,17 +122,16 @@ namespace pharmmlcpp
 
         // Declare dose/time
         int index = 1;
-        // TODO: Remove since dose amounts and times shouldn't necessarily be in a=
-        //~ if (this->model->getTrialDesign()) {
-            //~ std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-            //~ std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+        if (this->model->getTrialDesign()) {
+            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
-            //~ for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-                //~ form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-                //~ form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-                //~ index += 2;
-            //~ }
-        //~ }
+            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                index += 2;
+            }
+        }
 
         // Declare covariates
         SymbolSet covariates = needed_symbols.getCovariates();
@@ -284,30 +283,23 @@ namespace pharmmlcpp
             dini_formatter.closeVector();
             form.add(dini_formatter.createString());
 
+            // Dose times
             form.add("times_xt <- drop(xt)");
+            form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+            form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+
             form.add("integration_start_time <- 0");
 
-            // Only use events for bolus doses (TODO: DesignParameter names for non-fixed!)
-            if (!this->td_visitor.getBolusTimes().empty()) {
-                // Dose times
-                //~ form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusTimes(), "bolus_dose_times <- c()"));
-                //~ form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
-                form.add(TextFormatter::createInlineVector(this->td_visitor.getBolusDoses(), "bolus_dose_amt <- c()"));
+            // Event data
+            // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
+            form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
+            form.add("time = dose_times,");
+            form.add("value = dose_amt, method = c('add'))");
+            form.closeIndent();
+            form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
-                // Event data
-                // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-                form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
-                form.add("time = bolus_dose_times,");
-                form.add("value = bolus_dose_amt, method = c('add'))");
-                form.closeIndent();
-                form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
-
-                // ODE call
-                form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
-            } else {
-                form.add("out <- ode(d_ini, times, ode_func, parameters");
-            }
+            // ODE call
+            form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
             form.emptyLine();
         }
 
@@ -599,22 +591,13 @@ namespace pharmmlcpp
         // TrialDesign
         form.add("groupsize = 1");
 
-        // DesignParameters and their inits
-        // TODO: Is this the best place to add them?
-        TrialDesign *td = model->getTrialDesign();
-        if (td) {
-            SymbolSet design_params = td->getOptimizationParameters();
-            for (Symbol *symbol : design_params) {
-                this->td_visitor.addOptimizationParameter(static_cast<DesignParameter *>(symbol));
-            }
-        }
-
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
         form.addMany(this->td_visitor.getDatabaseA());
 
 
         // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
+        TrialDesign *td = model->getTrialDesign();
         if (td) {
             DesignSpaces *ds = td->getDesignSpaces();
             if (ds) {

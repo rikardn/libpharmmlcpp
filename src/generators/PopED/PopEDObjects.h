@@ -34,15 +34,8 @@ namespace pharmmlcpp
             TextFormatter& getDatabaseXT();
             TextFormatter& getDatabaseA();
             void setIndividualAdministrations(std::vector<IndividualAdministration *> individualAdministrations);
-            void addOptimizationParameter(DesignParameter *opt_param);
             std::vector<std::string> getDoseNames();
-            std::vector<std::string> getDoses();
-            std::vector<std::string> getBolusDoses();
-            std::vector<std::string> getInfusionDoses();
             std::vector<std::string> getTimeNames();
-            std::vector<std::string> getTimes();
-            std::vector<std::string> getBolusTimes();
-            std::vector<std::string> getInfusionTimes();
             bool hasInfusions();
 
             void visit(Arm *object) override;
@@ -57,13 +50,7 @@ namespace pharmmlcpp
             TextFormatter xt_formatter;
             TextFormatter a_formatter;
             std::vector<std::string> doseNames;
-            std::vector<std::string> doses;
-            std::vector<std::string> bolus_doses;
-            std::vector<std::string> infusion_doses;
             std::vector<std::string> timeNames;
-            std::vector<std::string> times;
-            std::vector<std::string> bolus_times;
-            std::vector<std::string> infusion_times;
             bool has_infusions;
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);

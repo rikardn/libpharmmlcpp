@@ -215,19 +215,24 @@ namespace pharmmlcpp
             }
             // Add infusions with same target together
             for (auto &pair : this->td_visitor.getInfusionMap()) {
-                std::string infadd = "inf_" + pair.first + " <- ";
+                std::string infadd = "inf_" + pair.first->getName() + " <- ";
                 infadd += TextFormatter::createInlineVector(pair.second, "", " + ");
                 form.add(infadd);
             }
-            // Add infusion rates to correct derivative
         }
 
         // Derivative definitions
         std::vector<std::string> name_list;
 
         for (Symbol *symbol : derivs_set) {
+            std::string infusion_rate;  // Infusion rate to add if needed
+            if (this->td_visitor.hasInfusions()) {
+                if (this->td_visitor.getInfusionMap().count(symbol)) {
+                    infusion_rate = " + inf_" + symbol->getName();
+                }
+            }
             symbol->accept(&this->r_symb);
-            form.add(this->r_symb.getValue());
+            form.add(this->r_symb.getValue() + infusion_rate);
             this->derivs.push_back(symbol);
             name_list.push_back("d" + symbol->getName());
         }

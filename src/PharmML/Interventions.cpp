@@ -183,9 +183,7 @@ namespace pharmmlcpp
 
     void Administration::setupTargetMappings(SymbolGathering &gathering) {
         if (this->getTargetMapping()) {
-            for (MapType map : this->getTargetMapping()->getMaps()) {
-                map.symbol = gathering.getSymbol(this->getTargetMapping()->getBlkIdRef(), map.modelSymbol);
-            }
+            this->getTargetMapping()->setupSymbolRefs(gathering);
         }
     }
 

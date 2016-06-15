@@ -42,7 +42,7 @@ namespace pharmmlcpp
             AstNode *getCombinationStart();
             AstNode *getInterventionStart();
             std::vector<std::string> getInfFuncCalls();
-            std::unordered_map<std::string, std::vector<std::string>> getInfusionMap();
+            std::unordered_map<Symbol *, std::vector<std::string>> getInfusionMap();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -64,7 +64,7 @@ namespace pharmmlcpp
             AstNode *combination_start;
             AstNode *intseq_start;
             std::vector<std::string> infFuncCalls;
-            std::unordered_map<std::string, std::vector<std::string>> infusionMap;
+            std::unordered_map<Symbol *, std::vector<std::string>> infusionMap;
     };
 }
 

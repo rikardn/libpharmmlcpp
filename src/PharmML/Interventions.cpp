@@ -270,11 +270,11 @@ namespace pharmmlcpp
         }
         xml::Node start_node = this->context->getSingleElement(node, "./design:Start");
         if (start_node.exists()) {
-            this->start = this->context->factory.create(start_node.getChild());
+            this->start = this->context->factory.create(start_node.getChild().getChild());
         }
         xml::Node end_node = this->context->getSingleElement(node, "./design:End");
         if (end_node.exists()) {
-            this->end = this->context->factory.create(end_node.getChild());
+            this->end = this->context->factory.create(end_node.getChild().getChild());
         }
     }
 

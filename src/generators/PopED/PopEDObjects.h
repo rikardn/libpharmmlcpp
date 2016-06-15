@@ -38,6 +38,9 @@ namespace pharmmlcpp
             std::vector<std::string> getTimeNames();
             bool hasInfusions();
 
+            AstNode *getCombinationStart();
+            AstNode *getInterventionStart();
+
             void visit(Arm *object) override;
             void visit(Administration *object) override;
             void visit(InterventionsCombination *object) override;
@@ -55,6 +58,8 @@ namespace pharmmlcpp
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
             std::string generateAdministration(Administration *administration);
+            AstNode *combination_start;
+            AstNode *intseq_start;
     };
 }
 

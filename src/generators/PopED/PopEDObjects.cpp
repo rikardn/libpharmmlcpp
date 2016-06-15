@@ -21,6 +21,7 @@
 #include <PharmML/Observations.h>
 #include <iostream>
 #include <visitors/AstAnalyzer.h>
+#include <AST/AstTransformation.h>
 
 namespace pharmmlcpp
 {
@@ -107,6 +108,14 @@ namespace pharmmlcpp
     bool PopEDObjects::hasInfusions() {
         return this->has_infusions;
     }
+            
+    AstNode *PopEDObjects::getCombinationStart() {
+        return this->combination_start;
+    }
+
+    AstNode *PopEDObjects::getInterventionStart() {
+        return this->intseq_start;
+    }
 
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
@@ -145,6 +154,7 @@ namespace pharmmlcpp
                     a_formatter.add(this->getValue());
                 }
             }
+            this->intseq_start = AstTransformation::toVector(int_seq->getStart())[0];
         }
     }
 
@@ -172,6 +182,12 @@ namespace pharmmlcpp
 
     void PopEDObjects::visit(InterventionsCombination *object) {
         SingleIntervention *singleIntervention = object->getSingleInterventions()[0];     // FIXME: Assume one and only one
+
+        // Get the start offset for the combination
+        AstNode *start = AstTransformation::toVector(singleIntervention->getStart())[0];    // Assume only one. FIXME: What would more mean?
+        this->combination_start = start;
+
+        // Handle the first single intervention
         for (ObjectRef *objectRef : singleIntervention->getOidRefs()) {
             objectRef->getObject()->accept(this);
         }

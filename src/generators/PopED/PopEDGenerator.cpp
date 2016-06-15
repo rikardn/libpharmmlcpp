@@ -201,10 +201,15 @@ namespace pharmmlcpp
 
         form.emptyLine();
 
-        // Output infusion function if infusions are present
+        // Special case if infusions are present
         if (this->td_visitor.hasInfusions()) {
             form.addMany(this->InfusionFunction);
             form.emptyLine();
+
+            this->td_visitor.getCombinationStart()->accept(&this->ast_gen);
+            form.add("offset <- " + this->ast_gen.getValue());
+            this->td_visitor.getInterventionStart()->accept(&this->ast_gen);
+            form.add("offset <- offset + " + this->ast_gen.getValue());
         }
 
         // Derivative definitions

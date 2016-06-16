@@ -37,6 +37,7 @@ namespace pharmmlcpp
             std::vector<std::string> getDoseNames();
             std::vector<std::string> getTimeNames();
             bool hasInfusions();
+            bool hasBoluses();
 
             // FIXME: Rushed methods for combining stuff. Should probably be rethinked.
             AstNode *getCombinationStart();
@@ -57,7 +58,8 @@ namespace pharmmlcpp
             TextFormatter a_formatter;
             std::vector<std::string> doseNames;
             std::vector<std::string> timeNames;
-            bool has_infusions;
+            bool has_infusions = false;
+            bool has_boluses = false;
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
             std::string generateAdministration(Administration *administration);

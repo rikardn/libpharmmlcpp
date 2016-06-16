@@ -109,6 +109,10 @@ namespace pharmmlcpp
         return this->has_infusions;
     }
             
+    bool PopEDObjects::hasBoluses() {
+        return this->has_boluses;
+    }
+
     AstNode *PopEDObjects::getCombinationStart() {
         return this->combination_start;
     }
@@ -188,6 +192,8 @@ namespace pharmmlcpp
             Symbol *target = object->getTargetMapping()->getMaps()[0].symbol;
             this->infusionMap[target].push_back(object->getOid());
             return;
+        } else {
+            this->has_boluses = true;
         }
 
         // Check if this is being refered to by an IndividualAdministration

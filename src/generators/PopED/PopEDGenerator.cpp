@@ -305,8 +305,19 @@ namespace pharmmlcpp
 
             // Dose times
             form.add("times_xt <- drop(xt)");
-            form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-            form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+            if (this->td_visitor.hasBoluses()) {
+                form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+                form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+            } else if (this->td_visitor.hasInfusions()) {     // FIXME: Should not be mutually exclusive
+                TextFormatter dt_formatter;
+                dt_formatter.openVector("dose_times <- c()", 0, ", ");
+                for (AstNode *dt_node : this->td_visitor.getDoseTimes()) {
+                    dt_node->accept(&this->ast_gen);
+                    dt_formatter.add(this->ast_gen.getValue());
+                }
+                dt_formatter.closeVector();
+                form.add(dt_formatter.createString());
+            }
 
             form.add("integration_start_time <- 0");
 

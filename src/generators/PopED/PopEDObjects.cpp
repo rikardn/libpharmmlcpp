@@ -129,6 +129,10 @@ namespace pharmmlcpp
         return this->infusionMap;
     }
 
+    std::vector<AstNode *> PopEDObjects::getDoseTimes() {
+        return this->doseTimes;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -191,6 +195,10 @@ namespace pharmmlcpp
             // FIXME: The TargetMap retreival is so ugly that my eyes hurt! Also need convenience for case of pure SymbRef instead of TargetMapping
             Symbol *target = object->getTargetMapping()->getMaps()[0].symbol;
             this->infusionMap[target].push_back(object->getOid());
+
+            auto time_vector = object->getTimesAsVector();
+            this->doseTimes.insert(this->doseTimes.end(), time_vector.begin(), time_vector.end());
+
             return;
         } else {
             this->has_boluses = true;

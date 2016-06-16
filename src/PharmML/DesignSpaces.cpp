@@ -49,6 +49,10 @@ namespace pharmmlcpp
         for (xml::Node symbref_node : symbref_nodes) {
             this->symbRefs.push_back(new SymbRef(symbref_node));
         }
+        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+        if (assign_node.exists()) {
+            this->assignment = this->context->factory.create(assign_node.getChild());
+        }
     }
 
     xml::Node DesignSpace::xml() {
@@ -90,6 +94,10 @@ namespace pharmmlcpp
 
     AstNode *DesignSpace::getDosingTimes() {
         return this->dosingTimes;
+    }
+
+    AstNode *DesignSpace::getAssignment() {
+        return this->assignment;
     }
 
     void DesignSpace::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
@@ -138,6 +146,17 @@ namespace pharmmlcpp
 
     std::vector<DesignSpace *> DesignSpaces::getDesignSpaces() {
         return this->designSpaces;
+    }
+
+    DesignSpace *DesignSpaces::getDesignSpaceFromSymbol(Symbol *symbol) {
+        for (DesignSpace *ds : this->designSpaces) {
+            for (SymbRef *symbref : ds->getSymbRefs()) {
+                if (symbref->getSymbol() == symbol) {
+                    return ds;
+                }
+            }
+        }
+        return nullptr;
     }
 
     void DesignSpaces::setupRefererSymbRefs(SymbolGathering &gathering) {

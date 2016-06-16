@@ -58,6 +58,7 @@ namespace pharmmlcpp
             PharmML *model;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
             std::vector<RandomVariable *> etas;
+            std::vector<Symbol *> designParameters;     // Design parameter with connection to DesignSpaces
 
             std::string accept(AstNode *);
             std::string genParameterModel();

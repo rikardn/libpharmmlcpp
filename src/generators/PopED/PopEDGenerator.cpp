@@ -148,6 +148,7 @@ namespace pharmmlcpp
             SymbolSet design_params = td->getOptimizationParameters();
             for (Symbol *symbol : design_params) {
                 form.add(symbol->getName() + "=a[" + std::to_string(index++) + "]");
+                this->designParameters.push_back(symbol);       // For later retrieval
             }
         }
 
@@ -633,23 +634,43 @@ namespace pharmmlcpp
         form.addMany(this->td_visitor.getDatabaseXT());
         form.addMany(this->td_visitor.getDatabaseA());
 
-
-        // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
         TrialDesign *td = model->getTrialDesign();
         if (td) {
             DesignSpaces *ds = td->getDesignSpaces();
             if (ds) {
-                DesignSpace *designSpace = ds->getDesignSpaces()[0];
-                AstAnalyzer intervalAnalyzer;
-                AstNode *dosingTimes = designSpace->getDosingTimes();
-                if (dosingTimes) {
-                    designSpace->getDosingTimes()->accept(&intervalAnalyzer);
-                    Interval *interval = intervalAnalyzer.getPureInterval();
-                    if (interval) {
+                if (this->designParameters.size() > 0) {
+                    TextFormatter mina_formatter;
+                    mina_formatter.openVector("mina = c()", 0, ", ");
+                    TextFormatter maxa_formatter;
+                    maxa_formatter.openVector("maxa = c()", 0, ", ");
+                    for (Symbol *param : this->designParameters) {
+                        DesignSpace *space = ds->getDesignSpaceFromSymbol(param);
+                        Interval *interval = static_cast<Interval *>(space->getAssignment());        // FIXME: Assume Interval here. Discussion ongoing
                         interval->getLeftEndpoint()->accept(&this->ast_gen);
-                        form.add("minxt=" + this->ast_gen.getValue());
+                        mina_formatter.add(this->ast_gen.getValue());
                         interval->getRightEndpoint()->accept(&this->ast_gen);
-                        form.add("maxxt=" + this->ast_gen.getValue());
+                        maxa_formatter.add(this->ast_gen.getValue());
+                    }
+                    mina_formatter.closeVector();
+                    mina_formatter.noFinalNewline();
+                    form.add(mina_formatter.createString());
+                    maxa_formatter.closeVector();
+                    maxa_formatter.noFinalNewline();
+                    form.add(maxa_formatter.createString());
+                } else {
+                    // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
+                    DesignSpace *designSpace = ds->getDesignSpaces()[0];
+                    AstAnalyzer intervalAnalyzer;
+                    AstNode *dosingTimes = designSpace->getDosingTimes();
+                    if (dosingTimes) {
+                        designSpace->getDosingTimes()->accept(&intervalAnalyzer);
+                        Interval *interval = intervalAnalyzer.getPureInterval();
+                        if (interval) {
+                            interval->getLeftEndpoint()->accept(&this->ast_gen);
+                            form.add("minxt=" + this->ast_gen.getValue());
+                            interval->getRightEndpoint()->accept(&this->ast_gen);
+                            form.add("maxxt=" + this->ast_gen.getValue());
+                        }
                     }
                 }
             }

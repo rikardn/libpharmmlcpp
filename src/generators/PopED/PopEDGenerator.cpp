@@ -312,14 +312,21 @@ namespace pharmmlcpp
 
             // Event data
             // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
-            form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
-            form.add("time = dose_times,");
-            form.add("value = dose_amt, method = c('add'))");
-            form.closeIndent();
+            if (this->td_visitor.hasBoluses()) {
+                form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
+                form.add("time = dose_times,");
+                form.add("value = dose_amt, method = c('add'))");
+                form.closeIndent();
+            }
             form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
             // ODE call
-            form.add("out <- ode(d_ini, times, ode_func, parameters, events = list(data = eventdat))");
+            std::string ode_call = "out <- ode(d_ini, times, ode_func, parameters";
+            if (this->td_visitor.hasBoluses()) {
+                ode_call += ", events = list(data = eventdat)";
+            }
+            ode_call += ")";
+            form.add(ode_call);
             form.emptyLine();
         }
 

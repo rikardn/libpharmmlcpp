@@ -71,7 +71,7 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             Binop *e12 = static_cast<Binop *>( e1234->getLeft() );
             Binop *e34 = static_cast<Binop *>( e1234->getRight() );
             Binop *e56 = static_cast<Binop *>( e123456->getRight() );
-            
+
             CHECK(e123456->hasParentheses() == false);
             CHECK(e1234->hasParentheses() == false);
             CHECK(e12->hasParentheses() == false);
@@ -94,7 +94,7 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             Binop *e5678 = static_cast<Binop *>( e12345678->getRight() );
             Binop *e56 = static_cast<Binop *>( e5678->getLeft() );
             Binop *e78 = static_cast<Binop *>( e5678->getRight() );
-                        
+
             CHECK(e12345678->hasParentheses() == false);
             CHECK(e1234->hasParentheses() == false);
             CHECK(e12->hasParentheses() == false);
@@ -133,7 +133,7 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             Binop *e123 = static_cast<Binop *>( e12345->getLeft() );
             Binop *e12 = static_cast<Binop *>( e123->getLeft() );
             Binop *e45 = static_cast<Binop *>( e12345->getRight() );
-            
+
             CHECK(e12345->hasParentheses() == false);
             CHECK(e123->hasParentheses() == true);
             CHECK(e12->hasParentheses() == true);
@@ -144,6 +144,36 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             assertScalarRealNoParentheses(scalar_binops);
             ScalarReal *s3 = static_cast<ScalarReal *>( e123->getRight() );
             CHECK(s3->hasParentheses() == false);
+        }
+
+        // Component uniop tests (expressions named after the digits they contain)
+        SECTION ("expr (((-1)+(-2))-((-3)-(-4)))+((-5)-(-6))") { // = (-1)+(-2)-((-3)-(-4))+(-5)-(-6) = -3
+            auto var = vars["unimin"];
+            var->accept(&ap);
+
+            // binops
+            Binop *e123456 = static_cast<Binop *>( var );
+            Binop *e1234 = static_cast<Binop *>( e123456->getLeft() );
+            Binop *e12 = static_cast<Binop *>( e1234->getLeft() );
+            Binop *e34 = static_cast<Binop *>( e1234->getRight() );
+            Binop *e56 = static_cast<Binop *>( e123456->getRight() );
+
+            CHECK(e123456->hasParentheses() == false);
+            CHECK(e1234->hasParentheses() == false);
+            CHECK(e12->hasParentheses() == false);
+            CHECK(e34->hasParentheses() == true);
+            CHECK(e56->hasParentheses() == false);
+
+            // scalars
+            std::vector<Binop *> binops = {e12, e34, e56};
+            for (auto binop : binops) {
+                Uniop *ul = static_cast<Uniop *>( binop->getLeft() );
+                Uniop *ur = static_cast<Uniop *>( binop->getRight() );
+                ScalarInt *sl = static_cast<ScalarInt *>( ul->getChild() );
+                ScalarInt *sr = static_cast<ScalarInt *>( ur->getChild() );
+                CHECK(sl->hasParentheses() == false);
+                CHECK(sr->hasParentheses() == false);
+            }
         }
     }
 }

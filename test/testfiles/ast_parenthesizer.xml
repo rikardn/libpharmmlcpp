@@ -85,6 +85,38 @@
                     </math:Binop>
                 </ct:Assign>
             </ct:Variable>
+            <ct:Variable symbolType="real" symbId="unimin">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="minus">
+                            <math:Binop op="plus">
+                                <math:Uniop op="minus">
+                                    <ct:Real>1</ct:Real>
+                                </math:Uniop>
+                                <math:Uniop op="minus">
+                                    <ct:Real>2</ct:Real>
+                                </math:Uniop>
+                            </math:Binop>
+                            <math:Binop op="minus">
+                                <math:Uniop op="minus">
+                                    <ct:Real>3</ct:Real>
+                                </math:Uniop>
+                                <math:Uniop op="minus">
+                                    <ct:Real>4</ct:Real>
+                                </math:Uniop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Uniop op="minus">
+                                <ct:Real>5</ct:Real>
+                            </math:Uniop>
+                            <math:Uniop op="minus">
+                                <ct:Real>6</ct:Real>
+                            </math:Uniop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
         </StructuralModel>
         <ObservationModel blkId="om1">
             <ContinuousData>

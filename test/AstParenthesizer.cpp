@@ -17,6 +17,13 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
 
     SECTION ("Simple binop tests") {
         // Binop's named after the numbers they contain
+        // 2
+        // -2
+        // -(2)
+        // 1+2
+        // functioncalls, log(X), exp(X)
+        // log(x) combinations
+        // Stuart's example (unary not against exponentiation)
         SECTION ("((1+2)+(3+4))+(5+6)") {
             auto var = vars["add"]; // ((1+2)+(3+4))+(5+6) = 1+2+3+4+5+6 = 21
             var->accept(&ap);

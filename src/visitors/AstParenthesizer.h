@@ -143,6 +143,7 @@ namespace pharmmlcpp
         int priority;
         NodeAssociativity associativity;
         bool commutative;
+        bool parenthesized;
     };
 
     class NodePropertiesStack
@@ -151,11 +152,14 @@ namespace pharmmlcpp
             NodePropertiesStack(AstNodeVisitor *visitor);
             int size();
             void setProperties(NodeProperties properties);
+            const NodeProperties &getCurrentProperties();
             void acceptUniop(Uniop *node);
             void acceptBinop(Binop *node);
             NodeProperties *getParentLeft();
             NodeProperties *getParentRight();
-            
+            bool adjacentLeftParenthesis();
+            bool adjacentRightParenthesis();
+
         private:
             AstNodeVisitor *visitor;
             NodeProperties set_properties;
@@ -163,6 +167,7 @@ namespace pharmmlcpp
             std::vector<AcceptDirection> directions;
 
             void popStacks();
+            void setParenthesesProperty(AstNode *node);
     };
 
     class AstParenthesizer : public AstNodeVisitor
@@ -282,7 +287,7 @@ namespace pharmmlcpp
             };
 
             NodePropertiesStack parents{this};
-            bool requiresParentheses(const NodeProperties &properties);
+            bool requiresParentheses();
     };
 }
 

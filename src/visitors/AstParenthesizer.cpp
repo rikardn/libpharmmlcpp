@@ -19,27 +19,40 @@
 
 namespace pharmmlcpp
 {
-    // private
+    // Stack of node properties with visitor to traverse
     NodePropertiesStack::NodePropertiesStack(AstNodeVisitor *visitor) {
         this->visitor = visitor;
     }
 
+    // Get current size of stack
     int NodePropertiesStack::size() {
         return this->properties.size();
     }
 
+    // Set current node properties (pushed to stack only when node is accepted)
     void NodePropertiesStack::setProperties(NodeProperties properties) {
         this->set_properties = properties;
     }
-    
+
+    // Get current node properties
+    const NodeProperties &NodePropertiesStack::getCurrentProperties() {
+        return this->set_properties;
+    }
+
+    // Push set properties, push child direction and accept uniop node (traverse); pop node from stack when exiting
     void NodePropertiesStack::acceptUniop(Uniop *node) {
+        this->setParenthesesProperty(node);
+
         this->properties.push_back(this->set_properties);
         this->directions.push_back(AcceptDirection::LeftChild);
         node->getChild()->accept(this->visitor);
         this->popStacks();
     }
 
+    // Push set properties, push child direction and accept binop node (traverse); pop node from stack when exiting
     void NodePropertiesStack::acceptBinop(Binop *node) {
+        this->setParenthesesProperty(node);
+
         this->properties.push_back(this->set_properties);
         this->directions.push_back(AcceptDirection::LeftChild);
         node->getLeft()->accept(this->visitor);
@@ -50,81 +63,121 @@ namespace pharmmlcpp
         this->popStacks();
     }
 
-    // Fetch properties of the first parent to the left in flattened AST
-    // (i.e., first parent whom not pushed node is a right child of)
+    // Fetch properties of the first parent to the left (in flattened AST)
+    // (i.e., first parent whom not yet pushed node is a right child of)
     NodeProperties *NodePropertiesStack::getParentLeft() {
         for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
             if ((*it) == AcceptDirection::RightChild) {
                 auto dir_index = std::distance(this->directions.begin(), it);
-                auto np_index = this->properties.begin() + dir_index;
-                return &(*np_index);
+                auto prop_it = this->properties.begin() + dir_index;
+                return &(*prop_it);
             }
         }
         return nullptr;
     }
 
-    // Fetch properties of the first parent to the right in flattened AST
-    // (i.e., first parent whom not pushed node is a left child of)
+    // Fetch properties of the first parent to the right (in flattened AST)
+    // (i.e., first parent whom not yet pushed node is a left child of)
     NodeProperties *NodePropertiesStack::getParentRight() {
         for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
             if ((*it) == AcceptDirection::LeftChild) {
                 auto dir_index = std::distance(this->directions.begin(), it);
-                auto np_index = this->properties.begin() + dir_index;
-                return &(*np_index);
+                auto prop_it = this->properties.begin() + dir_index;
+                return &(*prop_it);
             }
         }
         return nullptr;
     }
 
+    // Check if parent node left-parenthesizes last pushed node
+    bool NodePropertiesStack::adjacentLeftParenthesis() {
+        for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
+            if ((*it) != AcceptDirection::LeftChild) break;
+            auto dir_index = std::distance(this->directions.begin(), it);
+            auto prop_it = this->properties.begin() + dir_index;
+            if ((*prop_it).parenthesized == true) return true;
+        }
+        return false;
+    }
+
+    // Check if parent node right-parenthesizes last pushed node
+    bool NodePropertiesStack::adjacentRightParenthesis() {
+        for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
+            if ((*it) != AcceptDirection::RightChild) break;
+            auto dir_index = std::distance(this->directions.begin(), it);
+            auto prop_it = this->properties.begin() + dir_index;
+            if ((*prop_it).parenthesized == true) return true;
+        }
+        return false;
+    }
+
+    // Pop internal stacks (of last pushed node)
     void NodePropertiesStack::popStacks() {
         this->properties.pop_back();
         this->directions.pop_back();
     }
 
-    // public
+    // Set parentheses property from node (by internal accept before pushing and visiting)
+    void NodePropertiesStack::setParenthesesProperty(AstNode *node) {
+        this->set_properties.parenthesized = (node->hasParentheses() ? true : false);
+    }
+
+    // Visitor to traverse and determine if node requires parentheses
+    // (with regards to operator priority, associativity, commutativity and parent node parentheses)
     AstParenthesizer::AstParenthesizer() {
 
     }
 
-    // private
-    bool AstParenthesizer::requiresParentheses(const NodeProperties &properties) {
+    // Determine if current node (not yet accepted) requires parentheses (using internal parent stack)
+    bool AstParenthesizer::requiresParentheses() {
         // Root nodes never require parentheses
         if (this->parents.size() == 0) {
             return false;
         }
 
-        // Require if higher priority to left OR (same but this node is left associative AND left is not commutative like + or *)
+        // Properties of current (not yet pushed) node
+        const NodeProperties &cur_props = parents.getCurrentProperties();
+
+        // Check parent node to the "left" (which this node is RIGHT child of)
         NodeProperties *left_prop = this->parents.getParentLeft();
         if (left_prop) {
-            if (left_prop->priority > properties.priority) {
-                return true;
-            } else if (left_prop->priority == properties.priority) {
-                if (properties.associativity == NodeAssociativity::Left &&
-                    left_prop->commutative == false) {
+            // Only check rules if no parent node already protects with left "("
+            if (!this->parents.adjacentLeftParenthesis()) {
+                if (left_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
+                } else if (left_prop->priority == cur_props.priority) { // Same priority might require ()
+                    if (cur_props.associativity == NodeAssociativity::Left &&
+                        left_prop->commutative == false) {
+                        return true;
+                    }
                 }
             }
-            
         }
 
-        // Require if higher priority to right OR (same but this node is right associative AND right is not commutative like + or *)
+        // Check parent node to the "right" (which this node is LEFT child of)
         NodeProperties *right_prop = this->parents.getParentRight();
         if (right_prop) {
-            if (right_prop->priority > properties.priority) {
-                return true;
-            } else if (right_prop->priority == properties.priority) {
-                if (properties.associativity == NodeAssociativity::Right &&
-                    right_prop->commutative == false) {
+            // Only check rules if no parent node already protects with right ")"
+            if (!this->parents.adjacentRightParenthesis()) {
+                if (right_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
+                } else if (right_prop->priority == cur_props.priority) { // Same priority might require ()
+                    if (cur_props.associativity == NodeAssociativity::Right &&
+                        right_prop->commutative == false) {
+                        return true;
+                    }
                 }
             }
         }
 
-        // No rule left to require parentheses
+        // No rule triggered: () must not be required
         return false;
     }
 
-    // visitor methods
+    // Visit methods; Procedure:
+    // 1. Fetch properties of node (operator) and load into stack
+    // 2. Determine if node requires () considering parents visited (and set AstNode flag)
+    // 3. Let stack push node properties and accept node (via this visitor)
     void AstParenthesizer::visit(SymbRef *node) { }
 
     void AstParenthesizer::visit(SteadyStateParameter *node) { }
@@ -244,35 +297,35 @@ namespace pharmmlcpp
     void AstParenthesizer::visit(BinopPlus *node) {
         const NodeProperties &props = node_properties[AstOperator::BinopPlus];
         this->parents.setProperties(props);
-        if (!this->requiresParentheses(props)) node->elideParentheses();
+        if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopMinus *node) {
         const NodeProperties &props = node_properties[AstOperator::BinopMinus];
         this->parents.setProperties(props);
-        if (!this->requiresParentheses(props)) node->elideParentheses();
+        if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopDivide *node) {
         const NodeProperties &props = node_properties[AstOperator::BinopDivide];
         this->parents.setProperties(props);
-        if (!this->requiresParentheses(props)) node->elideParentheses();
+        if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopTimes *node) {
         const NodeProperties &props = node_properties[AstOperator::BinopTimes];
         this->parents.setProperties(props);
-        if (!this->requiresParentheses(props)) node->elideParentheses();
+        if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
     void AstParenthesizer::visit(BinopPower *node) {
         const NodeProperties &props = node_properties[AstOperator::BinopPower];
         this->parents.setProperties(props);
-        if (!this->requiresParentheses(props)) node->elideParentheses();
+        if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 

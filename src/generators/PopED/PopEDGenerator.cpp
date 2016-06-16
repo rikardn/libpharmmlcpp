@@ -632,7 +632,19 @@ namespace pharmmlcpp
 
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
-        form.addMany(this->td_visitor.getDatabaseA());
+        if (this->designParameters.size() > 0) {
+            TextFormatter a_formatter;
+            a_formatter.openVector("a = c()", 0, ", ");
+            for (Symbol *param : this->designParameters) {
+                static_cast<DesignParameter *>(param)->getAssignment()->accept(&this->ast_gen);
+                a_formatter.add(this->ast_gen.getValue());
+            }
+            a_formatter.closeVector();
+            a_formatter.noFinalNewline();
+            form.add(a_formatter.createString());
+        } else {
+            form.addMany(this->td_visitor.getDatabaseA());
+        }
 
         TrialDesign *td = model->getTrialDesign();
         if (td) {

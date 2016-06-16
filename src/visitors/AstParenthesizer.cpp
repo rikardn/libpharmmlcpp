@@ -178,7 +178,10 @@ namespace pharmmlcpp
     // 1. Fetch properties of node (operator) and load into stack
     // 2. Determine if node requires () considering parents visited (and set AstNode flag)
     // 3. Let stack push node properties and accept node (via this visitor)
-    void AstParenthesizer::visit(SymbRef *node) { }
+    void AstParenthesizer::visit(SymbRef *node) {
+        this->parents.setProperties(node_properties[AstOperator::SymbRef]);
+        if (!this->requiresParentheses()) node->elideParentheses();
+    }
 
     void AstParenthesizer::visit(SteadyStateParameter *node) { }
 
@@ -280,6 +283,7 @@ namespace pharmmlcpp
         } else {
             this->parents.setProperties(node_properties[AstOperator::UniopMinus]);
         }
+        if (!this->requiresParentheses()) node->elideParentheses();
     }
 
     void AstParenthesizer::visit(ScalarReal *node) {
@@ -288,6 +292,7 @@ namespace pharmmlcpp
         } else {
             this->parents.setProperties(node_properties[AstOperator::UniopMinus]);
         }
+        if (!this->requiresParentheses()) node->elideParentheses();
     }
 
     void AstParenthesizer::visit(ScalarBool *node) { }

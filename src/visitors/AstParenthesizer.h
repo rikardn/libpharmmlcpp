@@ -276,6 +276,7 @@ namespace pharmmlcpp
                 }
             };
             std::unordered_map<AstOperator, NodeProperties, EnumClassHash> node_properties = {
+                {AstOperator::SymbRef, {6, NodeAssociativity::None, false}},
                 {AstOperator::UniopMinus, {4, NodeAssociativity::Left, false}},
                 {AstOperator::ScalarInt, {6, NodeAssociativity::None, false}},
                 {AstOperator::ScalarReal, {6, NodeAssociativity::None, false}},

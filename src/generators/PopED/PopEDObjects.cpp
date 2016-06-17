@@ -133,6 +133,10 @@ namespace pharmmlcpp
         return this->doseTimes;
     }
 
+    int PopEDObjects::getNumObservations() {
+        return this->numObservations;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -142,6 +146,7 @@ namespace pharmmlcpp
                 Object *obj = obj_ref->getObject();
                 obj->accept(this);
                 xt_formatter.add(this->getValue());
+                this->numObservations++;
             }
         }
 

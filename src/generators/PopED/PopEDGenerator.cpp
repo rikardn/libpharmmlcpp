@@ -334,8 +334,11 @@ namespace pharmmlcpp
 
             // ODE call
             std::string ode_call = "out <- ode(d_ini, times, ode_func, parameters";
+            if (this->td_visitor.getNumObservations() == 1) {
+                ode_call += ", hmax=0.01";      // Default hmax will probably be to big for single observations
+            }
             if (this->td_visitor.hasBoluses()) {
-                ode_call += ", events = list(data = eventdat)";
+                ode_call += ", events=list(data=eventdat)";
             }
             ode_call += ")";
             form.add(ode_call);
@@ -634,14 +637,14 @@ namespace pharmmlcpp
         form.addMany(this->td_visitor.getDatabaseXT());
         if (this->designParameters.size() > 0) {
             TextFormatter a_formatter;
-            a_formatter.openVector("a = c()", 0, ", ");
+            a_formatter.openVector("a = list(c()", 0, ", ");
             for (Symbol *param : this->designParameters) {
                 static_cast<DesignParameter *>(param)->getAssignment()->accept(&this->ast_gen);
                 a_formatter.add(this->ast_gen.getValue());
             }
             a_formatter.closeVector();
             a_formatter.noFinalNewline();
-            form.add(a_formatter.createString());
+            form.add(a_formatter.createString() + ")");
         } else {
             form.addMany(this->td_visitor.getDatabaseA());
         }
@@ -652,9 +655,9 @@ namespace pharmmlcpp
             if (ds) {
                 if (this->designParameters.size() > 0) {
                     TextFormatter mina_formatter;
-                    mina_formatter.openVector("mina = c()", 0, ", ");
+                    mina_formatter.openVector("mina = list(c()", 0, ", ");
                     TextFormatter maxa_formatter;
-                    maxa_formatter.openVector("maxa = c()", 0, ", ");
+                    maxa_formatter.openVector("maxa = list(c()", 0, ", ");
                     for (Symbol *param : this->designParameters) {
                         DesignSpace *space = ds->getDesignSpaceFromSymbol(param);
                         Interval *interval = static_cast<Interval *>(space->getAssignment());        // FIXME: Assume Interval here. Discussion ongoing
@@ -665,10 +668,10 @@ namespace pharmmlcpp
                     }
                     mina_formatter.closeVector();
                     mina_formatter.noFinalNewline();
-                    form.add(mina_formatter.createString());
+                    form.add(mina_formatter.createString() + ")");
                     maxa_formatter.closeVector();
                     maxa_formatter.noFinalNewline();
-                    form.add(maxa_formatter.createString());
+                    form.add(maxa_formatter.createString() + ")");
                 } else {
                     // Handle the first DesignSpace. FIXME: Generalization needed. More design spaces? Should use oid
                     DesignSpace *designSpace = ds->getDesignSpaces()[0];

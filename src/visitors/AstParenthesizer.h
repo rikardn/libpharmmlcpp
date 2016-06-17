@@ -162,6 +162,7 @@ namespace pharmmlcpp
         NodeAssociativity associativity;
         bool commutative; // FIXME: Misnamed (means that parentheses can be removed if same priority)
         bool parenthesized;
+        AstOperator node_type; // For double minus removal and commutativity resolution
     };
 
     // Holds stack of node properties (of parents)
@@ -171,6 +172,7 @@ namespace pharmmlcpp
             NodePropertiesStack(AstNodeVisitor *visitor);
             int size();
             void setProperties(NodeProperties properties);
+            void setNodeType(AstOperator node_type);
             const NodeProperties &getCurrentProperties();
             void acceptUniop(Uniop *node);
             void acceptBinop(Binop *node);
@@ -401,11 +403,13 @@ namespace pharmmlcpp
                 {AstOperator::FunctionArgument, {0, NodeAssociativity::Both, false}},
                 {AstOperator::Interval, {0, NodeAssociativity::Both, false}},
             };
+            bool no_double_minus = true; // e.g. "-a - (-b)", never "-a - -b"
+
             NodePropertiesStack parents{this};
 
-            void acceptUniop(Uniop *node, NodeProperties &node_props);
-            void acceptBinop(Binop *node, NodeProperties &node_props);
-            void acceptEndNode(AstNode *node, NodeProperties &node_props);
+            void acceptUniop(Uniop *node, AstOperator node_type);
+            void acceptBinop(Binop *node, AstOperator node_type);
+            void acceptEndNode(AstNode *node, AstOperator node_type);
             bool requiresParentheses();
     };
 }

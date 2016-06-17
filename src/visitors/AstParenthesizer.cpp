@@ -34,6 +34,12 @@ namespace pharmmlcpp
         this->set_properties = properties;
     }
 
+    // Set current node type (pushed to stack only when node is accepted)
+    void NodePropertiesStack::setNodeType(AstOperator node_type) {
+        // TODO: Not very pretty, but required to remove double minus and resolve commutativity
+        this->set_properties.node_type = node_type;
+    }
+
     // Get current node properties
     const NodeProperties &NodePropertiesStack::getCurrentProperties() {
         return this->set_properties;
@@ -128,20 +134,23 @@ namespace pharmmlcpp
     // (with regards to operator priority, associativity, commutativity and parent node parentheses)
     AstParenthesizer::AstParenthesizer() { }
 
-    void AstParenthesizer::acceptUniop(Uniop *node, NodeProperties &node_props) {
-        this->parents.setProperties(node_props);
+    void AstParenthesizer::acceptUniop(Uniop *node, AstOperator node_type) {
+        this->parents.setProperties(this->node_properties[node_type]);
+        this->parents.setNodeType(node_type);
         if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptUniop(node);
     }
 
-    void AstParenthesizer::acceptBinop(Binop *node, NodeProperties &node_props) {
-        this->parents.setProperties(node_props);
+    void AstParenthesizer::acceptBinop(Binop *node, AstOperator node_type) {
+        this->parents.setProperties(this->node_properties[node_type]);
+        this->parents.setNodeType(node_type);
         if (!this->requiresParentheses()) node->elideParentheses();
         this->parents.acceptBinop(node);
     }
 
-    void AstParenthesizer::acceptEndNode(AstNode *node, NodeProperties &node_props) {
-        this->parents.setProperties(node_props);
+    void AstParenthesizer::acceptEndNode(AstNode *node, AstOperator node_type) {
+        this->parents.setProperties(this->node_properties[node_type]);
+        this->parents.setNodeType(node_type);
         if (!this->requiresParentheses()) node->elideParentheses();
     }
 
@@ -167,6 +176,10 @@ namespace pharmmlcpp
                     if ((cur_props.associativity == NodeAssociativity::Left ||
                          cur_props.associativity == NodeAssociativity::Both) &&
                         left_prop->commutative == false) {
+                        return true;
+                    }
+                } else if (this->no_double_minus) {
+                    if (cur_props.node_type == AstOperator::UniopMinus && left_prop->node_type == AstOperator::BinopMinus) {
                         return true;
                     }
                 }
@@ -199,7 +212,7 @@ namespace pharmmlcpp
     // 2. Determine if node requires () considering parents visited (and set AstNode flag)
     // 3. Let stack push node properties and accept node (via this visitor)
     void AstParenthesizer::visit(SymbRef *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::SymbRef]);
+        this->acceptEndNode(node, AstOperator::SymbRef);
     }
 
     void AstParenthesizer::visit(SteadyStateParameter *node) { }
@@ -207,299 +220,299 @@ namespace pharmmlcpp
     void AstParenthesizer::visit(ColumnRef *node) { }
 
     void AstParenthesizer::visit(UniopLog *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog]);
+        this->acceptUniop(node, AstOperator::UniopLog);
     }
 
     void AstParenthesizer::visit(UniopLog2 *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog2]);
+        this->acceptUniop(node, AstOperator::UniopLog2);
     }
 
     void AstParenthesizer::visit(UniopLog10 *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog10]);
+        this->acceptUniop(node, AstOperator::UniopLog10);
     }
 
     void AstParenthesizer::visit(UniopExp *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopExp]);
+        this->acceptUniop(node, AstOperator::UniopExp);
     }
 
     void AstParenthesizer::visit(UniopMinus *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopMinus]);
+        this->acceptUniop(node, AstOperator::UniopMinus);
     }
 
     void AstParenthesizer::visit(UniopAbs *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopAbs]);
+        this->acceptUniop(node, AstOperator::UniopAbs);
     }
 
     void AstParenthesizer::visit(UniopSqrt *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSqrt]);
+        this->acceptUniop(node, AstOperator::UniopSqrt);
     }
 
     void AstParenthesizer::visit(UniopLogistic *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopLogistic]);
+        this->acceptUniop(node, AstOperator::UniopLogistic);
     }
 
     void AstParenthesizer::visit(UniopLogit *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopLogit]);
+        this->acceptUniop(node, AstOperator::UniopLogit);
     }
 
     void AstParenthesizer::visit(UniopProbit *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopProbit]);
+        this->acceptUniop(node, AstOperator::UniopProbit);
     }
 
     void AstParenthesizer::visit(UniopNormcdf *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopNormcdf]);
+        this->acceptUniop(node, AstOperator::UniopNormcdf);
     }
 
     void AstParenthesizer::visit(UniopFactorial *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopFactorial]);
+        this->acceptUniop(node, AstOperator::UniopFactorial);
     }
 
     void AstParenthesizer::visit(UniopFactln *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopFactln]);
+        this->acceptUniop(node, AstOperator::UniopFactln);
     }
 
     void AstParenthesizer::visit(UniopGamma *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopGamma]);
+        this->acceptUniop(node, AstOperator::UniopGamma);
     }
 
     void AstParenthesizer::visit(UniopGammaln *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopGammaln]);
+        this->acceptUniop(node, AstOperator::UniopGammaln);
     }
 
     void AstParenthesizer::visit(UniopSin *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSin]);
+        this->acceptUniop(node, AstOperator::UniopSin);
     }
 
     void AstParenthesizer::visit(UniopSinh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSinh]);
+        this->acceptUniop(node, AstOperator::UniopSinh);
     }
 
     void AstParenthesizer::visit(UniopCos *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCos]);
+        this->acceptUniop(node, AstOperator::UniopCos);
     }
 
     void AstParenthesizer::visit(UniopCosh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCosh]);
+        this->acceptUniop(node, AstOperator::UniopCosh);
     }
 
     void AstParenthesizer::visit(UniopTan *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopTan]);
+        this->acceptUniop(node, AstOperator::UniopTan);
     }
 
     void AstParenthesizer::visit(UniopTanh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopTanh]);
+        this->acceptUniop(node, AstOperator::UniopTanh);
     }
 
     void AstParenthesizer::visit(UniopCot *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCot]);
+        this->acceptUniop(node, AstOperator::UniopCot);
     }
 
     void AstParenthesizer::visit(UniopCoth *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCoth]);
+        this->acceptUniop(node, AstOperator::UniopCoth);
     }
 
     void AstParenthesizer::visit(UniopSec *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSec]);
+        this->acceptUniop(node, AstOperator::UniopSec);
     }
 
     void AstParenthesizer::visit(UniopSech *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSech]);
+        this->acceptUniop(node, AstOperator::UniopSech);
     }
 
     void AstParenthesizer::visit(UniopCsc *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCsc]);
+        this->acceptUniop(node, AstOperator::UniopCsc);
     }
 
     void AstParenthesizer::visit(UniopCsch *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCsch]);
+        this->acceptUniop(node, AstOperator::UniopCsch);
     }
 
     void AstParenthesizer::visit(UniopArcsin *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsin]);
+        this->acceptUniop(node, AstOperator::UniopArcsin);
     }
 
     void AstParenthesizer::visit(UniopArcsinh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsinh]);
+        this->acceptUniop(node, AstOperator::UniopArcsinh);
     }
 
     void AstParenthesizer::visit(UniopArccos *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccos]);
+        this->acceptUniop(node, AstOperator::UniopArccos);
     }
 
     void AstParenthesizer::visit(UniopArccosh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccosh]);
+        this->acceptUniop(node, AstOperator::UniopArccosh);
     }
 
     void AstParenthesizer::visit(UniopArctan *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArctan]);
+        this->acceptUniop(node, AstOperator::UniopArctan);
     }
 
     void AstParenthesizer::visit(UniopArctanh *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArctanh]);
+        this->acceptUniop(node, AstOperator::UniopArctanh);
     }
 
     void AstParenthesizer::visit(UniopArccot *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccot]);
+        this->acceptUniop(node, AstOperator::UniopArccot);
     }
 
     void AstParenthesizer::visit(UniopArccoth *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccoth]);
+        this->acceptUniop(node, AstOperator::UniopArccoth);
     }
 
     void AstParenthesizer::visit(UniopArcsec *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsec]);
+        this->acceptUniop(node, AstOperator::UniopArcsec);
     }
 
     void AstParenthesizer::visit(UniopArcsech *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsech]);
+        this->acceptUniop(node, AstOperator::UniopArcsech);
     }
 
     void AstParenthesizer::visit(UniopArccsc *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccsc]);
+        this->acceptUniop(node, AstOperator::UniopArccsc);
     }
 
     void AstParenthesizer::visit(UniopArccsch *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccsch]);
+        this->acceptUniop(node, AstOperator::UniopArccsch);
     }
 
     void AstParenthesizer::visit(UniopHeaviside *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopHeaviside]);
+        this->acceptUniop(node, AstOperator::UniopHeaviside);
     }
 
     void AstParenthesizer::visit(UniopSign *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopSign]);
+        this->acceptUniop(node, AstOperator::UniopSign);
     }
 
     void AstParenthesizer::visit(UniopFloor *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopFloor]);
+        this->acceptUniop(node, AstOperator::UniopFloor);
     }
 
     void AstParenthesizer::visit(UniopCeiling *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::UniopCeiling]);
+        this->acceptUniop(node, AstOperator::UniopCeiling);
     }
 
     void AstParenthesizer::visit(ScalarInt *node) {
         if (node->toInt() >= 0) {
-            this->acceptEndNode(node, this->node_properties[AstOperator::ScalarInt]);
+            this->acceptEndNode(node, AstOperator::ScalarInt);
         } else {
-            this->acceptEndNode(node, this->node_properties[AstOperator::UniopMinus]);
+            this->acceptEndNode(node, AstOperator::UniopMinus);
         }
     }
 
     void AstParenthesizer::visit(ScalarReal *node) {
         if (node->toDouble() >= 0) {
-            this->acceptEndNode(node, this->node_properties[AstOperator::ScalarReal]);
+            this->acceptEndNode(node, AstOperator::ScalarReal);
         } else {
-            this->acceptEndNode(node, this->node_properties[AstOperator::UniopMinus]);
+            this->acceptEndNode(node, AstOperator::UniopMinus);
         }
     }
 
     void AstParenthesizer::visit(ScalarBool *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::ScalarBool]);
+        this->acceptEndNode(node, AstOperator::ScalarBool);
     }
 
     void AstParenthesizer::visit(ScalarString *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::ScalarString]);
+        this->acceptEndNode(node, AstOperator::ScalarString);
     }
 
     void AstParenthesizer::visit(BinopPlus *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopPlus]);
+        this->acceptBinop(node, AstOperator::BinopPlus);
     }
 
     void AstParenthesizer::visit(BinopMinus *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopMinus]);
+        this->acceptBinop(node, AstOperator::BinopMinus);
     }
 
     void AstParenthesizer::visit(BinopDivide *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopDivide]);
+        this->acceptBinop(node, AstOperator::BinopDivide);
     }
 
     void AstParenthesizer::visit(BinopTimes *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopTimes]);
+        this->acceptBinop(node, AstOperator::BinopTimes);
     }
 
     void AstParenthesizer::visit(BinopPower *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopPower]);
+        this->acceptBinop(node, AstOperator::BinopPower);
     }
 
     void AstParenthesizer::visit(BinopLogx *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopLogx]);
+        this->acceptBinop(node, AstOperator::BinopLogx);
     }
 
     void AstParenthesizer::visit(BinopRoot *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopRoot]);
+        this->acceptBinop(node, AstOperator::BinopRoot);
     }
 
     void AstParenthesizer::visit(BinopMin *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopMin]);
+        this->acceptBinop(node, AstOperator::BinopMin);
     }
 
     void AstParenthesizer::visit(BinopMax *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopMax]);
+        this->acceptBinop(node, AstOperator::BinopMax);
     }
 
     void AstParenthesizer::visit(BinopRem *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopRem]);
+        this->acceptBinop(node, AstOperator::BinopRem);
     }
 
     void AstParenthesizer::visit(BinopAtan2 *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::BinopAtan2]);
+        this->acceptBinop(node, AstOperator::BinopAtan2);
     }
 
     void AstParenthesizer::visit(Pi *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::Pi]);
+        this->acceptEndNode(node, AstOperator::Pi);
     }
 
     void AstParenthesizer::visit(Exponentiale *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::Exponentiale]);
+        this->acceptEndNode(node, AstOperator::Exponentiale);
     }
 
     void AstParenthesizer::visit(NullValue *node) {
-        this->acceptEndNode(node, this->node_properties[AstOperator::NullValue]);
+        this->acceptEndNode(node, AstOperator::NullValue);
     }
 
     void AstParenthesizer::visit(LogicUniopIsdefined *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::LogicUniopIsdefined]);
+        this->acceptUniop(node, AstOperator::LogicUniopIsdefined);
     }
 
     void AstParenthesizer::visit(LogicUniopNot *node) {
-        this->acceptUniop(node, this->node_properties[AstOperator::LogicUniopNot]);
+        this->acceptUniop(node, AstOperator::LogicUniopNot);
     }
 
     void AstParenthesizer::visit(LogicBinopLt *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopLt]);
+        this->acceptBinop(node, AstOperator::LogicBinopLt);
     }
 
     void AstParenthesizer::visit(LogicBinopLeq *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopLeq]);
+        this->acceptBinop(node, AstOperator::LogicBinopLeq);
     }
 
     void AstParenthesizer::visit(LogicBinopGt *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopGt]);
+        this->acceptBinop(node, AstOperator::LogicBinopGt);
     }
 
     void AstParenthesizer::visit(LogicBinopGeq *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopGeq]);
+        this->acceptBinop(node, AstOperator::LogicBinopGeq);
     }
 
     void AstParenthesizer::visit(LogicBinopEq *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopEq]);
+        this->acceptBinop(node, AstOperator::LogicBinopEq);
     }
 
     void AstParenthesizer::visit(LogicBinopNeq *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopNeq]);
+        this->acceptBinop(node, AstOperator::LogicBinopNeq);
     }
 
     void AstParenthesizer::visit(LogicBinopAnd *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopAnd]);
+        this->acceptBinop(node, AstOperator::LogicBinopAnd);
     }
 
     void AstParenthesizer::visit(LogicBinopOr *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopOr]);
+        this->acceptBinop(node, AstOperator::LogicBinopOr);
     }
 
     void AstParenthesizer::visit(LogicBinopXor *node) {
-        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopXor]);
+        this->acceptBinop(node, AstOperator::LogicBinopXor);
     }
 
     void AstParenthesizer::visit(Vector *node) {

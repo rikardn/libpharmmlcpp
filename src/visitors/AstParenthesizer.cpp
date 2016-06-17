@@ -96,6 +96,7 @@ namespace pharmmlcpp
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
+            if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
         }
         return false;
     }
@@ -107,6 +108,7 @@ namespace pharmmlcpp
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
+            if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
         }
         return false;
     }

@@ -235,4 +235,48 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             CHECK(s7->hasParentheses() == false);
         }
     }
+
+    // Functions (in R)
+    SECTION ("Function operators (self-enclosed)") {
+        SECTION ("(-b+sqrt((b^2)-(4*(a*c))))/(2*a) (quadratic formula 1)") { // = (-b + sqrt(b^2 - 4*a*c))/(2*a)
+            auto var = vars["quadratic_formula_1"];
+            var->accept(&ap);
+
+            // binops/uniops
+            Binop *b_bb24ac2a = static_cast<Binop *>( var );
+            Binop *b_bb24ac = static_cast<Binop *>( b_bb24ac2a->getLeft() );
+            Uniop *u_b = static_cast<Uniop *>( b_bb24ac->getLeft() );
+            Uniop *u_b24ac = static_cast<Uniop *>( b_bb24ac->getRight() );
+            Binop *b_b24ac = static_cast<Binop *>( u_b24ac->getChild() );
+            Binop *b_b2 = static_cast<Binop *>( b_b24ac->getLeft() );
+            Binop *b_4ac = static_cast<Binop *>( b_b24ac->getRight() );
+            Binop *b_ac = static_cast<Binop *>( b_4ac->getRight() );
+            Binop *b_2a = static_cast<Binop *>( b_bb24ac2a->getRight() );
+
+            CHECK(b_bb24ac2a->hasParentheses() == false);
+            CHECK(b_bb24ac->hasParentheses() == true);
+            CHECK(u_b->hasParentheses() == false);
+            CHECK(u_b24ac->hasParentheses() == false);
+            CHECK(b_b24ac->hasParentheses() == false);
+            CHECK(b_b2->hasParentheses() == false);
+            CHECK(b_4ac->hasParentheses() == false);
+            CHECK(b_ac->hasParentheses() == false);
+            CHECK(b_2a->hasParentheses() == true);
+
+            // scalars
+            SymbRef *s_b = static_cast<SymbRef *>( u_b->getChild() );
+            ScalarInt *s_4 = static_cast<ScalarInt *>( b_4ac->getLeft() );
+            SymbRef *b_a = static_cast<SymbRef *>( b_ac->getLeft() );
+            SymbRef *b_c = static_cast<SymbRef *>( b_ac->getRight() );
+            ScalarInt *s_2 = static_cast<ScalarInt *>( b_2a->getLeft() );
+            SymbRef *s_a = static_cast<SymbRef *>( b_2a->getRight() );
+
+            CHECK(s_b->hasParentheses() == false);
+            CHECK(s_4->hasParentheses() == false);
+            CHECK(b_a->hasParentheses() == false);
+            CHECK(b_c->hasParentheses() == false);
+            CHECK(s_2->hasParentheses() == false);
+            CHECK(s_a->hasParentheses() == false);
+        }
+    }
 }

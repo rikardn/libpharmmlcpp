@@ -156,6 +156,36 @@
                     </math:LogicBinop>
                 </ct:Assign>
             </ct:Variable>
+            <ct:Variable symbolType="real" symbId="quadratic_formula_1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="plus">
+                            <math:Uniop op="minus">
+                                <ct:SymbRef symbIdRef="b"/>
+                            </math:Uniop>
+                            <math:Uniop op="sqrt">
+                                <math:Binop op="minus">
+                                    <math:Binop op="power">
+                                        <ct:SymbRef symbIdRef="b"/>
+                                        <ct:Real>2</ct:Real>
+                                    </math:Binop>
+                                    <math:Binop op="times">
+                                        <ct:Real>4</ct:Real>
+                                        <math:Binop op="times">
+                                            <ct:SymbRef symbIdRef="a"/>
+                                            <ct:SymbRef symbIdRef="c"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Uniop>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:Real>2</ct:Real>
+                            <ct:SymbRef symbIdRef="a"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
         </StructuralModel>
         <ObservationModel blkId="om1">
             <ContinuousData>

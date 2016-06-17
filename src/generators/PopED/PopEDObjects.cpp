@@ -188,12 +188,19 @@ namespace pharmmlcpp
             object->getTimesAsVector()[0]->accept(&this->rast);
             inf_func_call += this->rast.getValue();
             inf_func_call += ", ";
-            object->getRate()->accept(&this->rast);
-            inf_func_call += this->rast.getValue();
-            inf_func_call += ", ";
             object->getAmount()->accept(&this->rast);
             inf_func_call += this->rast.getValue();
-            inf_func_call += ", Time)";
+            inf_func_call += ", Time, ";
+
+            if (object->getRate()) {
+                object->getRate()->accept(&this->rast);
+                inf_func_call += "rate=" + this->rast.getValue();
+            } else {    // Have duration
+                object->getDuration()->accept(&this->rast);
+                inf_func_call += "duration=" + this->rast.getValue();
+            }
+            inf_func_call += ")";
+
             this->infFuncCalls.push_back(inf_func_call);
 
             // Add to infusionMap for future sum of all infusions to same targets

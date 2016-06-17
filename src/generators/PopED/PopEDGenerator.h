@@ -77,8 +77,10 @@ namespace pharmmlcpp
             void warnOperationPropertyUnknown(OperationProperty *prop);
 
             // Constants
-            const std::string InfusionFunction = R"(inf_func <- function(start,rate,amount,Time) {
-    duration = rate/amount
+            const std::string InfusionFunction = R"(inf_func <- function(start,amount,Time,rate=NULL,duration=NULL) {
+    if (is.null(duration)) {
+        duration = rate/amount
+    }
     if(Time >= start && Time < (start+duration)) {
         return(amount/duration)
     } else {

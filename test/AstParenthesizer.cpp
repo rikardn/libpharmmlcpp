@@ -35,32 +35,29 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
     }
     AstParenthesizer ap;
 
-    SECTION ("Simple binop tests") {
-        // No (scalar) root nodes should require parentheses
-        SECTION ("scalars") {
-            SymbRef symbref("symbref");
-            ScalarInt pos_int(2);
-            ScalarInt neg_int(-2);
-            ScalarReal pos_real(2);
-            ScalarReal neg_real(-2);
+    // No (scalar) root nodes should require parentheses
+    SECTION ("Simple scalars") {
+        SymbRef symbref("symbref");
+        ScalarInt pos_int(2);
+        ScalarInt neg_int(-2);
+        ScalarReal pos_real(2);
+        ScalarReal neg_real(-2);
 
-            symbref.accept(&ap);
-            pos_int.accept(&ap);
-            neg_int.accept(&ap);
-            pos_real.accept(&ap);
-            neg_real.accept(&ap);
+        symbref.accept(&ap);
+        pos_int.accept(&ap);
+        neg_int.accept(&ap);
+        pos_real.accept(&ap);
+        neg_real.accept(&ap);
 
-            CHECK(symbref.hasParentheses() == false);
-            CHECK(pos_int.hasParentheses() == false);
-            CHECK(neg_int.hasParentheses() == false);
-            CHECK(pos_real.hasParentheses() == false);
-            CHECK(neg_real.hasParentheses() == false);
-        }
-        // functioncalls, log(X), exp(X)
-        // log(x) combinations
-        // Stuart's example (unary not against exponentiation)
+        CHECK(symbref.hasParentheses() == false);
+        CHECK(pos_int.hasParentheses() == false);
+        CHECK(neg_int.hasParentheses() == false);
+        CHECK(pos_real.hasParentheses() == false);
+        CHECK(neg_real.hasParentheses() == false);
+    }
 
-        // Component binop tests (expressions named after the digits they contain)
+    // Component binop tests (expressions named after the digits they contain)
+    SECTION ("Mixed binops") {
         SECTION ("expr ((1+2)+(3+4))+(5+6)") { // = 1+2+3+4+5+6 = 21
             auto var = vars["add"];
             var->accept(&ap);
@@ -145,8 +142,10 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             ScalarReal *s3 = static_cast<ScalarReal *>( e123->getRight() );
             CHECK(s3->hasParentheses() == false);
         }
+    }
 
-        // Component uniop tests (expressions named after the digits they contain)
+    // Component uniop tests (expressions named after the digits they contain)
+    SECTION ("Uniop minus") {
         SECTION ("expr (((-1)+(-2))-((-3)-(-4)))+((-5)-(-6))") { // = (-1)+(-2)-((-3)-(-4))+(-5)-(-6) = -3
             auto var = vars["unimin"];
             var->accept(&ap);
@@ -175,8 +174,10 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
                 CHECK(sr->hasParentheses() == false);
             }
         }
+    }
 
-        // Logical operator tests (expressions named after the digits they contain)
+    // Logical operator tests (expressions named after the digits they contain)
+    SECTION ("Logical operators") {
         SECTION ("((!((1==1)>(!F)))<((2>=3)<=(4>5)))||((T||F)&&(6!=7))") { // = "(! (1==1) > (!F)) < ((2>=3) <= (4>5)) || (T||F) && 6!=7"
             auto var = vars["rand_logic"];
             var->accept(&ap);

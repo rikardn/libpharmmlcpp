@@ -44,7 +44,7 @@ namespace pharmmlcpp
         this->setParenthesesProperty(node);
 
         this->properties.push_back(this->set_properties);
-        this->directions.push_back(AcceptDirection::LeftChild);
+        this->directions.push_back(AcceptDirection::OnlyChild);
         node->getChild()->accept(this->visitor);
         this->popStacks();
     }
@@ -67,7 +67,7 @@ namespace pharmmlcpp
     // (i.e., first parent whom not yet pushed node is a right child of)
     NodeProperties *NodePropertiesStack::getParentLeft() {
         for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
-            if ((*it) == AcceptDirection::RightChild) {
+            if ((*it) == AcceptDirection::RightChild || (*it) == AcceptDirection::OnlyChild) {
                 auto dir_index = std::distance(this->directions.begin(), it);
                 auto prop_it = this->properties.begin() + dir_index;
                 return &(*prop_it);
@@ -80,7 +80,7 @@ namespace pharmmlcpp
     // (i.e., first parent whom not yet pushed node is a left child of)
     NodeProperties *NodePropertiesStack::getParentRight() {
         for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
-            if ((*it) == AcceptDirection::LeftChild) {
+            if ((*it) == AcceptDirection::LeftChild || (*it) == AcceptDirection::OnlyChild) {
                 auto dir_index = std::distance(this->directions.begin(), it);
                 auto prop_it = this->properties.begin() + dir_index;
                 return &(*prop_it);
@@ -92,7 +92,7 @@ namespace pharmmlcpp
     // Check if parent node left-parenthesizes last pushed node
     bool NodePropertiesStack::adjacentLeftParenthesis() {
         for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
-            if ((*it) != AcceptDirection::LeftChild) break;
+            if ((*it) != AcceptDirection::LeftChild || (*it) == AcceptDirection::OnlyChild) break;
             auto dir_index = std::distance(this->directions.begin(), it);
             auto prop_it = this->properties.begin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
@@ -103,7 +103,7 @@ namespace pharmmlcpp
     // Check if parent node right-parenthesizes last pushed node
     bool NodePropertiesStack::adjacentRightParenthesis() {
         for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
-            if ((*it) != AcceptDirection::RightChild) break;
+            if ((*it) != AcceptDirection::RightChild || (*it) == AcceptDirection::OnlyChild) break;
             auto dir_index = std::distance(this->directions.begin(), it);
             auto prop_it = this->properties.begin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
@@ -137,6 +137,7 @@ namespace pharmmlcpp
 
         // Properties of current (not yet pushed) node
         const NodeProperties &cur_props = parents.getCurrentProperties();
+        if (cur_props.associativity == NodeAssociativity::None) return false;
 
         // Check parent node to the "left" (which this node is RIGHT child of)
         NodeProperties *left_prop = this->parents.getParentLeft();
@@ -146,7 +147,8 @@ namespace pharmmlcpp
                 if (left_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
                 } else if (left_prop->priority == cur_props.priority) { // Same priority might require ()
-                    if (cur_props.associativity == NodeAssociativity::Left &&
+                    if ((cur_props.associativity == NodeAssociativity::Left ||
+                         cur_props.associativity == NodeAssociativity::Both) &&
                         left_prop->commutative == false) {
                         return true;
                     }
@@ -162,7 +164,8 @@ namespace pharmmlcpp
                 if (right_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
                 } else if (right_prop->priority == cur_props.priority) { // Same priority might require ()
-                    if (cur_props.associativity == NodeAssociativity::Right &&
+                    if ((cur_props.associativity == NodeAssociativity::Right ||
+                         cur_props.associativity == NodeAssociativity::Both) &&
                         right_prop->commutative == false) {
                         return true;
                     }

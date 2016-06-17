@@ -46,7 +46,7 @@ namespace pharmmlcpp
         Left,
         Right,
         Both,
-        None
+        None // FIXME: Split into None (end-nodes) and Inner (self-enclosing nodes)
     };
 
     // Direction a parent accepted child. Determines location of child
@@ -160,7 +160,7 @@ namespace pharmmlcpp
     struct NodeProperties {
         int priority;
         NodeAssociativity associativity;
-        bool commutative; // FIXME: Misnamed
+        bool commutative; // FIXME: Misnamed (means that parentheses can be removed if same priority)
         bool parenthesized;
     };
 
@@ -376,12 +376,12 @@ namespace pharmmlcpp
                 {AstOperator::BinopMinus, {5, NodeAssociativity::Left, false}},
 
                 // logical comparisons
-                {AstOperator::LogicBinopLt, {4, NodeAssociativity::Left, false}},
-                {AstOperator::LogicBinopLeq, {4, NodeAssociativity::Left, false}},
-                {AstOperator::LogicBinopGt, {4, NodeAssociativity::Left, false}},
-                {AstOperator::LogicBinopGeq, {4, NodeAssociativity::Left, false}},
-                {AstOperator::LogicBinopEq, {4, NodeAssociativity::Left, false}},
-                {AstOperator::LogicBinopNeq, {4, NodeAssociativity::Left, false}},
+                {AstOperator::LogicBinopLt, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopLeq, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopGt, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopGeq, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopEq, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopNeq, {4, NodeAssociativity::Both, false}},
 
                 // logical not
                 {AstOperator::LogicUniopNot, {3, NodeAssociativity::Left, false}},
@@ -403,6 +403,9 @@ namespace pharmmlcpp
             };
             NodePropertiesStack parents{this};
 
+            void acceptUniop(Uniop *node, NodeProperties &node_props);
+            void acceptBinop(Binop *node, NodeProperties &node_props);
+            void acceptEndNode(AstNode *node, NodeProperties &node_props);
             bool requiresParentheses();
     };
 }

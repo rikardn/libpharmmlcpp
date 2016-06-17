@@ -175,5 +175,63 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
                 CHECK(sr->hasParentheses() == false);
             }
         }
+
+        // Logical operator tests (expressions named after the digits they contain)
+        SECTION ("((!((1==1)>(!F)))<((2>=3)<=(4>5)))||((T||F)&&(6!=7))") { // = "(! (1==1) > (!F)) < ((2>=3) <= (4>5)) || (T||F) && 6!=7"
+            auto var = vars["rand_logic"];
+            var->accept(&ap);
+
+            // binops/uniops
+            Binop *b11F2345TF67 = static_cast<Binop *>( var );
+            Binop *b11F2345 = static_cast<Binop *>( b11F2345TF67->getLeft() );
+            Uniop *u11F = static_cast<Uniop *>( b11F2345->getLeft() );
+            Binop *b11F = static_cast<Binop *>( u11F->getChild() );
+            Binop *b11 = static_cast<Binop *>( b11F->getLeft() );
+            Uniop *uF = static_cast<Uniop *>( b11F->getRight() );
+            Binop *b2345 = static_cast<Binop *>( b11F2345->getRight() );
+            Binop *b23 = static_cast<Binop *>( b2345->getLeft() );
+            Binop *b45 = static_cast<Binop *>( b2345->getRight() );
+            Binop *bTF67 = static_cast<Binop *>( b11F2345TF67->getRight() );
+            Binop *bTF = static_cast<Binop *>( bTF67->getLeft() );
+            Binop *b67 = static_cast<Binop *>( bTF67->getRight() );
+
+            CHECK(b11F2345TF67->hasParentheses() == false);
+            CHECK(b11F2345->hasParentheses() == false);
+            CHECK(u11F->hasParentheses() == true);
+            CHECK(b11F->hasParentheses() == false);
+            CHECK(b11->hasParentheses() == true);
+            CHECK(uF->hasParentheses() == true);
+            CHECK(b2345->hasParentheses() == true);
+            CHECK(b23->hasParentheses() == true);
+            CHECK(b45->hasParentheses() == true);
+            CHECK(bTF67->hasParentheses() == false);
+            CHECK(bTF->hasParentheses() == true);
+            CHECK(b67->hasParentheses() == false);
+
+            // scalars
+            ScalarInt *s1_1 = static_cast<ScalarInt *>( b11->getLeft() );
+            ScalarInt *s1_2 = static_cast<ScalarInt *>( b11->getRight() );
+            ScalarBool *sF_1 = static_cast<ScalarBool *>( uF->getChild() );
+            ScalarInt *s2 = static_cast<ScalarInt *>( b23->getLeft() );
+            ScalarInt *s3 = static_cast<ScalarInt *>( b23->getRight() );
+            ScalarInt *s4 = static_cast<ScalarInt *>( b45->getLeft() );
+            ScalarInt *s5 = static_cast<ScalarInt *>( b45->getRight() );
+            ScalarBool *sT = static_cast<ScalarBool *>( bTF->getLeft() );
+            ScalarBool *sF_2 = static_cast<ScalarBool *>( bTF->getRight() );
+            ScalarInt *s6 = static_cast<ScalarInt *>( b67->getLeft() );
+            ScalarInt *s7 = static_cast<ScalarInt *>( b67->getRight() );
+
+            CHECK(s1_1->hasParentheses() == false);
+            CHECK(s1_2->hasParentheses() == false);
+            CHECK(sF_1->hasParentheses() == false);
+            CHECK(s2->hasParentheses() == false);
+            CHECK(s3->hasParentheses() == false);
+            CHECK(s4->hasParentheses() == false);
+            CHECK(s5->hasParentheses() == false);
+            CHECK(sT->hasParentheses() == false);
+            CHECK(sF_2->hasParentheses() == false);
+            CHECK(s6->hasParentheses() == false);
+            CHECK(s7->hasParentheses() == false);
+        }
     }
 }

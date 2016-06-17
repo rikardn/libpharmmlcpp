@@ -66,10 +66,10 @@ namespace pharmmlcpp
     // Fetch properties of the first parent to the left (in flattened AST)
     // (i.e., first parent whom not yet pushed node is a right child of)
     NodeProperties *NodePropertiesStack::getParentLeft() {
-        for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
+        for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
             if ((*it) == AcceptDirection::RightChild || (*it) == AcceptDirection::OnlyChild) {
-                auto dir_index = std::distance(this->directions.begin(), it);
-                auto prop_it = this->properties.begin() + dir_index;
+                auto dir_index = std::distance(this->directions.rbegin(), it);
+                auto prop_it = this->properties.rbegin() + dir_index;
                 return &(*prop_it);
             }
         }
@@ -79,33 +79,33 @@ namespace pharmmlcpp
     // Fetch properties of the first parent to the right (in flattened AST)
     // (i.e., first parent whom not yet pushed node is a left child of)
     NodeProperties *NodePropertiesStack::getParentRight() {
-        for (auto it = this->directions.begin(); it != this->directions.end(); ++it) {
+        for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
             if ((*it) == AcceptDirection::LeftChild || (*it) == AcceptDirection::OnlyChild) {
-                auto dir_index = std::distance(this->directions.begin(), it);
-                auto prop_it = this->properties.begin() + dir_index;
+                auto dir_index = std::distance(this->directions.rbegin(), it);
+                auto prop_it = this->properties.rbegin() + dir_index;
                 return &(*prop_it);
             }
         }
         return nullptr;
     }
 
-    // Check if parent node left-parenthesizes last pushed node
+    // Check if parent node left-parenthesizes (not yet pushed node)
     bool NodePropertiesStack::adjacentLeftParenthesis() {
-        for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
-            if ((*it) != AcceptDirection::LeftChild || (*it) == AcceptDirection::OnlyChild) break;
-            auto dir_index = std::distance(this->directions.begin(), it);
-            auto prop_it = this->properties.begin() + dir_index;
+        for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
+            if ((*it) == AcceptDirection::RightChild || (*it) == AcceptDirection::MiddleChild) break;
+            auto dir_index = std::distance(this->directions.rbegin(), it);
+            auto prop_it = this->properties.rbegin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
         }
         return false;
     }
 
-    // Check if parent node right-parenthesizes last pushed node
+    // Check if parent node right-parenthesizes (not yet pushed node)
     bool NodePropertiesStack::adjacentRightParenthesis() {
-        for (auto it = this->directions.begin()+1; it != this->directions.end(); ++it) {
-            if ((*it) != AcceptDirection::RightChild || (*it) == AcceptDirection::OnlyChild) break;
-            auto dir_index = std::distance(this->directions.begin(), it);
-            auto prop_it = this->properties.begin() + dir_index;
+        for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
+            if ((*it) == AcceptDirection::LeftChild || (*it) == AcceptDirection::MiddleChild) break;
+            auto dir_index = std::distance(this->directions.rbegin(), it);
+            auto prop_it = this->properties.rbegin() + dir_index;
             if ((*prop_it).parenthesized == true) return true;
         }
         return false;
@@ -124,8 +124,23 @@ namespace pharmmlcpp
 
     // Visitor to traverse and determine if node requires parentheses
     // (with regards to operator priority, associativity, commutativity and parent node parentheses)
-    AstParenthesizer::AstParenthesizer() {
+    AstParenthesizer::AstParenthesizer() { }
 
+    void AstParenthesizer::acceptUniop(Uniop *node, NodeProperties &node_props) {
+        this->parents.setProperties(node_props);
+        if (!this->requiresParentheses()) node->elideParentheses();
+        this->parents.acceptUniop(node);
+    }
+
+    void AstParenthesizer::acceptBinop(Binop *node, NodeProperties &node_props) {
+        this->parents.setProperties(node_props);
+        if (!this->requiresParentheses()) node->elideParentheses();
+        this->parents.acceptBinop(node);
+    }
+
+    void AstParenthesizer::acceptEndNode(AstNode *node, NodeProperties &node_props) {
+        this->parents.setProperties(node_props);
+        if (!this->requiresParentheses()) node->elideParentheses();
     }
 
     // Determine if current node (not yet accepted) requires parentheses (using internal parent stack)
@@ -182,210 +197,330 @@ namespace pharmmlcpp
     // 2. Determine if node requires () considering parents visited (and set AstNode flag)
     // 3. Let stack push node properties and accept node (via this visitor)
     void AstParenthesizer::visit(SymbRef *node) {
-        this->parents.setProperties(node_properties[AstOperator::SymbRef]);
-        if (!this->requiresParentheses()) node->elideParentheses();
+        this->acceptEndNode(node, this->node_properties[AstOperator::SymbRef]);
     }
 
     void AstParenthesizer::visit(SteadyStateParameter *node) { }
 
     void AstParenthesizer::visit(ColumnRef *node) { }
 
-    void AstParenthesizer::visit(UniopLog *node) { }
-
-    void AstParenthesizer::visit(UniopLog2 *node) { }
-
-    void AstParenthesizer::visit(UniopLog10 *node) { }
-
-    void AstParenthesizer::visit(UniopExp *node) { }
-
-    void AstParenthesizer::visit(UniopMinus *node) {
-        this->parents.setProperties(node_properties[AstOperator::UniopMinus]);
-
-        this->parents.acceptUniop(node);
+    void AstParenthesizer::visit(UniopLog *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog]);
     }
 
-    void AstParenthesizer::visit(UniopAbs *node) { }
+    void AstParenthesizer::visit(UniopLog2 *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog2]);
+    }
 
-    void AstParenthesizer::visit(UniopSqrt *node) { }
+    void AstParenthesizer::visit(UniopLog10 *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopLog10]);
+    }
 
-    void AstParenthesizer::visit(UniopLogistic *node) { }
+    void AstParenthesizer::visit(UniopExp *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopExp]);
+    }
 
-    void AstParenthesizer::visit(UniopLogit *node) { }
+    void AstParenthesizer::visit(UniopMinus *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopMinus]);
+    }
 
-    void AstParenthesizer::visit(UniopProbit *node) { }
+    void AstParenthesizer::visit(UniopAbs *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopAbs]);
+    }
 
-    void AstParenthesizer::visit(UniopNormcdf *node) { }
+    void AstParenthesizer::visit(UniopSqrt *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSqrt]);
+    }
 
-    void AstParenthesizer::visit(UniopFactorial *node) { }
+    void AstParenthesizer::visit(UniopLogistic *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopLogistic]);
+    }
 
-    void AstParenthesizer::visit(UniopFactln *node) { }
+    void AstParenthesizer::visit(UniopLogit *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopLogit]);
+    }
 
-    void AstParenthesizer::visit(UniopGamma *node) { }
+    void AstParenthesizer::visit(UniopProbit *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopProbit]);
+    }
 
-    void AstParenthesizer::visit(UniopGammaln *node) { }
+    void AstParenthesizer::visit(UniopNormcdf *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopNormcdf]);
+    }
 
-    void AstParenthesizer::visit(UniopSin *node) { }
+    void AstParenthesizer::visit(UniopFactorial *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopFactorial]);
+    }
 
-    void AstParenthesizer::visit(UniopSinh *node) { }
+    void AstParenthesizer::visit(UniopFactln *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopFactln]);
+    }
 
-    void AstParenthesizer::visit(UniopCos *node) { }
+    void AstParenthesizer::visit(UniopGamma *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopGamma]);
+    }
 
-    void AstParenthesizer::visit(UniopCosh *node) { }
+    void AstParenthesizer::visit(UniopGammaln *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopGammaln]);
+    }
 
-    void AstParenthesizer::visit(UniopTan *node) { }
+    void AstParenthesizer::visit(UniopSin *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSin]);
+    }
 
-    void AstParenthesizer::visit(UniopTanh *node) { }
+    void AstParenthesizer::visit(UniopSinh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSinh]);
+    }
 
-    void AstParenthesizer::visit(UniopCot *node) { }
+    void AstParenthesizer::visit(UniopCos *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCos]);
+    }
 
-    void AstParenthesizer::visit(UniopCoth *node) { }
+    void AstParenthesizer::visit(UniopCosh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCosh]);
+    }
 
-    void AstParenthesizer::visit(UniopSec *node) { }
+    void AstParenthesizer::visit(UniopTan *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopTan]);
+    }
 
-    void AstParenthesizer::visit(UniopSech *node) { }
+    void AstParenthesizer::visit(UniopTanh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopTanh]);
+    }
 
-    void AstParenthesizer::visit(UniopCsc *node) { }
+    void AstParenthesizer::visit(UniopCot *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCot]);
+    }
 
-    void AstParenthesizer::visit(UniopCsch *node) { }
+    void AstParenthesizer::visit(UniopCoth *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCoth]);
+    }
 
-    void AstParenthesizer::visit(UniopArcsin *node) { }
+    void AstParenthesizer::visit(UniopSec *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSec]);
+    }
 
-    void AstParenthesizer::visit(UniopArcsinh *node) { }
+    void AstParenthesizer::visit(UniopSech *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSech]);
+    }
 
-    void AstParenthesizer::visit(UniopArccos *node) { }
+    void AstParenthesizer::visit(UniopCsc *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCsc]);
+    }
 
-    void AstParenthesizer::visit(UniopArccosh *node) { }
+    void AstParenthesizer::visit(UniopCsch *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCsch]);
+    }
 
-    void AstParenthesizer::visit(UniopArctan *node) { }
+    void AstParenthesizer::visit(UniopArcsin *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsin]);
+    }
 
-    void AstParenthesizer::visit(UniopArctanh *node) { }
+    void AstParenthesizer::visit(UniopArcsinh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsinh]);
+    }
 
-    void AstParenthesizer::visit(UniopArccot *node) { }
+    void AstParenthesizer::visit(UniopArccos *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccos]);
+    }
 
-    void AstParenthesizer::visit(UniopArccoth *node) { }
+    void AstParenthesizer::visit(UniopArccosh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccosh]);
+    }
 
-    void AstParenthesizer::visit(UniopArcsec *node) { }
+    void AstParenthesizer::visit(UniopArctan *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArctan]);
+    }
 
-    void AstParenthesizer::visit(UniopArcsech *node) { }
+    void AstParenthesizer::visit(UniopArctanh *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArctanh]);
+    }
 
-    void AstParenthesizer::visit(UniopArccsc *node) { }
+    void AstParenthesizer::visit(UniopArccot *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccot]);
+    }
 
-    void AstParenthesizer::visit(UniopArccsch *node) { }
+    void AstParenthesizer::visit(UniopArccoth *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccoth]);
+    }
 
-    void AstParenthesizer::visit(UniopHeaviside *node) { }
+    void AstParenthesizer::visit(UniopArcsec *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsec]);
+    }
 
-    void AstParenthesizer::visit(UniopSign *node) { }
+    void AstParenthesizer::visit(UniopArcsech *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArcsech]);
+    }
 
-    void AstParenthesizer::visit(UniopFloor *node) { }
+    void AstParenthesizer::visit(UniopArccsc *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccsc]);
+    }
 
-    void AstParenthesizer::visit(UniopCeiling *node) { }
+    void AstParenthesizer::visit(UniopArccsch *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopArccsch]);
+    }
+
+    void AstParenthesizer::visit(UniopHeaviside *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopHeaviside]);
+    }
+
+    void AstParenthesizer::visit(UniopSign *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopSign]);
+    }
+
+    void AstParenthesizer::visit(UniopFloor *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopFloor]);
+    }
+
+    void AstParenthesizer::visit(UniopCeiling *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::UniopCeiling]);
+    }
 
     void AstParenthesizer::visit(ScalarInt *node) {
         if (node->toInt() >= 0) {
-            this->parents.setProperties(node_properties[AstOperator::ScalarInt]);
+            this->acceptEndNode(node, this->node_properties[AstOperator::ScalarInt]);
         } else {
-            this->parents.setProperties(node_properties[AstOperator::UniopMinus]);
+            this->acceptEndNode(node, this->node_properties[AstOperator::UniopMinus]);
         }
-        if (!this->requiresParentheses()) node->elideParentheses();
     }
 
     void AstParenthesizer::visit(ScalarReal *node) {
         if (node->toDouble() >= 0) {
-            this->parents.setProperties(node_properties[AstOperator::ScalarReal]);
+            this->acceptEndNode(node, this->node_properties[AstOperator::ScalarReal]);
         } else {
-            this->parents.setProperties(node_properties[AstOperator::UniopMinus]);
+            this->acceptEndNode(node, this->node_properties[AstOperator::UniopMinus]);
         }
-        if (!this->requiresParentheses()) node->elideParentheses();
     }
 
-    void AstParenthesizer::visit(ScalarBool *node) { }
+    void AstParenthesizer::visit(ScalarBool *node) {
+        this->acceptEndNode(node, this->node_properties[AstOperator::ScalarBool]);
+    }
 
-    void AstParenthesizer::visit(ScalarString *node) { }
+    void AstParenthesizer::visit(ScalarString *node) {
+        this->acceptEndNode(node, this->node_properties[AstOperator::ScalarString]);
+    }
 
     void AstParenthesizer::visit(BinopPlus *node) {
-        const NodeProperties &props = node_properties[AstOperator::BinopPlus];
-        this->parents.setProperties(props);
-        if (!this->requiresParentheses()) node->elideParentheses();
-        this->parents.acceptBinop(node);
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopPlus]);
     }
 
     void AstParenthesizer::visit(BinopMinus *node) {
-        const NodeProperties &props = node_properties[AstOperator::BinopMinus];
-        this->parents.setProperties(props);
-        if (!this->requiresParentheses()) node->elideParentheses();
-        this->parents.acceptBinop(node);
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopMinus]);
     }
 
     void AstParenthesizer::visit(BinopDivide *node) {
-        const NodeProperties &props = node_properties[AstOperator::BinopDivide];
-        this->parents.setProperties(props);
-        if (!this->requiresParentheses()) node->elideParentheses();
-        this->parents.acceptBinop(node);
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopDivide]);
     }
 
     void AstParenthesizer::visit(BinopTimes *node) {
-        const NodeProperties &props = node_properties[AstOperator::BinopTimes];
-        this->parents.setProperties(props);
-        if (!this->requiresParentheses()) node->elideParentheses();
-        this->parents.acceptBinop(node);
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopTimes]);
     }
 
     void AstParenthesizer::visit(BinopPower *node) {
-        const NodeProperties &props = node_properties[AstOperator::BinopPower];
-        this->parents.setProperties(props);
-        if (!this->requiresParentheses()) node->elideParentheses();
-        this->parents.acceptBinop(node);
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopPower]);
     }
 
-    void AstParenthesizer::visit(BinopLogx *node) { }
+    void AstParenthesizer::visit(BinopLogx *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopLogx]);
+    }
 
-    void AstParenthesizer::visit(BinopRoot *node) { }
+    void AstParenthesizer::visit(BinopRoot *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopRoot]);
+    }
 
-    void AstParenthesizer::visit(BinopMin *node) { }
+    void AstParenthesizer::visit(BinopMin *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopMin]);
+    }
 
-    void AstParenthesizer::visit(BinopMax *node) { }
+    void AstParenthesizer::visit(BinopMax *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopMax]);
+    }
 
-    void AstParenthesizer::visit(BinopRem *node) { }
+    void AstParenthesizer::visit(BinopRem *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopRem]);
+    }
 
-    void AstParenthesizer::visit(BinopAtan2 *node) { }
+    void AstParenthesizer::visit(BinopAtan2 *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::BinopAtan2]);
+    }
 
-    void AstParenthesizer::visit(Pi *node) { }
+    void AstParenthesizer::visit(Pi *node) {
+        this->acceptEndNode(node, this->node_properties[AstOperator::Pi]);
+    }
 
-    void AstParenthesizer::visit(Exponentiale *node) { }
+    void AstParenthesizer::visit(Exponentiale *node) {
+        this->acceptEndNode(node, this->node_properties[AstOperator::Exponentiale]);
+    }
 
-    void AstParenthesizer::visit(NullValue *node) { }
+    void AstParenthesizer::visit(NullValue *node) {
+        this->acceptEndNode(node, this->node_properties[AstOperator::NullValue]);
+    }
 
-    void AstParenthesizer::visit(LogicUniopIsdefined *node) { }
+    void AstParenthesizer::visit(LogicUniopIsdefined *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::LogicUniopIsdefined]);
+    }
 
-    void AstParenthesizer::visit(LogicUniopNot *node) { }
+    void AstParenthesizer::visit(LogicUniopNot *node) {
+        this->acceptUniop(node, this->node_properties[AstOperator::LogicUniopNot]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopLt *node) { }
+    void AstParenthesizer::visit(LogicBinopLt *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopLt]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopLeq *node) { }
+    void AstParenthesizer::visit(LogicBinopLeq *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopLeq]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopGt *node) { }
+    void AstParenthesizer::visit(LogicBinopGt *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopGt]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopGeq *node) { }
+    void AstParenthesizer::visit(LogicBinopGeq *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopGeq]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopEq *node) { }
+    void AstParenthesizer::visit(LogicBinopEq *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopEq]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopNeq *node) { }
+    void AstParenthesizer::visit(LogicBinopNeq *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopNeq]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopAnd *node) { }
+    void AstParenthesizer::visit(LogicBinopAnd *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopAnd]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopOr *node) { }
+    void AstParenthesizer::visit(LogicBinopOr *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopOr]);
+    }
 
-    void AstParenthesizer::visit(LogicBinopXor *node) { }
+    void AstParenthesizer::visit(LogicBinopXor *node) {
+        this->acceptBinop(node, this->node_properties[AstOperator::LogicBinopXor]);
+    }
 
-    void AstParenthesizer::visit(Vector *node) { }
+    void AstParenthesizer::visit(Vector *node) {
+        
+    }
 
-    void AstParenthesizer::visit(Piecewise *node) { }
+    void AstParenthesizer::visit(Piecewise *node) {
+        
+    }
 
-    void AstParenthesizer::visit(Piece *node) { }
+    void AstParenthesizer::visit(Piece *node) {
+        
+    }
 
-    void AstParenthesizer::visit(FunctionCall *node) { }
+    void AstParenthesizer::visit(FunctionCall *node) {
+        
+    }
 
-    void AstParenthesizer::visit(FunctionArgument *node) { }
+    void AstParenthesizer::visit(FunctionArgument *node) {
+        
+    }
 
-    void AstParenthesizer::visit(Interval *node) { }
+    void AstParenthesizer::visit(Interval *node) {
+        
+    }
 }

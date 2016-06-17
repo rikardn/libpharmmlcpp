@@ -56,13 +56,13 @@ namespace pharmmlcpp
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
         for (std::vector<AstNode *>::size_type i = 0; i != idv_data.size(); i++) {
-            dose_data[i]->accept(&this->rast);
+            this->rast.acceptRoot(dose_data[i]);
             std::string dose_name = "DOSE_" + std::to_string(i + 1) + "_AMT";
             std::string time_name = "DOSE_" + std::to_string(i + 1) + "_TIME";
             this->doseNames.push_back(dose_name);      // Needed for the placebo arm and elsewhere
             this->timeNames.push_back(time_name);
             formatter.add(dose_name + "=" + this->rast.getValue());
-            idv_data[i]->accept(&this->rast);
+            this->rast.acceptRoot(idv_data[i]);
             formatter.add(time_name + "=" + this->rast.getValue());
         }
         formatter.closeVector();
@@ -85,9 +85,9 @@ namespace pharmmlcpp
         formatter.openVector("c()", 0, ", ");
 
         for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
-            amounts[i]->accept(&this->rast);
+            this->rast.acceptRoot(amounts[i]);
             formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
-            times[i]->accept(&this->rast);
+            this->rast.acceptRoot(times[i]);
             formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
         }
 
@@ -176,13 +176,13 @@ namespace pharmmlcpp
             this->has_infusions = true;
             std::string inf_func_call;
             inf_func_call = object->getOid() + " <- inf_func(offset + ";
-            object->getTimesAsVector()[0]->accept(&this->rast);
+            this->rast.acceptRoot(object->getTimesAsVector()[0]);
             inf_func_call += this->rast.getValue();
             inf_func_call += ", ";
-            object->getRate()->accept(&this->rast);
+            this->rast.acceptRoot(object->getRate());
             inf_func_call += this->rast.getValue();
             inf_func_call += ", ";
-            object->getAmount()->accept(&this->rast);
+            this->rast.acceptRoot(object->getAmount());
             inf_func_call += this->rast.getValue();
             inf_func_call += ", Time)";
             this->infFuncCalls.push_back(inf_func_call);
@@ -229,7 +229,7 @@ namespace pharmmlcpp
         formatter.openVector("c()", 0, ", ");
 
         for (AstNode *time_point : object->getTimesAsVector()) {
-            time_point->accept(&this->rast);
+            this->rast.acceptRoot(time_point);
             formatter.add(this->rast.getValue());
         }
 
@@ -247,7 +247,7 @@ namespace pharmmlcpp
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
         for (AstNode *node : data) {
-            node->accept(&this->rast);
+            this->rast.acceptRoot(node);
             formatter.add(this->rast.getValue());
         }
         formatter.closeVector();

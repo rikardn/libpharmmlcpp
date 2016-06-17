@@ -26,8 +26,7 @@ namespace pharmmlcpp
 {
     // private
     std::string PopEDGenerator::accept(AstNode *node) {
-        node->accept(&this->ast_gen);
-        return ast_gen.getValue();
+        return this->ast_gen.acceptRoot(node);
     }
 
     // public
@@ -207,9 +206,9 @@ namespace pharmmlcpp
             form.addMany(this->InfusionFunction);
             form.emptyLine();
 
-            this->td_visitor.getCombinationStart()->accept(&this->ast_gen);
+            this->ast_gen.acceptRoot(this->td_visitor.getCombinationStart());
             form.add("offset <- " + this->ast_gen.getValue());
-            this->td_visitor.getInterventionStart()->accept(&this->ast_gen);
+            this->ast_gen.acceptRoot(this->td_visitor.getInterventionStart());
             form.add("offset <- offset + " + this->ast_gen.getValue());
             for (std::string row : this->td_visitor.getInfFuncCalls()) {
                 form.add(row);
@@ -252,7 +251,7 @@ namespace pharmmlcpp
         // FIXME: Assumes a specific structure
         Administration *adm = this->model->getTrialDesign()->getInterventions()->getAdministrations()[0];
         if (adm->getTargetSymbRef()) {
-            adm->getTargetSymbRef()->accept(&this->ast_gen);
+            this->ast_gen.acceptRoot(adm->getTargetSymbRef());
             return this->ast_gen.getValue();
         } else {
             TargetMapping *target = adm->getTargetMapping();
@@ -287,7 +286,7 @@ namespace pharmmlcpp
             for (Symbol *symbol : this->derivs) {
                 DerivativeVariable *derivative_variable = static_cast<DerivativeVariable *>(symbol);
                 AstNode *init = derivative_variable->getInitialValue();
-                init->accept(&this->ast_gen);
+                this->ast_gen.acceptRoot(init);
                 dini_formatter.add(symbol->getName() + "=" + this->ast_gen.getValue());
                 SymbRefFinder finder;     // Needed to find SymbRefs in the initial value
                 init->accept(&finder);
@@ -434,7 +433,7 @@ namespace pharmmlcpp
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
         RAstGenerator error_ast_gen;
-        om->getErrorModel()->accept(&error_ast_gen);
+        this->accept(om->getErrorModel());
         form.add("w <- " + error_ast_gen.getValue());
 
         // Increase y by error fraction (weight * epsilon)
@@ -519,7 +518,7 @@ namespace pharmmlcpp
             if (!pop_param->isVariabilityParameter()) {
                 std::string parameter_name = pop_param->getPopulationParameter()->getSymbId();
                 if (pop_param->getParameterEstimation()) {
-                    bpop.add(parameter_name + "=" + this->accept(pop_param->getParameterEstimation()->getInitValue())); 
+                    bpop.add(parameter_name + "=" + this->ast_gen.acceptRoot(pop_param->getParameterEstimation()->getInitValue()));
                     notfixed_bpop.add(parameter_name + "=" + (pop_param->getParameterEstimation()->isFixed() ? "0" : "1"));
                 } else {
                     bpop.add(parameter_name + "=0");
@@ -639,7 +638,7 @@ namespace pharmmlcpp
             TextFormatter a_formatter;
             a_formatter.openVector("a = list(c()", 0, ", ");
             for (Symbol *param : this->designParameters) {
-                static_cast<DesignParameter *>(param)->getAssignment()->accept(&this->ast_gen);
+                this->accept(static_cast<DesignParameter *>(param)->getAssignment());
                 a_formatter.add(this->ast_gen.getValue());
             }
             a_formatter.closeVector();
@@ -661,9 +660,9 @@ namespace pharmmlcpp
                     for (Symbol *param : this->designParameters) {
                         DesignSpace *space = ds->getDesignSpaceFromSymbol(param);
                         Interval *interval = static_cast<Interval *>(space->getAssignment());        // FIXME: Assume Interval here. Discussion ongoing
-                        interval->getLeftEndpoint()->accept(&this->ast_gen);
+                        this->accept(interval->getLeftEndpoint());
                         mina_formatter.add(this->ast_gen.getValue());
-                        interval->getRightEndpoint()->accept(&this->ast_gen);
+                        this->accept(interval->getRightEndpoint());
                         maxa_formatter.add(this->ast_gen.getValue());
                     }
                     mina_formatter.closeVector();
@@ -678,12 +677,12 @@ namespace pharmmlcpp
                     AstAnalyzer intervalAnalyzer;
                     AstNode *dosingTimes = designSpace->getDosingTimes();
                     if (dosingTimes) {
-                        designSpace->getDosingTimes()->accept(&intervalAnalyzer);
+                        this->accept(designSpace->getDosingTimes());
                         Interval *interval = intervalAnalyzer.getPureInterval();
                         if (interval) {
-                            interval->getLeftEndpoint()->accept(&this->ast_gen);
+                            this->accept(interval->getLeftEndpoint());
                             form.add("minxt=" + this->ast_gen.getValue());
-                            interval->getRightEndpoint()->accept(&this->ast_gen);
+                            this->accept(interval->getRightEndpoint());
                             form.add("maxxt=" + this->ast_gen.getValue());
                         }
                     }

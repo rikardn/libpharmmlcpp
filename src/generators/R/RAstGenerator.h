@@ -20,6 +20,7 @@
 
 #include <string>
 #include <visitors/AstNodeVisitor.h>
+#include <visitors/AstParenthesizer.h>
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
 #include <AST/Binop.h>
@@ -39,6 +40,7 @@ namespace pharmmlcpp
     class RAstGenerator : public AstNodeVisitor
     {
         public:
+            std::string acceptRoot(AstNode *node);
             std::string getValue();
 
             void visit(SymbRef *node) override;
@@ -133,8 +135,10 @@ namespace pharmmlcpp
             void visit(Interval *node) override;
 
         protected:
+            AstParenthesizer parenthesizer;
             std::string value;
             void setValue(std::string str);
+            void setParenthesizedValue(AstNode *node, std::string str);
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);
             std::string infix(Binop *binop, std::string op);

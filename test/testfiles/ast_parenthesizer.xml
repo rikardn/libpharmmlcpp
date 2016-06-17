@@ -13,17 +13,17 @@
                     <math:Binop op="plus">
                         <math:Binop op="plus">
                             <math:Binop op="plus">
-                                <ct:Real>1</ct:Real>
-                                <ct:Real>2</ct:Real>
+                                <ct:Int>1</ct:Int>
+                                <ct:Int>2</ct:Int>
                             </math:Binop>
                             <math:Binop op="plus">
-                                <ct:Real>3</ct:Real>
-                                <ct:Real>4</ct:Real>
+                                <ct:Int>3</ct:Int>
+                                <ct:Int>4</ct:Int>
                             </math:Binop>
                         </math:Binop>
                         <math:Binop op="plus">
-                            <ct:Real>5</ct:Real>
-                            <ct:Real>6</ct:Real>
+                            <ct:Int>5</ct:Int>
+                            <ct:Int>6</ct:Int>
                         </math:Binop>
                     </math:Binop>
                 </ct:Assign>
@@ -33,22 +33,22 @@
                     <math:Binop op="minus">
                         <math:Binop op="plus">
                             <math:Binop op="minus">
-                                <ct:Real>1</ct:Real>
-                                <ct:Real>2</ct:Real>
+                                <ct:Int>1</ct:Int>
+                                <ct:Int>2</ct:Int>
                             </math:Binop>
                             <math:Binop op="minus">
-                                <ct:Real>3</ct:Real>
-                                <ct:Real>4</ct:Real>
+                                <ct:Int>3</ct:Int>
+                                <ct:Int>4</ct:Int>
                             </math:Binop>
                         </math:Binop>
                         <math:Binop op="minus">
                             <math:Binop op="plus">
-                                <ct:Real>5</ct:Real>
-                                <ct:Real>6</ct:Real>
+                                <ct:Int>5</ct:Int>
+                                <ct:Int>6</ct:Int>
                             </math:Binop>
                             <math:Binop op="plus">
-                                <ct:Real>7</ct:Real>
-                                <ct:Real>8</ct:Real>
+                                <ct:Int>7</ct:Int>
+                                <ct:Int>8</ct:Int>
                             </math:Binop>
                         </math:Binop>
                     </math:Binop>
@@ -58,12 +58,12 @@
                 <ct:Assign>
                     <math:Binop op="plus">
                         <math:Binop op="times">
-                            <ct:Real>1</ct:Real>
-                            <ct:Real>2</ct:Real>
+                            <ct:Int>1</ct:Int>
+                            <ct:Int>2</ct:Int>
                         </math:Binop>
                         <math:Binop op="divide">
-                            <ct:Real>3</ct:Real>
-                            <ct:Real>4</ct:Real>
+                            <ct:Int>3</ct:Int>
+                            <ct:Int>4</ct:Int>
                         </math:Binop>
                     </math:Binop>
                 </ct:Assign>
@@ -81,6 +81,107 @@
                         <math:Binop op="power">
                             <ct:Real>1.4</ct:Real>
                             <ct:Real>1.5</ct:Real>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="unimin">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="minus">
+                            <math:Binop op="plus">
+                                <math:Uniop op="minus">
+                                    <ct:Int>1</ct:Int>
+                                </math:Uniop>
+                                <math:Uniop op="minus">
+                                    <ct:Int>2</ct:Int>
+                                </math:Uniop>
+                            </math:Binop>
+                            <math:Binop op="minus">
+                                <math:Uniop op="minus">
+                                    <ct:Int>3</ct:Int>
+                                </math:Uniop>
+                                <math:Uniop op="minus">
+                                    <ct:Int>4</ct:Int>
+                                </math:Uniop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Uniop op="minus">
+                                <ct:Int>5</ct:Int>
+                            </math:Uniop>
+                            <math:Uniop op="minus">
+                                <ct:Int>6</ct:Int>
+                            </math:Uniop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="rand_logic">
+                <ct:Assign>
+                    <math:LogicBinop op="or">
+                        <math:LogicBinop op="lt">
+                            <math:LogicUniop op="not">
+                                <math:LogicBinop op="gt">
+                                    <math:LogicBinop op="eq">
+                                        <ct:Int>1</ct:Int>
+                                        <ct:Int>1</ct:Int>
+                                    </math:LogicBinop>
+                                    <math:LogicUniop op="not">
+                                        <ct:False/>
+                                    </math:LogicUniop>
+                                </math:LogicBinop>
+                            </math:LogicUniop>
+                            <math:LogicBinop op="leq">
+                                <math:LogicBinop op="geq">
+                                    <ct:Int>2</ct:Int>
+                                    <ct:Int>3</ct:Int>
+                                </math:LogicBinop>
+                                <math:LogicBinop op="gt">
+                                    <ct:Int>4</ct:Int>
+                                    <ct:Int>5</ct:Int>
+                                </math:LogicBinop>
+                            </math:LogicBinop>
+                        </math:LogicBinop>
+                        <math:LogicBinop op="and">
+                            <math:LogicBinop op="or">
+                                <ct:True/>
+                                <ct:False/>
+                            </math:LogicBinop>
+                            <math:LogicBinop op="neq">
+                                <ct:Int>6</ct:Int>
+                                <ct:Int>7</ct:Int>
+                            </math:LogicBinop>
+                        </math:LogicBinop>
+                    </math:LogicBinop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="quadratic_formula_1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="plus">
+                            <math:Uniop op="minus">
+                                <ct:SymbRef symbIdRef="b"/>
+                            </math:Uniop>
+                            <math:Uniop op="sqrt">
+                                <math:Binop op="minus">
+                                    <math:Binop op="power">
+                                        <ct:SymbRef symbIdRef="b"/>
+                                        <ct:Int>2</ct:Int>
+                                    </math:Binop>
+                                    <math:Binop op="times">
+                                        <ct:Int>4</ct:Int>
+                                        <math:Binop op="times">
+                                            <ct:SymbRef symbIdRef="a"/>
+                                            <ct:SymbRef symbIdRef="c"/>
+                                        </math:Binop>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Uniop>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:Int>2</ct:Int>
+                            <ct:SymbRef symbIdRef="a"/>
                         </math:Binop>
                     </math:Binop>
                 </ct:Assign>

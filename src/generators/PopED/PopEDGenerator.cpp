@@ -815,7 +815,7 @@ namespace pharmmlcpp
             // Use the parsed settings
             if (criterion == Criterion::EXPLICIT) {
                 if (!penalty_file.empty()) {
-                    form.add("strEDPenaltyFile = '" + penalty_file + "'");
+                    form.add("ofv_fun = '" + penalty_file + "'");
                     std::ifstream file(penalty_file);
                     if (!file.good()) {
                         this->logger.warning("File '" + penalty_file + "' (penalty function) not found or not accessible");

@@ -501,9 +501,8 @@ namespace pharmmlcpp
 
         // Get weight definition
         // TODO: Figure out how to get the dependencies of w in here
-        RAstGenerator error_ast_gen;
         this->accept(om->getErrorModel());
-        form.add("w <- " + error_ast_gen.getValue());
+        form.add("w <- " + ast_gen.getValue());
 
         // Increase y by error fraction (weight * epsilon)
         // TODO: Figure out how to resolve this with multiple EPS

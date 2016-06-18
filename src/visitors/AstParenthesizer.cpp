@@ -528,7 +528,12 @@ namespace pharmmlcpp
     }
 
     void AstParenthesizer::visit(FunctionCall *node) {
-        
+        node->elideParentheses();
+        SymbRef *func_ref = node->getFunction();
+        func_ref->elideParentheses();
+        for (FunctionArgument *farg : node->getFunctionArguments()) {
+            farg->elideParentheses();
+        } 
     }
 
     void AstParenthesizer::visit(FunctionArgument *node) {

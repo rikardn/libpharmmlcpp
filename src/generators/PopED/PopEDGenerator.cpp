@@ -119,16 +119,20 @@ namespace pharmmlcpp
             }
         }
 
+        TrialDesign *td = this->model->getTrialDesign();
+
         // Declare dose/time
         int index = 1;
-        if (this->model->getTrialDesign()) {
-            std::vector<std::string> time_names = this->td_visitor.getTimeNames();
-            std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
+        if (td) {
+            if (td->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+                std::vector<std::string> time_names = this->td_visitor.getTimeNames();
+                std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
-            for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
-                form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
-                form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
-                index += 2;
+                for (std::vector<std::string>::size_type i = 0; i != time_names.size(); i++) {
+                    form.add(amount_names[i] + "=a[" + std::to_string(2*i + 1) + "]");
+                    form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
+                    index += 2;
+                }
             }
         }
 
@@ -142,7 +146,6 @@ namespace pharmmlcpp
         }
 
         // DesignParameters used from DesignSpaces
-        TrialDesign *td = this->model->getTrialDesign();
         if (td) {
             SymbolSet design_params = td->getOptimizationParameters();
             for (Symbol *symbol : design_params) {
@@ -306,8 +309,38 @@ namespace pharmmlcpp
             // Dose times
             form.add("times_xt <- drop(xt)");
             if (this->td_visitor.hasBoluses()) {
-                form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
-                form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+                    form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
+                    form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
+                } else {
+                    TextFormatter dosetimes_formatter;
+                    dosetimes_formatter.openVector("dose_times <- c()", 0, ", ");
+                    for (auto &pair : this->td_visitor.getBolusAmounts()) {
+                        TextFormatter amount_formatter;
+                        amount_formatter.openVector("dose_amt_" + pair.first->getName() + " <- c()", 0, ", ");
+                        for (AstNode *node : pair.second) {
+                            this->accept(node);
+                            amount_formatter.add(ast_gen.getValue());
+                        }
+                        amount_formatter.closeVector();
+                        amount_formatter.noFinalNewline();
+                        form.add(amount_formatter.createString());
+                    }
+                    for (auto &pair : this->td_visitor.getBolusTimes()) {
+                        TextFormatter times_formatter;
+                        times_formatter.openVector("dose_times_" + pair.first->getName() + " <- c()", 0, ", ");
+                        for (AstNode *node : pair.second) {
+                            this->accept(node);
+                            times_formatter.add(ast_gen.getValue());
+                        }
+                        times_formatter.closeVector();
+                        times_formatter.noFinalNewline();
+                        form.add(times_formatter.createString());
+                        dosetimes_formatter.add("dose_times_" + pair.first->getName());
+                    }
+                    dosetimes_formatter.noFinalNewline();
+                    form.add(dosetimes_formatter.createString());
+                }
             } else if (this->td_visitor.hasInfusions()) {     // FIXME: Should not be mutually exclusive
                 TextFormatter dt_formatter;
                 dt_formatter.openVector("dose_times <- c()", 0, ", ");
@@ -324,10 +357,28 @@ namespace pharmmlcpp
             // Event data
             // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
             if (this->td_visitor.hasBoluses()) {
-                form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
-                form.add("time = dose_times,");
-                form.add("value = dose_amt, method = c('add'))");
-                form.closeIndent();
+                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+                    form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
+                    form.add("time = dose_times,");
+                    form.add("value = dose_amt, method = c('add'))");
+                    form.closeIndent();
+                } else {
+                    for (auto &pair : this->td_visitor.getBolusAmounts()) {
+                        form.indentAdd("eventdat_" + pair.first->getName() + " <- data.frame(var = c('" + pair.first->getName() + "'),");
+                        form.add("time = dose_times_" + pair.first->getName() + ",");
+                        form.add("value = dose_amt_" + pair.first->getName() + ",");
+                        form.add("method = c('add')");
+                        form.outdentAdd(")");
+                    }
+                    TextFormatter rbind_formatter;
+                    rbind_formatter.openVector("eventdat <- rbind()", 0, ", ");
+                    for (auto &pair : this->td_visitor.getBolusAmounts()) {
+                       rbind_formatter.add("eventdat_" + pair.first->getName()); 
+                    }
+                    rbind_formatter.closeVector();
+                    rbind_formatter.noFinalNewline();
+                    form.add(rbind_formatter.createString());
+                }
             }
             form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 

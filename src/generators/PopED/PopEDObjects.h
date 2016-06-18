@@ -46,6 +46,8 @@ namespace pharmmlcpp
             std::unordered_map<Symbol *, std::vector<std::string>> getInfusionMap();
             std::vector<AstNode *> getDoseTimes();
             int getNumObservations();
+            std::unordered_map<Symbol *, std::vector<AstNode *>> getBolusAmounts();
+            std::unordered_map<Symbol *, std::vector<AstNode *>> getBolusTimes();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -71,6 +73,8 @@ namespace pharmmlcpp
             std::unordered_map<Symbol *, std::vector<std::string>> infusionMap;
             std::vector<AstNode *> doseTimes;
             int numObservations = 0;
+            std::unordered_map<Symbol *, std::vector<AstNode *>> bolusAmounts;
+            std::unordered_map<Symbol *, std::vector<AstNode *>> bolusTimes;
     };
 }
 

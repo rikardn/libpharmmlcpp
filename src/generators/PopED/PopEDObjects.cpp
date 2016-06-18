@@ -137,6 +137,14 @@ namespace pharmmlcpp
         return this->numObservations;
     }
 
+    std::unordered_map<Symbol *, std::vector<AstNode *>> PopEDObjects::getBolusAmounts() {
+        return this->bolusAmounts;
+    }
+
+    std::unordered_map<Symbol *, std::vector<AstNode *>> PopEDObjects::getBolusTimes() {
+        return this->bolusTimes;
+    }
+
     void PopEDObjects::visit(Arm *object) {
         std::vector<ObservationSequence *> obs_seqs = object->getObservationSequences();
 
@@ -214,6 +222,14 @@ namespace pharmmlcpp
             return;
         } else {
             this->has_boluses = true;
+            // FIXME: This is material for library method: Find all interesting boluses with adm => (amounts, times). On Arm? combination? administration?
+            Symbol *target = object->getTargetMapping()->getMaps()[0].symbol;
+            AstNode *single_amount = object->getAmount();
+            std::vector<AstNode *> times = object->getTimesAsVector();
+            for (AstNode* time_node : times) {
+                this->bolusTimes[target].push_back(time_node);
+                this->bolusAmounts[target].push_back(single_amount);
+            }
         }
 
         // Check if this is being refered to by an IndividualAdministration

@@ -359,6 +359,7 @@ namespace pharmmlcpp
                 {AstOperator::LogicUniopIsdefined, {10, NodeAssociativity::None, false}},
                 {AstOperator::FunctionCall, {10, NodeAssociativity::None, false}},
                 {AstOperator::LogicBinopXor, {10, NodeAssociativity::None, false}},
+                {AstOperator::Piecewise, {10, NodeAssociativity::None, false}},
 
                 // exponentiation
                 {AstOperator::BinopPower, {9, NodeAssociativity::Right, false}},
@@ -398,7 +399,6 @@ namespace pharmmlcpp
                 {AstOperator::SteadyStateParameter, {0, NodeAssociativity::Both, false}},
                 {AstOperator::ColumnRef, {0, NodeAssociativity::Both, false}},
                 {AstOperator::Vector, {0, NodeAssociativity::Both, false}},
-                {AstOperator::Piecewise, {0, NodeAssociativity::Both, false}},
                 {AstOperator::Piece, {0, NodeAssociativity::Both, false}},
                 {AstOperator::FunctionArgument, {0, NodeAssociativity::Both, false}},
                 {AstOperator::Interval, {0, NodeAssociativity::Both, false}},

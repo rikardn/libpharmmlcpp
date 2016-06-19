@@ -520,11 +520,22 @@ namespace pharmmlcpp
     }
 
     void AstParenthesizer::visit(Piecewise *node) {
-        
+        this->parents.setProperties(this->node_properties[AstOperator::Piecewise]);
+        this->parents.setNodeType(AstOperator::Piecewise);
+        if (!this->requiresParentheses()) node->elideParentheses();
+        for (Piece *piece : node->getPieces()) {
+            piece->accept(this);
+        }
     }
 
     void AstParenthesizer::visit(Piece *node) {
-        
+        this->parents.setProperties(this->node_properties[AstOperator::Piece]);
+        this->parents.setNodeType(AstOperator::Piece);
+        if (!this->requiresParentheses()) node->elideParentheses();
+        if (!node->isOtherwise()) {
+            node->getCondition()->accept(this);
+        }
+        node->getExpression()->accept(this);
     }
 
     void AstParenthesizer::visit(FunctionCall *node) {

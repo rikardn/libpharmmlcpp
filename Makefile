@@ -8,7 +8,7 @@ ifeq ($(TARGET), UNIX)
   OUTPUT = pharmml2poped
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -Wall -O3 -std=c++14 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -MMD -Wall -O3 -std=c++14 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
   OUTPUT = pharmml2poped.exe
 endif
 

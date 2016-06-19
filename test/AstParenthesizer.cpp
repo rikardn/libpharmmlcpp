@@ -146,7 +146,7 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
 
     // Component uniop tests (expressions named after the digits they contain)
     SECTION ("Uniop minus") {
-        SECTION ("expr (((-1)+(-2))-((-3)-(-4)))+((-5)-(-6))") { // = -1+-2-(-3-(-4))+-5-(-6) = -3
+        SECTION ("expr (((-1)+(-2))-((-3)-(-4)))+((-5)-(-6))") { // = -1+(-2)-(-3-(-4))+(-5)-(-6) = -3
             auto var = vars["unimin"];
             var->accept(&ap);
 
@@ -167,12 +167,12 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
             CHECK(b_1234->hasParentheses() == false);
             CHECK(b_12->hasParentheses() == false);
             CHECK(u_1->hasParentheses() == false);
-            CHECK(u_2->hasParentheses() == false);
+            CHECK(u_2->hasParentheses() == true);
             CHECK(b_34->hasParentheses() == true);
             CHECK(u_3->hasParentheses() == false);
             CHECK(u_4->hasParentheses() == true);
             CHECK(b_56->hasParentheses() == false);
-            CHECK(u_5->hasParentheses() == false);
+            CHECK(u_5->hasParentheses() == true);
             CHECK(u_6->hasParentheses() == true);
 
             // scalars

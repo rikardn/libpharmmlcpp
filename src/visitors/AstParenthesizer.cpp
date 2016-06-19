@@ -178,8 +178,8 @@ namespace pharmmlcpp
                         left_prop->commutative == false) {
                         return true;
                     }
-                } else if (this->no_double_minus) {
-                    if (cur_props.node_type == AstOperator::UniopMinus && left_prop->node_type == AstOperator::BinopMinus) {
+                } else if (this->pretty_minus) {
+                    if (cur_props.node_type == AstOperator::UniopMinus) {
                         return true;
                     }
                 }

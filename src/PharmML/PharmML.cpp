@@ -25,7 +25,7 @@ namespace pharmmlcpp
 {
     PharmML::PharmML(const char *filename) {
         this->context = new PharmMLContext(filename, this);
-        this->parse(this->context->doc.getRoot());
+        this->parse(this->context->doc->getRoot());
     }
 
     void PharmML::parse(xml::Node node) {
@@ -82,7 +82,7 @@ namespace pharmmlcpp
     }
 
     void PharmML::write(std::string filename) {
-        this->context->doc.write(filename);
+        this->context->doc->write(filename);
     }
 
     pharmmlcpp::IndependentVariable *PharmML::getIndependentVariable() {

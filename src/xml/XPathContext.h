@@ -15,36 +15,25 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMMLCPP_PHARMMLCONTEXT_H_
-#define PHARMMLCPP_PHARMMLCONTEXT_H_
+#ifndef PHARMMLCPP_XML_XPATHCONTEXT_H_
+#define PHARMMLCPP_XML_XPATHCONTEXT_H_
 
-#include <unordered_map>
-#include <xml/xml.h>
-#include <AST/AstNodeFactory.h>
-#include <AST/symbols.h>
-#include <helpers/Logger.h>
+#include <xml/Document.h>
 
-namespace pharmmlcpp
+namespace xml
 {
-    class PharmML;
-    class PharmMLContext
-    {
-        public:
-            std::unique_ptr<xml::Document> doc;
-            Logger logger;
-            AstNodeFactory factory;
-            PharmML *model;
-            void validateDocument();
-            xml::Node getSingleElement(xml::Node, const char *xpath);
-            std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
+    class Document;
 
-            PharmMLContext(std::string filename, PharmML *model);
-            ~PharmMLContext();
+    class XPathContext
+    {
+        friend class Document;
+
+        public:
+            XPathContext(Document &doc);
+            ~XPathContext();
 
         private:
             xmlXPathContext *xpath_context;
-
-            std::string getNamespaceVersion();
     };
 }
 

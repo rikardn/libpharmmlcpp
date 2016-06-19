@@ -29,6 +29,8 @@
 #include <libxml/xmlschemas.h>
 #include <libxml/catalog.h>
 #include <libxml/xpath.h>
+#include <xml/Document.h>
+#include <xml/XPathContext.h>
 
 namespace xml
 {
@@ -82,32 +84,6 @@ namespace xml
 
     // This is expected to be used for testing
     Node nodeFromString(std::string xml_string);
-
-    // Representing a xmlDoc in libxml2
-    class Document
-    {
-        public:
-            ~Document();
-            void validate();
-            void read(std::string filename);
-            void write(std::string filename);
-            xml::Node getRoot();
-
-            xmlDoc *doc;        // FIXME: Move to private soon
-        private:
-    };
-
-    class XPathContext
-    {
-        friend class Document;
-
-        public:
-            XPathContext(Document &doc);
-            ~XPathContext();
-
-        private:
-            xmlXPathContext *xpath_context;
-    };
 }
 
 #endif

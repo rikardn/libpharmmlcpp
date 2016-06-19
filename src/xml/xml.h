@@ -18,6 +18,7 @@
 #ifndef PHARMMLCPP_XML_H_
 #define PHARMMLCPP_XML_H_
 
+#include <stdexcept>
 #include <vector>
 #include <string>
 #include <stdexcept>

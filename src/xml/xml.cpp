@@ -310,11 +310,12 @@ leave:
 
     XPathContext::XPathContext(Document &doc) {
         this->xpath_context = xmlXPathNewContext(doc.doc);
+        if (!this->xpath_context) {
+            throw std::bad_alloc();
+        }
     }
 
     XPathContext::~XPathContext() {
-        if (this->xpath_context) {
-            xmlXPathFreeContext(this->xpath_context);
-        }
+        xmlXPathFreeContext(this->xpath_context);
     }
 }

@@ -61,7 +61,7 @@ namespace pharmmlcpp
             void addInitialCharSet(std::unordered_set<char32_t> chars);
             void subInitialCharSet(std::unordered_set<char32_t> chars);
             void setReservedPrefix(std::u32string prefix);
-            void setMaximumLength(uint length);
+            void setMaximumLength(unsigned int length);
 
             // Name getters
             std::u32string getName(Symbol *symbol);
@@ -73,7 +73,7 @@ namespace pharmmlcpp
             std::unordered_set<char32_t> legal_chars;
             std::unordered_set<char32_t> legal_initial_chars;
             std::u32string reserved_prefix;
-            uint max_length = 0;
+            unsigned int max_length = 0;
 
             // Earlier generated names
             std::unordered_set<std::u32string> names;
@@ -89,7 +89,7 @@ namespace pharmmlcpp
             std::u32string shiftIllegalCase(std::u32string name, const std::unordered_set<char32_t> &legal_chars);
             
             std::u32string escapeCollision(std::u32string name, const std::unordered_set<std::u32string> &illegals);
-            std::u32string stringFromNumerals(uint num, const std::vector<char32_t> &numerals);
+            std::u32string stringFromNumerals(unsigned int num, const std::vector<char32_t> &numerals);
     };
 }
 

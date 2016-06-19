@@ -64,7 +64,7 @@ namespace pharmmlcpp
     }
 
     // Set a maximum length of names to accept (0 is default and imposes no restrictions)
-    void SymbolNamer::setMaximumLength(uint length) {
+    void SymbolNamer::setMaximumLength(unsigned int length) {
         this->max_length = length;
     }
 
@@ -263,7 +263,7 @@ namespace pharmmlcpp
 
         // Iterate away from collisions via numerals
         new_name = name + sep;
-        uint version = 2;
+        unsigned int version = 2;
         while (illegals.count(new_name)) {
             std::u32string suffix = this->stringFromNumerals(version, sorted_numerals);
             new_name = name + sep + suffix;
@@ -280,10 +280,10 @@ namespace pharmmlcpp
     }
 
     // Form a string from a number and set of (ordered) numerals, e.g 12 & {'1','0'} -> "1100"
-    std::u32string SymbolNamer::stringFromNumerals(uint num, const std::vector<char32_t> &numerals) {
+    std::u32string SymbolNamer::stringFromNumerals(unsigned int num, const std::vector<char32_t> &numerals) {
         std::u32string result;
         while (num > 0) {
-            uint digit = num % numerals.size();
+            unsigned int digit = num % numerals.size();
             num = num / numerals.size();
             result.insert(0, 1, numerals.at(digit));
         }

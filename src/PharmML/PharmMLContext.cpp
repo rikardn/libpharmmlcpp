@@ -21,7 +21,7 @@
 namespace pharmmlcpp
 {
     std::string PharmMLContext::getNamespaceVersion() {
-        xml::Node root = this->doc->getRoot();
+        xml::Node root = this->doc.getRoot();
         std::string version = root.getAttribute("writtenVersion").getValue();
         int first_dot_index = version.find_first_of(".");
         int last_dot_index = version.find_last_of(".");
@@ -31,11 +31,10 @@ namespace pharmmlcpp
         return version;
     }
 
-    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) {
+    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename) {
         this->model = model;
-        this->doc = std::make_unique<xml::Document>(filename);
-        this->doc->validate();
-        this->xpath_context = xmlXPathNewContext(this->doc->doc);    // FIXME!
+        this->doc.validate();
+        this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
         std::string version = getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());

@@ -30,7 +30,7 @@ namespace pharmmlcpp
     class PharmMLContext
     {
         public:
-            std::unique_ptr<xml::Document> doc;
+            xml::Document doc;
             Logger logger;
             AstNodeFactory factory;
             PharmML *model;

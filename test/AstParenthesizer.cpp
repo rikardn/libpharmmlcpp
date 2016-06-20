@@ -182,6 +182,25 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
                 CHECK(sint->hasParentheses() == false);
             }
         }
+        SECTION ("expr (-(1+2))^(3*4)") { // = (-(1+2))^(3*4)
+            auto var = vars["unimin2"];
+            var->accept(&ap);
+
+            // binops/uniops
+            Binop *b_1234 = static_cast<Binop *>( var );
+            Uniop *u_12 = static_cast<Uniop *>( b_1234->getLeft() );
+            Binop *b_12 = static_cast<Binop *>( u_12->getChild() );
+            Binop *b_34 = static_cast<Binop *>( b_1234->getRight() );
+
+            CHECK(b_1234->hasParentheses() == false);
+            CHECK(u_12->hasParentheses() == true);
+            CHECK(b_12->hasParentheses() == true);
+            CHECK(b_34->hasParentheses() == true);
+
+            // scalars
+            std::vector<Binop *> binops = {b_12, b_34};
+            assertScalarIntNoParentheses(binops);
+        }
     }
 
     // Logical operator tests (expressions named after the digits they contain)

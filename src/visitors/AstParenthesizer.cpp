@@ -101,7 +101,7 @@ namespace pharmmlcpp
             if ((*it) == AcceptDirection::RightChild || (*it) == AcceptDirection::MiddleChild) break;
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
-            if ((*prop_it).parenthesized == true) return true;
+            if ((*prop_it).parenthesized == true && (*prop_it).position != OperatorPosition::Prefix) return true;
             if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
         }
         return false;
@@ -113,7 +113,7 @@ namespace pharmmlcpp
             if ((*it) == AcceptDirection::LeftChild || (*it) == AcceptDirection::MiddleChild) break;
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
-            if ((*prop_it).parenthesized == true) return true;
+            if ((*prop_it).parenthesized == true && (*prop_it).position != OperatorPosition::Postfix) return true;
             if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
         }
         return false;

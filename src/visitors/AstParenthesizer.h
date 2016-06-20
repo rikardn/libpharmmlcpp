@@ -62,6 +62,15 @@ namespace pharmmlcpp
         MiddleChild // FIXME: Integrate when N-ary ops are added
     };
 
+    // Position of operator in relation to children (necessary to detect
+    // adjacent parentheses accurately)
+    enum class OperatorPosition {
+        Prefix,
+        Infix,
+        Postfix,
+        None
+    };
+
     // To access node properties
     enum class AstOperator {
         SymbRef,
@@ -160,6 +169,7 @@ namespace pharmmlcpp
     struct NodeProperties {
         int priority;
         NodeAssociativity associativity;
+        OperatorPosition position;
         bool commutative; // FIXME: Misnamed (means that parentheses can be removed if same priority)
         bool parenthesized;
         AstOperator node_type; // For double minus removal and commutativity resolution
@@ -300,108 +310,108 @@ namespace pharmmlcpp
             // Default node properties (modelled after R)
             std::unordered_map<AstOperator, NodeProperties, EnumClassHash> node_properties = {
                 // end nodes (highest default priority)
-                {AstOperator::SymbRef, {11, NodeAssociativity::None, false}},
-                {AstOperator::ScalarInt, {11, NodeAssociativity::None, false}},
-                {AstOperator::ScalarReal, {11, NodeAssociativity::None, false}},
-                {AstOperator::ScalarBool, {11, NodeAssociativity::None, false}},
-                {AstOperator::ScalarString, {11, NodeAssociativity::None, false}},
-                {AstOperator::Pi, {11, NodeAssociativity::None, false}},
-                {AstOperator::Exponentiale, {11, NodeAssociativity::None, false}},
+                {AstOperator::SymbRef, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::ScalarInt, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::ScalarReal, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::ScalarBool, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::ScalarString, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::Pi, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::Exponentiale, {11, NodeAssociativity::None, OperatorPosition::None, false}},
 
                 // functions (self-enclosed)
-                {AstOperator::UniopLog, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopLog2, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopLog10, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopExp, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopAbs, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSqrt, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopLogistic, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopLogit, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopProbit, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopNormcdf, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopFactorial, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopFactln, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopGamma, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopGammaln, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSin, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSinh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCos, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCosh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopTan, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopTanh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCot, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCoth, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSec, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSech, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCsc, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCsch, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArcsin, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArcsinh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccos, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccosh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArctan, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArctanh, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccot, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccoth, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArcsec, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArcsech, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccsc, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopArccsch, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopHeaviside, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopSign, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopFloor, {10, NodeAssociativity::None, false}},
-                {AstOperator::UniopCeiling, {10, NodeAssociativity::None, false}},
-                {AstOperator::BinopLogx, {10, NodeAssociativity::None, false}},
-                {AstOperator::BinopRoot, {10, NodeAssociativity::None, false}},
-                {AstOperator::BinopMin, {10, NodeAssociativity::None, false}},
-                {AstOperator::BinopMax, {10, NodeAssociativity::None, false}},
-                {AstOperator::BinopAtan2, {10, NodeAssociativity::None, false}},
-                {AstOperator::LogicUniopIsdefined, {10, NodeAssociativity::None, false}},
-                {AstOperator::FunctionCall, {10, NodeAssociativity::None, false}},
-                {AstOperator::LogicBinopXor, {10, NodeAssociativity::None, false}},
+                {AstOperator::UniopLog, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopLog2, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopLog10, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopExp, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopAbs, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSqrt, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopLogistic, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopLogit, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopProbit, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopNormcdf, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopFactorial, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopFactln, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopGamma, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopGammaln, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSin, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSinh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCos, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCosh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopTan, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopTanh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCot, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCoth, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSec, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSech, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCsc, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCsch, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArcsin, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArcsinh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccos, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccosh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArctan, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArctanh, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccot, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccoth, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArcsec, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArcsech, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccsc, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopArccsch, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopHeaviside, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopSign, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopFloor, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::UniopCeiling, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::BinopLogx, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::BinopRoot, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::BinopMin, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::BinopMax, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::BinopAtan2, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::LogicUniopIsdefined, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::FunctionCall, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
+                {AstOperator::LogicBinopXor, {10, NodeAssociativity::None, OperatorPosition::Prefix, false}},
 
                 // exponentiation
-                {AstOperator::BinopPower, {9, NodeAssociativity::Right, false}},
+                {AstOperator::BinopPower, {9, NodeAssociativity::Right, OperatorPosition::Infix, false}},
 
                 // unary minus (also negative scalars)
-                {AstOperator::UniopMinus, {8, NodeAssociativity::Left, false}},
+                {AstOperator::UniopMinus, {8, NodeAssociativity::Left, OperatorPosition::Prefix, false}},
 
                 // modulo
-                {AstOperator::BinopRem, {7, NodeAssociativity::Left, false}},
+                {AstOperator::BinopRem, {7, NodeAssociativity::Left, OperatorPosition::Infix, false}},
 
                 // multiplication/division
-                {AstOperator::BinopDivide, {6, NodeAssociativity::Left, false}},
-                {AstOperator::BinopTimes, {6, NodeAssociativity::Left, true}},
+                {AstOperator::BinopDivide, {6, NodeAssociativity::Left, OperatorPosition::Infix, false}},
+                {AstOperator::BinopTimes, {6, NodeAssociativity::Left, OperatorPosition::Infix, true}},
 
                 // addition/subtraction
-                {AstOperator::BinopPlus, {5, NodeAssociativity::Left, true}},
-                {AstOperator::BinopMinus, {5, NodeAssociativity::Left, false}},
+                {AstOperator::BinopPlus, {5, NodeAssociativity::Left, OperatorPosition::Infix, true}},
+                {AstOperator::BinopMinus, {5, NodeAssociativity::Left, OperatorPosition::Infix, false}},
 
                 // logical comparisons
-                {AstOperator::LogicBinopLt, {4, NodeAssociativity::Both, false}},
-                {AstOperator::LogicBinopLeq, {4, NodeAssociativity::Both, false}},
-                {AstOperator::LogicBinopGt, {4, NodeAssociativity::Both, false}},
-                {AstOperator::LogicBinopGeq, {4, NodeAssociativity::Both, false}},
-                {AstOperator::LogicBinopEq, {4, NodeAssociativity::Both, false}},
-                {AstOperator::LogicBinopNeq, {4, NodeAssociativity::Both, false}},
+                {AstOperator::LogicBinopLt, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::LogicBinopLeq, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::LogicBinopGt, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::LogicBinopGeq, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::LogicBinopEq, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::LogicBinopNeq, {4, NodeAssociativity::Both, OperatorPosition::Infix, false}},
 
                 // logical not
-                {AstOperator::LogicUniopNot, {3, NodeAssociativity::Left, false}},
+                {AstOperator::LogicUniopNot, {3, NodeAssociativity::Left, OperatorPosition::Prefix, false}},
 
                 // logical and
-                {AstOperator::LogicBinopAnd, {2, NodeAssociativity::Left, false}},
+                {AstOperator::LogicBinopAnd, {2, NodeAssociativity::Left, OperatorPosition::Infix, false}},
 
                 // logical or
-                {AstOperator::LogicBinopOr, {1, NodeAssociativity::Left, false}},
+                {AstOperator::LogicBinopOr, {1, NodeAssociativity::Left, OperatorPosition::Infix, false}},
 
                 // uncategorized (lowest priority)
-                {AstOperator::SteadyStateParameter, {0, NodeAssociativity::Both, false}},
-                {AstOperator::ColumnRef, {0, NodeAssociativity::Both, false}},
-                {AstOperator::Vector, {0, NodeAssociativity::Both, false}},
-                {AstOperator::Piecewise, {0, NodeAssociativity::Both, false}},
-                {AstOperator::Piece, {0, NodeAssociativity::Both, false}},
-                {AstOperator::FunctionArgument, {0, NodeAssociativity::Both, false}},
-                {AstOperator::Interval, {0, NodeAssociativity::Both, false}},
+                {AstOperator::SteadyStateParameter, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::ColumnRef, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::Vector, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::Piecewise, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::Piece, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::FunctionArgument, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
+                {AstOperator::Interval, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
             };
             bool pretty_minus = true; // e.g. "-a - (-b)", never "-a - -b"
 

@@ -20,32 +20,16 @@
 
 namespace pharmmlcpp
 {
-    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename) {
+    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename), xpathContext(doc) {
         this->model = model;
         this->doc.validate();
-        this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
-        std::string version = this->doc.getNamespaceVersion();
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST xml::buildNamespace("CommonTypes", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST xml::buildNamespace("Dataset", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST xml::buildNamespace("ModelDefinition", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST xml::buildNamespace("ModellingSteps", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST xml::buildNamespace("TrialDesign", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 
     xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {
-        return node.getSingleElement(this->xpath_context, xpath);
+        return node.getSingleElement(this->xpathContext, xpath);
     }
 
     std::vector<xml::Node> PharmMLContext::getElements(xml::Node node, const char *xpath) {
-        return node.getElements(this->xpath_context, xpath);
-    }
-
-    PharmMLContext::~PharmMLContext() {
-        if (this->xpath_context) {
-            xmlXPathFreeContext(xpath_context);
-        }
+        return node.getElements(this->xpathContext, xpath);
     }
 }

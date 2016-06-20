@@ -155,8 +155,8 @@ namespace xml
         return str;
     }
 
-    Node Node::getSingleElement(xmlXPathContext *xpath_context, const char *xpath) {
-        xmlXPathObject *obj = xmlXPathNodeEval(this->node, BAD_CAST xpath, xpath_context);
+    Node Node::getSingleElement(XPathContext &xpath_context, const char *xpath) {
+        xmlXPathObject *obj = xmlXPathNodeEval(this->node, BAD_CAST xpath, xpath_context.xpath_context);
         xmlNode *result = NULL;
 
         if (obj && obj->nodesetval) {
@@ -175,8 +175,8 @@ namespace xml
         return Node(result);
     }
 
-    std::vector<xml::Node> Node::getElements(xmlXPathContext *xpath_context, const char *xpath) {
-        xmlXPathObject *obj = xmlXPathNodeEval(this->node, BAD_CAST xpath, xpath_context);
+    std::vector<xml::Node> Node::getElements(XPathContext &xpath_context, const char *xpath) {
+        xmlXPathObject *obj = xmlXPathNodeEval(this->node, BAD_CAST xpath, xpath_context.xpath_context);
         std::vector<xml::Node> results;
 
         if (obj) {

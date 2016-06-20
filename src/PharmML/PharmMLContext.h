@@ -39,10 +39,9 @@ namespace pharmmlcpp
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
             PharmMLContext(std::string filename, PharmML *model);
-            ~PharmMLContext();
 
         private:
-            xmlXPathContext *xpath_context;
+            xml::XPathContext xpathContext;
     };
 }
 

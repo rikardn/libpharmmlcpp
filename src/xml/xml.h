@@ -38,6 +38,8 @@ namespace xml
     std::string nsToPrefix(Namespace ns);
     std::string buildNamespace(std::string name, std::string namespace_version);
 
+    class XPathContext;     // FIXME: Why is this needed?
+
     class Attribute
     {
         public:
@@ -70,8 +72,8 @@ namespace xml
             xml::Node getLastChild();
             std::vector<xml::Node> getChildren();
             std::string getText();
-            Node getSingleElement(xmlXPathContext *xpath_context, const char *xpath);
-            std::vector<xml::Node> getElements(xmlXPathContext *xpath_context, const char *xpath);
+            Node getSingleElement(XPathContext &xpath_context, const char *xpath);
+            std::vector<xml::Node> getElements(XPathContext &xpath_context, const char *xpath);
             void replaceNode(xml::Node new_node);
             xml::Node createChild(std::string name);
             void addChild(xml::Node child);

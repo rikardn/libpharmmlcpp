@@ -20,22 +20,11 @@
 
 namespace pharmmlcpp
 {
-    std::string PharmMLContext::getNamespaceVersion() {
-        xml::Node root = this->doc.getRoot();
-        std::string version = root.getAttribute("writtenVersion").getValue();
-        int first_dot_index = version.find_first_of(".");
-        int last_dot_index = version.find_last_of(".");
-        if (first_dot_index != last_dot_index) {
-            version = version.substr(0, last_dot_index);
-        }
-        return version;
-    }
-
     PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename) {
         this->model = model;
         this->doc.validate();
         this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
-        std::string version = getNamespaceVersion();
+        std::string version = this->doc.getNamespaceVersion();
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());
         xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST xml::buildNamespace("CommonTypes", version).c_str());

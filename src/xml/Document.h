@@ -33,6 +33,7 @@ namespace xml
             void validate();
             void write(std::string filename);
             xml::Node getRoot();
+            std::string getNamespaceVersion();
 
             xmlDoc *doc;        // FIXME: Move to private soon
         private:

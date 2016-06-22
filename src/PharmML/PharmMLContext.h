@@ -33,12 +33,11 @@ namespace pharmmlcpp
             xml::Document doc;
             Logger logger;
             AstNodeFactory factory;
-            PharmML *model;
             void validateDocument();
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
-            PharmMLContext(std::string filename, PharmML *model);
+            PharmMLContext(std::string filename);
 
         private:
             xml::XPathContext xpathContext;

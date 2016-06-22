@@ -20,8 +20,7 @@
 
 namespace pharmmlcpp
 {
-    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename), xpathContext(doc) {
-        this->model = model;
+    PharmMLContext::PharmMLContext(std::string filename) : doc(filename), xpathContext(doc) {
         this->doc.validate();
     }
 

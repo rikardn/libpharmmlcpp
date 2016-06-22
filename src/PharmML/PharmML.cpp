@@ -24,7 +24,7 @@
 namespace pharmmlcpp
 {
     PharmML::PharmML(const char *filename) {
-        this->context = new PharmMLContext(filename, this);
+        this->context = new PharmMLContext(filename);
         this->parse(this->context->doc.getRoot());
     }
 

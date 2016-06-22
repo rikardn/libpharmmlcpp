@@ -158,6 +158,7 @@ namespace pharmmlcpp
             this->getTrialDesign()->gatherSymbols(gathering);
         }
 
+        this->allSymbols = gathering.getAllSymbols();
 
         gathering.setupAllSymbRefs();
 
@@ -258,13 +259,11 @@ namespace pharmmlcpp
     }
 
     void PharmML::setSymbolNamer(SymbolNamer *namer) {
-        this->symbolNamer = namer;
+        for (Symbol *symbol : this->allSymbols) {
+            symbol->setSymbolNamer(namer);
+        }
     }
             
-    SymbolNamer *PharmML::getSymbolNamer() {
-        return this->symbolNamer;
-    }
-
     // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
     PharmMLContext *PharmML::getContext() {
         return this->context;

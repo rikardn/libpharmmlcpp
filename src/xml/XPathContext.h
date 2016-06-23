@@ -27,6 +27,7 @@ namespace xml
     class XPathContext
     {
         friend class Document;
+        friend class Node;
 
         public:
             XPathContext(Document &doc);

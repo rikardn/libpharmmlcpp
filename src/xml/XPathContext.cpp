@@ -17,10 +17,25 @@
 
 #include <xml/XPathContext.h>
 
-namespace xml {
+namespace xml
+{
     XPathContext::XPathContext(Document &doc) {
         this->xpath_context = xmlXPathNewContext(doc.doc);
         if (!this->xpath_context) {
+            throw std::bad_alloc();
+        }
+        std::string version = doc.getNamespaceVersion();
+        int fail;
+        fail = xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST xml::buildNamespace("CommonTypes", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST xml::buildNamespace("Dataset", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST xml::buildNamespace("ModelDefinition", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST xml::buildNamespace("ModellingSteps", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST xml::buildNamespace("TrialDesign", version).c_str());
+        fail |= xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
+
+        if (fail) {
             throw std::bad_alloc();
         }
     }

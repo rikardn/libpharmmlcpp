@@ -106,6 +106,21 @@ namespace pharmmlcpp
         }
     }
 
+    // FIXME: Not yet called
+    void Administration::postParse() {
+        if (this->type == "Bolus") {
+            AstAnalyzer analyzer;
+            this->amount->accept(&analyzer);
+            int amount_length = analyzer.getLength();
+            analyzer.reset();
+            this->times->accept(&analyzer);
+            int times_length = analyzer.getLength();
+            if (times_length != 1 && amount_length != 1 && times_length != amount_length) {
+               return; // FIXME: Error handling here 
+            }
+        }
+    }
+
     xml::Node Administration::xml() {
         xml::Node adm("Administration");
         adm.setAttribute("oid", this->oid);

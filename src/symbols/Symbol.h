@@ -34,6 +34,7 @@ namespace pharmmlcpp
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
     class PharmMLContext;
+    class SymbolNamer;
     class Referer
     {
         public:
@@ -56,12 +57,16 @@ namespace pharmmlcpp
         public:
             std::string getSymbId();
             std::string getName();
+            void setSymbolNamer(SymbolNamer *namer);
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
             PharmMLContext *context;
             std::string symbId;
             void parse(xml::Node node);
+
+        private:
+            SymbolNamer *namer = nullptr;
     };
 }
 

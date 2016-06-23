@@ -58,6 +58,7 @@ namespace pharmmlcpp
         public:
             Administration(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
+            void postParse();
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
             xml::Node xml();
             std::string getType();

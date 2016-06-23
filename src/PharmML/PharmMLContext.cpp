@@ -20,43 +20,15 @@
 
 namespace pharmmlcpp
 {
-    std::string PharmMLContext::getNamespaceVersion() {
-        xml::Node root = this->doc.getRoot();
-        std::string version = root.getAttribute("writtenVersion").getValue();
-        int first_dot_index = version.find_first_of(".");
-        int last_dot_index = version.find_last_of(".");
-        if (first_dot_index != last_dot_index) {
-            version = version.substr(0, last_dot_index);
-        }
-        return version;
-    }
-
-    PharmMLContext::PharmMLContext(std::string filename, PharmML *model) : doc(filename) {
-        this->model = model;
+    PharmMLContext::PharmMLContext(std::string filename) : doc(filename), xpathContext(doc) {
         this->doc.validate();
-        this->xpath_context = xmlXPathNewContext(this->doc.doc);    // FIXME!
-        std::string version = getNamespaceVersion();
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "x", BAD_CAST xml::buildNamespace("PharmML", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "math", BAD_CAST xml::buildNamespace("Maths", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ct", BAD_CAST xml::buildNamespace("CommonTypes", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "ds", BAD_CAST xml::buildNamespace("Dataset", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "mdef", BAD_CAST xml::buildNamespace("ModelDefinition", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "msteps", BAD_CAST xml::buildNamespace("ModellingSteps", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "design", BAD_CAST xml::buildNamespace("TrialDesign", version).c_str());
-        xmlXPathRegisterNs(this->xpath_context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     }
 
     xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {
-        return node.getSingleElement(this->xpath_context, xpath);
+        return node.getSingleElement(this->xpathContext, xpath);
     }
 
     std::vector<xml::Node> PharmMLContext::getElements(xml::Node node, const char *xpath) {
-        return node.getElements(this->xpath_context, xpath);
-    }
-
-    PharmMLContext::~PharmMLContext() {
-        if (this->xpath_context) {
-            xmlXPathFreeContext(xpath_context);
-        }
+        return node.getElements(this->xpathContext, xpath);
     }
 }

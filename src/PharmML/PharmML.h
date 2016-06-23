@@ -48,7 +48,6 @@ namespace pharmmlcpp
             ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
-            SymbolNamer *getSymbolNamer();
 
             PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
 
@@ -62,7 +61,6 @@ namespace pharmmlcpp
             CPharmML::Consolidator *consolidator;
             SymbolSet allSymbols;
             std::unordered_set<pharmmlcpp::Object *> allObjects;
-            SymbolNamer *symbolNamer;
             void parse(xml::Node node);
             void postParse();
             void setupSymbols();

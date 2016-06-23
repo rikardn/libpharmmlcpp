@@ -45,6 +45,16 @@ namespace pharmmlcpp
         }
     }
 
+    SymbolSet SymbolGathering::getAllSymbols() {
+        SymbolSet set;
+        for (const auto &blk_pair : this->map) {
+            for (const auto &symbref_pair : blk_pair.second) {
+                set.addSymbol(symbref_pair.second);
+            }
+        }
+        return set;
+    }
+
     void SymbolGathering::setupAllSymbRefs() {
         for (auto &blkId_pair : this->map) {        // blkId_pair = (blkId, symbRef_pair)
             for (auto &symbRef_pair : blkId_pair.second) {      // symbRef_pair = (symbId, Symbol)

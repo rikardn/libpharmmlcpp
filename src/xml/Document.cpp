@@ -90,4 +90,15 @@ leave:
 
         xmlCatalogCleanup();
     }
+
+    std::string Document::getNamespaceVersion() {
+        xml::Node root = this->getRoot();
+        std::string version = root.getAttribute("writtenVersion").getValue();
+        int first_dot_index = version.find_first_of(".");
+        int last_dot_index = version.find_last_of(".");
+        if (first_dot_index != last_dot_index) {
+            version = version.substr(0, last_dot_index);
+        }
+        return version;
+    }
 }

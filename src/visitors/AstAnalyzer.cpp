@@ -57,6 +57,7 @@ namespace pharmmlcpp
         this->piecewise = nullptr;
         this->vector = nullptr;
         this->interval = nullptr;
+        this->length = 1;
     }
 
     // Methods to get a single object (if complex, return a nullptr)

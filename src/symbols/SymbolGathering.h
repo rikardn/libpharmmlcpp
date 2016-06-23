@@ -33,6 +33,7 @@ namespace pharmmlcpp
             void globalBlock();
             void addSymbol(Symbol *symbol);
             Symbol *getSymbol(std::string blkId, std::string symbId);
+            SymbolSet getAllSymbols();
             void setupAllSymbRefs();
 
         private:

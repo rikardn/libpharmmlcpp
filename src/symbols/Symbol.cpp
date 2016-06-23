@@ -71,12 +71,15 @@ namespace pharmmlcpp
 
     // Get the name mangled through the global model symbolMangler
     std::string Symbol::getName() {
-        SymbolNamer *namer = this->context->model->getSymbolNamer();
-        if (namer) {
-            return namer->getNameString(this);
+        if (this->namer) {
+            return this->namer->getNameString(this);
         } else {        // No namer was installed. Do the most sensible
             return this->symbId;
         }
+    }
+
+    void Symbol::setSymbolNamer(SymbolNamer *namer) {
+        this->namer = namer;
     }
 
     void Symbol::parse(xml::Node node) {

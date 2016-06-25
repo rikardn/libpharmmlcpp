@@ -26,24 +26,23 @@
 
 namespace pharmmlcpp
 {
-    VariabilityModel::VariabilityModel(PharmMLContext *context, xml::Node node) {
-        this->context = context;
+    VariabilityModel::VariabilityModel(PharmMLReader &reader, xml::Node node) {
         this->Block::parse(node);
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void VariabilityModel::parse(xml::Node node) {
+    void VariabilityModel::parse(PharmMLReader &reader, xml::Node node) {
         // Get type and name
         this->type = node.getAttribute("type").getValue();
-        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        xml::Node name_node = reader.getSingleElement(node, "./ct:Name");
         if (name_node.exists()) {
-            this->name = this->context->getSingleElement(node, "./ct:Name").getText();
+            this->name = reader.getSingleElement(node, "./ct:Name").getText();
         }
 
         // Get variability levels
-        std::vector<xml::Node> var_level_nodes = this->context->getElements(node, "./mdef:Level");
+        std::vector<xml::Node> var_level_nodes = reader.getElements(node, "./mdef:Level");
         for (xml::Node var_level_node : var_level_nodes) {
-            pharmmlcpp::VariabilityLevel *var_level = new pharmmlcpp::VariabilityLevel(this->context, var_level_node);
+            VariabilityLevel *var_level = new VariabilityLevel(reader, var_level_node);
             this->variabilityLevels.push_back(var_level);
         }
     }

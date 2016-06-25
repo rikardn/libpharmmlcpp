@@ -31,8 +31,8 @@ namespace pharmmlcpp
     class VariabilityModel : public Block
     {
         public:
-            VariabilityModel(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            VariabilityModel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
             bool onResidualError();
             bool onParameter();
@@ -40,7 +40,6 @@ namespace pharmmlcpp
             void gatherSymbols(SymbolGathering &gathering);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string name;
             std::string type;
             std::vector<pharmmlcpp::VariabilityLevel *> variabilityLevels;

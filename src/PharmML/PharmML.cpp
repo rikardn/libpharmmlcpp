@@ -29,17 +29,17 @@ namespace pharmmlcpp
     }
 
     void PharmML::parse(PharmMLReader &reader, xml::Node node) {
-        this->context = new PharmMLContext(reader);
         xml::Node iv = reader.getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
-            this->independentVariable = new IndependentVariable(this->context, iv);
+            this->independentVariable = new IndependentVariable(reader, iv);
         }
 
         xml::Node mdef_node = reader.getSingleElement(node, "/x:PharmML/mdef:ModelDefinition");
         if (mdef_node.exists()) {
-            this->modelDefinition = new ModelDefinition(this->context, mdef_node);
+            this->modelDefinition = new ModelDefinition(reader, mdef_node);
         }
 
+        this->context = new PharmMLContext(reader);
         std::vector<xml::Node> function_nodes = reader.getElements(node, "/x:PharmML/ct:FunctionDefinition");
         for (xml::Node n : function_nodes) {
             this->functionDefinitions.push_back(new FunctionDefinition(this->context, n));

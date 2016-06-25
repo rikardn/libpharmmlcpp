@@ -23,6 +23,7 @@
 #include <AST/AstNodeFactory.h>
 #include <AST/symbols.h>
 #include <helpers/Logger.h>
+#include <PharmML/PharmMLReader.h>
 
 namespace pharmmlcpp
 {
@@ -37,6 +38,7 @@ namespace pharmmlcpp
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
+            PharmMLContext(PharmMLReader &reader);
             PharmMLContext(std::string filename);
 
         private:

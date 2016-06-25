@@ -61,7 +61,7 @@ namespace pharmmlcpp
             CPharmML::Consolidator *consolidator;
             SymbolSet allSymbols;
             std::unordered_set<pharmmlcpp::Object *> allObjects;
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void postParse();
             void setupSymbols();
             void setupObjects();

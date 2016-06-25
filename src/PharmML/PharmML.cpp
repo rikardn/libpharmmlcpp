@@ -24,32 +24,33 @@
 namespace pharmmlcpp
 {
     PharmML::PharmML(const char *filename) {
-        this->context = new PharmMLContext(filename);
-        this->parse(this->context->doc.getRoot());
+        PharmMLReader reader(filename);
+        this->parse(reader, reader.doc.getRoot());
     }
 
-    void PharmML::parse(xml::Node node) {
-        xml::Node iv = this->context->getSingleElement(node, "/x:PharmML/x:IndependentVariable");
+    void PharmML::parse(PharmMLReader &reader, xml::Node node) {
+        this->context = new PharmMLContext(reader);
+        xml::Node iv = reader.getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
             this->independentVariable = new IndependentVariable(this->context, iv);
         }
 
-        xml::Node mdef_node = this->context->getSingleElement(node, "/x:PharmML/mdef:ModelDefinition");
+        xml::Node mdef_node = reader.getSingleElement(node, "/x:PharmML/mdef:ModelDefinition");
         if (mdef_node.exists()) {
             this->modelDefinition = new ModelDefinition(this->context, mdef_node);
         }
 
-        std::vector<xml::Node> function_nodes = this->context->getElements(node, "/x:PharmML/ct:FunctionDefinition");
+        std::vector<xml::Node> function_nodes = reader.getElements(node, "/x:PharmML/ct:FunctionDefinition");
         for (xml::Node n : function_nodes) {
             this->functionDefinitions.push_back(new FunctionDefinition(this->context, n));
         }
 
-        xml::Node design_node = this->context->getSingleElement(node, "/x:PharmML/design:TrialDesign");
+        xml::Node design_node = reader.getSingleElement(node, "/x:PharmML/design:TrialDesign");
         if (design_node.exists()) {
             this->trialDesign = new TrialDesign(this->context, design_node);
         }
 
-        xml::Node msteps_node = this->context->getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
+        xml::Node msteps_node = reader.getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
         if (msteps_node.exists()) {
             this->modellingSteps = new ModellingSteps(this->context, msteps_node);
         }

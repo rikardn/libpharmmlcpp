@@ -52,6 +52,7 @@ namespace pharmmlcpp
             PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
 
         private:
+						PharmMLReader reader;
             PharmMLContext *context;
             pharmmlcpp::IndependentVariable *independentVariable = nullptr;
             std::vector<FunctionDefinition *> functionDefinitions;

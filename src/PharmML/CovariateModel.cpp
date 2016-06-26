@@ -33,7 +33,7 @@ namespace pharmmlcpp
     void CovariateModel::parse(PharmMLReader &reader, xml::Node node) {
         std::vector<xml::Node> cov_nodes = reader.getElements(node, "./mdef:Covariate");
         for (xml::Node cov_node : cov_nodes) {
-            Covariate *cov = new Covariate(this->context, cov_node);
+            Covariate *cov = new Covariate(reader, cov_node);
             this->covariates.push_back(cov);
         }
     }

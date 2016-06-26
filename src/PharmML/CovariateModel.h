@@ -38,7 +38,6 @@ namespace pharmmlcpp
             void gatherSymbols(SymbolGathering &gathering) override;
         
         private:
-            PharmMLContext *context;
             std::vector<Covariate *> covariates;
     };
 }

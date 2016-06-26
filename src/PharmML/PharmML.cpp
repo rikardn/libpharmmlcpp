@@ -24,7 +24,6 @@
 namespace pharmmlcpp
 {
     PharmML::PharmML(const char *filename) : reader(filename) {
-        //PharmMLReader reader(filename);
         this->parse(this->reader, this->reader.doc.getRoot());
     }
 

@@ -24,46 +24,44 @@
 
 namespace pharmmlcpp
 {
-    Covariate::Covariate(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    Covariate::Covariate(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
     // Constructor for transformed covariates
-    Covariate::Covariate(PharmMLContext *context, xml::Node name_node, xml::Node assign_node) {
-        this->context = context;
+    Covariate::Covariate(PharmMLReader &reader, xml::Node name_node, xml::Node assign_node) {
         this->Symbol::parse(name_node);
         xml::Node tree = assign_node.getChild();
-        this->assignment = this->context->factory.create(tree);
+        this->assignment = reader.factory.create(tree);
         this->transformed = true;
     }
 
-    void Covariate::parse(xml::Node node) {
+    void Covariate::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
 
         // Get type (timeDependent, occasionDependent or constant)
         this->type = node.getAttribute("type").getValue();
 
         // Get continuous/categorical type
-        xml::Node cont_node = this->context->getSingleElement(node, "./mdef:Continuous");
+        xml::Node cont_node = reader.getSingleElement(node, "./mdef:Continuous");
         if (cont_node.exists()) {
             this->continuous = true;
 
             // Get distribution/realization
-            xml::Node dist_node = this->context->getSingleElement(cont_node, "./mdef:Distribution");
+            xml::Node dist_node = reader.getSingleElement(cont_node, "./mdef:Distribution");
             if (dist_node.exists()) {
-                this->distribution = new pharmmlcpp::Distribution(this->context, dist_node);
+                this->distribution = new Distribution(this->context, dist_node);
             }
             // TODO: Support realization of distribution (also, in general)
             //xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");
 
             // Get transformations
-            std::vector<xml::Node> trans_nodes = this->context->getElements(cont_node, "./mdef:Transformation");
+            std::vector<xml::Node> trans_nodes = reader.getElements(cont_node, "./mdef:Transformation");
             for (xml::Node trans_node : trans_nodes) {
                 // Create new covariate for each transformation
-                xml::Node name_node = this->context->getSingleElement(trans_node, "./mdef:TransformedCovariate");
-                xml::Node assign_node = this->context->getSingleElement(trans_node, "./ct:Assign");
-                Covariate *new_cov = new Covariate(this->context, name_node, assign_node);
+                xml::Node name_node = reader.getSingleElement(trans_node, "./mdef:TransformedCovariate");
+                xml::Node assign_node = reader.getSingleElement(trans_node, "./ct:Assign");
+                Covariate *new_cov = new Covariate(reader, name_node, assign_node);
                 this->transformations.push_back(new_cov);
             }
 
@@ -71,10 +69,10 @@ namespace pharmmlcpp
             //xml::Node int_node = this->context->getSingleElement(cont_node, "./ct:Interpolation");
 
             // Get assign (likely for constants)
-            xml::Node assign = this->context->getSingleElement(cont_node, "./ct:Assign");
+            xml::Node assign = reader.getSingleElement(cont_node, "./ct:Assign");
             if (assign.exists()) {
                 xml::Node tree = assign.getChild();
-                this->assignment = this->context->factory.create(tree);
+                this->assignment = reader.factory.create(tree);
             }
         } else {
             this->continuous = false;

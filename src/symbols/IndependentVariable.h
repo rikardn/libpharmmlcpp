@@ -26,7 +26,7 @@ namespace pharmmlcpp
     class IndependentVariable : public Symbol
     {
         public:
-            IndependentVariable(PharmMLContext *context, xml::Node node);
+            IndependentVariable(PharmMLReader &reader, xml::Node node);
             void parse(xml::Node node);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) {};
             void accept(PharmMLVisitor *visitor);

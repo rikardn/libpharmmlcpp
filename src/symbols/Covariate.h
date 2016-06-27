@@ -29,9 +29,9 @@ namespace pharmmlcpp
     class Covariate : public Symbol
     {
         public:
-            Covariate(PharmMLContext *context, xml::Node node);
-            Covariate(PharmMLContext *context, xml::Node name_node, xml::Node assign_node);
-            void parse(xml::Node node);
+            Covariate(PharmMLReader &reader, xml::Node node);
+            Covariate(PharmMLReader &reader, xml::Node name_node, xml::Node assign_node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             bool isTransformed();
             bool isContinuous();

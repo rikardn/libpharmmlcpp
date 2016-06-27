@@ -15,23 +15,33 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <PharmML/PharmMLContext.h>
-#include <PharmML/PharmML.h>
+#ifndef PHARMMLCPP_PHARMMLREADER_H_
+#define PHARMMLCPP_PHARMMLREADER_H_
+
+#include <unordered_map>
+#include <xml/xml.h>
+#include <AST/AstNodeFactory.h>
+#include <AST/symbols.h>
+#include <helpers/Logger.h>
 
 namespace pharmmlcpp
 {
-    PharmMLContext::PharmMLContext(std::string filename) : doc(filename), xpathContext(doc) {
-        this->doc.validate();
-    }
+    class PharmML;
+    class PharmMLReader
+    {
+        public:
+            xml::Document doc;
+            Logger logger;
+            AstNodeFactory factory;
+            void validateDocument();
+            xml::Node getSingleElement(xml::Node, const char *xpath);
+            std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
-    PharmMLContext::PharmMLContext(PharmMLReader &reader) : doc(reader.doc), xpathContext(reader.doc) {
-    }
+            PharmMLReader(std::string filename);
 
-    xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {
-        return node.getSingleElement(this->xpathContext, xpath);
-    }
-
-    std::vector<xml::Node> PharmMLContext::getElements(xml::Node node, const char *xpath) {
-        return node.getElements(this->xpathContext, xpath);
-    }
+    //    private:
+            xml::XPathContext xpathContext;
+    };
 }
+
+#endif

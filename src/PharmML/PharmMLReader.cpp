@@ -15,23 +15,20 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/PharmML.h>
 
 namespace pharmmlcpp
 {
-    PharmMLContext::PharmMLContext(std::string filename) : doc(filename), xpathContext(doc) {
+    PharmMLReader::PharmMLReader(std::string filename) : doc(filename), xpathContext(doc) {
         this->doc.validate();
     }
 
-    PharmMLContext::PharmMLContext(PharmMLReader &reader) : doc(reader.doc), xpathContext(reader.doc) {
-    }
-
-    xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {
+    xml::Node PharmMLReader::getSingleElement(xml::Node node, const char *xpath) {
         return node.getSingleElement(this->xpathContext, xpath);
     }
 
-    std::vector<xml::Node> PharmMLContext::getElements(xml::Node node, const char *xpath) {
+    std::vector<xml::Node> PharmMLReader::getElements(xml::Node node, const char *xpath) {
         return node.getElements(this->xpathContext, xpath);
     }
 }

@@ -23,33 +23,33 @@
 
 namespace pharmmlcpp
 {
-    ModelDefinition::ModelDefinition(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ModelDefinition::ModelDefinition(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ModelDefinition::parse(xml::Node node) {
-        std::vector<xml::Node> var_nodes = this->context->getElements(node, "./mdef:VariabilityModel");
+    void ModelDefinition::parse(PharmMLReader &reader, xml::Node node) {
+        std::vector<xml::Node> var_nodes = reader.getElements(node, "./mdef:VariabilityModel");
         for (xml::Node var_node : var_nodes) {
-            VariabilityModel *varModel = new pharmmlcpp::VariabilityModel(this->context, var_node);
+            VariabilityModel *varModel = new VariabilityModel(reader, var_node);
             this->VariabilityModels.push_back(varModel);
         }
-        // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
-        xml::Node cov_node = this->context->getSingleElement(node, "./mdef:CovariateModel");
+        // TODO: Support for more than one of the following
+        xml::Node cov_node = reader.getSingleElement(node, "./mdef:CovariateModel");
         if (cov_node.exists()) {
-            this->CovariateModel = new pharmmlcpp::CovariateModel(this->context, cov_node);
+            this->covariateModel = new CovariateModel(reader, cov_node);
         }
-        xml::Node struct_node = this->context->getSingleElement(node, "./mdef:StructuralModel");
+        this->context = new PharmMLContext(reader);
+        xml::Node struct_node = reader.getSingleElement(node, "./mdef:StructuralModel");
         if (struct_node.exists()) {
-            this->StructuralModel = new pharmmlcpp::StructuralModel(this->context, struct_node);
+            this->structuralModel = new StructuralModel(this->context, struct_node);
         }
-        xml::Node param_node = this->context->getSingleElement(node, "./mdef:ParameterModel");
+        xml::Node param_node = reader.getSingleElement(node, "./mdef:ParameterModel");
         if (param_node.exists()) {
-            this->ParameterModel = new pharmmlcpp::ParameterModel(this->context, param_node);
+            this->parameterModel = new ParameterModel(this->context, param_node);
         }
-        xml::Node obs_node = this->context->getSingleElement(node, "./mdef:ObservationModel");
+        xml::Node obs_node = reader.getSingleElement(node, "./mdef:ObservationModel");
         if (obs_node.exists()) {
-            this->ObservationModel = new pharmmlcpp::ObservationModel(this->context, obs_node);
+            this->observationModel = new ObservationModel(this->context, obs_node);
         }
     }
 
@@ -68,19 +68,19 @@ namespace pharmmlcpp
         return this->VariabilityModels;
     }
 
-    pharmmlcpp::CovariateModel *ModelDefinition::getCovariateModel() {
-        return this->CovariateModel;
+    CovariateModel *ModelDefinition::getCovariateModel() {
+        return this->covariateModel;
     }
 
-    pharmmlcpp::ParameterModel *ModelDefinition::getParameterModel() {
-        return this->ParameterModel;
+    ParameterModel *ModelDefinition::getParameterModel() {
+        return this->parameterModel;
     }
 
-    pharmmlcpp::StructuralModel *ModelDefinition::getStructuralModel() {
-        return this->StructuralModel;
+    StructuralModel *ModelDefinition::getStructuralModel() {
+        return this->structuralModel;
     }
 
-    pharmmlcpp::ObservationModel *ModelDefinition::getObservationModel() {
-        return this->ObservationModel;
+    ObservationModel *ModelDefinition::getObservationModel() {
+        return this->observationModel;
     }
 }

@@ -330,6 +330,9 @@ namespace pharmmlcpp
     }
 
     void SymbRefFinder::visit(Vector *node) {
+        for (AstNode *ast_node : node->getElements()) {
+            ast_node->accept(this);
+        }
     }
 
     void SymbRefFinder::visit(Piecewise *node) {

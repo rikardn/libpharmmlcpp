@@ -32,14 +32,13 @@ namespace pharmmlcpp
     class CovariateModel : public Block
     {
         public:
-            CovariateModel(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
-            std::vector<pharmmlcpp::Covariate *> getCovariates();
+            CovariateModel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
+            std::vector<Covariate *> getCovariates();
             void gatherSymbols(SymbolGathering &gathering) override;
         
         private:
-            pharmmlcpp::PharmMLContext *context;
-            std::vector<pharmmlcpp::Covariate *> covariates;
+            std::vector<Covariate *> covariates;
     };
 }
 

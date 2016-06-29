@@ -19,24 +19,23 @@
 
 namespace pharmmlcpp
 {
-    VariabilityLevel::VariabilityLevel(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->VariabilityLevel::parse(node);
+    VariabilityLevel::VariabilityLevel(PharmMLReader &reader, xml::Node node) {
+        this->VariabilityLevel::parse(reader, node);
     }
 
-    void VariabilityLevel::parse(xml::Node node) {
+    void VariabilityLevel::parse(PharmMLReader &reader, xml::Node node) {
         // Gets symbId
         this->Symbol::parse(node);
 
         // Get name and if this level is the reference level
-        xml::Node name_node = this->context->getSingleElement(node, "./ct:Name");
+        xml::Node name_node = reader.getSingleElement(node, "./ct:Name");
         if (name_node.exists()) {
-            this->name = this->context->getSingleElement(node, "./ct:Name").getText();
+            this->name = reader.getSingleElement(node, "./ct:Name").getText();
         }
         this->referenceLevel = node.getAttribute("referenceLevel").getValue() == "true" ? true : false;
 
         // Get parent reference
-        xml::Node parent_ref_node = this->context->getSingleElement(node, "./mdef:ParentLevel");
+        xml::Node parent_ref_node = reader.getSingleElement(node, "./mdef:ParentLevel");
         if (parent_ref_node.exists()) {
             this->parentLevelRef = new SymbRef(parent_ref_node.getChild());
         }

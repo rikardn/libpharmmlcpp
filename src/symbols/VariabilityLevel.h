@@ -28,8 +28,8 @@ namespace pharmmlcpp
     class VariabilityLevel : public Symbol
     {
         public:
-            VariabilityLevel(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            VariabilityLevel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
             bool isReferenceLevel();
             SymbRef *getParentReference();

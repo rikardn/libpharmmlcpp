@@ -116,7 +116,7 @@ namespace pharmmlcpp
             this->times->accept(&analyzer);
             int times_length = analyzer.getLength();
             if (times_length != 1 && amount_length != 1 && times_length != amount_length) {
-               return; // FIXME: Error handling here 
+               return; // FIXME: Error handling here
             }
         }
     }
@@ -193,6 +193,9 @@ namespace pharmmlcpp
         }
         if (this->amount) {
             this->setupAstSymbRefs(this->amount, gathering, blkId);
+        }
+        if (this->times) {
+            this->setupAstSymbRefs(this->times, gathering, blkId);
         }
     }
 
@@ -320,7 +323,7 @@ namespace pharmmlcpp
         this->context = context;
         this->parse(node);
     }
-    
+
     void InterventionsCombination::parse(xml::Node node) {
         this->Object::parse(node);
         xml::Node relative_node = this->context->getSingleElement(node, "./design:Relative");

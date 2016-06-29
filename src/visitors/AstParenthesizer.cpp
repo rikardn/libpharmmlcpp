@@ -173,10 +173,8 @@ namespace pharmmlcpp
                 if (left_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
                 } else if (left_prop->priority == cur_props.priority) { // Same priority might require ()
-                    if ((cur_props.associativity == NodeAssociativity::Left ||
-                         cur_props.associativity == NodeAssociativity::Both) &&
-                        left_prop->commutative == false) {
-                        return true;
+                    if (cur_props.associativity == NodeAssociativity::Left || cur_props.associativity == NodeAssociativity::Both) {
+                        if (!left_prop->commutative) return true;
                     }
                 } else if (this->pretty_minus) {
                     if (cur_props.node_type == AstOperator::UniopMinus) {
@@ -194,10 +192,8 @@ namespace pharmmlcpp
                 if (right_prop->priority > cur_props.priority) { // Lower priority requires ()
                     return true;
                 } else if (right_prop->priority == cur_props.priority) { // Same priority might require ()
-                    if ((cur_props.associativity == NodeAssociativity::Right ||
-                         cur_props.associativity == NodeAssociativity::Both) &&
-                        right_prop->commutative == false) {
-                        return true;
+                    if (cur_props.associativity == NodeAssociativity::Right || cur_props.associativity == NodeAssociativity::Both) {
+                        if (!right_prop->commutative) return true;
                     }
                 }
             }

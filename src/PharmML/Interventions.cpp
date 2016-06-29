@@ -179,6 +179,9 @@ namespace pharmmlcpp
         if (this->amount) {
             this->setupAstSymbRefs(this->amount, gathering, blkId);
         }
+        if (this->times) {
+            this->setupAstSymbRefs(this->times, gathering, blkId);
+        }
     }
 
     void Administration::setupTargetMappings(SymbolGathering &gathering) {
@@ -305,7 +308,7 @@ namespace pharmmlcpp
         this->context = context;
         this->parse(node);
     }
-    
+
     void InterventionsCombination::parse(xml::Node node) {
         this->Object::parse(node);
         xml::Node relative_node = this->context->getSingleElement(node, "./design:Relative");

@@ -34,8 +34,8 @@ namespace pharmmlcpp
     class StructuralModel : public Block
     {
         public:
-            StructuralModel(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            StructuralModel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::vector<pharmmlcpp::CommonVariable *> getVariables();
             bool hasDerivatives();
             std::vector<pharmmlcpp::CommonVariable *> getDerivatives();

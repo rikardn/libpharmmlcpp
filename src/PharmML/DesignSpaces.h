@@ -29,8 +29,8 @@ namespace pharmmlcpp
     class DesignSpace : public Referer
     {
         public:
-            DesignSpace(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            DesignSpace(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::string getOid();
             std::vector<ObjectRef *> getInterventionRefs();
@@ -43,7 +43,6 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::vector<ObjectRef *> interventionRefs;
             std::vector<ObjectRef *> observationRefs;
@@ -56,19 +55,18 @@ namespace pharmmlcpp
     class DesignSpaces
     {
         public:
-            DesignSpaces(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            DesignSpaces(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
-            std::vector<pharmmlcpp::Variable *> getDesignParameters();
-            std::vector<pharmmlcpp::DesignSpace *> getDesignSpaces();
+            std::vector<Variable *> getDesignParameters();
+            std::vector<DesignSpace *> getDesignSpaces();
             DesignSpace *getDesignSpaceFromSymbol(Symbol *symbol);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            std::vector<pharmmlcpp::Variable *> designParameters;
-            std::vector<pharmmlcpp::DesignSpace *> designSpaces;
+            std::vector<Variable *> designParameters;
+            std::vector<DesignSpace *> designSpaces;
 
     };
 }

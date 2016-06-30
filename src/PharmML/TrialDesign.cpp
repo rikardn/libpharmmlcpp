@@ -23,41 +23,41 @@
 
 namespace pharmmlcpp
 {
-    TrialDesign::TrialDesign(PharmMLContext *context, xml::Node node) {
-        this->context = context;
+    TrialDesign::TrialDesign(PharmMLReader &reader, xml::Node node) {
         this->xml_node = node;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void TrialDesign::parse(xml::Node node) {
-        std::vector<xml::Node> ext_dataset_nodes = this->context->getElements(node, "./design:ExternalDataSet");
+    void TrialDesign::parse(PharmMLReader &reader, xml::Node node) {
+        this->context = new PharmMLContext(reader);
+        std::vector<xml::Node> ext_dataset_nodes = reader.getElements(node, "./design:ExternalDataSet");
         for (xml::Node ext_dataset_node : ext_dataset_nodes) {
             ExternalDataset* ds = new ExternalDataset(this->context, ext_dataset_node);
             this->externalDatasets.push_back(ds);
         }
-        xml::Node interventions_node = this->context->getSingleElement(node, "./design:Interventions");
+        xml::Node interventions_node = reader.getSingleElement(node, "./design:Interventions");
         if (interventions_node.exists()) {
             this->interventions = new Interventions(this->context, interventions_node);
         }
 
-        xml::Node observations_node = this->context->getSingleElement(node, "./design:Observations");
+        xml::Node observations_node = reader.getSingleElement(node, "./design:Observations");
         if (observations_node.exists()) {
-            this->observations = new Observations(this->context, observations_node);
+            this->observations = new Observations(reader, observations_node);
         }
 
-        xml::Node arms_node = this->context->getSingleElement(node, "./design:Arms");
+        xml::Node arms_node = reader.getSingleElement(node, "./design:Arms");
         if (arms_node.exists()) {
-            this->arms = new Arms(this->context, arms_node);
+            this->arms = new Arms(reader, arms_node);
         }
 
-        xml::Node ds_node = this->context->getSingleElement(node, "./design:DesignSpaces");
+        xml::Node ds_node = reader.getSingleElement(node, "./design:DesignSpaces");
         if (ds_node.exists()) {
-            this->designSpaces = new DesignSpaces(this->context, ds_node);
+            this->designSpaces = new DesignSpaces(reader, ds_node);
         }
         
-        std::vector<xml::Node> dspar_nodes = this->context->getElements(node, "./mdef:DesignParameter");
+        std::vector<xml::Node> dspar_nodes = reader.getElements(node, "./mdef:DesignParameter");
         for (xml::Node dspar_node : dspar_nodes) {
-            DesignParameter *dspar = new DesignParameter(this->context, dspar_node);
+            DesignParameter *dspar = new DesignParameter(reader, dspar_node);
             this->designParameters.push_back(dspar);
         }
     }

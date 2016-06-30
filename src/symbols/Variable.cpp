@@ -20,17 +20,16 @@
 
 namespace pharmmlcpp
 {
-    CommonVariable::CommonVariable(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->CommonVariable::parse(node);
+    CommonVariable::CommonVariable(PharmMLReader &reader, xml::Node node) {
+        this->CommonVariable::parse(reader, node);
     }
 
-    void CommonVariable::parse(xml::Node node) {
+    void CommonVariable::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
-        xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = this->context->factory.create(tree);
+            this->assignment = reader.factory.create(tree);
         }
     }
 

@@ -22,27 +22,27 @@
 
 namespace pharmmlcpp
 {
-    StructuralModel::StructuralModel(PharmMLContext *context, xml::Node node) {
-        this->context = context;
+    StructuralModel::StructuralModel(PharmMLReader &reader, xml::Node node) {
         this->Block::parse(node);
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void StructuralModel::parse(xml::Node node) {
-        std::vector<xml::Node> array = this->context->getElements(node, ".//ct:Variable");
+    void StructuralModel::parse(PharmMLReader &reader, xml::Node node) {
+        this->context = new PharmMLContext(reader);
+        std::vector<xml::Node> array = reader.getElements(node, ".//ct:Variable");
         for (xml::Node n : array) {
-            pharmmlcpp::Variable *var = new pharmmlcpp::Variable(this->context, n);
+            Variable *var = new Variable(reader, n);
             this->variables.push_back(var);
         }
-        std::vector<xml::Node> derivs = this->context->getElements(node, ".//ct:DerivativeVariable");
+        std::vector<xml::Node> derivs = reader.getElements(node, ".//ct:DerivativeVariable");
         for (xml::Node n : derivs) {
-            pharmmlcpp::DerivativeVariable *var = new pharmmlcpp::DerivativeVariable(this->context, n);
+            DerivativeVariable *var = new DerivativeVariable(reader, n);
             this->variables.push_back(var);
         }
         // Construct PKMacros object if macros are available
-        xml::Node macros_node = this->context->getSingleElement(node, "./mdef:PKmacros");
+        xml::Node macros_node = reader.getSingleElement(node, "./mdef:PKmacros");
         if (macros_node.exists()) {
-            pharmmlcpp::PKMacros *macros = new pharmmlcpp::PKMacros(this->context, macros_node);
+            PKMacros *macros = new PKMacros(this->context, macros_node);
             this->pk_macros = macros;
         }
     }

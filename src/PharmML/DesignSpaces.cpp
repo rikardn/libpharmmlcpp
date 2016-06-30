@@ -20,38 +20,37 @@
 
 namespace pharmmlcpp
 {
-    DesignSpace::DesignSpace(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    DesignSpace::DesignSpace(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void DesignSpace::parse(xml::Node node) {
+    void DesignSpace::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
 
         // Get (oid) references
-        std::vector<xml::Node> refs = this->context->getElements(node, "./design:InterventionRef");
+        std::vector<xml::Node> refs = reader.getElements(node, "./design:InterventionRef");
         for (xml::Node ref : refs) {
             this->interventionRefs.push_back(new ObjectRef(ref));
         }
-        refs = this->context->getElements(node, "./design:ObservationRef");
+        refs = reader.getElements(node, "./design:ObservationRef");
         for (xml::Node ref : refs) {
             this->observationRefs.push_back(new ObjectRef(ref));
         }
-        refs = this->context->getElements(node, "./design:ArmRef");
+        refs = reader.getElements(node, "./design:ArmRef");
         for (xml::Node ref : refs) {
             this->armRefs.push_back(new ObjectRef(ref));
         }
-        xml::Node dosing_times = this->context->getSingleElement(node, "./design:DosingTimes");
+        xml::Node dosing_times = reader.getSingleElement(node, "./design:DosingTimes");
         if (dosing_times.exists()) {
-            this->dosingTimes = this->context->factory.create(dosing_times.getChild().getChild());
+            this->dosingTimes = reader.factory.create(dosing_times.getChild().getChild());
         }
-        std::vector<xml::Node> symbref_nodes = this->context->getElements(node, "./ct:SymbRef");
+        std::vector<xml::Node> symbref_nodes = reader.getElements(node, "./ct:SymbRef");
         for (xml::Node symbref_node : symbref_nodes) {
             this->symbRefs.push_back(new SymbRef(symbref_node));
         }
-        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+        xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         if (assign_node.exists()) {
-            this->assignment = this->context->factory.create(assign_node.getChild());
+            this->assignment = reader.factory.create(assign_node.getChild());
         }
     }
 
@@ -110,24 +109,23 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
-    DesignSpaces::DesignSpaces(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    DesignSpaces::DesignSpaces(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void DesignSpaces::parse(xml::Node node) {
+    void DesignSpaces::parse(PharmMLReader &reader, xml::Node node) {
         // Get design parameters
         // (mdef:DesignParameterType extends mdef:CommonParameterType which is close enough to class Variable for now)
-        std::vector<xml::Node> design_parameters = this->context->getElements(node, "./mdef:DesignParameter");
+        std::vector<xml::Node> design_parameters = reader.getElements(node, "./mdef:DesignParameter");
         for (xml::Node node : design_parameters) {
-            Variable *parameter = new Variable(this->context, node);
+            Variable *parameter = new Variable(reader, node);
             this->designParameters.push_back(parameter);
         }
 
         // Get design spaces
-        std::vector<xml::Node> designSpaces = this->context->getElements(node, "./design:DesignSpace");
+        std::vector<xml::Node> designSpaces = reader.getElements(node, "./design:DesignSpace");
         for (xml::Node node : designSpaces) {
-            DesignSpace *space = new DesignSpace(this->context, node);
+            DesignSpace *space = new DesignSpace(reader, node);
             this->designSpaces.push_back(space);
         }
     }

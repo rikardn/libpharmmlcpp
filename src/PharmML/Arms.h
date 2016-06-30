@@ -93,7 +93,7 @@ namespace pharmmlcpp
     class Arm : public Object, public PharmMLSection
     {
         public:
-            Arm(pharmmlcpp::PharmMLContext *context, xml::Node node);
+            Arm(PharmMLContext *context, xml::Node node);
             void parse(xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
@@ -122,8 +122,9 @@ namespace pharmmlcpp
     class Arms
     {
         public:
-            Arms(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            std::vector<pharmmlcpp::Variable *> getDesignParameters();
+            Arms(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
+            std::vector<Variable *> getDesignParameters();
             AstNode *getArmSize();
             AstNode *getCostFunction();
             AstNode *getNumArms();
@@ -133,7 +134,6 @@ namespace pharmmlcpp
             AstNode *getTotalCost();
             AstNode *getTotalSize();
             std::vector<Arm *> getArms();
-            void parse(xml::Node node);
             xml::Node xml();
             void accept(PharmMLVisitor *visitor);
 

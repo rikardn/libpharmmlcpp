@@ -27,11 +27,11 @@ namespace pharmmlcpp
     class DerivativeVariable : public CommonVariable
     {
         public:
-            DerivativeVariable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = true; this->parse(node); };
+            DerivativeVariable(PharmMLReader &reader, xml::Node node) : CommonVariable(reader, node) { is_derivative = true; this->parse(reader, node); };
             AstNode *getIndependentVariable();
             AstNode *getInitialValue();
             AstNode *getInitialTime();
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

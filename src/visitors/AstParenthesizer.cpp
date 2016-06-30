@@ -98,11 +98,13 @@ namespace pharmmlcpp
     // Check if parent node left-parenthesizes (not yet pushed node)
     bool NodePropertiesStack::adjacentLeftParenthesis() {
         for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
-            if ((*it) == AcceptDirection::RightChild || (*it) == AcceptDirection::MiddleChild) break;
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
-            if ((*prop_it).parenthesized == true && (*prop_it).position != OperatorPosition::Prefix) return true;
             if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
+            if ((*prop_it).position == OperatorPosition::Prefix) break;
+            if ((*it) == AcceptDirection::RightChild && (*prop_it).position == OperatorPosition::Infix) break;
+            if ((*it) == AcceptDirection::MiddleChild && (*prop_it).position == OperatorPosition::Infix) break;
+            if ((*prop_it).parenthesized == true) return true;
         }
         return false;
     }
@@ -110,11 +112,13 @@ namespace pharmmlcpp
     // Check if parent node right-parenthesizes (not yet pushed node)
     bool NodePropertiesStack::adjacentRightParenthesis() {
         for (auto it = this->directions.rbegin(); it != this->directions.rend(); ++it) {
-            if ((*it) == AcceptDirection::LeftChild || (*it) == AcceptDirection::MiddleChild) break;
             auto dir_index = std::distance(this->directions.rbegin(), it);
             auto prop_it = this->properties.rbegin() + dir_index;
-            if ((*prop_it).parenthesized == true && (*prop_it).position != OperatorPosition::Postfix) return true;
             if ((*prop_it).associativity == NodeAssociativity::None) return true; // e.g. log(x), not log((x))
+            if ((*prop_it).position == OperatorPosition::Postfix) break;
+            if ((*it) == AcceptDirection::LeftChild && (*prop_it).position == OperatorPosition::Infix) break;
+            if ((*it) == AcceptDirection::MiddleChild && (*prop_it).position == OperatorPosition::Infix) break;
+            if ((*prop_it).parenthesized == true) return true;
         }
         return false;
     }
@@ -512,7 +516,7 @@ namespace pharmmlcpp
     }
 
     void AstParenthesizer::visit(Vector *node) {
-        
+
     }
 
     void AstParenthesizer::visit(Piecewise *node) {
@@ -540,14 +544,14 @@ namespace pharmmlcpp
         func_ref->elideParentheses();
         for (FunctionArgument *farg : node->getFunctionArguments()) {
             farg->elideParentheses();
-        } 
+        }
     }
 
     void AstParenthesizer::visit(FunctionArgument *node) {
-        
+
     }
 
     void AstParenthesizer::visit(Interval *node) {
-        
+
     }
 }

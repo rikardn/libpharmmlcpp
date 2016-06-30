@@ -133,6 +133,51 @@
                     </math:Binop>
                 </ct:Assign>
             </ct:Variable>
+            <ct:Variable symbolType="real" symbId="model1_uniop_test">
+              <ct:Assign>
+                <math:Binop op="minus">
+                    <ct:Int>1</ct:Int>
+                    <math:Uniop op="exp">
+                        <math:Binop op="power">
+                            <math:Uniop op="minus">
+                                <math:Binop op="plus">
+                                    <math:Binop op="plus">
+                                        <math:Binop op="times">
+                                            <math:Binop op="power">
+                                              <ct:Int>2</ct:Int>
+                                              <ct:Int>3</ct:Int>
+                                            </math:Binop>
+                                            <ct:Int>4</ct:Int>
+                                        </math:Binop>
+                                        <math:Binop op="times">
+                                            <math:Binop op="times">
+                                                <math:Binop op="times">
+                                                  <ct:Int>5</ct:Int>
+                                                  <ct:Int>6</ct:Int>
+                                                </math:Binop>
+                                                <ct:Int>7</ct:Int>
+                                            </math:Binop>
+                                            <ct:Int>8</ct:Int>
+                                        </math:Binop>
+                                    </math:Binop>
+                                    <math:Binop op="times">
+                                        <math:Binop op="power">
+                                          <ct:Int>9</ct:Int>
+                                          <ct:Int>10</ct:Int>
+                                        </math:Binop>
+                                        <ct:Int>11</ct:Int>
+                                    </math:Binop>
+                                </math:Binop>
+                            </math:Uniop>
+                            <math:Binop op="divide">
+                              <ct:Int>12</ct:Int>
+                              <ct:Int>13</ct:Int>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Uniop>
+                </math:Binop>
+              </ct:Assign>
+            </ct:Variable>
             <ct:Variable symbolType="real" symbId="rand_logic">
                 <ct:Assign>
                     <math:LogicBinop op="or">

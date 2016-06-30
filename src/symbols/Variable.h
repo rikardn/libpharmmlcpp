@@ -26,8 +26,8 @@ namespace pharmmlcpp
     class CommonVariable : public Symbol
     {
          public:
-            CommonVariable(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            CommonVariable(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             AstNode *getAssignment();
             bool isDerivative();
             virtual void setupSymbRefs(SymbolGathering &gathering, std::string blkId) = 0;
@@ -42,7 +42,7 @@ namespace pharmmlcpp
     class Variable : public CommonVariable
     {
         public:
-            Variable(PharmMLContext *context, xml::Node node) : CommonVariable(context, node) { is_derivative = false; };
+            Variable(PharmMLReader &reader, xml::Node node) : CommonVariable(reader, node) { is_derivative = false; };
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor) override;
             void accept(SymbolVisitor *visitor) override;
@@ -51,7 +51,7 @@ namespace pharmmlcpp
     class DesignParameter : public Variable
     {
         public:
-            DesignParameter(PharmMLContext *context, xml::Node node) : Variable(context, node) {};
+            DesignParameter(PharmMLReader &reader, xml::Node node) : Variable(reader, node) {};
     };
 }
 

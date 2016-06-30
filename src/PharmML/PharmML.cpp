@@ -46,7 +46,7 @@ namespace pharmmlcpp
 
         xml::Node design_node = reader.getSingleElement(node, "/x:PharmML/design:TrialDesign");
         if (design_node.exists()) {
-            this->trialDesign = new TrialDesign(this->context, design_node);
+            this->trialDesign = new TrialDesign(reader, design_node);
         }
 
         xml::Node msteps_node = reader.getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");

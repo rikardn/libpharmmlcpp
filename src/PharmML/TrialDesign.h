@@ -34,8 +34,8 @@ namespace pharmmlcpp
     class TrialDesign
     {
         public:
-            TrialDesign(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            TrialDesign(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void update();
             std::vector<ExternalDataset *> getExternalDatasets();
             Interventions *getInterventions();

@@ -38,11 +38,11 @@ namespace pharmmlcpp
         if (cov_node.exists()) {
             this->covariateModel = new CovariateModel(reader, cov_node);
         }
-        this->context = new PharmMLContext(reader);
         xml::Node struct_node = reader.getSingleElement(node, "./mdef:StructuralModel");
         if (struct_node.exists()) {
-            this->structuralModel = new StructuralModel(this->context, struct_node);
+            this->structuralModel = new StructuralModel(reader, struct_node);
         }
+        this->context = new PharmMLContext(reader);
         xml::Node param_node = reader.getSingleElement(node, "./mdef:ParameterModel");
         if (param_node.exists()) {
             this->parameterModel = new ParameterModel(this->context, param_node);

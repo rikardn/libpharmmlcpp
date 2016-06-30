@@ -288,70 +288,70 @@ namespace pharmmlcpp
     }
 
     // Arms class
-    Arms::Arms(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    Arms::Arms(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void Arms::parse(xml::Node node) {
+    void Arms::parse(PharmMLReader &reader, xml::Node node) {
         // Get design parameters
         // (mdef:DesignParameterType extends mdef:CommonParameterType which is close enough to class Variable for now)
-        std::vector<xml::Node> design_parameters = this->context->getElements(node, "./mdef:DesignParameter");
+        std::vector<xml::Node> design_parameters = reader.getElements(node, "./mdef:DesignParameter");
         for (xml::Node node : design_parameters) {
-            Variable *parameter = new Variable(this->context, node);
+            Variable *parameter = new Variable(reader, node);
             this->designParameters.push_back(parameter);
         }
 
         // Get arm size
-        xml::Node assign = this->context->getSingleElement(node, "./design:ArmSize/ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, "./design:ArmSize/ct:Assign");
         if (assign.exists()) {
-            this->armSize = this->context->factory.create(assign.getChild());
+            this->armSize = reader.factory.create(assign.getChild());
         }
 
         // Get cost function
-        assign = this->context->getSingleElement(node, "./design:CostFunction/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:CostFunction/ct:Assign");
         if (assign.exists()) {
-            this->costFunction = this->context->factory.create(assign.getChild());
+            this->costFunction = reader.factory.create(assign.getChild());
         }
 
         // Get number of arms
-        assign = this->context->getSingleElement(node, "./design:NumberArms/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:NumberArms/ct:Assign");
         if (assign.exists()) {
-            this->numArms = this->context->factory.create(assign.getChild());
+            this->numArms = reader.factory.create(assign.getChild());
         }
 
         // Get number of samples
-        assign = this->context->getSingleElement(node, "./design:NumberSamples/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:NumberSamples/ct:Assign");
         if (assign.exists()) {
-            this->numSamples = this->context->factory.create(assign.getChild());
+            this->numSamples = reader.factory.create(assign.getChild());
         }
 
         // Get number of times
-        assign = this->context->getSingleElement(node, "./design:NumberTimes/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:NumberTimes/ct:Assign");
         if (assign.exists()) {
-            this->numTimes = this->context->factory.create(assign.getChild());
+            this->numTimes = reader.factory.create(assign.getChild());
         }
 
         // Get same times
-        assign = this->context->getSingleElement(node, "./design:SameTimes/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:SameTimes/ct:Assign");
         if (assign.exists()) {
-            this->sameTimes = this->context->factory.create(assign.getChild());
+            this->sameTimes = reader.factory.create(assign.getChild());
         }
 
         // Get total cost
-        assign = this->context->getSingleElement(node, "./design:TotalCost/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:TotalCost/ct:Assign");
         if (assign.exists()) {
-            this->totalCost = this->context->factory.create(assign.getChild());
+            this->totalCost = reader.factory.create(assign.getChild());
         }
 
         // Get total size
-        assign = this->context->getSingleElement(node, "./design:TotalSize/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:TotalSize/ct:Assign");
         if (assign.exists()) {
-            this->totalSize = this->context->factory.create(assign.getChild());
+            this->totalSize = reader.factory.create(assign.getChild());
         }
 
+        this->context = new PharmMLContext(reader);
         // Get the arm definitions themselves
-        std::vector<xml::Node> arms = this->context->getElements(node, "./design:Arm");
+        std::vector<xml::Node> arms = reader.getElements(node, "./design:Arm");
         for (xml::Node node : arms) {
             Arm *arm = new Arm(this->context, node);
             this->arms.push_back(arm);

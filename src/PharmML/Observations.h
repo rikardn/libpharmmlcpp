@@ -97,8 +97,8 @@ namespace pharmmlcpp
     class Observations
     {
         public:
-            Observations(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Observations(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<Variable *> getDesignParameters();
             std::vector<Observation *> getObservations(); // Or getSimulationObservations()?

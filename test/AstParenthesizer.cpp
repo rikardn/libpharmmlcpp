@@ -182,6 +182,89 @@ TEST_CASE("AstParenthesizer", "[AstParenthesizer]") {
                 CHECK(sint->hasParentheses() == false);
             }
         }
+        SECTION ("expr (-(1+2))^(3*4)") { // = (-(1+2))^(3*4)
+            auto var = vars["unimin2"];
+            var->accept(&ap);
+
+            // binops/uniops
+            Binop *b_1234 = static_cast<Binop *>( var );
+            Uniop *u_12 = static_cast<Uniop *>( b_1234->getLeft() );
+            Binop *b_12 = static_cast<Binop *>( u_12->getChild() );
+            Binop *b_34 = static_cast<Binop *>( b_1234->getRight() );
+
+            CHECK(b_1234->hasParentheses() == false);
+            CHECK(u_12->hasParentheses() == true);
+            CHECK(b_12->hasParentheses() == true);
+            CHECK(b_34->hasParentheses() == true);
+
+            // scalars
+            std::vector<Binop *> binops = {b_12, b_34};
+            assertScalarIntNoParentheses(binops);
+        }
+        SECTION ("1 - (exp( (-( ( (((2^3)*4) + (((5*6)*7)*8)) + ((9^10)*11) ))) ^ (12/13) ))") { // = 1 - exp( (-(2^3*4 + 5*6*7*8 + 9^10*11)) ^ (12/13) )
+            auto var = vars["model1_uniop_test"];
+            var->accept(&ap);
+
+            // binops/uniops
+            Binop *b_all = static_cast<Binop *>( var );
+            Uniop *u_exp = static_cast<Uniop *>( b_all->getRight() );
+            Binop *b_pow = static_cast<Binop *>( u_exp->getChild() );
+            Uniop *u_min = static_cast<Uniop *>( b_pow->getLeft() );
+            Binop *b_plus = static_cast<Binop *>( u_min->getChild() );
+            Binop *b_2345678 = static_cast<Binop *>( b_plus->getLeft() );
+            Binop *b_234 = static_cast<Binop *>( b_2345678->getLeft() );
+            Binop *b_23 = static_cast<Binop *>( b_234->getLeft() );
+            Binop *b_5678 = static_cast<Binop *>( b_2345678->getRight() );
+            Binop *b_567 = static_cast<Binop *>( b_5678->getLeft() );
+            Binop *b_56 = static_cast<Binop *>( b_567->getLeft() );
+            Binop *b_9_10_11 = static_cast<Binop *>( b_plus->getRight() );
+            Binop *b_9_10 = static_cast<Binop *>( b_9_10_11->getLeft() );
+            Binop *b_div = static_cast<Binop *>( b_pow->getRight() );
+
+            CHECK(b_all->hasParentheses() == false);
+            CHECK(u_exp->hasParentheses() == false);
+            CHECK(b_pow->hasParentheses() == false);
+            CHECK(u_min->hasParentheses() == true);
+            CHECK(b_plus->hasParentheses() == true);
+            CHECK(b_2345678->hasParentheses() == false);
+            CHECK(b_234->hasParentheses() == false);
+            CHECK(b_23->hasParentheses() == false);
+            CHECK(b_5678->hasParentheses() == false);
+            CHECK(b_567->hasParentheses() == false);
+            CHECK(b_56->hasParentheses() == false);
+            CHECK(b_9_10_11->hasParentheses() == false);
+            CHECK(b_9_10->hasParentheses() == false);
+            CHECK(b_div->hasParentheses() == true);
+
+            // scalars
+            ScalarInt *s1 = static_cast<ScalarInt *>( b_all->getLeft() );
+            ScalarInt *s2 = static_cast<ScalarInt *>( b_23->getLeft() );
+            ScalarInt *s3 = static_cast<ScalarInt *>( b_23->getRight() );
+            ScalarInt *s4 = static_cast<ScalarInt *>( b_234->getRight() );
+            ScalarInt *s5 = static_cast<ScalarInt *>( b_56->getLeft() );
+            ScalarInt *s6 = static_cast<ScalarInt *>( b_56->getRight() );
+            ScalarInt *s7 = static_cast<ScalarInt *>( b_567->getRight() );
+            ScalarInt *s8 = static_cast<ScalarInt *>( b_5678->getRight() );
+            ScalarInt *s9 = static_cast<ScalarInt *>( b_9_10->getLeft() );
+            ScalarInt *s10 = static_cast<ScalarInt *>( b_9_10->getRight() );
+            ScalarInt *s11 = static_cast<ScalarInt *>( b_9_10_11->getRight() );
+            ScalarInt *s12 = static_cast<ScalarInt *>( b_div->getLeft() );
+            ScalarInt *s13 = static_cast<ScalarInt *>( b_div->getRight() );
+
+            CHECK(s1->hasParentheses() == false);
+            CHECK(s2->hasParentheses() == false);
+            CHECK(s3->hasParentheses() == false);
+            CHECK(s4->hasParentheses() == false);
+            CHECK(s5->hasParentheses() == false);
+            CHECK(s6->hasParentheses() == false);
+            CHECK(s7->hasParentheses() == false);
+            CHECK(s8->hasParentheses() == false);
+            CHECK(s9->hasParentheses() == false);
+            CHECK(s10->hasParentheses() == false);
+            CHECK(s11->hasParentheses() == false);
+            CHECK(s12->hasParentheses() == false);
+            CHECK(s13->hasParentheses() == false);
+        }
     }
 
     // Logical operator tests (expressions named after the digits they contain)

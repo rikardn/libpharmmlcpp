@@ -8,7 +8,7 @@ ifeq ($(TARGET), UNIX)
   OUTPUT = pharmml2poped
 else
   CC = x86_64-w64-mingw32-g++
-  CFLAGS = -MMD -Wall -O3 -std=c++14 -static-libgcc -static-libstdc++ -L./windep/libs -Isrc -I./windep/include
+  CFLAGS = -MMD -Wall -O3 -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -Isrc -I./windep/include
   OUTPUT = pharmml2poped.exe
 endif
 
@@ -299,7 +299,7 @@ windep:
 	cp windep/zlib-1.2.8/libz.dll.a windep/lib
 	wget -P windep ftp://xmlsoft.org/libxml2/libxml2-2.9.3.tar.gz
 	cd windep; tar xvfz libxml2-2.9.3.tar.gz
-	cd windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=/home/rikard/moose/pharmmlc/windep --with-iconv=/home/rikard/moose/pharmml/windep; make 
+	cd windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=.. --with-iconv=..; make 
 #	--without-html --without-legacy --without-regexps --without-sax1 --without-schemas --without-valid --without-xpath 
 	cp -r windep/libxml2-2.9.3/include/libxml windep/include
 	cp windep/libxml2-2.9.3/.libs/libxml2-2.dll windep/lib

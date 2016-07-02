@@ -36,12 +36,12 @@ namespace pharmmlcpp
     class ExternalDataset : public PharmMLSection
     {
         public:
-            ExternalDataset(pharmmlcpp::PharmMLContext *context, xml::Node node);
+            ExternalDataset(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::string getOid();
             std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
             Dataset *getDataset();
             std::string getToolName();
-            void parse(xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void setupTargetMappings(SymbolGathering &gatherer);
             void setupTargetMappings(MacroGathering &gatherer);
@@ -52,7 +52,6 @@ namespace pharmmlcpp
             
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string oid;
             std::vector<pharmmlcpp::ColumnMapping *> col_maps;
             Dataset *dataset = nullptr;

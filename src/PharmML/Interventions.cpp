@@ -23,19 +23,18 @@ namespace pharmmlcpp
 {
     // TODO: Maybe move this somewhere? Variable.cpp (this is a reference, however)?
     // TODO: Maybe the name can be changed to something more general if needed
-    SteadyStateParameter::SteadyStateParameter(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    SteadyStateParameter::SteadyStateParameter(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void SteadyStateParameter::parse(xml::Node node) {
-        xml::Node symbol = this->context->getSingleElement(node, ".//ct:SymbRef");
+    void SteadyStateParameter::parse(PharmMLReader &reader, xml::Node node) {
+        xml::Node symbol = reader.getSingleElement(node, ".//ct:SymbRef");
         symbRef = new SymbRef(symbol);
 
-        xml::Node assign = this->context->getSingleElement(node, ".//ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = this->context->factory.create(tree);
+            this->assignment = reader.factory.create(tree);
         }
     }
 
@@ -52,56 +51,55 @@ namespace pharmmlcpp
     }
 
     // Administration class
-    Administration::Administration(PharmMLContext *context, xml::Node node) {
+    Administration::Administration(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void Administration::parse(xml::Node node) {
+    void Administration::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         xml::Node dose = node.getChild();
         this->type = dose.getName();
 
         // Get dose amount (pure Assign)
-        xml::Node amount = this->context->getSingleElement(dose, "./design:DoseAmount");
-        xml::Node assign = this->context->getSingleElement(dose, "./design:DoseAmount/ct:Assign");
+        xml::Node amount = reader.getSingleElement(dose, "./design:DoseAmount");
+        xml::Node assign = reader.getSingleElement(dose, "./design:DoseAmount/ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->amount = this->context->factory.create(tree);
+            this->amount = reader.factory.create(tree);
         }
 
         // Get dose target (TargetMapping or SymbRef)
         this->target_type = amount.getAttribute("inputTarget").getValue(); // Can be "parameter", "derivativeVariable", "variable" and "admType"
-        xml::Node symbref = this->context->getSingleElement(dose, "./design:DoseAmount/ct:SymbRef");
-        xml::Node mapping = this->context->getSingleElement(dose, "./design:DoseAmount/design:TargetMapping");
+        xml::Node symbref = reader.getSingleElement(dose, "./design:DoseAmount/ct:SymbRef");
+        xml::Node mapping = reader.getSingleElement(dose, "./design:DoseAmount/design:TargetMapping");
         if (symbref.exists()) {
-            this->target_symbref = new pharmmlcpp::SymbRef(symbref);
+            this->target_symbref = new SymbRef(symbref);
         } else if (mapping.exists()) {
-            this->target_mapping = new pharmmlcpp::TargetMapping(this->context, mapping);
+            this->target_mapping = new TargetMapping(reader, mapping);
         }
 
         // Get dose times/steady state
-        xml::Node times = this->context->getSingleElement(dose, "./design:DosingTimes");
-        xml::Node steady = this->context->getSingleElement(dose, "./design:SteadyState");
+        xml::Node times = reader.getSingleElement(dose, "./design:DosingTimes");
+        xml::Node steady = reader.getSingleElement(dose, "./design:SteadyState");
         if (times.exists()) {
-            xml::Node assign = this->context->getSingleElement(times, "./ct:Assign");
+            xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->times = this->context->factory.create(tree);
+            this->times = reader.factory.create(tree);
         } else if (steady.exists()) {
-            this->steady = new SteadyStateParameter(this->context, steady);
+            this->steady = new SteadyStateParameter(reader, steady);
         }
 
         // Get duration/rate for infusion type
         if (this->type == "Infusion") {
-            xml::Node duration = this->context->getSingleElement(dose, "./design:Duration");
-            xml::Node rate = this->context->getSingleElement(dose, "./design:Rate");
+            xml::Node duration = reader.getSingleElement(dose, "./design:Duration");
+            xml::Node rate = reader.getSingleElement(dose, "./design:Rate");
             if (duration.exists()) {
                 // TODO: Support <Duration>
                 this->duration = nullptr;
             } else if (rate.exists()) {
                 // TODO: Support <Rate>
-                this->rate = this->context->factory.create(rate.getChild().getChild());
+                this->rate = reader.factory.create(rate.getChild().getChild());
             }
         }
     }
@@ -214,39 +212,38 @@ namespace pharmmlcpp
     }
 
     // IndividualAdministration class
-    IndividualAdministration::IndividualAdministration(pharmmlcpp::PharmMLContext *context, xml::Node node) {
+    IndividualAdministration::IndividualAdministration(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void IndividualAdministration::parse(xml::Node node) {
+    void IndividualAdministration::parse(PharmMLReader &reader, xml::Node node) {
         // Get intervention (oid) reference (for which individual times/amounts will be defined)
-        xml::Node ref_node = this->context->getSingleElement(node, "./design:InterventionRef");
+        xml::Node ref_node = reader.getSingleElement(node, "./design:InterventionRef");
         if (ref_node.exists()) {
             this->oidRef = new ObjectRef(ref_node);
         }
 
         // Get column mappings
-        std::vector<xml::Node> map_nodes = this->context->getElements(node, "./design:ColumnMapping");
+        std::vector<xml::Node> map_nodes = reader.getElements(node, "./design:ColumnMapping");
         for (xml::Node map_node : map_nodes) {
-            pharmmlcpp::ColumnMapping *map = new pharmmlcpp::ColumnMapping(this->context, map_node);
+            pharmmlcpp::ColumnMapping *map = new ColumnMapping(reader, map_node);
             this->columnMappings.push_back(map);
         }
 
         // Get dataset
-        xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
-        pharmmlcpp::Dataset *ds = new pharmmlcpp::Dataset(this->context, ds_node);
+        xml::Node ds_node = reader.getSingleElement(node, "./ds:DataSet");
+        Dataset *ds = new Dataset(reader, ds_node);
         this->dataset = ds;
 
         // Check that all individual administrations have an independent variable and a dose column
-        pharmmlcpp::DataColumn *idv_col = ds->getIdvColumn();
+        DataColumn *idv_col = ds->getIdvColumn();
         if (!idv_col) {     // No idv column was found
-            this->context->logger.error("Missing idv column in IndividualAdministration", this);
+            reader.logger.error("Missing idv column in IndividualAdministration", this);
         }
-        pharmmlcpp::DataColumn *dose_col = ds->getColumnFromType("dose");
+        DataColumn *dose_col = ds->getColumnFromType("dose");
         if (!dose_col) {
-            this->context->logger.error("Missing dose column in IndividualAdministration", this);
+            reader.logger.error("Missing dose column in IndividualAdministration", this);
         }
     }
 
@@ -284,24 +281,23 @@ namespace pharmmlcpp
     }
 
     // SingleIntervention
-    SingleIntervention::SingleIntervention(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    SingleIntervention::SingleIntervention(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void SingleIntervention::parse(xml::Node node) {
-        std::vector<xml::Node> interventionref_nodes = this->context->getElements(node, "./design:InterventionRef");
+    void SingleIntervention::parse(PharmMLReader &reader, xml::Node node) {
+        std::vector<xml::Node> interventionref_nodes = reader.getElements(node, "./design:InterventionRef");
         for (xml::Node interventionref_node: interventionref_nodes) {
             ObjectRef *ref = new ObjectRef(interventionref_node);
             this->oidRefs.push_back(ref);
         }
-        xml::Node start_node = this->context->getSingleElement(node, "./design:Start");
+        xml::Node start_node = reader.getSingleElement(node, "./design:Start");
         if (start_node.exists()) {
-            this->start = this->context->factory.create(start_node.getChild().getChild());
+            this->start = reader.factory.create(start_node.getChild().getChild());
         }
-        xml::Node end_node = this->context->getSingleElement(node, "./design:End");
+        xml::Node end_node = reader.getSingleElement(node, "./design:End");
         if (end_node.exists()) {
-            this->end = this->context->factory.create(end_node.getChild().getChild());
+            this->end = reader.factory.create(end_node.getChild().getChild());
         }
     }
 
@@ -318,21 +314,20 @@ namespace pharmmlcpp
     }
 
     // InterventionsCombination
-    InterventionsCombination::InterventionsCombination(PharmMLContext *context, xml::Node node) {
+    InterventionsCombination::InterventionsCombination(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void InterventionsCombination::parse(xml::Node node) {
+    void InterventionsCombination::parse(PharmMLReader &reader, xml::Node node) {
         this->Object::parse(node);
-        xml::Node relative_node = this->context->getSingleElement(node, "./design:Relative");
+        xml::Node relative_node = reader.getSingleElement(node, "./design:Relative");
         if (relative_node.exists()) {
-            this->relative = this->context->factory.create(relative_node.getChild());
+            this->relative = reader.factory.create(relative_node.getChild());
         }
-        std::vector<xml::Node> interventions_nodes = this->context->getElements(node, "./design:Interventions");
+        std::vector<xml::Node> interventions_nodes = reader.getElements(node, "./design:Interventions");
         for (xml::Node intervention_node : interventions_nodes) {
-            SingleIntervention *intervention = new SingleIntervention(this->context, intervention_node);
+            SingleIntervention *intervention = new SingleIntervention(reader, intervention_node);
             this->singleInterventions.push_back(intervention);
         }
     }
@@ -358,30 +353,29 @@ namespace pharmmlcpp
     }
 
     // Interventions class
-    Interventions::Interventions(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    Interventions::Interventions(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void Interventions::parse(xml::Node node) {
+    void Interventions::parse(PharmMLReader &reader, xml::Node node) {
         // Get administrations (treatments)
-        std::vector<xml::Node> adm_nodes = this->context->getElements(node, "./design:Administration");
+        std::vector<xml::Node> adm_nodes = reader.getElements(node, "./design:Administration");
         for (xml::Node node : adm_nodes) {
-            pharmmlcpp::Administration *adm = new pharmmlcpp::Administration(this->context, node);
+            Administration *adm = new Administration(reader, node);
             this->administrations.push_back(adm);
         }
 
         // Get individual administrations (time-dependent administration information on subject level)
-        std::vector<xml::Node> ind_adm_nodes = this->context->getElements(node, "./design:IndividualAdministration");
+        std::vector<xml::Node> ind_adm_nodes = reader.getElements(node, "./design:IndividualAdministration");
         for (xml::Node node : ind_adm_nodes) {
-            pharmmlcpp::IndividualAdministration *adm = new pharmmlcpp::IndividualAdministration(this->context, node);
+            IndividualAdministration *adm = new IndividualAdministration(reader, node);
             this->individualAdministrations.push_back(adm);
         }
 
         // Get interventions combinations
-        std::vector<xml::Node> int_comb_nodes = this->context->getElements(node, "./design:InterventionsCombination");
+        std::vector<xml::Node> int_comb_nodes = reader.getElements(node, "./design:InterventionsCombination");
         for (xml::Node node : int_comb_nodes) {
-            InterventionsCombination *comb = new InterventionsCombination(this->context, node);
+            InterventionsCombination *comb = new InterventionsCombination(reader, node);
             this->interventionsCombinations.push_back(comb);
         }
     }

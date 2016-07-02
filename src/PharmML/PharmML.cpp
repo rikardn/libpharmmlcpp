@@ -51,7 +51,7 @@ namespace pharmmlcpp
 
         xml::Node msteps_node = reader.getSingleElement(node, "/x:PharmML/msteps:ModellingSteps");
         if (msteps_node.exists()) {
-            this->modellingSteps = new ModellingSteps(this->context, msteps_node);
+            this->modellingSteps = new ModellingSteps(reader, msteps_node);
         }
 
         // TODO: This an be moved into postParse when the consolidator call below is removed

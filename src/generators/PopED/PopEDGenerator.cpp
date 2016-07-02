@@ -768,6 +768,9 @@ namespace pharmmlcpp
 
         // Use PopED settings from PharmML if found
         bool fim_approx_type_set = false;
+        bool diff_solver_method_set = false;
+        bool abs_tol_set = false;
+        bool rel_tol_set = false;
         if (algo) {
             // Store recognized and parsed settings in these (NA means no setting read and UNDEF undefined/illegal value read)
             enum Criterion {EXPLICIT, UNDEF, NA};
@@ -958,7 +961,7 @@ namespace pharmmlcpp
                 }
             }
 
-            // Use the parsed settings
+            // Use the parsed settings (separate to prepare for function breakout)
             if (criterion == Criterion::EXPLICIT) {
                 if (!penalty_file.empty()) {
                     form.add("ofv_fun = '" + penalty_file + "'");
@@ -999,6 +1002,7 @@ namespace pharmmlcpp
                 case FIMApproxType::NA      : break;
             }
             if (this->has_derivatives) {
+                diff_solver_method_set = true;
                 switch (diff_solver_method) {
                     case DiffSolverMethod::LSODA      : form.add("iDiffSolverMethod = 'lsoda'");
                                                         break;
@@ -1035,18 +1039,16 @@ namespace pharmmlcpp
                     case DiffSolverMethod::ITERATION  : form.add("iDiffSolverMethod = 'iteration'");
                                                         break;
                     case DiffSolverMethod::UNDEF      :
-                    case DiffSolverMethod::NA         : form.add("iDiffSolverMethod = 'lsoda'");
+                    case DiffSolverMethod::NA         : diff_solver_method_set = false; // Inverse cond set to save some code lines
                                                         break;
                 }
                 if (abs_tol > 0) {
                     form.add("AbsTol = " + std::to_string(abs_tol));
-                } else {
-                    form.add("AbsTol = 1E-6");
+                    abs_tol_set = true;
                 }
                 if (rel_tol > 0) {
                     form.add("RelTol = " + std::to_string(rel_tol));
-                } else {
-                    form.add("RelTol = 1E-6");
+                    rel_tol_set = true;
                 }
             } else {
                 if (diff_solver_method != DiffSolverMethod::NA || abs_tol > 0 || rel_tol > 0) {
@@ -1086,9 +1088,20 @@ namespace pharmmlcpp
             }
         }
 
-        // Set FIM approximation to FO only if not overriden by PopED settings in PharmML
-        if (scalar && !fim_approx_type_set) {
+        // Set settings not already overriden by PopED settings in PharmML
+        if (scalar && !fim_approx_type_set) { // FIM approximation
             form.add("iFIMCalculationType = 0");
+        }
+        if (has_derivatives) { // Differential equation settings
+            if (!diff_solver_method_set) {
+                form.add("iDiffSolverMethod = 'lsoda'");
+            }
+            if (!abs_tol_set) {
+                form.add("AbsTol = 1E-6");
+            }
+            if (!rel_tol_set) {
+                form.add("RelTol = 1E-6");
+            }
         }
 
         form.closeVector();

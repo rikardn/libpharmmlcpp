@@ -17,6 +17,8 @@
 
 #include "PopEDGenerator.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip> // std::setprecision (FIXME comment)
 #include <fstream>
 #include <algorithm>
 #include <visitors/SymbolNameVisitor.h>
@@ -1043,11 +1045,17 @@ namespace pharmmlcpp
                                                         break;
                 }
                 if (abs_tol > 0) {
-                    form.add("AbsTol = " + std::to_string(abs_tol));
+                    std::ostringstream os; // FIXME: Not pretty when there's good float pretty printing code in RAstGenerator ScalarReal visitor (break out somewhere?)
+                    os << std::scientific << std::setprecision(1) << abs_tol;
+                    std::string s = os.str();
+                    form.add("AbsTol = " + s);
                     abs_tol_set = true;
                 }
                 if (rel_tol > 0) {
-                    form.add("RelTol = " + std::to_string(rel_tol));
+                    std::ostringstream os; // FIXME: See above comment. Would really like to reuse that ScalarReal code.
+                    os << std::scientific << std::setprecision(1) << rel_tol;
+                    std::string s = os.str();
+                    form.add("RelTol = " + s);
                     rel_tol_set = true;
                 }
             } else {

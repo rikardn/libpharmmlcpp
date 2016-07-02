@@ -796,7 +796,7 @@ namespace pharmmlcpp
 
             enum class DiffSolverMethod {LSODA, LSODE, LSODES, LSODAR, VODE, DASPK, EULER, RK4, ODE23, ODE45, RADAU, BDF, BDF_D, ADAMS, IMPADAMS, IMPADAMS_D, ITERATION, UNDEF, NA};
             DiffSolverMethod diff_solver_method = DiffSolverMethod::NA;
-            int abs_tol = 0, rel_tol = 0;
+            double abs_tol = 0, rel_tol = 0;
 
             // Recognize and parse settings (and warn of all unexpectedness)
             for (OperationProperty *prop : algo->getProperties()) {
@@ -937,24 +937,24 @@ namespace pharmmlcpp
                         this->warnOperationPropertyUnexpectedType(prop, "string");
                     }
                 } else if (prop->isNamed("abs_tol")) {
-                    if (prop->isReal()) {
+                    if (prop->isInt() || prop->isReal()) {
                         if (prop->getReal() > 0) {
                             abs_tol = prop->getReal();
                         } else {
                             this->warnOperationPropertyUnderflow(prop, 0, true);
                         }
                     } else {
-                        this->warnOperationPropertyUnexpectedType(prop, "real");
+                        this->warnOperationPropertyUnexpectedType(prop, "int or real");
                     }
                 } else if (prop->isNamed("rel_tol")) {
-                    if (prop->isReal()) {
+                    if (prop->isInt() || prop->isReal()) {
                         if (prop->getReal() > 0) {
                             rel_tol = prop->getReal();
                         } else {
                             this->warnOperationPropertyUnderflow(prop, 0, true);
                         }
                     } else {
-                        this->warnOperationPropertyUnexpectedType(prop, "real");
+                        this->warnOperationPropertyUnexpectedType(prop, "int or real");
                     }
                 } else {
                     this->warnOperationPropertyUnknown(prop);

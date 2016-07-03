@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <symbols/Covariate.h>
-#include <PharmML/PharmMLContext.h>
 #include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
 #include <PharmML/Distribution.h>
@@ -53,7 +52,7 @@ namespace pharmmlcpp
                 this->distribution = new Distribution(reader, dist_node);
             }
             // TODO: Support realization of distribution (also, in general)
-            //xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");
+            //xml::Node real_node = reader.getSingleElement(cont_node, "./mdef:Realization");
 
             // Get transformations
             std::vector<xml::Node> trans_nodes = reader.getElements(cont_node, "./mdef:Transformation");
@@ -66,7 +65,7 @@ namespace pharmmlcpp
             }
 
             // TODO: Get interpolation
-            //xml::Node int_node = this->context->getSingleElement(cont_node, "./ct:Interpolation");
+            //xml::Node int_node = reader.getSingleElement(cont_node, "./ct:Interpolation");
 
             // Get assign (likely for constants)
             xml::Node assign = reader.getSingleElement(cont_node, "./ct:Assign");

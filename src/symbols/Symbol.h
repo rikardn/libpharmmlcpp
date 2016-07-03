@@ -33,13 +33,12 @@
 namespace pharmmlcpp
 {
     // Experimental Referer class; It's an experiment, all to solve the infamous "referer problem"
-    class PharmMLContext;
     class SymbolNamer;
     class Referer
     {
         public:
-            pharmmlcpp::SymbolSet referencedSymbols;
-            pharmmlcpp::Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
+            SymbolSet referencedSymbols;
+            Symbol *addSymbRef(SymbRef *symbRef, SymbolGathering &gathering, std::string blkId);
             void addReference(Symbol *symbol);
             void addReferences(std::unordered_set<Symbol *> symbols);
             bool refersTo(Symbol *symbol);
@@ -61,7 +60,6 @@ namespace pharmmlcpp
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:
-            PharmMLContext *context;
             std::string symbId;
             void parse(xml::Node node);
 

@@ -94,12 +94,11 @@ namespace pharmmlcpp
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
             ObjectRef *getOidRef();
-            std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
+            std::vector<ColumnMapping *> getColumnMappings();
             Dataset *getDataset();
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             ObjectRef *oidRef;
             std::vector<pharmmlcpp::ColumnMapping *> columnMappings;
             Dataset *dataset;
@@ -149,9 +148,8 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            std::vector<pharmmlcpp::Administration *> administrations;
-            std::vector<pharmmlcpp::IndividualAdministration *> individualAdministrations;
+            std::vector<Administration *> administrations;
+            std::vector<IndividualAdministration *> individualAdministrations;
             std::vector<InterventionsCombination *> interventionsCombinations;
     };
 }

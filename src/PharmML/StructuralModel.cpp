@@ -28,7 +28,6 @@ namespace pharmmlcpp
     }
 
     void StructuralModel::parse(PharmMLReader &reader, xml::Node node) {
-        this->context = new PharmMLContext(reader);
         std::vector<xml::Node> array = reader.getElements(node, ".//ct:Variable");
         for (xml::Node n : array) {
             Variable *var = new Variable(reader, n);
@@ -42,12 +41,12 @@ namespace pharmmlcpp
         // Construct PKMacros object if macros are available
         xml::Node macros_node = reader.getSingleElement(node, "./mdef:PKmacros");
         if (macros_node.exists()) {
-            PKMacros *macros = new PKMacros(this->context, macros_node);
+            PKMacros *macros = new PKMacros(reader, macros_node);
             this->pk_macros = macros;
         }
     }
 
-    std::vector<pharmmlcpp::CommonVariable *> StructuralModel::getVariables() {
+    std::vector<CommonVariable *> StructuralModel::getVariables() {
         return this->variables;
     }
 
@@ -56,8 +55,8 @@ namespace pharmmlcpp
     }
 
     // Return all derivative variables
-    std::vector<pharmmlcpp::CommonVariable *> StructuralModel::getDerivatives() {
-        std::vector<pharmmlcpp::CommonVariable *> derivs;
+    std::vector<CommonVariable *> StructuralModel::getDerivatives() {
+        std::vector<CommonVariable *> derivs;
         for (CommonVariable *var : this->variables) {
             if (var->isDerivative()) {
                 derivs.push_back(var);

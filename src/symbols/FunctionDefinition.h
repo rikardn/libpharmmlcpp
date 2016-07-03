@@ -18,7 +18,6 @@
 #ifndef PHARMMLCPP_FUNCTIONDEFINITON_H_
 #define PHARMMLCPP_FUNCTIONDEFINITON_H_
 
-#include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/SymbolVisitor.h>
@@ -30,7 +29,7 @@ namespace pharmmlcpp
     class FunctionArgumentDefinition : public Symbol
     {
         public:
-            FunctionArgumentDefinition(PharmMLContext *context, xml::Node node);
+            FunctionArgumentDefinition(PharmMLReader &reader, xml::Node node);
 
             std::string getType();
 
@@ -40,7 +39,7 @@ namespace pharmmlcpp
 
         private:
             std::string symbolType;
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
     };
 
     enum class StandardFunction { additiveError, proportionalError, combinedError1, NA };
@@ -56,7 +55,7 @@ namespace pharmmlcpp
     class FunctionDefinition : public Symbol
     {
         public:
-            FunctionDefinition(PharmMLContext *context, xml::Node node);
+            FunctionDefinition(PharmMLReader &reader, xml::Node node);
 
             std::string getType();
             std::vector<FunctionArgumentDefinition *> getArguments();
@@ -76,7 +75,7 @@ namespace pharmmlcpp
             std::string symbolType;
             std::vector<FunctionArgumentDefinition *> arguments;
 
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             // POSTPARSE/CONSOLIDATION
             std::string linear_form;

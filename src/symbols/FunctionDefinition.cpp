@@ -19,12 +19,11 @@
 
 namespace pharmmlcpp
 {
-    FunctionArgumentDefinition::FunctionArgumentDefinition(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->FunctionArgumentDefinition::parse(node);
+    FunctionArgumentDefinition::FunctionArgumentDefinition(PharmMLReader &reader, xml::Node node) {
+        this->FunctionArgumentDefinition::parse(reader, node);
     }
 
-    void FunctionArgumentDefinition::parse(xml::Node node) {
+    void FunctionArgumentDefinition::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
 
         // Get symbol (argument) type
@@ -43,28 +42,27 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
-    FunctionDefinition::FunctionDefinition(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->FunctionDefinition::parse(node);
+    FunctionDefinition::FunctionDefinition(PharmMLReader &reader, xml::Node node) {
+        this->FunctionDefinition::parse(reader, node);
     }
 
-    void FunctionDefinition::parse(xml::Node node) {
+    void FunctionDefinition::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
 
         // Get symbol (return value) type
         this->symbolType = node.getAttribute("symbolType").getValue();
 
         // Get (non-mandatory) function definition (assignment)
-        xml::Node assign = this->context->getSingleElement(node, "./ct:Definition/ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, "./ct:Definition/ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->definition = this->context->factory.create(tree);
+            this->definition = reader.factory.create(tree);
         }
 
         // Get (non-mandatory) function argument definitions (symbols with a type)
-        std::vector<xml::Node> args = this->context->getElements(node, "./ct:FunctionArgument");
+        std::vector<xml::Node> args = reader.getElements(node, "./ct:FunctionArgument");
         for (xml::Node arg : args) {
-            FunctionArgumentDefinition *argument = new FunctionArgumentDefinition(this->context, arg);
+            FunctionArgumentDefinition *argument = new FunctionArgumentDefinition(reader, arg);
             this->arguments.push_back(argument);
         }
     }
@@ -166,7 +164,7 @@ namespace pharmmlcpp
     }
 
     // Get standard function argument map (call after isStandardFunction)
-    std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> FunctionDefinition::getStandardFunctionArgumentMap() {
+    std::unordered_map<StandardFunctionArgument, FunctionArgumentDefinition *, EnumClassHash> FunctionDefinition::getStandardFunctionArgumentMap() {
         return this->std_arg_map;
     }
 }

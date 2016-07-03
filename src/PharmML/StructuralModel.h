@@ -19,7 +19,6 @@
 #define PHARMMLCPP_STRUCTURALMODEL_H_
 
 #include <vector>
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/PharmMLSection.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/SymbolSet.h>
@@ -36,18 +35,17 @@ namespace pharmmlcpp
         public:
             StructuralModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
-            std::vector<pharmmlcpp::CommonVariable *> getVariables();
+            std::vector<CommonVariable *> getVariables();
             bool hasDerivatives();
-            std::vector<pharmmlcpp::CommonVariable *> getDerivatives();
-            pharmmlcpp::PKMacros *getPKMacros();
+            std::vector<CommonVariable *> getDerivatives();
+            PKMacros *getPKMacros();
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gathering) override;
             void gatherMacros(MacroGathering &gatherer);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            std::vector<pharmmlcpp::CommonVariable *> variables;
-            pharmmlcpp::PKMacros *pk_macros = nullptr;
+            std::vector<CommonVariable *> variables;
+            PKMacros *pk_macros = nullptr;
     };
 }
 

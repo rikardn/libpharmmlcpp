@@ -20,7 +20,6 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/VariabilityModel.h>
 #include <PharmML/CovariateModel.h>
 #include <PharmML/ParameterModel.h>
@@ -35,22 +34,21 @@ namespace pharmmlcpp
     {
         public:
             ModelDefinition(PharmMLReader &reader, xml::Node node);
-            std::vector<pharmmlcpp::VariabilityModel *> getVariabilityModels();
-            pharmmlcpp::CovariateModel *getCovariateModel();
-            pharmmlcpp::ParameterModel *getParameterModel();
-            pharmmlcpp::StructuralModel *getStructuralModel();
-            pharmmlcpp::ObservationModel *getObservationModel();
+            std::vector<VariabilityModel *> getVariabilityModels();
+            CovariateModel *getCovariateModel();
+            ParameterModel *getParameterModel();
+            StructuralModel *getStructuralModel();
+            ObservationModel *getObservationModel();
             void parse(PharmMLReader &reader, xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            std::vector<pharmmlcpp::VariabilityModel *> VariabilityModels;
+            std::vector<VariabilityModel *> VariabilityModels;
             // TODO: Why are these all singular? It might be wise to support multiple models while it's still straightforward.
-            pharmmlcpp::CovariateModel *covariateModel = nullptr;
-            pharmmlcpp::ParameterModel *parameterModel = nullptr;
-            pharmmlcpp::StructuralModel *structuralModel = nullptr;
-            pharmmlcpp::ObservationModel *observationModel = nullptr;
+            CovariateModel *covariateModel = nullptr;
+            ParameterModel *parameterModel = nullptr;
+            StructuralModel *structuralModel = nullptr;
+            ObservationModel *observationModel = nullptr;
 
     };
 }

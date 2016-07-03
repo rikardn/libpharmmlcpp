@@ -38,10 +38,9 @@ namespace pharmmlcpp
             this->modelDefinition = new ModelDefinition(reader, mdef_node);
         }
 
-        this->context = new PharmMLContext(reader);
         std::vector<xml::Node> function_nodes = reader.getElements(node, "/x:PharmML/ct:FunctionDefinition");
         for (xml::Node n : function_nodes) {
-            this->functionDefinitions.push_back(new FunctionDefinition(this->context, n));
+            this->functionDefinitions.push_back(new FunctionDefinition(reader, n));
         }
 
         xml::Node design_node = reader.getSingleElement(node, "/x:PharmML/design:TrialDesign");
@@ -57,6 +56,7 @@ namespace pharmmlcpp
         // TODO: This an be moved into postParse when the consolidator call below is removed
         this->setupSymbols();
 
+        this->context = new PharmMLContext(reader);
         // Build consolidator object
         this->consolidator = new CPharmML::Consolidator(this->context, this);
 

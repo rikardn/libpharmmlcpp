@@ -35,7 +35,7 @@ namespace pharmmlcpp
     class PKMacro : public PharmMLSection, public Referer
     {
         public:
-            PKMacro(PharmMLContext *context, xml::Node node);
+            PKMacro(PharmMLReader &reader, xml::Node node);
 
             std::string getType();
             bool hasAttribute(std::string attribute);
@@ -59,8 +59,7 @@ namespace pharmmlcpp
             int getTargetNum();
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             std::string type;
             std::vector<MacroValue> values;
@@ -81,7 +80,7 @@ namespace pharmmlcpp
     class PKMacros : public PharmMLSection
     {
         public:
-            PKMacros(PharmMLContext *context, xml::Node node);
+            PKMacros(PharmMLReader &reader, xml::Node node);
 
             std::vector<PKMacro *> getMacros();
 
@@ -96,11 +95,9 @@ namespace pharmmlcpp
             PKMacro *getCompartment(int cmt_num);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-
             std::vector<PKMacro *> macros;
             
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             
             // POST PARSE/CONSOLIDATION
             //~ void postParse(); // FIXME: See comment in Model.cpp!!!

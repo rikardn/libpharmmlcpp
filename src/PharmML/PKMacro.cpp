@@ -19,30 +19,29 @@
 
 namespace pharmmlcpp
 {
-    PKMacro::PKMacro(PharmMLContext *context, xml::Node node) {
+    PKMacro::PKMacro(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
         this->postParse();
     }
 
-    void PKMacro::parse(xml::Node node) {
+    void PKMacro::parse(PharmMLReader &reader, xml::Node node) {
         // Get type and all values of macro
         this->type = node.getName();
-        std::vector<xml::Node> val_nodes = this->context->getElements(node, "./mdef:Value");
+        std::vector<xml::Node> val_nodes = reader.getElements(node, "./mdef:Value");
         for (xml::Node val_node : val_nodes) {
             // Get (optional) argument name
             MacroValue value;
             value.first = val_node.getAttribute("argument").getValue();
 
             // Get Assign, Symbref or Scalar
-            xml::Node assign_node = this->context->getSingleElement(val_node, "./ct:Assign");
+            xml::Node assign_node = reader.getSingleElement(val_node, "./ct:Assign");
             if (assign_node.exists()) {
                 xml::Node tree_node = assign_node.getChild();
-                value.second = this->context->factory.create(tree_node);
+                value.second = reader.factory.create(tree_node);
             } else if (val_node.getChild().exists()) {
                 // SymbRef or Scalar
-                value.second = this->context->factory.create(val_node.getChild());
+                value.second = reader.factory.create(val_node.getChild());
             } else {
                 // TODO: Shouldn't this be schema illegal? Doesn't seem to stop me from crashing the code...
                 value.second = nullptr;
@@ -311,24 +310,23 @@ namespace pharmmlcpp
     }
 
     // Wrapping layer holding all macros and convenience functions
-    PKMacros::PKMacros(PharmMLContext *context, xml::Node node) {
+    PKMacros::PKMacros(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
         //~ this->postParse(); // FIXME: See comment in Model.cpp!!!
     }
 
-    void PKMacros::parse(xml::Node node) {
+    void PKMacros::parse(PharmMLReader &reader, xml::Node node) {
         // Get all PK macros (nice that they are homologous, right?)
-        std::vector<xml::Node> abs = this->context->getElements(node, "./mdef:Absorption");
-        std::vector<xml::Node> cmt = this->context->getElements(node, "./mdef:Compartment");
-        std::vector<xml::Node> dpt = this->context->getElements(node, "./mdef:Depot");
-        std::vector<xml::Node> eff = this->context->getElements(node, "./mdef:Effect");
-        std::vector<xml::Node> el = this->context->getElements(node, "./mdef:Elimination");
-        std::vector<xml::Node> iv = this->context->getElements(node, "./mdef:IV");
-        std::vector<xml::Node> orl = this->context->getElements(node, "./mdef:Oral");
-        std::vector<xml::Node> per = this->context->getElements(node, "./mdef:Peripheral");
-        std::vector<xml::Node> tra = this->context->getElements(node, "./mdef:Transfer");
+        std::vector<xml::Node> abs = reader.getElements(node, "./mdef:Absorption");
+        std::vector<xml::Node> cmt = reader.getElements(node, "./mdef:Compartment");
+        std::vector<xml::Node> dpt = reader.getElements(node, "./mdef:Depot");
+        std::vector<xml::Node> eff = reader.getElements(node, "./mdef:Effect");
+        std::vector<xml::Node> el = reader.getElements(node, "./mdef:Elimination");
+        std::vector<xml::Node> iv = reader.getElements(node, "./mdef:IV");
+        std::vector<xml::Node> orl = reader.getElements(node, "./mdef:Oral");
+        std::vector<xml::Node> per = reader.getElements(node, "./mdef:Peripheral");
+        std::vector<xml::Node> tra = reader.getElements(node, "./mdef:Transfer");
 
         // Pre-allocate for premature optimization
         std::vector<xml::Node> macro_nodes;
@@ -345,7 +343,7 @@ namespace pharmmlcpp
 
         // Construct one PKMacro object for each macro
         for (xml::Node macro_node : macro_nodes) {
-            pharmmlcpp::PKMacro *macro = new pharmmlcpp::PKMacro(this->context, macro_node);
+            pharmmlcpp::PKMacro *macro = new PKMacro(reader, macro_node);
             this->macros.push_back(macro);
         }
     }
@@ -381,7 +379,7 @@ namespace pharmmlcpp
 
     // Validate the macros (where the schema won't help)
     void PKMacros::validate() { // FIXME: Who should call this now that consolidator is gone?
-        pharmmlcpp::AstAnalyzer ast_analyzer;
+        AstAnalyzer ast_analyzer;
         // Map from compartment/administration to (referable) integer codes (and the referees themselves)
         std::unordered_map<std::string, std::unordered_map<int, PKMacro *>> int_codes = {
             { "cmt", std::unordered_map<int, PKMacro *>() },
@@ -394,33 +392,35 @@ namespace pharmmlcpp
             std::string type = macro->getType();
 
             // Check all attributes in macro
-            for (pharmmlcpp::MacroValue value : macro->getValues()) {
+            for (MacroValue value : macro->getValues()) {
                 // Get attribute type and assignment ("cmt" and 1, etc.)
                 std::string attribute = value.first;
-                pharmmlcpp::AstNode *assignment = value.second;
+                AstNode *assignment = value.second;
 
                 if (!assignment) {
                     // Attribute without assignment
-                    this->context->logger.error("PK macro '" + type + "' (%a) contains a broken value (no content found)", macro, nullptr);
+                    // FIXME: How to log in validate?
+                    //this->context->logger.error("PK macro '" + type + "' (%a) contains a broken value (no content found)", macro, nullptr);
                 } else if (attribute == "") {
                     // Assigment without attribute (type)
-                    this->context->logger.warning("PK macro '" + type + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
+                    // FIXME: How to log?
+                    //this->context->logger.warning("PK macro '" + type + "' (%a) contains an anonymous value (no attribute type)", macro, nullptr);
                 } else if (attribute == "cmt" || attribute == "adm") {
                     // Check "cmt" and "adm" attributes
                     ast_analyzer.reset();
                     assignment->accept(&ast_analyzer);
-                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     if (!scalar_int) {
                         // No ScalarInt child on "cmt" or "adm" attribute
-                        this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
+                        //this->context->logger.error("PK macro '" + type + "' (%a) contains attribute '" + attribute + "' but value is not of type 'Int'", macro, nullptr);
                     } else if ( (attribute == "cmt" && macro->isCompartment()) || (attribute == "adm" && macro->isAdministration()) ) {
                         // Check if this integer is a duplicate of an earlier such integer found
                         int num = scalar_int->toInt();
                         auto got = int_codes[attribute].find(num);
                         if (got != int_codes[attribute].end()) {
-                            PKMacro *dup_macro = int_codes[attribute][num];
-                            this->context->logger.error("PK macro '" + type + "' (%a) shares referable attribute '"
-                                + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getType() + "' (%b)", macro, dup_macro);
+                            //PKMacro *dup_macro = int_codes[attribute][num];
+                            //this->context->logger.error("PK macro '" + type + "' (%a) shares referable attribute '"
+                            //    + attribute + "=" + std::to_string(num) + "' illegally with a preceeding '" + dup_macro->getType() + "' (%b)", macro, dup_macro);
                         }
                         // Link attribute, integer and macro for above check
                         int_codes[attribute][num] = macro;

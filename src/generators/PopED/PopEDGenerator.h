@@ -56,6 +56,7 @@ namespace pharmmlcpp
             int nArms;          // Number of arms
 
             PharmML *model;
+            bool has_derivatives;
             std::vector<Symbol *> derivs;       // Derivative symbols in (some) order
             std::vector<RandomVariable *> etas;
             std::vector<Symbol *> designParameters;     // Design parameter with connection to DesignSpaces
@@ -72,7 +73,7 @@ namespace pharmmlcpp
 
             // Logger methods
             void warnOperationPropertyUnexpectedType(OperationProperty *prop, std::string exp_type);
-            void warnOperationPropertyUnderflow(OperationProperty *prop, int min);
+            void warnOperationPropertyUnderflow(OperationProperty *prop, double min, bool open_interval = false);
             void warnOperationPropertyUnexpectedValue(OperationProperty *prop, std::vector<std::string> exp_strings);
             void warnOperationPropertyUnknown(OperationProperty *prop);
 

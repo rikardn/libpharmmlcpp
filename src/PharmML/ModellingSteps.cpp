@@ -320,6 +320,8 @@ namespace pharmmlcpp
     double OperationProperty::getReal() {
         if (this->real_val) {
             return *(this->real_val);
+        } else if (this->int_val) { // Seems reasonable to cast integer properties as doubles if requested
+            return *(this->int_val);
         } else {
             pharmmlcpp::AstAnalyzer aa;
             this->assignment->accept(&aa);

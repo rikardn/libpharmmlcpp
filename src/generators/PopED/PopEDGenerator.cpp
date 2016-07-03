@@ -17,6 +17,8 @@
 
 #include "PopEDGenerator.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip> // std::setprecision (FIXME comment)
 #include <fstream>
 #include <algorithm>
 #include <visitors/SymbolNameVisitor.h>
@@ -43,7 +45,8 @@ namespace pharmmlcpp
 
         // Preamble
         form.add("library(PopED)");
-        if (this->model->getModelDefinition()->getStructuralModel()->hasDerivatives()) {
+        this->has_derivatives = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().hasDerivatives();
+        if (this->has_derivatives) {
             form.add("library(deSolve)");
         }
         form.emptyLine();
@@ -170,7 +173,7 @@ namespace pharmmlcpp
         // Currently separate handling of DesignParameters
         // Output all DesignParameters except those optimized on.
         // FIXME: This could be reduced to only output those actually needed as per regular variables below
-        // FIXME: Currently only use DesignParametes on TrialDesign level. 
+        // FIXME: Currently only use DesignParametes on TrialDesign level.
         if (this->td_visitor.hasInfusions()) {
             TrialDesign *td = this->model->getTrialDesign();
             if (td) {
@@ -260,7 +263,7 @@ namespace pharmmlcpp
             return this->ast_gen.getValue();
         } else {
             TargetMapping *target = adm->getTargetMapping();
-            return target->getMaps()[0].modelSymbol;  // FIXME: What should really be the constraints here? 
+            return target->getMaps()[0].modelSymbol;  // FIXME: What should really be the constraints here?
         }
     }
 
@@ -271,12 +274,10 @@ namespace pharmmlcpp
             var->accept(&this->r_gen);
         }
 
-        bool has_derivatives = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().hasDerivatives();
-
         TextFormatter form;
 
         // Generate separate ODE function
-        if (has_derivatives) {
+        if (this->has_derivatives) {
             form.addMany(this->genODEFunc());
         }
 
@@ -301,7 +302,7 @@ namespace pharmmlcpp
         }
 
         // Init values
-        if (has_derivatives) {
+        if (this->has_derivatives) {
             TextFormatter dini_formatter;
             dini_formatter.openVector("d_ini <- c()", 0, ", ");
             for (Symbol *symbol : this->derivs) {
@@ -391,7 +392,7 @@ namespace pharmmlcpp
                     TextFormatter rbind_formatter;
                     rbind_formatter.openVector("eventdat <- rbind()", 0, ", ");
                     for (auto &pair : this->td_visitor.getBolusAmounts()) {
-                       rbind_formatter.add("eventdat_" + pair.first->getName()); 
+                       rbind_formatter.add("eventdat_" + pair.first->getName());
                     }
                     rbind_formatter.closeVector();
                     rbind_formatter.noFinalNewline();
@@ -401,21 +402,30 @@ namespace pharmmlcpp
             form.add("times <- sort(unique(c(0, times_xt, dose_times)))");
 
             // ODE call
-            std::string ode_call = "out <- ode(d_ini, times, ode_func, parameters";
+            TextFormatter ode_call;
+            ode_call.openVector("out <- ode()", 0);
+            ode_call.add("d_ini");
+            ode_call.add("times");
+            ode_call.add("ode_func");
+            ode_call.add("parameters");
             if (this->td_visitor.getNumObservations() == 1) {
-                ode_call += ", hmax=0.01";      // Default hmax will probably be to big for single observations
+                ode_call.add("hmax=0.01");      // Default hmax will probably be to big for single observations
             }
             if (this->td_visitor.hasBoluses()) {
-                ode_call += ", events=list(data=eventdat)";
+                ode_call.add("events=list(data=eventdat)");
             }
-            ode_call += ")";
-            form.add(ode_call);
+            ode_call.add("method=poped.db$settings$iDiffSolverMethod");
+            ode_call.add("atol=poped.db$settings$AbsTol");
+            ode_call.add("rtol=poped.db$settings$RelTol");
+            ode_call.noFinalNewline();
+            ode_call.closeVector();
+            form.add(ode_call.createString());
             form.emptyLine();
         }
 
         // Y definition
 
-        if (!has_derivatives) {
+        if (!this->has_derivatives) {
             form.indentAdd("mod <- function(xt) {");
             form.add(model->getIndependentVariable()->getName() + " <- xt");
         }
@@ -463,13 +473,13 @@ namespace pharmmlcpp
             form.add("y <- " + output->getSymbol()->getName());
         }
 
-        if (!has_derivatives) {
+        if (!this->has_derivatives) {
             form.outdentAdd("}");
             form.emptyLine();
             form.add("y <- sapply(xt, mod)");
         }
 
-        if (has_derivatives) {
+        if (this->has_derivatives) {
             form.add("y=y[match(times_xt, out[,'time'])]");
             form.add("y=cbind(y)");
         }
@@ -626,7 +636,7 @@ namespace pharmmlcpp
                     sigma_fixed_formatter.add("0");
                 }
             }
-        } 
+        }
 
         if (!scalar) {
             for (auto pop_param : pop_params) {
@@ -669,7 +679,7 @@ namespace pharmmlcpp
                                 power->setRight(new ScalarInt(2));
                                 value = power;
                             }
-                        } 
+                        }
                         d_formatter.add(rand_var->getSymbId() + "=" + this->accept(value));
                     }
                 }
@@ -684,7 +694,7 @@ namespace pharmmlcpp
 
             ParameterModel *parameterModel = this->model->getModelDefinition()->getParameterModel();
             std::vector<ParameterEstimation *> parameterEstimations = this->model->getModellingSteps()->getOptimalDesignSteps()[0]->getParameters();
-                
+
             for (std::vector<RandomVariable *>::size_type col = 0; col < this->etas.size(); col++) {
                 for (std::vector<RandomVariable *>::size_type row = col + 1; row < this->etas.size(); row++) {
                     AstNode *cov = parameterModel->initialCovariance(this->etas[col], this->etas[row], parameterEstimations);
@@ -760,8 +770,11 @@ namespace pharmmlcpp
 
         // Use PopED settings from PharmML if found
         bool fim_approx_type_set = false;
+        bool diff_solver_method_set = false;
+        bool abs_tol_set = false;
+        bool rel_tol_set = false;
         if (algo) {
-            // Store recognized and parsed settings in these
+            // Store recognized and parsed settings in these (NA means no setting read and UNDEF undefined/illegal value read)
             enum Criterion {EXPLICIT, UNDEF, NA};
             Criterion criterion = Criterion::NA;
 
@@ -782,6 +795,10 @@ namespace pharmmlcpp
             ESamplingType e_sampling_type = ESamplingType::NA;
 
             int e_samples = -1;
+
+            enum class DiffSolverMethod {LSODA, LSODE, LSODES, LSODAR, VODE, DASPK, EULER, RK4, ODE23, ODE45, RADAU, BDF, BDF_D, ADAMS, IMPADAMS, IMPADAMS_D, ITERATION, UNDEF, NA};
+            DiffSolverMethod diff_solver_method = DiffSolverMethod::NA;
+            double abs_tol = 0, rel_tol = 0;
 
             // Recognize and parse settings (and warn of all unexpectedness)
             for (OperationProperty *prop : algo->getProperties()) {
@@ -877,12 +894,76 @@ namespace pharmmlcpp
                     } else {
                         this->warnOperationPropertyUnexpectedType(prop, "integer");
                     }
+                } else if (prop->isNamed("diff_solver_method")) {
+                    if (prop->isString()) {
+                        // Methods of deSolve (lsoda is default)
+                        if (prop->isFoldedCaseString("LSODA")) {
+                            diff_solver_method = DiffSolverMethod::LSODA;
+                        } else if (prop->isFoldedCaseString("LSODE")) {
+                            diff_solver_method = DiffSolverMethod::LSODE;
+                        } else if (prop->isFoldedCaseString("LSODES")) {
+                            diff_solver_method = DiffSolverMethod::LSODES;
+                        } else if (prop->isFoldedCaseString("LSODAR")) {
+                            diff_solver_method = DiffSolverMethod::LSODAR;
+                        } else if (prop->isFoldedCaseString("VODE")) {
+                            diff_solver_method = DiffSolverMethod::VODE;
+                        } else if (prop->isFoldedCaseString("DASPK")) {
+                            diff_solver_method = DiffSolverMethod::DASPK;
+                        } else if (prop->isFoldedCaseString("EULER")) {
+                            diff_solver_method = DiffSolverMethod::EULER;
+                        } else if (prop->isFoldedCaseString("RK4")) {
+                            diff_solver_method = DiffSolverMethod::RK4;
+                        } else if (prop->isFoldedCaseString("ODE23")) {
+                            diff_solver_method = DiffSolverMethod::ODE23;
+                        } else if (prop->isFoldedCaseString("ODE45")) {
+                            diff_solver_method = DiffSolverMethod::ODE45;
+                        } else if (prop->isFoldedCaseString("RADAU")) {
+                            diff_solver_method = DiffSolverMethod::RADAU;
+                        } else if (prop->isFoldedCaseString("BDF")) {
+                            diff_solver_method = DiffSolverMethod::BDF;
+                        } else if (prop->isFoldedCaseString("BDF_D")) {
+                            diff_solver_method = DiffSolverMethod::BDF_D;
+                        } else if (prop->isFoldedCaseString("ADAMS")) {
+                            diff_solver_method = DiffSolverMethod::ADAMS;
+                        } else if (prop->isFoldedCaseString("IMPADAMS")) {
+                            diff_solver_method = DiffSolverMethod::IMPADAMS;
+                        } else if (prop->isFoldedCaseString("IMPADAMS_D")) {
+                            diff_solver_method = DiffSolverMethod::IMPADAMS_D;
+                        } else if (prop->isFoldedCaseString("ITERATION")) {
+                            diff_solver_method = DiffSolverMethod::ITERATION;
+                        } else {
+                            diff_solver_method = DiffSolverMethod::UNDEF;
+                            this->warnOperationPropertyUnexpectedValue(prop, std::vector<std::string>{"LSODA", "LSODE", "LSODES", "LSODAR", "VODE", "DASPK", "EULER", "RK4", "ODE23", "ODE45", "RADAU", "BDF", "BDF_D", "ADAMS", "IMPADAMS", "IMPADAMS_D", "ITERATION"});
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "string");
+                    }
+                } else if (prop->isNamed("abs_tol")) {
+                    if (prop->isInt() || prop->isReal()) {
+                        if (prop->getReal() > 0) {
+                            abs_tol = prop->getReal();
+                        } else {
+                            this->warnOperationPropertyUnderflow(prop, 0, true);
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "int or real");
+                    }
+                } else if (prop->isNamed("rel_tol")) {
+                    if (prop->isInt() || prop->isReal()) {
+                        if (prop->getReal() > 0) {
+                            rel_tol = prop->getReal();
+                        } else {
+                            this->warnOperationPropertyUnderflow(prop, 0, true);
+                        }
+                    } else {
+                        this->warnOperationPropertyUnexpectedType(prop, "int or real");
+                    }
                 } else {
                     this->warnOperationPropertyUnknown(prop);
                 }
             }
 
-            // Use the parsed settings
+            // Use the parsed settings (separate to prepare for function breakout)
             if (criterion == Criterion::EXPLICIT) {
                 if (!penalty_file.empty()) {
                     form.add("ofv_fun = '" + penalty_file + "'");
@@ -922,6 +1003,66 @@ namespace pharmmlcpp
                                               break;
                 case FIMApproxType::NA      : break;
             }
+            if (this->has_derivatives) {
+                diff_solver_method_set = true;
+                switch (diff_solver_method) {
+                    case DiffSolverMethod::LSODA      : form.add("iDiffSolverMethod = 'lsoda'");
+                                                        break;
+                    case DiffSolverMethod::LSODE      : form.add("iDiffSolverMethod = 'lsode'");
+                                                        break;
+                    case DiffSolverMethod::LSODES     : form.add("iDiffSolverMethod = 'lsodes'");
+                                                        break;
+                    case DiffSolverMethod::LSODAR     : form.add("iDiffSolverMethod = 'LSODAR'");
+                                                        break;
+                    case DiffSolverMethod::VODE       : form.add("iDiffSolverMethod = 'vode'");
+                                                        break;
+                    case DiffSolverMethod::DASPK      : form.add("iDiffSolverMethod = 'daspk'");
+                                                        break;
+                    case DiffSolverMethod::EULER      : form.add("iDiffSolverMethod = 'euler'");
+                                                        break;
+                    case DiffSolverMethod::RK4        : form.add("iDiffSolverMethod = 'rk4'");
+                                                        break;
+                    case DiffSolverMethod::ODE23      : form.add("iDiffSolverMethod = 'ode23'");
+                                                        break;
+                    case DiffSolverMethod::ODE45      : form.add("iDiffSolverMethod = 'ode45'");
+                                                        break;
+                    case DiffSolverMethod::RADAU      : form.add("iDiffSolverMethod = 'radau'");
+                                                        break;
+                    case DiffSolverMethod::BDF        : form.add("iDiffSolverMethod = 'bdf'");
+                                                        break;
+                    case DiffSolverMethod::BDF_D      : form.add("iDiffSolverMethod = 'bdf_d'");
+                                                        break;
+                    case DiffSolverMethod::ADAMS      : form.add("iDiffSolverMethod = 'adams'");
+                                                        break;
+                    case DiffSolverMethod::IMPADAMS   : form.add("iDiffSolverMethod = 'impadams'");
+                                                        break;
+                    case DiffSolverMethod::IMPADAMS_D : form.add("iDiffSolverMethod = 'impadams_d'");
+                                                        break;
+                    case DiffSolverMethod::ITERATION  : form.add("iDiffSolverMethod = 'iteration'");
+                                                        break;
+                    case DiffSolverMethod::UNDEF      :
+                    case DiffSolverMethod::NA         : diff_solver_method_set = false; // Inverse cond set to save some code lines
+                                                        break;
+                }
+                if (abs_tol > 0) {
+                    std::ostringstream os; // FIXME: Not pretty when there's good float pretty printing code in RAstGenerator ScalarReal visitor (break out somewhere?)
+                    os << std::scientific << std::setprecision(1) << abs_tol;
+                    std::string s = os.str();
+                    form.add("AbsTol = " + s);
+                    abs_tol_set = true;
+                }
+                if (rel_tol > 0) {
+                    std::ostringstream os; // FIXME: See above comment. Would really like to reuse that ScalarReal code.
+                    os << std::scientific << std::setprecision(1) << rel_tol;
+                    std::string s = os.str();
+                    form.add("RelTol = " + s);
+                    rel_tol_set = true;
+                }
+            } else {
+                if (diff_solver_method != DiffSolverMethod::NA || abs_tol > 0 || rel_tol > 0) {
+                    logger.warning("Differential equation solver settings found but no differential equations: Ignored");
+                }
+            }
             if (e_family_use) {
                 form.add("d_switch = 0");
                 switch (e_integration_type) {
@@ -955,9 +1096,20 @@ namespace pharmmlcpp
             }
         }
 
-        // Set FIM approximation to FO only if not overriden by PopED settings in PharmML
-        if (scalar && !fim_approx_type_set) {
+        // Set settings not already overriden by PopED settings in PharmML
+        if (scalar && !fim_approx_type_set) { // FIM approximation
             form.add("iFIMCalculationType = 0");
+        }
+        if (has_derivatives) { // Differential equation settings
+            if (!diff_solver_method_set) {
+                form.add("iDiffSolverMethod = 'lsoda'");
+            }
+            if (!abs_tol_set) {
+                form.add("AbsTol = 1E-6");
+            }
+            if (!rel_tol_set) {
+                form.add("RelTol = 1E-6");
+            }
         }
 
         form.closeVector();
@@ -972,9 +1124,19 @@ namespace pharmmlcpp
     }
 
     // OperationProperty is out of lower bound: Warn and inform of expected minimum
-    void PopEDGenerator::warnOperationPropertyUnderflow(OperationProperty *prop, int min) {
+    void PopEDGenerator::warnOperationPropertyUnderflow(OperationProperty *prop, double min, bool open_interval) {
         std::string name = prop->getName();
-        this->logger.warning("Property '" + name + "' value (" + std::to_string(prop->getInt()) + ") is illegal (restriction: >= " + std::to_string(min) + ")", prop);
+        std::string value;
+        if (prop->isInt()) {
+            value = std::to_string(prop->getInt());
+        } else {
+            value = std::to_string(prop->getReal());
+        }
+        if (open_interval) {
+            this->logger.warning("Property '" + name + "' value (" + value + ") is illegal (restriction: > " + std::to_string(min) + ")", prop);
+        } else {
+            this->logger.warning("Property '" + name + "' value (" + value + ") is illegal (restriction: >= " + std::to_string(min) + ")", prop);
+        }
     }
 
     // OperationProperty has unexpected string value: Warn and inform of expected string value
@@ -989,7 +1151,7 @@ namespace pharmmlcpp
 
     // OperationProperty is unknown or unsupported: Warn and inform of all known properties
     void PopEDGenerator::warnOperationPropertyUnknown(OperationProperty *prop) {
-        const std::vector<std::string> known_props = {"criterion","file","computeFIM","approximationFIM","E_family_value","E_family_calc_type","E_family_sampling","E_family_edsampling"};
+        const std::vector<std::string> known_props = {"criterion","file","computeFIM","approximationFIM","E_family_value","E_family_calc_type","E_family_sampling","E_family_edsampling","diff_solver_method","abs_tol","rel_tol"};
 
         std::string name = prop->getName();
         TextFormatter form;

@@ -23,30 +23,29 @@
 
 namespace pharmmlcpp
 {
-    Correlation::Correlation(PharmMLContext *context, xml::Node node) {
+    Correlation::Correlation(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void Correlation::parse(xml::Node node) {
+    void Correlation::parse(PharmMLReader &reader, xml::Node node) {
         // Get variability reference
-        xml::Node var_ref_node = this->context->getSingleElement(node, "./ct:VariabilityReference");
-        this->variabilityReference = new pharmmlcpp::VariabilityReference(this->context, var_ref_node);
+        xml::Node var_ref_node = reader.getSingleElement(node, "./ct:VariabilityReference");
+        this->variabilityReference = new VariabilityReference(reader, var_ref_node);
 
         // Get pairwise/matrix specification of correlation
-        xml::Node pairwise_node = this->context->getSingleElement(node, "./mdef:Pairwise");
-        xml::Node matrix_node = this->context->getSingleElement(node, "./ct:Matrix");
+        xml::Node pairwise_node = reader.getSingleElement(node, "./mdef:Pairwise");
+        xml::Node matrix_node = reader.getSingleElement(node, "./ct:Matrix");
         if (pairwise_node.exists()) {
             // Get the two correlated random variables
-            xml::Node var1_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable1/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new pharmmlcpp::SymbRef(var1_node));
-            xml::Node var2_node = this->context->getSingleElement(pairwise_node, "./mdef:RandomVariable2/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new pharmmlcpp::SymbRef(var2_node));
+            xml::Node var1_node = reader.getSingleElement(pairwise_node, "./mdef:RandomVariable1/ct:SymbRef");
+            this->pairwiseSymbRefs.push_back(new SymbRef(var1_node));
+            xml::Node var2_node = reader.getSingleElement(pairwise_node, "./mdef:RandomVariable2/ct:SymbRef");
+            this->pairwiseSymbRefs.push_back(new SymbRef(var2_node));
 
             // Get correlation type
-            xml::Node corr_node = this->context->getSingleElement(pairwise_node, "./mdef:CorrelationCoefficient");
-            xml::Node cov_node = this->context->getSingleElement(pairwise_node, "./mdef:Covariance");
+            xml::Node corr_node = reader.getSingleElement(pairwise_node, "./mdef:CorrelationCoefficient");
+            xml::Node cov_node = reader.getSingleElement(pairwise_node, "./mdef:Covariance");
             if (corr_node.exists()) {
                 this->pairwiseType = "CorrelationCoefficient";
             } else if (cov_node.exists()) {
@@ -54,14 +53,14 @@ namespace pharmmlcpp
             }
 
             // Get the assignment (coefficient/covariance) itself
-            xml::Node assign = this->context->getSingleElement(pairwise_node, ".//ct:Assign");
+            xml::Node assign = reader.getSingleElement(pairwise_node, ".//ct:Assign");
             xml::Node tree = assign.getChild();
             if (tree.getName() == "SymbRef") {
                 this->pure_symbref_assignment = true;
             } else {
                 this->pure_symbref_assignment = false;
             }
-            this->pairwiseAssignment = this->context->factory.create(tree);
+            this->pairwiseAssignment = reader.factory.create(tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
             this->matrixType = node.getAttribute("deviationMatrixType").getValue();

@@ -67,21 +67,20 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
-    VariabilityReference::VariabilityReference(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    VariabilityReference::VariabilityReference(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void VariabilityReference::parse(xml::Node node) {
+    void VariabilityReference::parse(PharmMLReader &reader, xml::Node node) {
         // Get the variability level reference
-        xml::Node ref_node = this->context->getSingleElement(node, "./ct:SymbRef");
+        xml::Node ref_node = reader.getSingleElement(node, "./ct:SymbRef");
         this->levelReference = new SymbRef(ref_node);
 
         // Get random effect mapping (what does it mean?)
         // "Type defining the stdev or variance to be referenced in the VariabilityReference element"
-        xml::Node map_node = this->context->getSingleElement(node, "./ct:RandomEffectMapping/ct:SymbRef");
+        xml::Node map_node = reader.getSingleElement(node, "./ct:RandomEffectMapping/ct:SymbRef");
         if (map_node.exists()) {
-            this->randomEffectsMapping = this->context->factory.create(map_node);
+            this->randomEffectsMapping = reader.factory.create(map_node);
         }
     }
 

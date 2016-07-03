@@ -38,15 +38,14 @@ namespace pharmmlcpp
             std::vector<IndividualParameter *> getIndividualParameters();
             std::vector<RandomVariable *> getRandomVariables();
             std::vector<Correlation *> getCorrelations();
-            ParameterModel(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            ParameterModel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gatherer) override;
 
             AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::vector<Parameter *> parameters;
             std::vector<PopulationParameter *> populationParameters;
             std::vector<IndividualParameter *> individualParameters;

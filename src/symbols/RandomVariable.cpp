@@ -20,22 +20,21 @@
 
 namespace pharmmlcpp
 {
-    RandomVariable::RandomVariable(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->RandomVariable::parse(node);
+    RandomVariable::RandomVariable(PharmMLReader &reader, xml::Node node) {
+        this->RandomVariable::parse(reader, node);
     }
 
-    void RandomVariable::parse(xml::Node node) {
+    void RandomVariable::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
-        std::vector<xml::Node> ref_nodes = this->context->getElements(node, "./ct:VariabilityReference");
+        std::vector<xml::Node> ref_nodes = reader.getElements(node, "./ct:VariabilityReference");
         for (xml::Node ref_node : ref_nodes) {
-            pharmmlcpp::VariabilityReference *var_ref = new VariabilityReference(this->context, ref_node);
+            pharmmlcpp::VariabilityReference *var_ref = new VariabilityReference(reader, ref_node);
             this->variabilityReferences.push_back(var_ref);
         }
-        xml::Node dist_node = this->context->getSingleElement(node, "./mdef:Distribution");
+        xml::Node dist_node = reader.getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
-            pharmmlcpp::Distribution *distribution = new pharmmlcpp::Distribution(context, dist_node.getChild());
-            this->Distribution = distribution;
+            Distribution *distribution = new Distribution(reader, dist_node.getChild());
+            this->distribution = distribution;
         }
     }
 
@@ -44,12 +43,12 @@ namespace pharmmlcpp
     }
 
     pharmmlcpp::Distribution *RandomVariable::getDistribution() {
-        return this->Distribution;
+        return this->distribution;
     }
 
 
     void RandomVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
-        for (DistributionParameter *par : this->Distribution->getDistributionParameters()) {
+        for (DistributionParameter *par : this->distribution->getDistributionParameters()) {
             this->setupAstSymbRefs(par->getAssignment(), gathering, blkId);
         }
         for (VariabilityReference *var_ref : this->getVariabilityReferences()) {
@@ -68,7 +67,7 @@ namespace pharmmlcpp
     // get the initial value for the stdev.
     // FIXME: Check which distribution
     AstNode *RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
-        for (DistributionParameter *param : this->Distribution->getDistributionParameters()) {
+        for (DistributionParameter *param : this->distribution->getDistributionParameters()) {
             if (param->getName() == "stdev") {
                 AstAnalyzer analyzer;
                 param->getAssignment()->accept(&analyzer);

@@ -22,40 +22,39 @@
 
 namespace pharmmlcpp
 {
-    ParameterModel::ParameterModel(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ParameterModel::ParameterModel(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ParameterModel::parse(xml::Node node) {
+    void ParameterModel::parse(PharmMLReader &reader, xml::Node node) {
         this->Block::parse(node);
-        std::vector<xml::Node> param_nodes = this->context->getElements(node, "./mdef:Parameter");
+        std::vector<xml::Node> param_nodes = reader.getElements(node, "./mdef:Parameter");
         for (xml::Node n : param_nodes) {
-            pharmmlcpp::Parameter *param = new pharmmlcpp::Parameter(this->context, n);
+            Parameter *param = new Parameter(reader, n);
             this->parameters.push_back(param);
         }
 
-        std::vector<xml::Node> pop_nodes = this->context->getElements(node, "./mdef:PopulationParameter");
+        std::vector<xml::Node> pop_nodes = reader.getElements(node, "./mdef:PopulationParameter");
         for (xml::Node n : pop_nodes) {
-            pharmmlcpp::PopulationParameter *pop = new pharmmlcpp::PopulationParameter(this->context, n);
+            pharmmlcpp::PopulationParameter *pop = new PopulationParameter(reader, n);
             this->populationParameters.push_back(pop);
         }
 
-        std::vector<xml::Node> ind_nodes = this->context->getElements(node, "./mdef:IndividualParameter");
+        std::vector<xml::Node> ind_nodes = reader.getElements(node, "./mdef:IndividualParameter");
         for (xml::Node n : ind_nodes) {
-            pharmmlcpp::IndividualParameter *ind = new pharmmlcpp::IndividualParameter(this->context, n);
+            pharmmlcpp::IndividualParameter *ind = new IndividualParameter(reader, n);
             this->individualParameters.push_back(ind);
         }
 
-        std::vector<xml::Node> rand_nodes = this->context->getElements(node, "./mdef:RandomVariable");
+        std::vector<xml::Node> rand_nodes = reader.getElements(node, "./mdef:RandomVariable");
         for (xml::Node n : rand_nodes) {
-            pharmmlcpp::RandomVariable *ind = new pharmmlcpp::RandomVariable(this->context, n);
+            pharmmlcpp::RandomVariable *ind = new RandomVariable(reader, n);
             this->randomVariables.push_back(ind);
         }
 
-        std::vector<xml::Node> corr_nodes = this->context->getElements(node, "./mdef:Correlation");
+        std::vector<xml::Node> corr_nodes = reader.getElements(node, "./mdef:Correlation");
         for (xml::Node n : corr_nodes) {
-            pharmmlcpp::Correlation *ind = new pharmmlcpp::Correlation(this->context, n);
+            pharmmlcpp::Correlation *ind = new Correlation(reader, n);
             this->correlations.push_back(ind);
         }
     }

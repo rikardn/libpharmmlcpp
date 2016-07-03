@@ -29,8 +29,8 @@ namespace pharmmlcpp
     {
         public:
             PopulationParameter(std::string symbId);
-            PopulationParameter(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            PopulationParameter(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
@@ -40,7 +40,7 @@ namespace pharmmlcpp
     class Parameter : public PopulationParameter
     {
         public:
-            Parameter(PharmMLContext *context, xml::Node node) : PopulationParameter(context, node) {};
+            Parameter(PharmMLReader &reader, xml::Node node) : PopulationParameter(reader, node) {};
             //void accept(SymbolVisitor *visitor);
     };
 }

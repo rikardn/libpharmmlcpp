@@ -46,15 +46,14 @@ namespace pharmmlcpp
     class VariabilityReference : public Referer
     {
         public:
-            VariabilityReference(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            VariabilityReference(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             SymbRef *getLevelReference();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             AstNode *getRandomEffectsMapping();
             //~ void accept(AstNodeVisitor *visitor);
         
         private:
-            pharmmlcpp::PharmMLContext *context;
             SymbRef *levelReference;
             AstNode *randomEffectsMapping = nullptr;
     };

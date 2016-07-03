@@ -31,28 +31,27 @@ namespace pharmmlcpp
     class FixedEffect : public Referer
     {
         public:
-            FixedEffect(PharmMLContext *context, xml::Node node);
+            FixedEffect(PharmMLReader &reader, xml::Node node);
 
             SymbRef *getReference();
-            pharmmlcpp::AstNode *getScalar();
+            AstNode *getScalar();
             std::string getCategory();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
 
         private:
-            PharmMLContext *context;
             SymbRef *symbRef = nullptr;
-            pharmmlcpp::AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
+            AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
             std::string catId;
 
-            void parse(xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
     };
 
     class IndividualParameter : public Symbol
     {
         public:
-            IndividualParameter(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            IndividualParameter(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             bool isStructured(); // Type 2/3 (linear/generic)
             bool isLinear(); // Type 2
@@ -61,7 +60,7 @@ namespace pharmmlcpp
             bool isGeneric(); // Type 4 (distributional)
 
             std::string getTransformation();
-            pharmmlcpp::AstNode *getPopulationValue();
+            AstNode *getPopulationValue();
 
             std::vector<SymbRef *> getCovariates();
             std::vector<FixedEffect *> getFixedEffects(SymbRef *covariate);
@@ -69,7 +68,7 @@ namespace pharmmlcpp
 
             std::vector<SymbRef *> getRandomEffects();
 
-            pharmmlcpp::AstNode *getAssignment();
+            AstNode *getAssignment();
 
             AstNode *asExplicit();
 

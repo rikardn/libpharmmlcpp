@@ -32,8 +32,8 @@ namespace pharmmlcpp
     class ObservationModel : public Block, public Symbol, public PharmMLSection
     {
         public:
-            ObservationModel(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            ObservationModel(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             // Type of observation data
             bool isContinuous(); // Standard, general och distributional

@@ -50,7 +50,7 @@ namespace pharmmlcpp
             // Get distribution/realization
             xml::Node dist_node = reader.getSingleElement(cont_node, "./mdef:Distribution");
             if (dist_node.exists()) {
-                this->distribution = new Distribution(this->context, dist_node);
+                this->distribution = new Distribution(reader, dist_node);
             }
             // TODO: Support realization of distribution (also, in general)
             //xml::Node real_node = this->context->getSingleElement(cont_node, "./mdef:Realization");

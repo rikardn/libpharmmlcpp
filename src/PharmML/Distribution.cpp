@@ -20,27 +20,26 @@
 
 namespace pharmmlcpp
 {
-    Distribution::Distribution(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    Distribution::Distribution(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void Distribution::parse(xml::Node node) {
+    void Distribution::parse(PharmMLReader &reader, xml::Node node) {
         if (node.getName() == "ProbOnto") {
             this->name = node.getAttribute("name").getValue();
-            std::vector<xml::Node> params = this->context->getElements(node, ".//po:Parameter");
+            std::vector<xml::Node> params = reader.getElements(node, ".//po:Parameter");
             for (xml::Node n : params) {
-                DistributionParameter *dist_param = new pharmmlcpp::DistributionParameter(this->context, n);
+                DistributionParameter *dist_param = new DistributionParameter(reader, n);
                 this->parameters.push_back(dist_param);
             }
         } else {
             // UncertML. Support only normal distribution and make lots of assumptions and hope that UncertML will go away.
             this->name = "Normal2";
-            auto mean_param = new pharmmlcpp::DistributionParameter(this->context);
+            auto mean_param = new DistributionParameter(reader);
             mean_param->setAssignment(new ScalarReal(node.getChild().getChild().getChild().getText()));
             mean_param->setName("mean");
             this->parameters.push_back(mean_param);
-            auto stdev_param = new pharmmlcpp::DistributionParameter(this->context);
+            auto stdev_param = new DistributionParameter(reader);
             stdev_param->setAssignment(new SymbRef(node.getChild().getLastChild().getChild().getAttribute("varId").getValue()));
             stdev_param->setName("var");
             this->parameters.push_back(stdev_param);
@@ -51,7 +50,7 @@ namespace pharmmlcpp
         return this->name;
     }
 
-    std::vector<pharmmlcpp::DistributionParameter *> Distribution::getDistributionParameters() {
+    std::vector<DistributionParameter *> Distribution::getDistributionParameters() {
         return this->parameters;
     }
 

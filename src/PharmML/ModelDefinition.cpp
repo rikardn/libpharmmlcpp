@@ -15,7 +15,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/ModelDefinition.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -42,14 +41,13 @@ namespace pharmmlcpp
         if (struct_node.exists()) {
             this->structuralModel = new StructuralModel(reader, struct_node);
         }
-        this->context = new PharmMLContext(reader);
         xml::Node param_node = reader.getSingleElement(node, "./mdef:ParameterModel");
         if (param_node.exists()) {
-            this->parameterModel = new ParameterModel(this->context, param_node);
+            this->parameterModel = new ParameterModel(reader, param_node);
         }
         xml::Node obs_node = reader.getSingleElement(node, "./mdef:ObservationModel");
         if (obs_node.exists()) {
-            this->observationModel = new ObservationModel(this->context, obs_node);
+            this->observationModel = new ObservationModel(reader, obs_node);
         }
     }
 

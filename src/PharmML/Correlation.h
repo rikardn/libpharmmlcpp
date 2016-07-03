@@ -32,8 +32,8 @@ namespace pharmmlcpp
     class Correlation : public Referer, public PharmMLSection
     {
         public:
-            Correlation(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Correlation(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             pharmmlcpp::VariabilityReference *getVariabilityReference();
             bool isPairwise();
@@ -50,8 +50,7 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-            pharmmlcpp::VariabilityReference *variabilityReference;
+            VariabilityReference *variabilityReference;
             std::vector<pharmmlcpp::SymbRef *> pairwiseSymbRefs;
             std::string pairwiseType;
             pharmmlcpp::AstNode *pairwiseAssignment = nullptr;

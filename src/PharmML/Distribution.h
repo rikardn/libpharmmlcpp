@@ -29,16 +29,15 @@ namespace pharmmlcpp
     class Distribution
     {
         public:
-            Distribution(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Distribution(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
-            std::vector<pharmmlcpp::DistributionParameter *> getDistributionParameters();
-            void accept(pharmmlcpp::PharmMLVisitor *visitor);
+            std::vector<DistributionParameter *> getDistributionParameters();
+            void accept(PharmMLVisitor *visitor);
 
         private:
-            PharmMLContext *context;
             std::string name;
-            std::vector<pharmmlcpp::DistributionParameter *> parameters;
+            std::vector<DistributionParameter *> parameters;
     };
 }
 

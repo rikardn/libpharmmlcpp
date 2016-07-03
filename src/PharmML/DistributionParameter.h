@@ -27,9 +27,9 @@ namespace pharmmlcpp
     class DistributionParameter : public Referer
     {
         public:
-            DistributionParameter(PharmMLContext *context);    // Legacy UncertML constructor
-            DistributionParameter(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            DistributionParameter(PharmMLReader &reader);    // Legacy UncertML constructor
+            DistributionParameter(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
             void setName(std::string name);
             AstNode *getAssignment();
@@ -37,7 +37,6 @@ namespace pharmmlcpp
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
         
         private:
-            PharmMLContext *context;
             std::string name;
             AstNode *assignment;
     };

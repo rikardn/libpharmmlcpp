@@ -20,18 +20,16 @@
 
 namespace pharmmlcpp
 {
-    DistributionParameter::DistributionParameter(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    DistributionParameter::DistributionParameter(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    DistributionParameter::DistributionParameter(PharmMLContext *context) {
-        this->context = context;
+    DistributionParameter::DistributionParameter(PharmMLReader &reader) {
     }
 
-    void DistributionParameter::parse(xml::Node node) {
+    void DistributionParameter::parse(PharmMLReader &reader, xml::Node node) {
         this->name = node.getAttribute("name").getValue();
-        this->assignment = context->factory.create(node.getChild().getChild());
+        this->assignment = reader.factory.create(node.getChild().getChild());
     }
 
     std::string DistributionParameter::getName() {

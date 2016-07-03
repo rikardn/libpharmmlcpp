@@ -23,25 +23,24 @@
 
 namespace pharmmlcpp
 {
-    FixedEffect::FixedEffect(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->FixedEffect::parse(node);
+    FixedEffect::FixedEffect(PharmMLReader &reader, xml::Node node) {
+        this->FixedEffect::parse(reader, node);
     }
 
-    void FixedEffect::parse(xml::Node node) {
+    void FixedEffect::parse(PharmMLReader &reader, xml::Node node) {
         // Get either SymbRef or Scalar
-        xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
+        xml::Node symbref_node = reader.getSingleElement(node, "./ct:SymbRef");
         if (symbref_node.exists()) {
-            pharmmlcpp::SymbRef *symbRef = new pharmmlcpp::SymbRef(symbref_node);
+            SymbRef *symbRef = new SymbRef(symbref_node);
             this->symbRef = symbRef;
         } else {
-            xml::Node scalar_node = this->context->getSingleElement(node, "./ct:Scalar");
-            pharmmlcpp::AstNode *scalar = this->context->factory.create(scalar_node);
+            xml::Node scalar_node = reader.getSingleElement(node, "./ct:Scalar");
+            AstNode *scalar = reader.factory.create(scalar_node);
             this->scalar = scalar;
         }
 
         // Get category (for categorical covariates)
-        xml::Node cat_node = this->context->getSingleElement(node, "./mdef:Category");
+        xml::Node cat_node = reader.getSingleElement(node, "./mdef:Category");
         if (cat_node.exists()) {
             this->catId = cat_node.getAttribute("catId").getValue();
         }
@@ -66,66 +65,65 @@ namespace pharmmlcpp
         }
     }
 
-    IndividualParameter::IndividualParameter(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->IndividualParameter::parse(node);
+    IndividualParameter::IndividualParameter(PharmMLReader &reader, xml::Node node) {
+        this->IndividualParameter::parse(reader, node);
     }
 
-    void IndividualParameter::parse(xml::Node node) {
+    void IndividualParameter::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
 
-        xml::Node structm_node = this->context->getSingleElement(node, "./mdef:StructuredModel");
+        xml::Node structm_node = reader.getSingleElement(node, "./mdef:StructuredModel");
         if (structm_node.exists()) {
             // Individual parameter is structured (type 2 or 3; general or linear)
             this->is_structured = true;
 
             // Get transformation if available
-            xml::Node trans = this->context->getSingleElement(structm_node, "./mdef:Transformation");
+            xml::Node trans = reader.getSingleElement(structm_node, "./mdef:Transformation");
             if (trans.exists()) {
                 // Get transformation type (Box-Cox, identity, log, logit or probit)
                 this->transformation = trans.getAttribute("type").getValue();
 
                 // Get transformation parameters (if available)
-                std::vector<xml::Node> trans_params = this->context->getElements(trans, "./ct:Parameter");
+                std::vector<xml::Node> trans_params = reader.getElements(trans, "./ct:Parameter");
                 for (xml::Node trans_param : trans_params) {
-                    pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
+                    pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
                     this->transformationParameters.push_back(param);
                 }
             }
 
             // Get structured type
-            xml::Node pop = this->context->getSingleElement(structm_node, "./mdef:PopulationValue");
-            xml::Node lin = this->context->getSingleElement(structm_node, "./mdef:LinearCovariate");
-            xml::Node gen = this->context->getSingleElement(structm_node, "./mdef:GeneralCovariate");
+            xml::Node pop = reader.getSingleElement(structm_node, "./mdef:PopulationValue");
+            xml::Node lin = reader.getSingleElement(structm_node, "./mdef:LinearCovariate");
+            xml::Node gen = reader.getSingleElement(structm_node, "./mdef:GeneralCovariate");
             if (pop.exists()) {
                 // Only a population value -- type 3 (without fixed effects)
                 this->is_linear_cov = true;
 
                 // Get population value
-                xml::Node assign = this->context->getSingleElement(pop, "./ct:Assign");
-                this->populationValue = this->context->factory.create(assign.getChild());
+                xml::Node assign = reader.getSingleElement(pop, "./ct:Assign");
+                this->populationValue = reader.factory.create(assign.getChild());
             } else if (lin.exists()) {
                 // Linear covariate model -- type 3
                 this->is_linear_cov = true;
 
                 // Get population value
-                xml::Node assign = this->context->getSingleElement(lin, "./mdef:PopulationValue/ct:Assign");
-                this->populationValue = this->context->factory.create(assign.getChild());
+                xml::Node assign = reader.getSingleElement(lin, "./mdef:PopulationValue/ct:Assign");
+                this->populationValue = reader.factory.create(assign.getChild());
 
                 // Get covariate terms
-                std::vector<xml::Node> cov_nodes = this->context->getElements(lin, "./mdef:Covariate");
+                std::vector<xml::Node> cov_nodes = reader.getElements(lin, "./mdef:Covariate");
                 for (xml::Node cov_node : cov_nodes) {
                     // Get SymbRef (to the covariate)
-                    xml::Node symbref_node = this->context->getSingleElement(cov_node, "./ct:SymbRef");
-                    pharmmlcpp::SymbRef *cov_symbref = new pharmmlcpp::SymbRef(symbref_node);
+                    xml::Node symbref_node = reader.getSingleElement(cov_node, "./ct:SymbRef");
+                    pharmmlcpp::SymbRef *cov_symbref = new SymbRef(symbref_node);
                     this->covariates.push_back(cov_symbref);
 
                     // Get fixed effects (unlimited amount per covariate)
-                    std::vector<xml::Node> fixed_nodes = this->context->getElements(cov_node, "./mdef:FixedEffect");
+                    std::vector<xml::Node> fixed_nodes = reader.getElements(cov_node, "./mdef:FixedEffect");
                     this->fixedEffects.emplace(cov_symbref, std::vector<FixedEffect *>()); // Need to initialize vector first (insert and std::make_pair if not C++11)
                     for (xml::Node fixed_node : fixed_nodes) {
                         // Create fixed effect object
-                        FixedEffect *fixed_effect = new FixedEffect(this->context, fixed_node);
+                        FixedEffect *fixed_effect = new FixedEffect(reader, fixed_node);
                         // Store fixed effect object in vector under associative array (of covariate SymbRef)
                         this->fixedEffects[cov_symbref].push_back(fixed_effect);
                     }
@@ -135,33 +133,33 @@ namespace pharmmlcpp
                 this->is_general_cov = true;
 
                 // Get population value
-                xml::Node assign = this->context->getSingleElement(gen, "./mdef:PopulationValue/ct:Assign");
-                this->populationValue = this->context->factory.create(assign.getChild());
+                xml::Node assign = reader.getSingleElement(gen, "./mdef:PopulationValue/ct:Assign");
+                this->populationValue = reader.factory.create(assign.getChild());
 
                 // Get general covariate definition (should not contain any random variable references)
-                assign = this->context->getSingleElement(gen, "./ct:Assign");
-                this->generalAssignment = this->context->factory.create(assign);
+                assign = reader.getSingleElement(gen, "./ct:Assign");
+                this->generalAssignment = reader.factory.create(assign);
             }
 
             // Finally, get the random effects
-            std::vector<xml::Node> rand_nodes = this->context->getElements(structm_node, "./mdef:RandomEffects");
+            std::vector<xml::Node> rand_nodes = reader.getElements(structm_node, "./mdef:RandomEffects");
             for (xml::Node rand_node : rand_nodes) {
                 // Get SymbRef (to the covariate)
-                xml::Node symbref_node = this->context->getSingleElement(rand_node, "./ct:SymbRef");
-                pharmmlcpp::SymbRef *symbRef = new pharmmlcpp::SymbRef(symbref_node);
+                xml::Node symbref_node = reader.getSingleElement(rand_node, "./ct:SymbRef");
+                pharmmlcpp::SymbRef *symbRef = new SymbRef(symbref_node);
                 this->randomEffects.push_back(symbRef);
             }
         } else {
             // Individual parameter is NOT structured (type 1 or 4; explicit or distribution)
             this->is_structured = false;
 
-            xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
+            xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
             if (assign_node.exists()) {
                 // Explicit covariate model -- type 1
                 this->is_explicit_cov = true;
 
                 // Get explicit assignment (can contain references to random variables)
-                this->explicitAssignment = this->context->factory.create(assign_node.getChild());
+                this->explicitAssignment = reader.factory.create(assign_node.getChild());
             } else {
                 // Generic distributional ("eta-free") covariate model -- type 4
                 this->is_generic_cov = true;

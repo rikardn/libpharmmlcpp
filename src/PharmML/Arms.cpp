@@ -21,19 +21,18 @@ namespace pharmmlcpp
 {
     // OccasionType class (for OccasionSequence class)
     // TODO: Occasion is also used on top-level of TrialDesign
-    OccasionType::OccasionType(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    OccasionType::OccasionType(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void OccasionType::parse(xml::Node node) {
+    void OccasionType::parse(PharmMLReader &reader, xml::Node node) {
         // Get start
-        xml::Node assign = this->context->getSingleElement(node, "./design:Start/ct:Assign");
-        this->start = this->context->factory.create(assign.getChild());
+        xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
+        this->start = reader.factory.create(assign.getChild());
 
         // Get end
-        assign = this->context->getSingleElement(node, "./design:End/ct:Assign");
-        this->end = this->context->factory.create(assign.getChild());
+        assign = reader.getSingleElement(node, "./design:End/ct:Assign");
+        this->end = reader.factory.create(assign.getChild());
     }
 
     AstNode *OccasionType::getStart() {
@@ -45,23 +44,22 @@ namespace pharmmlcpp
     }
 
     // InterventionSequence class
-    InterventionSequence::InterventionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    InterventionSequence::InterventionSequence(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void InterventionSequence::parse(xml::Node node) {
+    void InterventionSequence::parse(PharmMLReader &reader, xml::Node node) {
         // Get intervention references
-        xml::Node interventionList = this->context->getSingleElement(node, "./design:InterventionList");
-        std::vector<xml::Node> interventionRefs = this->context->getElements(interventionList, "./design:InterventionRef");
+        xml::Node interventionList = reader.getSingleElement(node, "./design:InterventionList");
+        std::vector<xml::Node> interventionRefs = reader.getElements(interventionList, "./design:InterventionRef");
         for (xml::Node ref : interventionRefs) {
             this->oidRefs.push_back(new ObjectRef(ref));
         }
 
         // Get start value
-        xml::Node assign = this->context->getSingleElement(node, "./design:Start/ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
         if (assign.exists()) {
-            this->start = this->context->factory.create(assign.getChild());
+            this->start = reader.factory.create(assign.getChild());
         }
     }
 
@@ -89,23 +87,22 @@ namespace pharmmlcpp
     }
 
     // ObservationSequence class
-    ObservationSequence::ObservationSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ObservationSequence::ObservationSequence(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ObservationSequence::parse(xml::Node node) {
+    void ObservationSequence::parse(PharmMLReader &reader, xml::Node node) {
         // Get observation references
-        xml::Node observationList = this->context->getSingleElement(node, "./design:ObservationList");
-        std::vector<xml::Node> observationRefs = this->context->getElements(observationList, "./design:ObservationRef");
+        xml::Node observationList = reader.getSingleElement(node, "./design:ObservationList");
+        std::vector<xml::Node> observationRefs = reader.getElements(observationList, "./design:ObservationRef");
         for (xml::Node ref : observationRefs) {
             this->oidRefs.push_back(new ObjectRef(ref));
         }
 
         // Get start value
-        xml::Node assign = this->context->getSingleElement(node, "./design:Start/ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
         if (assign.exists()) {
-            this->start = this->context->factory.create(assign.getChild());
+            this->start = reader.factory.create(assign.getChild());
         }
     }
 
@@ -133,22 +130,21 @@ namespace pharmmlcpp
     }
 
     // OccassionSequence class
-    OccasionSequence::OccasionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    OccasionSequence::OccasionSequence(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void OccasionSequence::parse(xml::Node node) {
-        xml::Node occasionList = this->context->getSingleElement(node, "./design:OccasionList");
+    void OccasionSequence::parse(PharmMLReader &reader, xml::Node node) {
+        xml::Node occasionList = reader.getSingleElement(node, "./design:OccasionList");
 
         // Get variability reference
-        xml::Node varRef = this->context->getSingleElement(occasionList, "./ct:VariabilityReference");
-        this->variabilityReference = new VariabilityReference(this->context, varRef);
+        xml::Node varRef = reader.getSingleElement(occasionList, "./ct:VariabilityReference");
+        this->variabilityReference = new VariabilityReference(reader, varRef);
 
         // Get occasions
-        std::vector<xml::Node> occasions = this->context->getElements(occasionList, "./design:Occasion");
+        std::vector<xml::Node> occasions = reader.getElements(occasionList, "./design:Occasion");
         for (xml::Node occ : occasions) {
-            this->occasions.push_back(new OccasionType(this->context, occ));
+            this->occasions.push_back(new OccasionType(reader, occ));
         }
     }
 
@@ -165,63 +161,62 @@ namespace pharmmlcpp
     }
 
     // Arm class
-    Arm::Arm(PharmMLContext *context, xml::Node node) {
+    Arm::Arm(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void Arm::parse(xml::Node node) {
+    void Arm::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
 
         // Get arm (oid) reference
-        xml::Node armRef = this->context->getSingleElement(node, "./design:ArmRef");
+        xml::Node armRef = reader.getSingleElement(node, "./design:ArmRef");
         if (armRef.exists()) {
             this->oidRef = armRef.getAttribute("oidRef").getValue();
         }
 
         // Get arm size
-        xml::Node assign = this->context->getSingleElement(node, "./design:ArmSize/ct:Assign");
+        xml::Node assign = reader.getSingleElement(node, "./design:ArmSize/ct:Assign");
         if (assign.exists()) {
-            this->armSize = this->context->factory.create(assign.getChild());
+            this->armSize = reader.factory.create(assign.getChild());
         }
 
         // Get number of samples
-        assign = this->context->getSingleElement(node, "./design:NumberSamples/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:NumberSamples/ct:Assign");
         if (assign.exists()) {
-            this->numSamples = this->context->factory.create(assign.getChild());
+            this->numSamples = reader.factory.create(assign.getChild());
         }
 
         // Get number of times
-        assign = this->context->getSingleElement(node, "./design:NumberTimes/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:NumberTimes/ct:Assign");
         if (assign.exists()) {
-            this->numTimes = this->context->factory.create(assign.getChild());
+            this->numTimes = reader.factory.create(assign.getChild());
         }
 
         // Get same times
-        assign = this->context->getSingleElement(node, "./design:SameTimes/ct:Assign");
+        assign = reader.getSingleElement(node, "./design:SameTimes/ct:Assign");
         if (assign.exists()) {
-            this->sameTimes = this->context->factory.create(assign.getChild());
+            this->sameTimes = reader.factory.create(assign.getChild());
         }
 
         // Get intervention sequences
-        std::vector<xml::Node> sequence = this->context->getElements(node, "./design:InterventionSequence");
+        std::vector<xml::Node> sequence = reader.getElements(node, "./design:InterventionSequence");
         for (xml::Node node : sequence) {
-            InterventionSequence *sequence = new InterventionSequence(this->context, node);
+            InterventionSequence *sequence = new InterventionSequence(reader, node);
             this->interventionSequences.push_back(sequence);
         }
 
         // Get observation sequences
-        sequence = this->context->getElements(node, "./design:ObservationSequence");
+        sequence = reader.getElements(node, "./design:ObservationSequence");
         for (xml::Node node : sequence) {
-            ObservationSequence *sequence = new ObservationSequence(this->context, node);
+            ObservationSequence *sequence = new ObservationSequence(reader, node);
             this->observationSequences.push_back(sequence);
         }
 
         // Get occasion sequences
-        sequence = this->context->getElements(node, "./design:OccasionSequence");
+        sequence = reader.getElements(node, "./design:OccasionSequence");
         for (xml::Node node : sequence) {
-            OccasionSequence *sequence = new OccasionSequence(this->context, node);
+            OccasionSequence *sequence = new OccasionSequence(reader, node);
             this->occasionSequences.push_back(sequence);
         }
     }
@@ -349,11 +344,10 @@ namespace pharmmlcpp
             this->totalSize = reader.factory.create(assign.getChild());
         }
 
-        this->context = new PharmMLContext(reader);
         // Get the arm definitions themselves
         std::vector<xml::Node> arms = reader.getElements(node, "./design:Arm");
         for (xml::Node node : arms) {
-            Arm *arm = new Arm(this->context, node);
+            Arm *arm = new Arm(reader, node);
             this->arms.push_back(arm);
         }
     }

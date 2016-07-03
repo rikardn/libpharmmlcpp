@@ -30,10 +30,10 @@ namespace pharmmlcpp
     class RandomVariable : public Symbol
     {
         public:
-            RandomVariable(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            RandomVariable(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::vector<VariabilityReference *> getVariabilityReferences();
-            pharmmlcpp::Distribution *getDistribution();
+            Distribution *getDistribution();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
@@ -42,7 +42,7 @@ namespace pharmmlcpp
         
         private:
             std::vector<VariabilityReference *> variabilityReferences;
-            pharmmlcpp::Distribution *Distribution;
+            Distribution *distribution;
     };
 }
 

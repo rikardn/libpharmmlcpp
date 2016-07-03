@@ -24,12 +24,11 @@ namespace pharmmlcpp
         this->symbId = symbId;        
     }
 
-    PopulationParameter::PopulationParameter(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->PopulationParameter::parse(node);
+    PopulationParameter::PopulationParameter(PharmMLReader &reader, xml::Node node) {
+        this->PopulationParameter::parse(reader, node);
     }
 
-    void PopulationParameter::parse(xml::Node node) {
+    void PopulationParameter::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
     }
 

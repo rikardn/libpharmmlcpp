@@ -31,13 +31,12 @@ namespace pharmmlcpp
     class OccasionType
     {
         public:
-            OccasionType(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            OccasionType(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             AstNode *getStart();
             AstNode *getEnd();
  
         private:
-            pharmmlcpp::PharmMLContext *context;
             AstNode *start = nullptr;
             AstNode *end = nullptr;
             //~ void accept(AstNodeVisitor *visitor);
@@ -46,15 +45,14 @@ namespace pharmmlcpp
     class InterventionSequence
     {
         public:
-            InterventionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            InterventionSequence(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
             AstNode *getStart();
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::vector<ObjectRef *> oidRefs;
             AstNode *start = nullptr;
     };
@@ -62,15 +60,14 @@ namespace pharmmlcpp
     class ObservationSequence
     {
         public:
-            ObservationSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            ObservationSequence(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
             AstNode *getStart();
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::vector<ObjectRef *> oidRefs;
             AstNode *start = nullptr;
     };
@@ -78,14 +75,13 @@ namespace pharmmlcpp
     class OccasionSequence
     {
         public:
-            OccasionSequence(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            OccasionSequence(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             VariabilityReference *getVariabilityReference();
             std::vector<OccasionType *> getOccasions();
             void accept(PharmMLVisitor *visitor);
         
         private:
-            pharmmlcpp::PharmMLContext *context;
             VariabilityReference *variabilityReference;
             std::vector<OccasionType *> occasions;
     };
@@ -93,8 +89,8 @@ namespace pharmmlcpp
     class Arm : public Object, public PharmMLSection
     {
         public:
-            Arm(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Arm(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
             std::string getOidRef();
@@ -108,7 +104,6 @@ namespace pharmmlcpp
             void accept(ObjectVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string oidRef;
             AstNode *armSize = nullptr;
             AstNode *numSamples = nullptr;
@@ -138,7 +133,6 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::vector<pharmmlcpp::Variable *> designParameters;
             AstNode *armSize = nullptr;
             AstNode *costFunction = nullptr;

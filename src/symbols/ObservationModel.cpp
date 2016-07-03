@@ -20,31 +20,30 @@
 
 namespace pharmmlcpp
 {
-    ObservationModel::ObservationModel(PharmMLContext *context, xml::Node node) {
+    ObservationModel::ObservationModel(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
         this->Block::parse(node);
-        this->ObservationModel::parse(node);
+        this->ObservationModel::parse(reader, node);
     }
 
-    void ObservationModel::parse(xml::Node node) {
+    void ObservationModel::parse(PharmMLReader &reader, xml::Node node) {
         // Get common data (to all observation model types)
-        xml::Node name_node = this->context->getSingleElement(node, ".//ct:Name");
+        xml::Node name_node = reader.getSingleElement(node, ".//ct:Name");
         if (name_node.exists()) {
             this->name = name_node.getText();
         }
         // TODO: Get other mdef:CommonObservationModelType stuff (don't know what most is for..)
 
         // Continuous or discrete model?
-        xml::Node cont_node = this->context->getSingleElement(node, "./mdef:ContinuousData");
-        xml::Node disc_node = this->context->getSingleElement(node, "./mdef:Discrete");
+        xml::Node cont_node = reader.getSingleElement(node, "./mdef:ContinuousData");
+        xml::Node disc_node = reader.getSingleElement(node, "./mdef:Discrete");
         if (cont_node.exists()) {
             // Continuous data model
             this->continuousData = true;
 
             // Get built in error models
-            xml::Node stand_node = this->context->getSingleElement(cont_node, "./mdef:Standard");
-            xml::Node general_node = this->context->getSingleElement(cont_node, "./mdef:General");
+            xml::Node stand_node = reader.getSingleElement(cont_node, "./mdef:Standard");
+            xml::Node general_node = reader.getSingleElement(cont_node, "./mdef:General");
             if (stand_node.exists()) {
                 // Standard error model (type 1): u(y) = u(f) + g * eps
                 this->standardErrorModel = true;
@@ -53,29 +52,29 @@ namespace pharmmlcpp
                 // TODO: Support mdef:ObservationErrorType
 
                 // Get transformation if available (u)
-                xml::Node trans_node = this->context->getSingleElement(stand_node, "./mdef:Transformation");
+                xml::Node trans_node = reader.getSingleElement(stand_node, "./mdef:Transformation");
                 if (trans_node.exists()) {
                     // Get transformation type (Box-Cox, identity, log, logit or probit)
                     this->transformation = trans_node.getAttribute("type").getValue();
 
                     // Get transformation parameters (if available)
-                    std::vector<xml::Node> trans_params = this->context->getElements(trans_node, "./ct:Parameter");
+                    std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                     for (xml::Node trans_param : trans_params) {
-                        pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
+                        pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
                         this->transformationParameters.push_back(param);
                     }
                 }
 
                 // Get output from the structural model (f)
-                xml::Node output_node = this->context->getSingleElement(stand_node, "./mdef:Output");
+                xml::Node output_node = reader.getSingleElement(stand_node, "./mdef:Output");
                 this->output = new SymbRef(output_node.getChild());
 
                 // Get error model (g)
-                xml::Node error_assign = this->context->getSingleElement(stand_node, "./mdef:ErrorModel/ct:Assign");
-                this->errorModel = this->context->factory.create(error_assign.getChild());
+                xml::Node error_assign = reader.getSingleElement(stand_node, "./mdef:ErrorModel/ct:Assign");
+                this->errorModel = reader.factory.create(error_assign.getChild());
 
                 // Get residual error (eps)
-                xml::Node res_node = this->context->getSingleElement(stand_node, "./mdef:ResidualError");
+                xml::Node res_node = reader.getSingleElement(stand_node, "./mdef:ResidualError");
                 this->residualError = new SymbRef(res_node.getChild());
             } else if (general_node.exists()) {
                 // General/distributional error model (type 2/3): h(y) = H(f, xi, eps) / u(y) ~ distribution(parameter1, parameter2, ...)
@@ -84,24 +83,24 @@ namespace pharmmlcpp
                 // TODO: Support mdef:ObservationErrorType
 
                 // Get assign/distribution
-                xml::Node assign_node = this->context->getSingleElement(general_node, "./ct:Assign");
+                xml::Node assign_node = reader.getSingleElement(general_node, "./ct:Assign");
                 if (assign_node.exists()) {
                     // General error model (type 2): h(y) = H(f, xi, eps)
                     this->generalErrorModel = true;
 
                     // Get the general assignment (right hand side)
-                    this->generalAssignment = this->context->factory.create(assign_node.getChild());
+                    this->generalAssignment = reader.factory.create(assign_node.getChild());
 
                     // Get LHS transformation
-                    xml::Node trans_node = this->context->getSingleElement(general_node, "./mdef:LHSTransformation");
+                    xml::Node trans_node = reader.getSingleElement(general_node, "./mdef:LHSTransformation");
                     if (trans_node.exists()) {
                         // Get transformation type (Box-Cox, identity, log, logit or probit)
                         this->transformation = trans_node.getAttribute("type").getValue();
 
                         // Get transformation parameters (if available)
-                        std::vector<xml::Node> trans_params = this->context->getElements(trans_node, "./ct:Parameter");
+                        std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                         for (xml::Node trans_param : trans_params) {
-                            pharmmlcpp::AstNode *param = this->context->factory.create(trans_param.getChild());
+                            pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
                             this->transformationParameters.push_back(param);
                         }
                     }
@@ -110,9 +109,9 @@ namespace pharmmlcpp
                     this->distributionalErrorModel = true;
 
                     // Get variablitiy references
-                    std::vector<xml::Node> var_ref_nodes = this->context->getElements(general_node, "./ct:VariabilityReference");
+                    std::vector<xml::Node> var_ref_nodes = reader.getElements(general_node, "./ct:VariabilityReference");
                     for (xml::Node var_ref_node : var_ref_nodes) {
-                        pharmmlcpp::VariabilityReference *varRef = new VariabilityReference(this->context, var_ref_node);
+                        pharmmlcpp::VariabilityReference *varRef = new VariabilityReference(reader, var_ref_node);
                         this->variabilityReferences.push_back(varRef);
                     }
 
@@ -123,8 +122,8 @@ namespace pharmmlcpp
             // Discrete data model
             this->continuousData = false;
 
-            xml::Node cat_node = this->context->getSingleElement(disc_node, "./mdef:CategoricalData");
-            xml::Node cnt_node = this->context->getSingleElement(disc_node, "./mdef:CountData");
+            xml::Node cat_node = reader.getSingleElement(disc_node, "./mdef:CategoricalData");
+            xml::Node cnt_node = reader.getSingleElement(disc_node, "./mdef:CountData");
             //TODO: xml::Node tte_node = this->context->getSingleElement(disc_node, "./mdef:TimeToEventData");
             if (cat_node.exists()) {
                 // Categorical data model

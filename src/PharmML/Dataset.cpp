@@ -20,12 +20,11 @@
 namespace pharmmlcpp
 {
     // Class HeaderDefinition (single header specification of dataset)
-    HeaderDefinition::HeaderDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    HeaderDefinition::HeaderDefinition(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void HeaderDefinition::parse(xml::Node node) {
+    void HeaderDefinition::parse(PharmMLReader &reader, xml::Node node) {
         // Get name, header type and row number
         this->name = node.getAttribute("name").getValue();
         // TODO: Support headerType (some symbolId stuff)
@@ -53,12 +52,11 @@ namespace pharmmlcpp
     }
 
     // Class ColumnDefinition (single column specification of dataset)
-    ColumnDefinition::ColumnDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ColumnDefinition::ColumnDefinition(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ColumnDefinition::parse(xml::Node node) {
+    void ColumnDefinition::parse(PharmMLReader &reader, xml::Node node) {
         // Get attributes of column
         this->id = node.getAttribute("columnId").getValue();
         this->type = node.getAttribute("columnType").getValue();
@@ -102,9 +100,8 @@ namespace pharmmlcpp
     }
 
     // Class DatasetDefinition (header/column specifications of dataset)
-    DatasetDefinition::DatasetDefinition(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    DatasetDefinition::DatasetDefinition(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
     ColumnDefinition *DatasetDefinition::getColumnDefinition(int colNum) {
@@ -119,25 +116,25 @@ namespace pharmmlcpp
         return this->columns.size();
     }
 
-    void DatasetDefinition::parse(xml::Node node) {
+    void DatasetDefinition::parse(PharmMLReader &reader, xml::Node node) {
         // Get header definitions
-        std::vector<xml::Node> headers = this->context->getElements(node, "./ds:Header");
+        std::vector<xml::Node> headers = reader.getElements(node, "./ds:Header");
         for (xml::Node header_node : headers) {
-            HeaderDefinition *header = new HeaderDefinition(this->context, header_node);
+            HeaderDefinition *header = new HeaderDefinition(reader, header_node);
             this->headers.push_back(header);
         }
 
         // Get column definitions
-        std::vector<xml::Node> columns = this->context->getElements(node, "./ds:Column");
+        std::vector<xml::Node> columns = reader.getElements(node, "./ds:Column");
         for (xml::Node column_node : columns) {
-            ColumnDefinition *column = new ColumnDefinition(this->context, column_node);
+            ColumnDefinition *column = new ColumnDefinition(reader, column_node);
             this->columns.push_back(column);
         }
 
         // Get ignore condition and/or ignore symbols
-        xml::Node ignore = this->context->getSingleElement(node, "./ds:IgnoreLineType");
+        xml::Node ignore = reader.getSingleElement(node, "./ds:IgnoreLineType");
         if (ignore.exists()) {
-            xml::Node condition = this->context->getSingleElement(ignore, "./math:Condition");
+            xml::Node condition = reader.getSingleElement(ignore, "./math:Condition");
             if (condition.exists()) {
                 // TODO: Include deps below via moving creation of AstNode to Factory
                 this->ignoreCondition = AstNodeFactory::create(condition);
@@ -168,9 +165,8 @@ namespace pharmmlcpp
     }
 
     // class ExternalFile (data is stored externally)
-    ExternalFile::ExternalFile(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ExternalFile::ExternalFile(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
     std::string ExternalFile::getOid() {
@@ -189,14 +185,14 @@ namespace pharmmlcpp
         return this->delimiter;
     }
 
-    void ExternalFile::parse(xml::Node node) {
+    void ExternalFile::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         // Get path, format and delimiter
-        xml::Node path_node = this->context->getSingleElement(node, "./ds:path");
+        xml::Node path_node = reader.getSingleElement(node, "./ds:path");
         this->path = path_node.getText();
-        xml::Node format_node = this->context->getSingleElement(node, "./ds:format");
+        xml::Node format_node = reader.getSingleElement(node, "./ds:format");
         this->format = format_node.getText();
-        xml::Node delimiter_node = this->context->getSingleElement(node, "./ds:delimiter");
+        xml::Node delimiter_node = reader.getSingleElement(node, "./ds:delimiter");
         std::string delimiter = delimiter_node.getText();
 
         // Parse predefined delimiter options
@@ -220,16 +216,15 @@ namespace pharmmlcpp
     // Class DataColumn (single column with its definition)
     // Preliminary class (forced conversion of all scalars into AstNode's)
     // TODO: Improve DataColumn data structure typing
-    DataColumn::DataColumn(pharmmlcpp::PharmMLContext *context, xml::Node table_node, ColumnDefinition *definition) {
-        this->context = context;
+    DataColumn::DataColumn(PharmMLReader &reader, xml::Node table_node, ColumnDefinition *definition) {
         this->definition = definition;
-        this->parse(table_node);
+        this->parse(reader, table_node);
     }
 
-    void DataColumn::parse(xml::Node table_node) {
+    void DataColumn::parse(PharmMLReader &reader, xml::Node table_node) {
         // Get values for column from each row element
         int colIndex = (this->definition->getNum() - 1); // Column numbers start at 1
-        std::vector<xml::Node> rows = this->context->getElements(table_node, "./ds:Row");
+        std::vector<xml::Node> rows = reader.getElements(table_node, "./ds:Row");
         this->numRows = rows.size();
         for (xml::Node row_node : rows) {
             std::vector<xml::Node> values = row_node.getChildren();
@@ -261,32 +256,31 @@ namespace pharmmlcpp
     }
 
     // Class Dataset (top-level of above)
-    Dataset::Dataset(pharmmlcpp::PharmMLContext *context, xml::Node node) {
+    Dataset::Dataset(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void Dataset::parse(xml::Node node) {
+    void Dataset::parse(PharmMLReader &reader, xml::Node node) {
         // Get definition (specifies headers/columns)
-        xml::Node def_node = this->context->getSingleElement(node, "./ds:Definition");
+        xml::Node def_node = reader.getSingleElement(node, "./ds:Definition");
         if (def_node.exists()) {
-            DatasetDefinition *def = new DatasetDefinition(this->context, def_node);
+            DatasetDefinition *def = new DatasetDefinition(reader, def_node);
             this->definition = def;
         }
 
         // Get the table and create (generic) columns
-        xml::Node table = this->context->getSingleElement(node, "./ds:Table");
+        xml::Node table = reader.getSingleElement(node, "./ds:Table");
         if (table.exists()) {
             int numColumns = this->definition->getNumColumns();
             for (int colNum = 1; colNum <= numColumns; colNum++) {
                 ColumnDefinition *definition = this->definition->getColumnDefinition(colNum);
-                DataColumn *column = new DataColumn(this->context, table, definition);
+                DataColumn *column = new DataColumn(reader, table, definition);
                 columns.push_back(column);
             }
         } else {
-            xml::Node ext_file = this->context->getSingleElement(node, "./ds:ExternalFile");
-            ExternalFile *externalFile = new ExternalFile(this->context, ext_file);
+            xml::Node ext_file = reader.getSingleElement(node, "./ds:ExternalFile");
+            ExternalFile *externalFile = new ExternalFile(reader, ext_file);
             this->externalFile = externalFile;
         }
     }

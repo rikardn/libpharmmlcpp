@@ -21,6 +21,7 @@
 #include <string>
 #include <unordered_map>
 #include <PharmML/PKMacro.h>
+#include <helpers/Logger.h>
 
 namespace pharmmlcpp
 {
@@ -29,6 +30,7 @@ namespace pharmmlcpp
     class MacroGathering
     {
         public:
+            Logger logger;
             void newBlock(Block *block);
             void addMacro(PKMacro *macro);
             PKMacro *getCmtMacro(std::string blkId, int cmt_num);

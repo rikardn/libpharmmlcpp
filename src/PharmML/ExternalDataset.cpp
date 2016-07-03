@@ -19,24 +19,23 @@
 
 namespace pharmmlcpp
 {
-    ExternalDataset::ExternalDataset(pharmmlcpp::PharmMLContext *context, xml::Node node) {
+    ExternalDataset::ExternalDataset(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void ExternalDataset::parse(xml::Node node) {
+    void ExternalDataset::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
-        std::vector<xml::Node> array = this->context->getElements(node, "./design:ColumnMapping");
+        std::vector<xml::Node> array = reader.getElements(node, "./design:ColumnMapping");
         for (xml::Node n : array) {
-            pharmmlcpp::ColumnMapping *col = new pharmmlcpp::ColumnMapping(this->context, n);
+            pharmmlcpp::ColumnMapping *col = new ColumnMapping(reader, n);
             this->col_maps.push_back(col);
         }
         // TODO: Support ColumnTransformation
         // TODO: Support MultipleDVMapping
-        xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
+        xml::Node ds_node = reader.getSingleElement(node, "./ds:DataSet");
         if (ds_node.exists()) {
-            this->dataset = new pharmmlcpp::Dataset(this->context, ds_node);
+            this->dataset = new Dataset(reader, ds_node);
         } else {
             // TODO: Support CodeInjection
         }
@@ -60,7 +59,7 @@ namespace pharmmlcpp
     }
 
     void ExternalDataset::setupRefererSymbRefs(SymbolGathering &gathering) {
-        for (pharmmlcpp::ColumnMapping *col_map : this->col_maps) {
+        for (ColumnMapping *col_map : this->col_maps) {
             col_map->setupSymbRefs(gathering, "");
         }
     }

@@ -20,18 +20,17 @@
 namespace pharmmlcpp
 {
     // TODO: Move elsewhere (Dataset.h?)
-    TargetMapping::TargetMapping(PharmMLContext *context, xml::Node node) {
+    TargetMapping::TargetMapping(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void TargetMapping::parse(xml::Node node) {
+    void TargetMapping::parse(PharmMLReader &reader, xml::Node node) {
         // According to spec this is specifically to allow multiple structural models
         this->blkIdRef = node.getAttribute("blkIdRef").getValue();
 
         // Get maps
-        std::vector<xml::Node> map_nodes = this->context->getElements(node, "./ds:Map");
+        std::vector<xml::Node> map_nodes = reader.getElements(node, "./ds:Map");
         for (xml::Node map_node : map_nodes) {
             MapType map;
 
@@ -75,9 +74,9 @@ namespace pharmmlcpp
     }
 
     // Get a (resolved) complete map from data symbol strings to the Symbol objects
-    std::unordered_map<std::string, pharmmlcpp::Symbol *> TargetMapping::getDataSymbolMap() {
+    std::unordered_map<std::string, Symbol *> TargetMapping::getDataSymbolMap() {
         // Create associative array
-        std::unordered_map<std::string, pharmmlcpp::Symbol *> data_to_symbol;
+        std::unordered_map<std::string, Symbol *> data_to_symbol;
         for (pharmmlcpp::MapType map : this->maps) {
             if (!map.modelSymbol.empty()) {
                 data_to_symbol[map.dataSymbol] = map.symbol;
@@ -87,9 +86,9 @@ namespace pharmmlcpp
     }
 
     // Get a (resolved) complete map from data symbol strings to (administration) PKMacro objects
-    std::unordered_map<std::string, pharmmlcpp::PKMacro *> TargetMapping::getDataMacroMap() {
+    std::unordered_map<std::string, PKMacro *> TargetMapping::getDataMacroMap() {
         // Create associative array
-        std::unordered_map<std::string, pharmmlcpp::PKMacro *> data_to_macro;
+        std::unordered_map<std::string, PKMacro *> data_to_macro;
         for (pharmmlcpp::MapType map : this->maps) {
             if (!map.admNumber.empty()) {
                 data_to_macro[map.dataSymbol] = map.macro;
@@ -106,7 +105,7 @@ namespace pharmmlcpp
                 if (symbol) {
                     map.symbol = symbol;
                 } else {
-                    this->context->logger.error("TargetMapping element contains non-resolvable 'modelSymbol' (" + map.modelSymbol + ")", this);
+                    gathering.logger.error("TargetMapping element contains non-resolvable 'modelSymbol' (" + map.modelSymbol + ")", this);
                 }
             }
         }
@@ -120,7 +119,7 @@ namespace pharmmlcpp
                 if (macro) {
                     map.macro = macro;
                 } else {
-                    this->context->logger.error("TargetMapping element contains non-resolvable 'admNumber' (" + map.admNumber + ")", this);
+                    gathering.logger.error("TargetMapping element contains non-resolvable 'admNumber' (" + map.admNumber + ")", this);
                 }
             }
         }
@@ -130,33 +129,32 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
-    ColumnMapping::ColumnMapping(pharmmlcpp::PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ColumnMapping::ColumnMapping(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ColumnMapping::parse(xml::Node node) {
-        xml::Node ref_node = this->context->getSingleElement(node, "./ds:ColumnRef");
+    void ColumnMapping::parse(PharmMLReader &reader, xml::Node node) {
+        xml::Node ref_node = reader.getSingleElement(node, "./ds:ColumnRef");
         this->columnIdRef = ref_node.getAttribute("columnIdRef").getValue();
-        xml::Node assign_node = this->context->getSingleElement(node, "./ct:Assign");
-        xml::Node symbref_node = this->context->getSingleElement(node, "./ct:SymbRef");
-        xml::Node piecewise_node = this->context->getSingleElement(node, "./ds:Piecewise");
+        xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
+        xml::Node symbref_node = reader.getSingleElement(node, "./ct:SymbRef");
+        xml::Node piecewise_node = reader.getSingleElement(node, "./ds:Piecewise");
         // TODO: Support CategoryMapping (for categorical covariates)
 
         // Store mapping expression (should only contain one symbol reference)
         if (symbref_node.exists()) {
             this->symbRef = new SymbRef(symbref_node);
         } else if (assign_node.exists()) {
-            this->assignment = this->context->factory.create(assign_node);
+            this->assignment = reader.factory.create(assign_node);
         } else if (piecewise_node.exists()) {
-            this->assignment = this->context->factory.create(piecewise_node);
+            this->assignment = reader.factory.create(piecewise_node);
         }
 
         // Get target map (e.g. to PK macros)
         // FIXME: Assume just one target mapping until we know definitely what unlimited maps means
-        xml::Node target_node = this->context->getSingleElement(node, "./ds:TargetMapping");
+        xml::Node target_node = reader.getSingleElement(node, "./ds:TargetMapping");
         if (target_node.exists()) {
-            TargetMapping *map = new TargetMapping(this->context, target_node);
+            TargetMapping *map = new TargetMapping(reader, target_node);
             this->target_map = map;
         }
     }

@@ -21,49 +21,48 @@
 namespace pharmmlcpp
 {
     // Observation class
-    Observation::Observation(PharmMLContext *context, xml::Node node) {
+    Observation::Observation(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void Observation::parse(xml::Node node) {
+    void Observation::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
 
         // Get (oid) observation references (to observations already defined)
-        xml::Node reference = this->context->getSingleElement(node, "./design:ObservationRef");
+        xml::Node reference = reader.getSingleElement(node, "./design:ObservationRef");
         if (reference.exists()) {
             this->oidRef = new ObjectRef(reference);
         }
 
         // Get NumberTimes (what is this even?)
-        xml::Node number = this->context->getSingleElement(node, "./design:NumberTimes");
+        xml::Node number = reader.getSingleElement(node, "./design:NumberTimes");
         if (number.exists()) {
-            xml::Node assign = this->context->getSingleElement(number, "./ct:Assign");
+            xml::Node assign = reader.getSingleElement(number, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->number = this->context->factory.create(tree);
+            this->number = reader.factory.create(tree);
         }
 
         // Get observation times
-        xml::Node times = this->context->getSingleElement(node, "./design:ObservationTimes");
+        xml::Node times = reader.getSingleElement(node, "./design:ObservationTimes");
         if (times.exists()) {
-            xml::Node assign = this->context->getSingleElement(times, "./ct:Assign");
+            xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->times = this->context->factory.create(tree);
+            this->times = reader.factory.create(tree);
         }
 
         // Get continuous and discrete variable output(s)
-        xml::Node continuous = this->context->getSingleElement(node, "./design:Continuous");
-        xml::Node discrete = this->context->getSingleElement(node, "./design:Discrete");
+        xml::Node continuous = reader.getSingleElement(node, "./design:Continuous");
+        xml::Node discrete = reader.getSingleElement(node, "./design:Discrete");
         if (continuous.exists()) {
-            std::vector<xml::Node> variables = this->context->getElements(continuous, "./ct:SymbRef");
+            std::vector<xml::Node> variables = reader.getElements(continuous, "./ct:SymbRef");
             for (xml::Node variable : variables) {
                 SymbRef *var = new SymbRef(variable);
                 this->continuousVariables.push_back(var);
             }
         }
         if (discrete.exists()) {
-            std::vector<xml::Node> variables = this->context->getElements(discrete, "./ct:SymbRef");
+            std::vector<xml::Node> variables = reader.getElements(discrete, "./ct:SymbRef");
             for (xml::Node variable : variables) {
                 SymbRef *var = new SymbRef(variable);
                 this->discreteVariables.push_back(var);
@@ -93,11 +92,11 @@ namespace pharmmlcpp
         return AstTransformation::toVector(this->times);
     }
 
-    std::vector<pharmmlcpp::SymbRef *> Observation::getContinuousVariables() {
+    std::vector<SymbRef *> Observation::getContinuousVariables() {
         return this->continuousVariables;
     }
 
-    std::vector<pharmmlcpp::SymbRef *> Observation::getDiscreteVariables() {
+    std::vector<SymbRef *> Observation::getDiscreteVariables() {
         return this->discreteVariables;
     }
 
@@ -110,30 +109,29 @@ namespace pharmmlcpp
     }
 
     // IndividualObservations class
-    IndividualObservations::IndividualObservations(pharmmlcpp::PharmMLContext *context, xml::Node node) {
+    IndividualObservations::IndividualObservations(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
-        this->context = context;
-        this->parse(node);
+        this->parse(reader, node);
     }
 
-    void IndividualObservations::parse(xml::Node node) {
+    void IndividualObservations::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         // Get column mappings
-        std::vector<xml::Node> mapping_nodes = this->context->getElements(node, "./design:ColumnMapping");
+        std::vector<xml::Node> mapping_nodes = reader.getElements(node, "./design:ColumnMapping");
         for (xml::Node mapping_node : mapping_nodes) {
-            ColumnMapping *map = new ColumnMapping(this->context, mapping_node);
+            ColumnMapping *map = new ColumnMapping(reader, mapping_node);
             this->columnMappings.push_back(map);
         }
 
         // Get dataset
-        xml::Node ds_node = this->context->getSingleElement(node, "./ds:DataSet");
-        pharmmlcpp::Dataset *ds = new pharmmlcpp::Dataset(this->context, ds_node);
+        xml::Node ds_node = reader.getSingleElement(node, "./ds:DataSet");
+        pharmmlcpp::Dataset *ds = new Dataset(reader, ds_node);
         this->dataset = ds;
 
         // Check that the individual observation has an independent variable
         pharmmlcpp::DataColumn *col = ds->getIdvColumn();
         if (!col) {     // No idv column was found
-            this->context->logger.error("Missing idv column in IndividualObservations", this);
+            reader.logger.error("Missing idv column in IndividualObservations", this);
             // FIXME: What to do here?
         }
         // FIXME: Need to check ColumnMapping and IndependentVariables also
@@ -167,17 +165,16 @@ namespace pharmmlcpp
     }
 
     // ObservationCombination class
-    ObservationCombination::ObservationCombination(PharmMLContext *context, xml::Node node) {
-        this->context = context;
-        this->parse(node);
+    ObservationCombination::ObservationCombination(PharmMLReader &reader, xml::Node node) {
+        this->parse(reader, node);
     }
 
-    void ObservationCombination::parse(xml::Node node) {
+    void ObservationCombination::parse(PharmMLReader &reader, xml::Node node) {
         this->oid = node.getAttribute("oid").getValue();
         // Get all observation combinations
-        std::vector<xml::Node> single_observations = this->context->getElements(node, "./design:Observations");
+        std::vector<xml::Node> single_observations = reader.getElements(node, "./design:Observations");
         for (xml::Node obs : single_observations) {
-            std::vector<xml::Node> observation_refs = this->context->getElements(obs, "./design:ObservationRef");
+            std::vector<xml::Node> observation_refs = reader.getElements(obs, "./design:ObservationRef");
             for (xml::Node ref : observation_refs) {
                 std::string oidRef = ref.getAttribute("oidRef").getValue();
                 this->oidRefs.push_back(oidRef);
@@ -185,11 +182,11 @@ namespace pharmmlcpp
         }
 
         // Get relative
-        xml::Node relative = this->context->getSingleElement(node, "./design:Relative");
+        xml::Node relative = reader.getSingleElement(node, "./design:Relative");
         if (relative.exists()) {
-            xml::Node assign = this->context->getSingleElement(relative, "./ct:Assign");
+            xml::Node assign = reader.getSingleElement(relative, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->relative = this->context->factory.create(tree);
+            this->relative = reader.factory.create(tree);
         }
     }
 
@@ -215,7 +212,6 @@ namespace pharmmlcpp
     }
 
     void Observations::parse(PharmMLReader &reader, xml::Node node) {
-        this->context = new PharmMLContext(reader);
         // Get design parameters
         // (mdef:DesignParameterType extends mdef:CommonParameterType which is close enough to class Variable for now)
         std::vector<xml::Node> design_parameters = reader.getElements(node, "./mdef:DesignParameter");
@@ -227,14 +223,14 @@ namespace pharmmlcpp
         // Get samplings to be generated by the simulation
         std::vector<xml::Node> sim_obs = reader.getElements(node, "./design:Observation");
         for (xml::Node node : sim_obs) {
-            Observation *obs = new Observation(this->context, node);
+            Observation *obs = new Observation(reader, node);
             this->simulationObservations.push_back(obs);
         }
 
         // Get samplings to use in dataset
         std::vector<xml::Node> data_obs = reader.getElements(node, "./design:IndividualObservations");
         for (xml::Node node : data_obs) {
-            IndividualObservations *obs = new IndividualObservations(this->context, node);
+            IndividualObservations *obs = new IndividualObservations(reader, node);
             this->datasetObservations.push_back(obs);
         }
 
@@ -244,7 +240,7 @@ namespace pharmmlcpp
         // Get observation combinations
         std::vector<xml::Node> obs_combinations = reader.getElements(node, "./design:ObservationsCombination");
         for (xml::Node node : obs_combinations) {
-            ObservationCombination *combination = new ObservationCombination(this->context, node);
+            ObservationCombination *combination = new ObservationCombination(reader, node);
             this->observationCombinations.push_back(combination);
         }
     }

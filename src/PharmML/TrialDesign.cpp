@@ -29,15 +29,14 @@ namespace pharmmlcpp
     }
 
     void TrialDesign::parse(PharmMLReader &reader, xml::Node node) {
-        this->context = new PharmMLContext(reader);
         std::vector<xml::Node> ext_dataset_nodes = reader.getElements(node, "./design:ExternalDataSet");
         for (xml::Node ext_dataset_node : ext_dataset_nodes) {
-            ExternalDataset* ds = new ExternalDataset(this->context, ext_dataset_node);
+            ExternalDataset* ds = new ExternalDataset(reader, ext_dataset_node);
             this->externalDatasets.push_back(ds);
         }
         xml::Node interventions_node = reader.getSingleElement(node, "./design:Interventions");
         if (interventions_node.exists()) {
-            this->interventions = new Interventions(this->context, interventions_node);
+            this->interventions = new Interventions(reader, interventions_node);
         }
 
         xml::Node observations_node = reader.getSingleElement(node, "./design:Observations");

@@ -50,8 +50,8 @@ namespace pharmmlcpp
     class TargetMapping : public PharmMLSection
     {
         public:
-            TargetMapping(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            TargetMapping(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
 
             std::string getBlkIdRef();
             std::vector<MapType> getMaps();
@@ -66,7 +66,6 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string blkIdRef;
             std::vector<MapType> maps;
     };
@@ -74,8 +73,8 @@ namespace pharmmlcpp
     class ColumnMapping : public Referer
     {
         public:
-            ColumnMapping(pharmmlcpp::PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            ColumnMapping(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             
             AstNode *getAssignment();
@@ -89,8 +88,6 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
-
             std::string columnIdRef;
             AstNode *assignment = nullptr;
             SymbRef *symbRef = nullptr;

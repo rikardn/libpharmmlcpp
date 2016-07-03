@@ -39,14 +39,11 @@ namespace pharmmlcpp
     class SteadyStateParameter : public AstNode
     {
         public:
-            SteadyStateParameter(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            SteadyStateParameter(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             AstNode *getAssignment();
             AstNode *getSymbRef();
             void accept(AstNodeVisitor *visitor);
-
-        protected:
-            pharmmlcpp::PharmMLContext *context;
 
         private:
             AstNode *assignment = nullptr;
@@ -56,8 +53,8 @@ namespace pharmmlcpp
     class Administration : public Object, public Referer, public PharmMLSection
     {
         public:
-            Administration(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Administration(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void postParse();
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap) {};
             xml::Node xml();
@@ -78,7 +75,6 @@ namespace pharmmlcpp
             void accept(ObjectVisitor *visitor);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             std::string type;
             std::string target_type;
             AstNode *amount = nullptr;
@@ -93,8 +89,8 @@ namespace pharmmlcpp
     class IndividualAdministration : public ObjectReferer, public PharmMLSection
     {
         public:
-            IndividualAdministration(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            IndividualAdministration(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
             ObjectRef *getOidRef();
@@ -112,14 +108,13 @@ namespace pharmmlcpp
     class SingleIntervention
     {
         public:
-            SingleIntervention(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            SingleIntervention(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::vector<ObjectRef *> getOidRefs();
             AstNode *getStart();
             AstNode *getEnd();
 
         private:
-            PharmMLContext *context;
             std::vector<ObjectRef *> oidRefs;
             AstNode *start;
             AstNode *end;
@@ -128,15 +123,14 @@ namespace pharmmlcpp
     class InterventionsCombination : public Object, public PharmMLSection
     {
         public:
-            InterventionsCombination(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            InterventionsCombination(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             std::vector<SingleIntervention *> getSingleInterventions();
             AstNode *getRelative();
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             void accept(ObjectVisitor *visitor);
 
         private:
-            PharmMLContext *context;
             std::vector<SingleIntervention *> singleInterventions;
             AstNode *relative;
     };
@@ -144,8 +138,8 @@ namespace pharmmlcpp
     class Interventions
     {
         public:
-            Interventions(PharmMLContext *context, xml::Node node);
-            void parse(xml::Node node);
+            Interventions(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<Administration *> getAdministrations();
             std::vector<IndividualAdministration *> getIndividualAdministrations();

@@ -52,7 +52,6 @@ namespace pharmmlcpp
             void setupTargetMappings(MacroGathering &gatherer);
 
         private:
-            pharmmlcpp::PharmMLContext *context;
             xml::Node xml_node;
             Interventions *interventions = nullptr;
             std::vector<ExternalDataset *> externalDatasets;

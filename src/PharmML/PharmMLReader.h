@@ -23,6 +23,7 @@
 #include <AST/AstNodeFactory.h>
 #include <AST/symbols.h>
 #include <helpers/Logger.h>
+#include <memory>
 
 namespace pharmmlcpp
 {
@@ -30,17 +31,17 @@ namespace pharmmlcpp
     class PharmMLReader
     {
         public:
-            xml::Document doc;
+            std::shared_ptr<xml::Document> doc;
             Logger logger;
             AstNodeFactory factory;
-            void validateDocument();
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 
             PharmMLReader(std::string filename);
+            PharmMLReader(std::shared_ptr<xml::Document> doc);
 
     //    private:
-            xml::XPathContext xpathContext;
+            std::unique_ptr<xml::XPathContext> xpathContext;
     };
 }
 

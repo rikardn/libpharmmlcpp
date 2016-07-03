@@ -20,15 +20,21 @@
 
 namespace pharmmlcpp
 {
-    PharmMLReader::PharmMLReader(std::string filename) : doc(filename), xpathContext(doc) {
-        this->doc.validate();
+    PharmMLReader::PharmMLReader(std::string filename) {
+        this->doc = std::make_shared<xml::Document>(filename);
+        this->xpathContext = std::make_unique<xml::XPathContext>(*this->doc);
+        this->doc->validate();
+    }
+
+    PharmMLReader::PharmMLReader(std::shared_ptr<xml::Document> doc) {
+        this->doc = doc;
     }
 
     xml::Node PharmMLReader::getSingleElement(xml::Node node, const char *xpath) {
-        return node.getSingleElement(this->xpathContext, xpath);
+        return node.getSingleElement(*this->xpathContext, xpath);
     }
 
     std::vector<xml::Node> PharmMLReader::getElements(xml::Node node, const char *xpath) {
-        return node.getElements(this->xpathContext, xpath);
+        return node.getElements(*this->xpathContext, xpath);
     }
 }

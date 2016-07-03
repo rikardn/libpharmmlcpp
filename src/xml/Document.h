@@ -29,6 +29,9 @@ namespace xml
     {
         public:
             Document(std::string filename);
+            Document();
+            Document(xmlDocPtr doc);
+            void parseString(std::string xml_string);
             ~Document();
             void validate();
             void write(std::string filename);

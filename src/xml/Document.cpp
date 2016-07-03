@@ -16,10 +16,14 @@
  */
 
 #include <xml/Document.h>
+#include <iostream>
 
 namespace xml {
     Document::~Document() {
         xmlFreeDoc(this->doc);
+    }
+
+    Document::Document() {
     }
 
     Document::Document(std::string filename) {
@@ -28,6 +32,18 @@ namespace xml {
         if (!this->doc) {
             throw std::runtime_error("File " + filename + " not found");
         }
+    }
+
+    void Document::parseString(std::string xml_string) {
+        this->doc = xmlReadMemory(xml_string.c_str(), xml_string.size(), NULL, "UTF-8", 0); //XML_PARSE_NOERROR);
+        xmlNodePtr node = xmlDocGetRootElement(doc);
+        xml::Node xml_node(node);
+        xml_node.setAttribute("xmlns:ct", xml::buildNamespace("CommonTypes", "0.8.1").c_str());
+        xml_node.setAttribute("xmlns:msteps", xml::buildNamespace("ModellingSteps", "0.8.1").c_str());
+    }
+
+    Document::Document(xmlDocPtr doc) {
+        this->doc = doc;
     }
 
     xml::Node Document::getRoot() {

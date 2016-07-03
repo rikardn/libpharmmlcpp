@@ -24,7 +24,7 @@ namespace pharmmlcpp
         this->doc.validate();
     }
 
-    PharmMLContext::PharmMLContext(PharmMLReader &reader) : doc(reader.doc), xpathContext(reader.doc) {
+    PharmMLContext::PharmMLContext(PharmMLReader &reader) : doc(*reader.doc), xpathContext(*reader.doc) {
     }
 
     xml::Node PharmMLContext::getSingleElement(xml::Node node, const char *xpath) {

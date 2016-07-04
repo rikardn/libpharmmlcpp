@@ -30,6 +30,17 @@ namespace pharmmlcpp
         this->doc = doc;
     }
 
+    xml::Node PharmMLReader::getRoot() {
+        return doc->getRoot();
+    }
+
+    PharmMLReader PharmMLReader::createTestReader(std::string xml) {
+        std::shared_ptr<xml::Document> doc(new xml::Document());
+        doc->parseString(xml);
+        PharmMLReader reader(doc);
+        return reader;
+    }
+
     xml::Node PharmMLReader::getSingleElement(xml::Node node, const char *xpath) {
         return node.getSingleElement(*this->xpathContext, xpath);
     }

@@ -31,6 +31,8 @@ namespace pharmmlcpp
     class PharmMLReader
     {
         public:
+            static PharmMLReader createTestReader(std::string xml);
+            xml::Node getRoot();
             std::shared_ptr<xml::Document> doc;
             Logger logger;
             AstNodeFactory factory;

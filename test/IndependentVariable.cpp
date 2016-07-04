@@ -5,12 +5,12 @@
 #include <PharmML/PharmMLReader.h>
 #include <symbols/IndependentVariable.h>
 
+using namespace pharmmlcpp;
+
 TEST_CASE("IndependentVariable", "[IndependentVariable]") {
     SECTION("Construction") {
-        std::shared_ptr<xml::Document> doc(new xml::Document());
-        doc->parseString(R"(<IndependentVariable symbId="T"/>)");
-        auto reader = pharmmlcpp::PharmMLReader(doc);
-        pharmmlcpp::IndependentVariable iv(reader, doc->getRoot());
+        PharmMLReader reader = PharmMLReader::createTestReader(R"(<IndependentVariable symbId="T"/>)");
+        IndependentVariable iv(reader, reader.getRoot());
         REQUIRE(iv.getSymbId() == "T");
     }
 }

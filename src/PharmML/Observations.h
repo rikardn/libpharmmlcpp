@@ -35,14 +35,14 @@ namespace pharmmlcpp
     /**
      * The Observation class defines one or multiple observations or samples
      * ObservationTimes is a vector (or scalar in case of one) of real or integer for the time points of the observations
-     * FIXME ???? NumberTimes is a vector of the same size as ObservationTimes with the number of replicates for each observation time point
+     * NumberTimes is an integer scalar that gives a number of observation if the ObservationTimes themeselves are omitted
+     *      as of PharmML 0.8.1 the mutual exclusive nature of ObservationTimes and NumberTimes is not in the schema
      * Continuous and Discrete are lists of variables to sample at the given time points
      */
     class Observation : public Object, public PharmMLSection
     {
         public:
             Observation(PharmMLReader &reader, xml::Node node);
-            void parse(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             ObjectRef* getOidRef();
             AstNode *getNumber();
@@ -54,6 +54,7 @@ namespace pharmmlcpp
             void accept(ObjectVisitor *visitor);
 
         private:
+            void parse(PharmMLReader &reader, xml::Node node);
             ObjectRef *oidRef = nullptr;
             AstNode *number = nullptr;
             AstNode *times = nullptr;

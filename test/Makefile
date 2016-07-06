@@ -12,8 +12,8 @@ LIBS = -lxml2
 #	$(CXX) $(CXXFLAGS) test.cpp SymbolSet.cpp SymbolNamer.cpp AstParenthesizer.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
 
 
-test: test.cpp IndependentVariable.cpp ../libpharmmlc.a
-	$(CXX) $(CXXFLAGS) test.cpp IndependentVariable.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
+test: test.cpp IndependentVariable.cpp Scalar.cpp ../libpharmmlc.a
+	$(CXX) $(CXXFLAGS) test.cpp IndependentVariable.cpp Scalar.cpp -L.. -I../src -lpharmmlc $(LIBS) -otest
 
 .PHONY: check
 check: test

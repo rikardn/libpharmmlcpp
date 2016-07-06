@@ -46,6 +46,7 @@ namespace pharmmlcpp
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             ObjectRef* getOidRef();
             AstNode *getNumberTimes();
+            void setNumberTimes(AstNode *numberTimes);
             AstNode *getObservationTimes();
             std::vector<AstNode *> getObservationTimesAsVector();
             std::vector<SymbRef *> getContinuousVariables();

@@ -84,6 +84,11 @@ namespace pharmmlcpp
         return this->numberTimes;
     }
 
+    void Observation::setNumberTimes(AstNode *numberTimes) {
+        // FIXME: Here we could immediately validate that numberTimes is a scalar integer
+        this->numberTimes = numberTimes;
+    }
+
     AstNode *Observation::getObservationTimes() {
         return this->observationTimes;
     }

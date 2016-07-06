@@ -40,7 +40,7 @@ namespace pharmmlcpp
         if (number.exists()) {
             xml::Node assign = reader.getSingleElement(number, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->number = reader.factory.create(tree);
+            this->numberTimes = reader.factory.create(tree);
         }
 
         // Get observation times
@@ -48,7 +48,7 @@ namespace pharmmlcpp
         if (times.exists()) {
             xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->times = reader.factory.create(tree);
+            this->observationTimes = reader.factory.create(tree);
         }
 
         // Get continuous and discrete variable output(s)
@@ -80,16 +80,16 @@ namespace pharmmlcpp
         return this->oidRef;
     }
 
-    AstNode *Observation::getNumber() {
-        return this->number;
+    AstNode *Observation::getNumberTimes() {
+        return this->numberTimes;
     }
 
-    AstNode *Observation::getTimes() {
-        return this->times;
+    AstNode *Observation::getObservationTimes() {
+        return this->observationTimes;
     }
 
-    std::vector<AstNode *> Observation::getTimesAsVector() {
-        return AstTransformation::toVector(this->times);
+    std::vector<AstNode *> Observation::getObservationTimesAsVector() {
+        return AstTransformation::toVector(this->observationTimes);
     }
 
     std::vector<SymbRef *> Observation::getContinuousVariables() {

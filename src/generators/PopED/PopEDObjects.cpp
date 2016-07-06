@@ -264,7 +264,7 @@ namespace pharmmlcpp
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
 
-        for (AstNode *time_point : object->getTimesAsVector()) {
+        for (AstNode *time_point : object->getObservationTimesAsVector()) {
             this->rast.acceptRoot(time_point);
             formatter.add(this->rast.getValue());
         }

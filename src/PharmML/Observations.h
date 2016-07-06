@@ -45,9 +45,9 @@ namespace pharmmlcpp
             Observation(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             ObjectRef* getOidRef();
-            AstNode *getNumber();
-            AstNode *getTimes();
-            std::vector<AstNode *> getTimesAsVector();
+            AstNode *getNumberTimes();
+            AstNode *getObservationTimes();
+            std::vector<AstNode *> getObservationTimesAsVector();
             std::vector<SymbRef *> getContinuousVariables();
             std::vector<SymbRef *> getDiscreteVariables();
             void accept(PharmMLVisitor *visitor);
@@ -56,8 +56,8 @@ namespace pharmmlcpp
         private:
             void parse(PharmMLReader &reader, xml::Node node);
             ObjectRef *oidRef = nullptr;
-            AstNode *number = nullptr;
-            AstNode *times = nullptr;
+            AstNode *numberTimes = nullptr;
+            AstNode *observationTimes = nullptr;
             std::vector<SymbRef *> continuousVariables;
             std::vector<SymbRef *> discreteVariables;
     };

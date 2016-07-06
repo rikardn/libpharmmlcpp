@@ -32,6 +32,12 @@
 
 namespace pharmmlcpp
 {
+    /**
+     * The Observation class defines one or multiple observations or samples
+     * ObservationTimes is a vector (or scalar in case of one) of real or integer for the time points of the observations
+     * FIXME ???? NumberTimes is a vector of the same size as ObservationTimes with the number of replicates for each observation time point
+     * Continuous and Discrete are lists of variables to sample at the given time points
+     */
     class Observation : public Object, public PharmMLSection
     {
         public:
@@ -42,8 +48,8 @@ namespace pharmmlcpp
             AstNode *getNumber();
             AstNode *getTimes();
             std::vector<AstNode *> getTimesAsVector();
-            std::vector<pharmmlcpp::SymbRef *> getContinuousVariables();
-            std::vector<pharmmlcpp::SymbRef *> getDiscreteVariables();
+            std::vector<SymbRef *> getContinuousVariables();
+            std::vector<SymbRef *> getDiscreteVariables();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
@@ -51,8 +57,8 @@ namespace pharmmlcpp
             ObjectRef *oidRef = nullptr;
             AstNode *number = nullptr;
             AstNode *times = nullptr;
-            std::vector<pharmmlcpp::SymbRef *> continuousVariables;
-            std::vector<pharmmlcpp::SymbRef *> discreteVariables;
+            std::vector<SymbRef *> continuousVariables;
+            std::vector<SymbRef *> discreteVariables;
     };
 
     // IndividualObservations class

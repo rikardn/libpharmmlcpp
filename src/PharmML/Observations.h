@@ -43,7 +43,9 @@ namespace pharmmlcpp
     {
         public:
             Observation(PharmMLReader &reader, xml::Node node);
+            Observation() {};
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
+            xml::Node xml();
             std::shared_ptr<ObjectRef> getOidRef();
             std::shared_ptr<AstNode> getNumberTimes();
             void setNumberTimes(std::shared_ptr<AstNode> numberTimes);

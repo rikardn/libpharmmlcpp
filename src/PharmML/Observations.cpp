@@ -74,6 +74,14 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node Observation::xml() {
+        // FIXME: Under construction
+        xml::Node observation("Observation");
+        observation.setAttribute("oid", this->oid);
+        //    arm.addChild(seq->xml());
+        return observation;
+    }
+
     std::shared_ptr<ObjectRef> Observation::getOidRef() {
         return this->oidRef;
     }

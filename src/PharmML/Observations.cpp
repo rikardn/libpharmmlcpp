@@ -32,7 +32,7 @@ namespace pharmmlcpp
         // Get (oid) observation references (to observations already defined)
         xml::Node reference = reader.getSingleElement(node, "./design:ObservationRef");
         if (reference.exists()) {
-            this->oidRef = new ObjectRef(reference);
+            this->oidRef = std::make_shared<ObjectRef>(reference);
         }
 
         // Get NumberTimes (what is this even?)
@@ -57,15 +57,13 @@ namespace pharmmlcpp
         if (continuous.exists()) {
             std::vector<xml::Node> variables = reader.getElements(continuous, "./ct:SymbRef");
             for (xml::Node variable : variables) {
-                SymbRef *var = new SymbRef(variable);
-                this->continuousVariables.push_back(var);
+                this->continuousVariables.push_back(std::make_shared<SymbRef>(variable));
             }
         }
         if (discrete.exists()) {
             std::vector<xml::Node> variables = reader.getElements(discrete, "./ct:SymbRef");
             for (xml::Node variable : variables) {
-                SymbRef *var = new SymbRef(variable);
-                this->discreteVariables.push_back(var);
+                this->discreteVariables.push_back(std::make_shared<SymbRef>(variable));
             }
         }
     }
@@ -76,7 +74,7 @@ namespace pharmmlcpp
         }
     }
 
-    ObjectRef* Observation::getOidRef() {
+    std::shared_ptr<ObjectRef> Observation::getOidRef() {
         return this->oidRef;
     }
 
@@ -101,11 +99,11 @@ namespace pharmmlcpp
         return AstTransformation::toVector(&*this->observationTimes);
     }
 
-    std::vector<SymbRef *> Observation::getContinuousVariables() {
+    std::vector<std::shared_ptr<SymbRef>>& Observation::getContinuousVariables() {
         return this->continuousVariables;
     }
 
-    std::vector<SymbRef *> Observation::getDiscreteVariables() {
+    std::vector<std::shared_ptr<SymbRef>>& Observation::getDiscreteVariables() {
         return this->discreteVariables;
     }
 

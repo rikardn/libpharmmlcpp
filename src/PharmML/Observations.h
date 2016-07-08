@@ -44,24 +44,24 @@ namespace pharmmlcpp
         public:
             Observation(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
-            ObjectRef* getOidRef();
+            std::shared_ptr<ObjectRef> getOidRef();
             std::shared_ptr<AstNode> getNumberTimes();
             void setNumberTimes(std::shared_ptr<AstNode> numberTimes);
             std::shared_ptr<AstNode> getObservationTimes();
             void setObservationTimes(std::shared_ptr<AstNode> observationTimes);
             std::vector<AstNode *> getObservationTimesAsVector();
-            std::vector<SymbRef *> getContinuousVariables();
-            std::vector<SymbRef *> getDiscreteVariables();
+            std::vector<std::shared_ptr<SymbRef>>& getContinuousVariables();
+            std::vector<std::shared_ptr<SymbRef>>& getDiscreteVariables();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
         private:
             void parse(PharmMLReader &reader, xml::Node node);
-            ObjectRef *oidRef = nullptr;
+            std::shared_ptr<ObjectRef> oidRef;
             std::shared_ptr<AstNode> numberTimes;
             std::shared_ptr<AstNode> observationTimes;
-            std::vector<SymbRef *> continuousVariables;
-            std::vector<SymbRef *> discreteVariables;
+            std::vector<std::shared_ptr<SymbRef>> continuousVariables;
+            std::vector<std::shared_ptr<SymbRef>> discreteVariables;
     };
 
     // IndividualObservations class

@@ -49,8 +49,6 @@ namespace pharmmlcpp
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
 
-            PharmMLContext *getContext(); // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
-
         private:
             PharmMLReader reader;
             PharmMLContext *context;

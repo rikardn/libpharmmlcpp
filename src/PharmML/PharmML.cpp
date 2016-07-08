@@ -263,9 +263,4 @@ namespace pharmmlcpp
             symbol->setSymbolNamer(namer);
         }
     }
-            
-    // FIXME: Only here to be able to create classes (that demands a context) in unit tests!
-    PharmMLContext *PharmML::getContext() {
-        return this->context;
-    }
 }

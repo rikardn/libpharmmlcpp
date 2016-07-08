@@ -45,9 +45,10 @@ namespace pharmmlcpp
             Observation(PharmMLReader &reader, xml::Node node);
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             ObjectRef* getOidRef();
-            AstNode *getNumberTimes();
-            void setNumberTimes(AstNode *numberTimes);
-            AstNode *getObservationTimes();
+            std::shared_ptr<AstNode> getNumberTimes();
+            void setNumberTimes(std::shared_ptr<AstNode> numberTimes);
+            std::shared_ptr<AstNode> getObservationTimes();
+            void setObservationTimes(std::shared_ptr<AstNode> observationTimes);
             std::vector<AstNode *> getObservationTimesAsVector();
             std::vector<SymbRef *> getContinuousVariables();
             std::vector<SymbRef *> getDiscreteVariables();
@@ -57,8 +58,8 @@ namespace pharmmlcpp
         private:
             void parse(PharmMLReader &reader, xml::Node node);
             ObjectRef *oidRef = nullptr;
-            AstNode *numberTimes = nullptr;
-            AstNode *observationTimes = nullptr;
+            std::shared_ptr<AstNode> numberTimes;
+            std::shared_ptr<AstNode> observationTimes;
             std::vector<SymbRef *> continuousVariables;
             std::vector<SymbRef *> discreteVariables;
     };

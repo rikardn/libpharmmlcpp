@@ -40,7 +40,7 @@ namespace pharmmlcpp
         if (number.exists()) {
             xml::Node assign = reader.getSingleElement(number, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->numberTimes = reader.factory.create(tree);
+            this->numberTimes.reset(reader.factory.create(tree));   // FIXME: Factory should return at least unique_ptr
         }
 
         // Get observation times
@@ -48,7 +48,7 @@ namespace pharmmlcpp
         if (times.exists()) {
             xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->observationTimes = reader.factory.create(tree);
+            this->observationTimes.reset(reader.factory.create(tree));  // same FIXME as above
         }
 
         // Get continuous and discrete variable output(s)
@@ -80,21 +80,25 @@ namespace pharmmlcpp
         return this->oidRef;
     }
 
-    AstNode *Observation::getNumberTimes() {
+    std::shared_ptr<AstNode> Observation::getNumberTimes() {
         return this->numberTimes;
     }
 
-    void Observation::setNumberTimes(AstNode *numberTimes) {
+    void Observation::setNumberTimes(std::shared_ptr<AstNode> numberTimes) {
         // FIXME: Here we could immediately validate that numberTimes is a scalar integer
         this->numberTimes = numberTimes;
     }
 
-    AstNode *Observation::getObservationTimes() {
+    std::shared_ptr<AstNode> Observation::getObservationTimes() {
         return this->observationTimes;
     }
 
+    void Observation::setObservationTimes(std::shared_ptr<AstNode> observationTimes) {
+        this->observationTimes = observationTimes;
+    }
+
     std::vector<AstNode *> Observation::getObservationTimesAsVector() {
-        return AstTransformation::toVector(this->observationTimes);
+        return AstTransformation::toVector(&*this->observationTimes);
     }
 
     std::vector<SymbRef *> Observation::getContinuousVariables() {

@@ -384,12 +384,12 @@ namespace pharmmlcpp
     void RPharmMLGenerator::visit(Observation *node) {
         std::string s = node->getOid() + " <- list(";
 
-        s += "times = " + this->accept(node->getObservationTimes());
+        s += "times = " + this->accept(&*node->getObservationTimes());
         if (node->getOidRef()->getOidRef() != "") {
             s += ", oidRef = \"" + node->getOidRef()->getOidRef() + "\"";
         }
         if (node->getNumberTimes()) {
-            s += ", number = " + this->accept(node->getNumberTimes());
+            s += ", number = " + this->accept(&*node->getNumberTimes());
         }
         if (!node->getContinuousVariables().empty()) {
             s += ", cont_vars = c(";

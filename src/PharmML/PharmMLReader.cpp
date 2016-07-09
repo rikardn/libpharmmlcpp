@@ -28,6 +28,7 @@ namespace pharmmlcpp
 
     PharmMLReader::PharmMLReader(std::shared_ptr<xml::Document> doc) {
         this->doc = doc;
+        this->xpathContext = std::make_unique<xml::XPathContext>(*this->doc);
     }
 
     xml::Node PharmMLReader::getRoot() {

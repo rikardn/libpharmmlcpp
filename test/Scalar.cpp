@@ -18,7 +18,7 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
     }
 
     SECTION("Construct from xml") {
-        PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:Int xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes">56</ct:Int>)");
+        PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:Int>56</ct:Int>)");
         ScalarInt si(reader.getRoot());
         REQUIRE(si.toInt() == 56);
     }
@@ -35,7 +35,7 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
         REQUIRE(sr.toDouble() == -10.0);
     }
     SECTION("Construct from xml") {
-        PharmMLReader reader = PharmMLReader::createTestReader("<ct:Real xmlns:ct=\"http://www.pharmml.org/pharmml/0.8/CommonTypes\">790.3</ct:Real>");
+        PharmMLReader reader = PharmMLReader::createTestReader("<ct:Real>790.3</ct:Real>");
         ScalarReal sr(reader.getRoot());
         REQUIRE(Approx(sr.toDouble()) == 790.3);
     }

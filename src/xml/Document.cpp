@@ -35,11 +35,21 @@ namespace xml {
     }
 
     void Document::parseString(std::string xml_string) {
-        this->doc = xmlReadMemory(xml_string.c_str(), xml_string.size(), NULL, "UTF-8", 0); //XML_PARSE_NOERROR);
+        // Adding namespace prefixes to string before parsing (crude but it works)
+        std::size_t pos = xml_string.find(">");
+        if (xml_string.find("/>") < pos) {
+            pos = xml_string.find(" ");
+        }
+        xml_string.insert(pos, " xmlns:ct=\"" + xml::buildNamespace("CommonTypes", "0.8") + "\"");
+	    xml_string.insert(pos, " xmlns:math=\"" + xml::buildNamespace("Maths", "0.8") + "\"");
+	    xml_string.insert(pos, " xmlns:ds=\"" + xml::buildNamespace("Dataset", "0.8") + "\"");
+	    xml_string.insert(pos, " xmlns:mdef=\"" + xml::buildNamespace("ModelDefinition", "0.8") + "\"");
+	    xml_string.insert(pos, " xmlns:mstep=\"" + xml::buildNamespace("ModellingSteps", "0.8") + "\"");
+	    xml_string.insert(pos, " xmlns:design=\"" + xml::buildNamespace("TrialDesign", "0.8") + "\"");
+
+        this->doc = xmlReadMemory(xml_string.c_str(), xml_string.size(), NULL, "UTF-8", 0);
         xmlNodePtr node = xmlDocGetRootElement(doc);
         xml::Node xml_node(node);
-        xml_node.setAttribute("xmlns:ct", xml::buildNamespace("CommonTypes", "0.8").c_str());
-        xml_node.setAttribute("xmlns:msteps", xml::buildNamespace("ModellingSteps", "0.8").c_str());
     }
 
     Document::Document(xmlDocPtr doc) {

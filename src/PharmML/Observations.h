@@ -46,14 +46,16 @@ namespace pharmmlcpp
             Observation() {};
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
+
             std::shared_ptr<ObjectRef> getOidRef();
             std::shared_ptr<AstNode> getNumberTimes();
             void setNumberTimes(std::shared_ptr<AstNode> numberTimes);
             std::shared_ptr<AstNode> getObservationTimes();
             void setObservationTimes(std::shared_ptr<AstNode> observationTimes);
-            std::vector<AstNode *> getObservationTimesAsVector();
             std::vector<std::shared_ptr<SymbRef>>& getContinuousVariables();
             std::vector<std::shared_ptr<SymbRef>>& getDiscreteVariables();
+            
+            std::vector<AstNode *> getObservationTimesAsVector();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 

@@ -54,7 +54,7 @@ namespace pharmmlcpp
             void setObservationTimes(std::shared_ptr<AstNode> observationTimes);
             std::vector<std::shared_ptr<SymbRef>>& getContinuousVariables();
             std::vector<std::shared_ptr<SymbRef>>& getDiscreteVariables();
-            
+ 
             std::vector<AstNode *> getObservationTimesAsVector();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);

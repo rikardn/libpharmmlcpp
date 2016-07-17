@@ -391,7 +391,7 @@ namespace pharmmlcpp
         if (node->getNumberTimes()) {
             s += ", number = " + this->accept(&*node->getNumberTimes());
         }
-        if (!node->getContinuousVariables().empty()) {
+/*        if (!node->getContinuousVariables().empty()) {
             s += ", cont_vars = c(";
             bool first = true;
             for (SymbRef *symbol : node->getContinuousVariables()) {
@@ -417,7 +417,7 @@ namespace pharmmlcpp
             }
             s += ")";
         }
-
+*/
         this->setValue(s + ")");
     }
 

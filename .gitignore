@@ -13,6 +13,8 @@ test/test
 output
 output.xml
 
+html/*
+latex/*
 
 windep
 release

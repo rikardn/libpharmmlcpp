@@ -23,11 +23,16 @@
 
 namespace pharmmlcpp
 {
+    /**
+     * Base class for all scalar constant AstNodes 
+     */
     class Scalar : public AstNode
     {
-
     };
 
+    /**
+     * A scalar integer representing a signed 32-bit integer constant
+     */
     class ScalarInt : public Scalar
     {
         public:
@@ -36,12 +41,17 @@ namespace pharmmlcpp
             ScalarInt(xml::Node xml_node);
             std::string toString();
             int toInt();
+            void set(int value);
+            void set(std::string value);
             virtual void accept(AstNodeVisitor *visitor);
         
         private:
             int value;
     };
 
+    /**
+     * A scalar real representing a double precision floating point constant
+     */
     class ScalarReal : public Scalar
     {
         public:
@@ -50,6 +60,8 @@ namespace pharmmlcpp
             ScalarReal(xml::Node xml_node);
             std::string toString();
             double toDouble();
+            void set(double value);
+            void set(std::string value);
             virtual void accept(AstNodeVisitor *visitor);
         
         private:

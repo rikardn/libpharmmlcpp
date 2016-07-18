@@ -98,6 +98,17 @@ namespace pharmmlcpp
         private:
             std::string value;
     };
+
+    /**
+     *  A scalar id constant
+     *  Note that there is currently no check that the id matches xs:NCName
+     */
+    class ScalarId : public ScalarString
+    {
+        public:
+            ScalarId(std::string value) : ScalarString(value) {}
+            ScalarId(xml::Node xml_node) : ScalarString(xml_node) {}
+    };
 }
 
 #endif

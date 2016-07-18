@@ -68,24 +68,31 @@ namespace pharmmlcpp
             std::string value;
     };
 
-    // Boolean scalar (formerly a constant)
+    /**
+     * A scalar boolean constant
+     */
     class ScalarBool : public Scalar
     {
         public:
             ScalarBool(bool value);
             bool toBool();
+            void set(bool value);
             virtual void accept(AstNodeVisitor *visitor);
 
         private:
             bool value;
     };
 
+    /**
+     *  A scalar string constant
+     */
     class ScalarString : public Scalar
     {
         public:
             ScalarString(std::string value);
             ScalarString(xml::Node xml_node);
             std::string toString();
+            void set(std::string value);
             virtual void accept(AstNodeVisitor *visitor);
 
         private:

@@ -86,3 +86,51 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
         REQUIRE(si.toDouble() == 89.0);
     }
 }
+
+TEST_CASE("ScalarBool", "[ScalarBool]") {
+    SECTION("Construct from value") {
+        ScalarBool sb(true);
+        REQUIRE(sb.toBool());
+    }
+
+    SECTION("Setters") {
+        ScalarBool sb(true);
+        sb.set(false);
+        REQUIRE(!sb.toBool());
+    }
+
+    SECTION("Copy construct") {
+        ScalarBool sb(true);
+        ScalarBool x = sb;
+        x.set(false);
+        REQUIRE(sb.toBool());
+        REQUIRE(!x.toBool());
+    }
+}
+
+TEST_CASE("ScalarString", "[ScalarString]") {
+    SECTION("Construct from value") {
+        ScalarString ss("MyString");
+        REQUIRE(ss.toString() == "MyString");
+    }
+
+    SECTION("Construct from xml") {
+        PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:String>AString</ct:String>)");
+        ScalarString ss(reader.getRoot());
+        REQUIRE(ss.toString() == "AString");
+    }
+
+    SECTION("Setters") {
+        ScalarString ss("FirstValue");
+        ss.set("Ménière");
+        REQUIRE(ss.toString() == "Ménière");
+    }
+
+    SECTION("Copy construct") {
+        ScalarString ss("One");
+        ScalarString x = ss;
+        x.set("Two");
+        REQUIRE(ss.toString() == "One");
+        REQUIRE(x.toString() == "Two");
+   }
+}

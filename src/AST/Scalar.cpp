@@ -29,6 +29,8 @@ namespace pharmmlcpp
 
     /**
      *  Creates a new ScalarInt from a string
+     *  \throws std::invalid_argument if the argument string could not be converted to an int
+     *  \throws std::out_of_range if the argument string represent a number smaller or larger than an int32
      */
     ScalarInt::ScalarInt(std::string s) {
         this->value = std::stoi(s);
@@ -96,6 +98,8 @@ namespace pharmmlcpp
 
     /**
      *  Convert to a double value
+     *  \throws std::invalid_argument
+     *  \throws std::out_of_range
      */
     double ScalarReal::toDouble() {
         return std::stod(this->value);
@@ -126,28 +130,57 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    /**
+     *  Create a new ScalarBool from a boolean value
+     */
     ScalarBool::ScalarBool(bool value) {
         this->value = value;
     }
 
+    /**
+     *  Convert to a bool value
+     */
     bool ScalarBool::toBool() {
         return value;
+    }
+    
+    /**
+     *  Set a new value from a bool value
+     */
+    void ScalarBool::set(bool value) {
+        this->value = value;
     }
 
     void ScalarBool::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
+    /**
+     *  Create a new ScalarString from a string value
+     */
     ScalarString::ScalarString(std::string value) {
         this->value = value;
     }
 
+    /**
+     *  Create a new ScalarString from the PharmML xml node
+     */
     ScalarString::ScalarString(xml::Node xml_node) {
         this->value = xml_node.getText();
     }
 
+    /**
+     *  Convert to a string value
+     */
     std::string ScalarString::toString() {
         return value;
+    }
+
+    /**
+     *  Set a new value from a string value
+     */
+    void ScalarString::set(std::string value) {
+        this->value = value;
     }
 
     void ScalarString::accept(AstNodeVisitor *visitor) {

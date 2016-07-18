@@ -43,7 +43,7 @@ namespace pharmmlcpp
             int toInt();
             void set(int value);
             void set(std::string value);
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
         
         private:
             int value;
@@ -62,7 +62,7 @@ namespace pharmmlcpp
             double toDouble();
             void set(double value);
             void set(std::string value);
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
         
         private:
             std::string value;
@@ -77,7 +77,7 @@ namespace pharmmlcpp
             ScalarBool(bool value);
             bool toBool();
             void set(bool value);
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
 
         private:
             bool value;
@@ -93,7 +93,7 @@ namespace pharmmlcpp
             ScalarString(xml::Node xml_node);
             std::string toString();
             void set(std::string value);
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
 
         private:
             std::string value;

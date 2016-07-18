@@ -221,6 +221,11 @@ namespace xml
         return "http://www.pharmml.org/pharmml/" + namespace_version + "/" + name;
     }
 
+    bool validateNCName(std::string ncname) {
+        int fail = xmlValidateNCName(BAD_CAST ncname.c_str(), 1);
+        return !fail;
+    }
+
     Node nodeFromString(std::string xml_string) {
         //xmlDocPtr doc = xmlParseMemory(xml_string.c_str(), xml_string.size()); 
         xmlDocPtr doc = xmlReadMemory(xml_string.c_str(), xml_string.size(), NULL, "UTF-8", XML_PARSE_NOERROR);

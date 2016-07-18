@@ -86,6 +86,7 @@ namespace xml
 
     // This is expected to be used for testing
     Node nodeFromString(std::string xml_string);
+    bool validateNCName(std::string ncname);
 }
 
 #endif

@@ -101,13 +101,19 @@ namespace pharmmlcpp
 
     /**
      *  A scalar id constant
-     *  Note that there is currently no check that the id matches xs:NCName
+     *  The value is matched against NCName
      */
-    class ScalarId : public ScalarString
+    class ScalarId : public Scalar
     {
         public:
-            ScalarId(std::string value) : ScalarString(value) {}
-            ScalarId(xml::Node xml_node) : ScalarString(xml_node) {}
+            ScalarId(std::string value);
+            ScalarId(xml::Node xml_node);
+            std::string toString();
+            void set(std::string value);
+            void accept(AstNodeVisitor *visitor) override;
+
+        private:
+            std::string value;
     };
 }
 

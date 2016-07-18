@@ -134,3 +134,32 @@ TEST_CASE("ScalarString", "[ScalarString]") {
         REQUIRE(x.toString() == "Two");
    }
 }
+
+TEST_CASE("ScalarId", "[ScalarId]") {
+    SECTION("Construct from value") {
+        ScalarId sid("MyString");
+        REQUIRE(sid.toString() == "MyString");
+        REQUIRE_THROWS_AS(sid = ScalarId("1B"), std::invalid_argument);
+    }
+
+    SECTION("Construct from xml") {
+        PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:Id>AString</ct:Id>)");
+        ScalarId sid(reader.getRoot());
+        REQUIRE(sid.toString() == "AString");
+    }
+
+    SECTION("Setters") {
+        ScalarId sid("FirstValue");
+        sid.set("Ménière");
+        REQUIRE(sid.toString() == "Ménière");
+        REQUIRE_THROWS_AS(sid.set("1A"), std::invalid_argument);
+    }
+
+    SECTION("Copy construct") {
+        ScalarId sid("One");
+        ScalarId x = sid;
+        x.set("Two");
+        REQUIRE(sid.toString() == "One");
+        REQUIRE(x.toString() == "Two");
+   }
+}

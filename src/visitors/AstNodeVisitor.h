@@ -71,6 +71,7 @@ namespace pharmmlcpp
     class ScalarReal;
     class ScalarBool;
     class ScalarString;
+    class ScalarId;
 
     class BinopPlus;
     class BinopMinus;
@@ -165,6 +166,7 @@ namespace pharmmlcpp
             virtual void visit(ScalarReal *node) {};
             virtual void visit(ScalarBool *node) {};
             virtual void visit(ScalarString *node) {};
+            virtual void visit(ScalarId *node) {};
 
             virtual void visit(BinopPlus *node) {};
             virtual void visit(BinopMinus *node) {};

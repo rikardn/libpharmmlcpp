@@ -186,4 +186,44 @@ namespace pharmmlcpp
     void ScalarString::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
+
+    /**
+     *  Create a new ScalarId from a string value
+     *  \throws std::invalid_argument if value does not match NCName
+     */
+    ScalarId::ScalarId(std::string value) {
+        if (!xml::validateNCName(value)) {
+            throw std::invalid_argument("Argument does not match NCName");
+        }
+        this->value = value;
+    }
+
+    /**
+     *  Create a new ScalarString from the PharmML xml node
+     */
+    ScalarId::ScalarId(xml::Node xml_node) {
+        this->value = xml_node.getText();
+    }
+
+    /**
+     *  Convert to a string value
+     */
+    std::string ScalarId::toString() {
+        return value;
+    }
+
+    /**
+     *  Set a new value from a string value
+     *  \throws std::invalid_argument if value does not match NCName
+     */
+    void ScalarId::set(std::string value) {
+        if (!xml::validateNCName(value)) {
+            throw std::invalid_argument("Argument does not match NCName");
+        }
+        this->value = value;
+    }
+
+    void ScalarId::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

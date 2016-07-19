@@ -115,6 +115,60 @@ namespace pharmmlcpp
         private:
             std::string value;
     };
+
+    /**
+     *  An NA constant
+     */
+    class ScalarNA : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
+
+    /**
+     *  A Not a Number constant
+     */
+    class ScalarNaN : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
+
+    /**
+     *  Plus infinity
+     */
+    class ScalarPlusInf : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
+
+    /**
+     *  Minus infinity
+     */
+    class ScalarMinusInf : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
+
+    /**
+     *  Below limit of quantification
+     */
+    class ScalarBLQ : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
+
+    /**
+     *  Above limit of quantification
+     */
+    class ScalarALQ : public Scalar
+    {
+        public:
+            void accept(AstNodeVisitor *visitor) override;
+    };
 }
 
 #endif

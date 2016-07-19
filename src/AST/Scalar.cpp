@@ -226,4 +226,28 @@ namespace pharmmlcpp
     void ScalarId::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
+
+    void ScalarNA::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    void ScalarNaN::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    void ScalarPlusInf::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    void ScalarMinusInf::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    void ScalarBLQ::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    void ScalarALQ::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
 }

@@ -211,6 +211,18 @@ namespace pharmmlcpp
             instance = new ScalarString(node);
         } else if (name == "Id") {
             instance = new ScalarId(node);
+        } else if (name == "NA") {
+            instance = new ScalarNA();
+        } else if (name == "NaN") {
+            instance = new ScalarNaN();
+        } else if (name == "plusInf") {
+            instance = new ScalarPlusInf();
+        } else if (name == "minusInf") {
+            instance = new ScalarMinusInf();
+        } else if (name == "BLQ") {
+            instance = new ScalarBLQ();
+        } else if (name == "ALQ") {
+            instance = new ScalarALQ();
         } else if (name == "Vector") {
             std::string length = node.getAttribute("length").getValue();
             std::string defaultValue = node.getAttribute("default").getValue();

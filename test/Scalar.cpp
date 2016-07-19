@@ -35,10 +35,18 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
 
     SECTION("Copy construct") {
         ScalarInt si(9);
-        ScalarInt x = si;
+        ScalarInt x(si);
         x.set(3);
         REQUIRE(si.toInt() == 9);
         REQUIRE(x.toInt() == 3);
+    }
+
+    SECTION("Assignment") {
+        ScalarInt a(9);
+        ScalarInt b(12);
+        a = b;
+        REQUIRE(a.toInt() == 12);
+        REQUIRE(b.toInt() == 12);
     }
 
     SECTION("Getters") {
@@ -78,10 +86,18 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
 
     SECTION("Copy construct") {
         ScalarReal sr(9.0);
-        ScalarReal x = sr;
+        ScalarReal x(sr);
         x.set(3.0);
         REQUIRE(sr.toDouble() == 9.0);
         REQUIRE(x.toDouble() == 3.0);
+    }
+
+    SECTION("Assignment") {
+        ScalarReal a(9.0);
+        ScalarReal b(12.0);
+        a = b;
+        REQUIRE(a.toDouble() == 12.0);
+        REQUIRE(b.toDouble() == 12.0);
     }
 
     SECTION("Getters") {
@@ -105,10 +121,18 @@ TEST_CASE("ScalarBool", "[ScalarBool]") {
 
     SECTION("Copy construct") {
         ScalarBool sb(true);
-        ScalarBool x = sb;
+        ScalarBool x(sb);
         x.set(false);
         REQUIRE(sb.toBool());
         REQUIRE(!x.toBool());
+    }
+
+    SECTION("Assignment") {
+        ScalarBool a(true);
+        ScalarBool b(false);
+        a = b;
+        REQUIRE_FALSE(a.toBool());
+        REQUIRE_FALSE(b.toBool());
     }
 }
 
@@ -132,11 +156,19 @@ TEST_CASE("ScalarString", "[ScalarString]") {
 
     SECTION("Copy construct") {
         ScalarString ss("One");
-        ScalarString x = ss;
+        ScalarString x(ss);
         x.set("Two");
         REQUIRE(ss.toString() == "One");
         REQUIRE(x.toString() == "Two");
    }
+
+    SECTION("Assignment") {
+        ScalarString a("MyString");
+        ScalarString b("Lizard");
+        a = b;
+        REQUIRE(a.toString() == "Lizard");
+        REQUIRE(b.toString() == "Lizard");
+    }
 }
 
 TEST_CASE("ScalarId", "[ScalarId]") {
@@ -161,9 +193,17 @@ TEST_CASE("ScalarId", "[ScalarId]") {
 
     SECTION("Copy construct") {
         ScalarId sid("One");
-        ScalarId x = sid;
+        ScalarId x(sid);
         x.set("Two");
         REQUIRE(sid.toString() == "One");
         REQUIRE(x.toString() == "Two");
-   }
+    }
+
+    SECTION("Assignment") {
+        ScalarId a("MyString");
+        ScalarId b("Lizard");
+        a = b;
+        REQUIRE(a.toString() == "Lizard");
+        REQUIRE(b.toString() == "Lizard");
+    }
 }

@@ -298,6 +298,42 @@ namespace pharmmlcpp
         this->setValue(scalar_string);
     }
 
+    void XMLAstVisitor::visit(ScalarId *node) {
+        xml::Node scalar_id("Id", xml::Namespace::ct);
+        scalar_id.setContent(node->toString());
+        this->setValue(scalar_id);
+    }
+
+    void XMLAstVisitor::visit(ScalarNA *node) {
+        xml::Node scalar_NA("NA", xml::Namespace::ct);
+        this->setValue(scalar_NA);
+    }
+
+    void XMLAstVisitor::visit(ScalarNaN *node) {
+        xml::Node scalar_NaN("NaN", xml::Namespace::ct);
+        this->setValue(scalar_NaN);
+    }
+
+    void XMLAstVisitor::visit(ScalarPlusInf *node) {
+        xml::Node scalar_plusInf("plusInf", xml::Namespace::ct);
+        this->setValue(scalar_plusInf);
+    }
+
+    void XMLAstVisitor::visit(ScalarMinusInf *node) {
+        xml::Node scalar_minusInf("minusInf", xml::Namespace::ct);
+        this->setValue(scalar_minusInf);
+    }
+
+    void XMLAstVisitor::visit(ScalarBLQ *node) {
+        xml::Node scalar_BLQ("BLQ", xml::Namespace::ct);
+        this->setValue(scalar_BLQ);
+    }
+
+    void XMLAstVisitor::visit(ScalarALQ *node) {
+        xml::Node scalar_ALQ("ALQ", xml::Namespace::ct);
+        this->setValue(scalar_ALQ);
+    }
+
     void XMLAstVisitor::visit(BinopPlus *node) {
         this->createBinop(node, "plus");
     }

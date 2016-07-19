@@ -15,6 +15,7 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
     SECTION("Construct from string") {
         ScalarInt si("-578");
         REQUIRE(si.toInt() == -578);
+        REQUIRE_THROWS(si = ScalarInt("abc"));
     }
 
     SECTION("Construct from xml") {
@@ -29,6 +30,7 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
         REQUIRE(si.toInt() == 23);
         si.set("-451");
         REQUIRE(si.toInt() == -451);
+        REQUIRE_THROWS(si.set("9999999999"));
     }
 
     SECTION("Copy construct") {
@@ -51,6 +53,7 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
         ScalarReal sr(9.0);
         REQUIRE(sr.toDouble() == 9);
         REQUIRE(sr.toString() == "9.000000");
+        REQUIRE_THROWS(sr = ScalarReal("aa"));
     }
 
     SECTION("Construct from string") {
@@ -70,6 +73,7 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
         REQUIRE(sr.toDouble() == 29.0);
         sr.set("-7.123");
         REQUIRE(sr.toString() == "-7.123");
+        REQUIRE_THROWS(sr = ScalarReal("aa"));
     }
 
     SECTION("Copy construct") {
@@ -81,9 +85,9 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
     }
 
     SECTION("Getters") {
-        ScalarReal si(89.0);
+        ScalarReal sr(89.0);
         // FIXME: Trailing zeros to be removed here! REQUIRE(si.toString() == "89");
-        REQUIRE(si.toDouble() == 89.0);
+        REQUIRE(sr.toDouble() == 89.0);
     }
 }
 

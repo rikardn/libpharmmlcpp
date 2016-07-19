@@ -66,6 +66,8 @@ namespace pharmmlcpp
 
     /**
      *  Set a new value from a string
+     *  \throws std::invalid_argument
+     *  \throws std::out_of_range
      */
     void ScalarInt::set(std::string value) {
         this->value = std::stoi(value);
@@ -84,8 +86,11 @@ namespace pharmmlcpp
 
     /**
      *  Create a new ScalarReal from a string representing a double value
+     *  \throws std::invalid_argument
+     *  \throws std::out_of_range
      */
     ScalarReal::ScalarReal(std::string value) {
+        std::stod(value);
         this->value = value;
     }
 
@@ -98,8 +103,6 @@ namespace pharmmlcpp
 
     /**
      *  Convert to a double value
-     *  \throws std::invalid_argument
-     *  \throws std::out_of_range
      */
     double ScalarReal::toDouble() {
         return std::stod(this->value);
@@ -121,8 +124,11 @@ namespace pharmmlcpp
 
     /**
      *  Set a new value from a string representing a double value
+     *  \throws std::invalid_argument
+     *  \throws std::out_of_range
      */
     void ScalarReal::set(std::string value) {
+        std::stod(value);
         this->value = value;
     }
 

@@ -26,14 +26,14 @@ namespace pharmmlcpp
     class Binop : public AstNode
     {
         public:
-            void setLeft(AstNode *child);
+            void setLeft(std::unique_ptr<AstNode> child);
             AstNode *getLeft();
-            void setRight(AstNode *child);
+            void setRight(std::unique_ptr<AstNode> child);
             AstNode *getRight();
 
-        private:
-            AstNode *left;
-            AstNode *right;
+        protected:
+            std::unique_ptr<AstNode> left;
+            std::unique_ptr<AstNode> right;
     };
 
     // Ordinary binops
@@ -41,66 +41,99 @@ namespace pharmmlcpp
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopMinus : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopDivide : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopTimes : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopPower : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopLogx : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopRoot : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopMin : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopMax : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopRem : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class BinopAtan2 : public Binop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     // Logic binops
@@ -113,54 +146,81 @@ namespace pharmmlcpp
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopLeq : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopGt : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopGeq : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopEq : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopNeq : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopAnd : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopOr : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class LogicBinopXor : public LogicBinop
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 }
 

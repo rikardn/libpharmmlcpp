@@ -47,7 +47,7 @@ namespace CPharmML
             bool isContinuous();
             std::string getType();
             pharmmlcpp::Distribution *getDistribution();
-            pharmmlcpp::AstNode *getDefinition();
+            std::shared_ptr<pharmmlcpp::AstNode> getDefinition();
             std::string getColumnId();
 
         private:
@@ -61,7 +61,7 @@ namespace CPharmML
             bool continuous;
             std::string type;
             pharmmlcpp::Distribution *distribution;
-            pharmmlcpp::AstNode *definition;
+            std::shared_ptr<pharmmlcpp::AstNode> definition;
             std::string columnId;
     };
 }

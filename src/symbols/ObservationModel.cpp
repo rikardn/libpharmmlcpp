@@ -60,7 +60,7 @@ namespace pharmmlcpp
                     // Get transformation parameters (if available)
                     std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                     for (xml::Node trans_param : trans_params) {
-                        pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
+                        std::shared_ptr<AstNode> param = reader.factory.create(trans_param.getChild());
                         this->transformationParameters.push_back(param);
                     }
                 }
@@ -100,7 +100,7 @@ namespace pharmmlcpp
                         // Get transformation parameters (if available)
                         std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                         for (xml::Node trans_param : trans_params) {
-                            pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
+                            std::shared_ptr<AstNode> param = reader.factory.create(trans_param.getChild());
                             this->transformationParameters.push_back(param);
                         }
                     }
@@ -180,7 +180,7 @@ namespace pharmmlcpp
         return this->output;
     }
 
-    AstNode *ObservationModel::getErrorModel() {
+    std::shared_ptr<AstNode> ObservationModel::getErrorModel() {
         return this->errorModel;
     }
 
@@ -188,7 +188,7 @@ namespace pharmmlcpp
         return this->residualError;
     }
 
-    AstNode *ObservationModel::getAssignment() {
+    std::shared_ptr<AstNode> ObservationModel::getAssignment() {
         return this->generalAssignment;
     }
 
@@ -206,7 +206,7 @@ namespace pharmmlcpp
         // FIXME: Fill this
         if (this->standardErrorModel) {
             this->addSymbRef(this->output, gathering, blkId);
-            this->setupAstSymbRefs(this->errorModel, gathering, blkId);
+            this->setupAstSymbRefs(this->errorModel.get(), gathering, blkId);
             this->setupAstSymbRefs(this->residualError, gathering, blkId);
         }
     }

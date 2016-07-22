@@ -28,18 +28,18 @@ namespace pharmmlcpp
     {
         public:
             DerivativeVariable(PharmMLReader &reader, xml::Node node) : CommonVariable(reader, node) { is_derivative = true; this->parse(reader, node); };
-            AstNode *getIndependentVariable();
-            AstNode *getInitialValue();
-            AstNode *getInitialTime();
+            std::shared_ptr<AstNode> getIndependentVariable();
+            std::shared_ptr<AstNode> getInitialValue();
+            std::shared_ptr<AstNode> getInitialTime();
             void parse(PharmMLReader &reader, xml::Node node);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
         
         private:
-            AstNode *independent_variable;
-            AstNode *initial_value;
-            AstNode *initial_time;
+            std::shared_ptr<AstNode> independent_variable;
+            std::shared_ptr<AstNode> initial_value;
+            std::shared_ptr<AstNode> initial_time;
     };
 }
 

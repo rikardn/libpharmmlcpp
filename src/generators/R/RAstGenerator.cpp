@@ -402,10 +402,10 @@ namespace pharmmlcpp
     }
 
     void RAstGenerator::visit(Vector *node) {
-        std::vector<AstNode *> elements = node->getElements();
+        std::vector<std::shared_ptr<AstNode>> elements = node->getElements();
         std::string s = "c(";
         bool first = true;
-        for (AstNode *element : elements) {
+        for (std::shared_ptr<AstNode> element : elements) {
             if (first) {
                 first = false;
             } else {

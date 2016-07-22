@@ -55,7 +55,7 @@ namespace pharmmlcpp
             std::vector<std::shared_ptr<SymbRef>>& getContinuousVariables();
             std::vector<std::shared_ptr<SymbRef>>& getDiscreteVariables();
  
-            std::vector<AstNode *> getObservationTimesAsVector();
+            std::vector<std::shared_ptr<AstNode>> getObservationTimesAsVector();
             void accept(PharmMLVisitor *visitor);
             void accept(ObjectVisitor *visitor);
 
@@ -94,13 +94,13 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             std::string getOid();
             std::vector<std::string> getOidRefs();
-            AstNode *getRelative();
+            std::shared_ptr<AstNode> getRelative();
             void accept(PharmMLVisitor *visitor);
 
         private:
             std::string oid;
             std::vector<std::string> oidRefs;
-            AstNode *relative = nullptr;
+            std::shared_ptr<AstNode> relative;
     };
 
     // Observations class (contains objects of classes above)

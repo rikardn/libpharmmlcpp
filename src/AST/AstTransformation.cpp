@@ -23,14 +23,14 @@ namespace pharmmlcpp
     // Transform an AstNode into a vector of AstNodes
     // If the AstNode is a pure Vector the elements will be returned
     // and if not the single node will be put in a vector
-    std::vector<AstNode *> AstTransformation::toVector(AstNode *node) {
+    std::vector<std::shared_ptr<AstNode>> AstTransformation::toVector(std::shared_ptr<AstNode> node) {
         AstAnalyzer analyzer;
         node->accept(&analyzer);
         Vector *vector = analyzer.getPureVector();
         if (vector) {
-            return vector->getElements();
+            return vector->getElements();       // FIXME Currently this is a copy. Might have changed!
         } else {
-            std::vector<AstNode *> ast_vector;
+            std::vector<std::shared_ptr<AstNode>> ast_vector;
             ast_vector.push_back(node);
             return ast_vector;
         } 

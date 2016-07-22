@@ -33,19 +33,19 @@ namespace pharmmlcpp
     }
 
     AstNode *Interval::getLeftEndpoint() {
-        return this->LeftEndpoint;
+        return this->LeftEndpoint.get();
     }
 
     AstNode *Interval::getRightEndpoint() {
-        return this->RightEndpoint;
+        return this->RightEndpoint.get();
     }
 
-    void Interval::setLeftEndpoint(AstNode *node) {
-        this->LeftEndpoint = node;
+    void Interval::setLeftEndpoint(std::unique_ptr<AstNode> node) {
+        this->LeftEndpoint = std::move(node);
     }
 
-    void Interval::setRightEndpoint(AstNode *node) {
-        this->RightEndpoint = node;
+    void Interval::setRightEndpoint(std::unique_ptr<AstNode> node) {
+        this->RightEndpoint = std::move(node);
     }
 
     bool Interval::isLeftEndpointOpen() {
@@ -62,6 +62,11 @@ namespace pharmmlcpp
 
     void Interval::setRightEndpointOpen(bool open) {
         this->openRightEndpoint = open;
+    }
+
+    std::unique_ptr<AstNode> Interval::clone() {
+        std::unique_ptr<Interval> cl;
+        return std::move(cl);
     }
 
     void Interval::accept(AstNodeVisitor *visitor) {

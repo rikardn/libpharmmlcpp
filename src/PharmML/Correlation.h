@@ -35,25 +35,25 @@ namespace pharmmlcpp
             Correlation(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
 
-            pharmmlcpp::VariabilityReference *getVariabilityReference();
+            VariabilityReference *getVariabilityReference();
             bool isPairwise();
-            std::vector<pharmmlcpp::SymbRef *> getPairwiseSymbRefs();
+            std::vector<SymbRef *> getPairwiseSymbRefs();
             std::string getPairwiseType();
-            pharmmlcpp::AstNode *getPairwiseAssignment();
+            std::shared_ptr<AstNode> getPairwiseAssignment();
             bool hasPureSymbRefAssigment();
 
             /* Referer base class (referencedSymbols) contains all symbols while correlatedSymbols
              * below only those that refer to the correlated random variables (to not mix them up): */
-            pharmmlcpp::SymbolSet correlatedSymbols;
+            SymbolSet correlatedSymbols;
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
         private:
             VariabilityReference *variabilityReference;
-            std::vector<pharmmlcpp::SymbRef *> pairwiseSymbRefs;
+            std::vector<SymbRef *> pairwiseSymbRefs;
             std::string pairwiseType;
-            pharmmlcpp::AstNode *pairwiseAssignment = nullptr;
+            std::shared_ptr<AstNode> pairwiseAssignment;
             bool pure_symbref_assignment;
             std::string matrixType;
     };

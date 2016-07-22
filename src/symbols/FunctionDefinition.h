@@ -59,7 +59,7 @@ namespace pharmmlcpp
 
             std::string getType();
             std::vector<FunctionArgumentDefinition *> getArguments();
-            AstNode *getDefinition();
+            std::shared_ptr<AstNode> getDefinition();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
@@ -71,7 +71,7 @@ namespace pharmmlcpp
             std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> getStandardFunctionArgumentMap();
 
         private:
-            AstNode *definition = nullptr;
+            std::shared_ptr<AstNode> definition;
             std::string symbolType;
             std::vector<FunctionArgumentDefinition *> arguments;
 

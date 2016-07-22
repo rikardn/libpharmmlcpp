@@ -52,14 +52,14 @@ namespace pharmmlcpp
 
             // Standard error model
             SymbRef *getOutput();
-            AstNode *getErrorModel();
+            std::shared_ptr<AstNode> getErrorModel();
             SymbRef *getResidualError();
 
             // General error model
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
 
             // Distributional error model
-            std::vector<pharmmlcpp::VariabilityReference *> getVariabilityReferences();
+            std::vector<VariabilityReference *> getVariabilityReferences();
 
             // Convenience methods
             SymbolSet getNeededSymbols();
@@ -86,18 +86,18 @@ namespace pharmmlcpp
 
             // Transformations (on LHS or both)
             std::string transformation;
-            std::vector<pharmmlcpp::AstNode *> transformationParameters;
+            std::vector<std::shared_ptr<AstNode>> transformationParameters;
 
             // Standard error model
             SymbRef *output = nullptr;
-            AstNode *errorModel = nullptr;
+            std::shared_ptr<AstNode> errorModel;
             SymbRef *residualError = nullptr;
 
             // General error model
-            AstNode *generalAssignment = nullptr;
+            std::shared_ptr<AstNode> generalAssignment;
 
             // Distributional error model
-            std::vector<pharmmlcpp::VariabilityReference *> variabilityReferences;
+            std::vector<VariabilityReference *> variabilityReferences;
     };
 }
 

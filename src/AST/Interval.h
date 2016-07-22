@@ -30,17 +30,20 @@ namespace pharmmlcpp
             Interval(xml::Node node);
             AstNode *getLeftEndpoint();
             AstNode *getRightEndpoint();
-            void setLeftEndpoint(AstNode *node);
-            void setRightEndpoint(AstNode *node);
+            void setLeftEndpoint(std::unique_ptr<AstNode> node);
+            void setRightEndpoint(std::unique_ptr<AstNode> node);
             bool isLeftEndpointOpen();
             bool isRightEndpointOpen();
             void setLeftEndpointOpen(bool open);
             void setRightEndpointOpen(bool open);
-            void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
 
         private:
-            AstNode *LeftEndpoint = nullptr;
-            AstNode *RightEndpoint = nullptr;
+            std::unique_ptr<AstNode> LeftEndpoint;
+            std::unique_ptr<AstNode> RightEndpoint;
             bool openLeftEndpoint = false;
             bool openRightEndpoint = false;
     };

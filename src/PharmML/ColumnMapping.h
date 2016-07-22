@@ -77,7 +77,7 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
             std::string getColumnIdRef();
 
             Symbol *getMappedSymbol();
@@ -89,7 +89,7 @@ namespace pharmmlcpp
 
         private:
             std::string columnIdRef;
-            AstNode *assignment = nullptr;
+            std::shared_ptr<AstNode> assignment;
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
             TargetMapping *target_map = nullptr;

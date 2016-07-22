@@ -50,11 +50,11 @@ namespace pharmmlcpp
             VariableAssignment(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             SymbRef *getSymbRef();
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
 
         private:
             SymbRef *symbRef;
-            AstNode *assignment;
+            std::shared_ptr<AstNode> assignment;
     };
 
     class CommonStepType
@@ -92,18 +92,18 @@ namespace pharmmlcpp
             bool hasInitValue();
             bool hasLoBound();
             bool hasHiBound();
-            AstNode *getInitValue();
-            AstNode *getLoBound();
-            AstNode *getHiBound();
+            std::shared_ptr<AstNode> getInitValue();
+            std::shared_ptr<AstNode> getLoBound();
+            std::shared_ptr<AstNode> getHiBound();
             void accept(PharmMLVisitor *visitor);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
 
         private:
             SymbRef *symbRef;
             bool fixed = false;
-            AstNode *init = nullptr;
-            AstNode *loBound = nullptr;
-            AstNode *hiBound = nullptr;
+            std::shared_ptr<AstNode> init;
+            std::shared_ptr<AstNode> loBound;
+            std::shared_ptr<AstNode> hiBound;
     };
 
     class OperationProperty : public PharmMLSection
@@ -112,7 +112,7 @@ namespace pharmmlcpp
             OperationProperty(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
 
             bool isNamed(std::string case_insensitive_name);
             // Convenience functions for simply accessing simple property values
@@ -129,7 +129,7 @@ namespace pharmmlcpp
 
         private:
             std::string name;
-            AstNode *assignment;
+            std::shared_ptr<AstNode> assignment;
 
             // Convenience storage of simple property values
             int *int_val = nullptr;

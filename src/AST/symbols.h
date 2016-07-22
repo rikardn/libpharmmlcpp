@@ -37,6 +37,9 @@ namespace pharmmlcpp
             void setSymbol(Symbol *symbol);
             Symbol *getSymbol();
 
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             std::string blkIdRef;
             std::string symbIdRef;
@@ -50,7 +53,10 @@ namespace pharmmlcpp
             ColumnRef(xml::Node node);
             virtual void accept(AstNodeVisitor *visitor);
             std::string toString();
-        
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             std::string columnIdRef;
     };

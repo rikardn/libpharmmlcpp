@@ -75,7 +75,7 @@ namespace pharmmlcpp
         return (pairwiseSymbRefs.size() == 2);
     }
 
-    std::vector<pharmmlcpp::SymbRef *> Correlation::getPairwiseSymbRefs(){
+    std::vector<SymbRef *> Correlation::getPairwiseSymbRefs(){
         return this->pairwiseSymbRefs;
     }
 
@@ -83,7 +83,7 @@ namespace pharmmlcpp
         return this->pairwiseType;
     }
 
-    pharmmlcpp::AstNode *Correlation::getPairwiseAssignment() {
+    std::shared_ptr<AstNode> Correlation::getPairwiseAssignment() {
         return this->pairwiseAssignment;
     }
 
@@ -95,7 +95,7 @@ namespace pharmmlcpp
     void Correlation::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         this->variabilityReference->setupSymbRefs(gathering, blkId);
         if (this->pairwiseAssignment) {
-            this->setupAstSymbRefs(this->pairwiseAssignment, gathering, blkId);
+            this->setupAstSymbRefs(this->pairwiseAssignment.get(), gathering, blkId);
             for (pharmmlcpp::SymbRef *symbRef : this->pairwiseSymbRefs) {
                 // Separation of correlated random variables seem like a good idea
                 this->correlatedSymbols.addSymbol(this->addSymbRef(symbRef, gathering, blkId));

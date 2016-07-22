@@ -91,11 +91,11 @@ namespace pharmmlcpp
         return this->symbRefs;
     }
 
-    AstNode *DesignSpace::getDosingTimes() {
+    std::shared_ptr<AstNode> DesignSpace::getDosingTimes() {
         return this->dosingTimes;
     }
 
-    AstNode *DesignSpace::getAssignment() {
+    std::shared_ptr<AstNode> DesignSpace::getAssignment() {
         return this->assignment;
     }
 

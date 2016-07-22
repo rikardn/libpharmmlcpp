@@ -33,196 +33,196 @@
 
 namespace pharmmlcpp
 {
-    AstNode *AstNodeFactory::create(xml::Node node) {
-        AstNode *instance = nullptr;
+    std::unique_ptr<AstNode> AstNodeFactory::create(xml::Node node) {
+        std::unique_ptr<AstNode> instance;
 
         std::string name = node.getName();
         if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
-            Uniop *uniop;
+            std::unique_ptr<Uniop> uniop;
             // Ordinary uniops
             if (op == "log") {
-                uniop = new UniopLog();
+                uniop = std::make_unique<UniopLog>();
             } else if (op == "log2") {
-                uniop = new UniopLog2();
+                uniop = std::make_unique<UniopLog2>();
             } else if (op == "log10") {
-                uniop = new UniopLog10();
+                uniop = std::make_unique<UniopLog10>();
             } else if (op == "exp") {
-                uniop = new UniopExp();
+                uniop = std::make_unique<UniopExp>();
             } else if (op == "minus") {
-                uniop = new UniopMinus();
+                uniop = std::make_unique<UniopMinus>();
             } else if (op == "abs") {
-                uniop = new UniopAbs();
+                uniop = std::make_unique<UniopAbs>();
             } else if (op == "sqrt") {
-                uniop = new UniopSqrt();
+                uniop = std::make_unique<UniopSqrt>();
             } else if (op == "logistic") {
-                uniop = new UniopLogistic();
+                uniop = std::make_unique<UniopLogistic>();
             } else if (op == "logit") {
-                uniop = new UniopLogit();
+                uniop = std::make_unique<UniopLogit>();
             } else if (op == "probit") {
-                uniop = new UniopProbit();
+                uniop = std::make_unique<UniopProbit>();
             } else if (op == "normcdf") {
-                uniop = new UniopNormcdf();
+                uniop = std::make_unique<UniopNormcdf>();
             } else if (op == "factorial") {
-                uniop = new UniopFactorial();
+                uniop = std::make_unique<UniopFactorial>();
             } else if (op == "factln") {
-                uniop = new UniopFactln();
+                uniop = std::make_unique<UniopFactln>();
             } else if (op == "gamma") {
-                uniop = new UniopGamma();
+                uniop = std::make_unique<UniopGamma>();
             } else if (op == "gammaln") {
-                uniop = new UniopGammaln();
+                uniop = std::make_unique<UniopGammaln>();
             } else if (op == "sin") {
-                uniop = new UniopSin();
+                uniop = std::make_unique<UniopSin>();
             } else if (op == "sinh") {
-                uniop = new UniopSinh();
+                uniop = std::make_unique<UniopSinh>();
             } else if (op == "cos") {
-                uniop = new UniopCos();
+                uniop = std::make_unique<UniopCos>();
             } else if (op == "cosh") {
-                uniop = new UniopCosh();
+                uniop = std::make_unique<UniopCosh>();
             } else if (op == "tan") {
-                uniop = new UniopTan();
+                uniop = std::make_unique<UniopTan>();
             } else if (op == "tanh") {
-                uniop = new UniopTanh();
+                uniop = std::make_unique<UniopTanh>();
             } else if (op == "cot") {
-                uniop = new UniopCot();
+                uniop = std::make_unique<UniopCot>();
             } else if (op == "coth") {
-                uniop = new UniopCoth();
+                uniop = std::make_unique<UniopCoth>();
             } else if (op == "sec") {
-                uniop = new UniopSec();
+                uniop = std::make_unique<UniopSec>();
             } else if (op == "sech") {
-                uniop = new UniopSech();
+                uniop = std::make_unique<UniopSech>();
             } else if (op == "csc") {
-                uniop = new UniopCsc();
+                uniop = std::make_unique<UniopCsc>();
             } else if (op == "csch") {
-                uniop = new UniopCsch();
+                uniop = std::make_unique<UniopCsch>();
             } else if (op == "arcsin") {
-                uniop = new UniopArcsin();
+                uniop = std::make_unique<UniopArcsin>();
             } else if (op == "arcsinh") {
-                uniop = new UniopArcsinh();
+                uniop = std::make_unique<UniopArcsinh>();
             } else if (op == "arccos") {
-                uniop = new UniopArccos();
+                uniop = std::make_unique<UniopArccos>();
             } else if (op == "arccosh") {
-                uniop = new UniopArccosh();
+                uniop = std::make_unique<UniopArccosh>();
             } else if (op == "arctan") {
-                uniop = new UniopArctan();
+                uniop = std::make_unique<UniopArctan>();
             } else if (op == "arctanh") {
-                uniop = new UniopArctanh();
+                uniop = std::make_unique<UniopArctanh>();
             } else if (op == "arccot") {
-                uniop = new UniopArccot();
+                uniop = std::make_unique<UniopArccot>();
             } else if (op == "arccoth") {
-                uniop = new UniopArccoth();
+                uniop = std::make_unique<UniopArccoth>();
             } else if (op == "arcsec") {
-                uniop = new UniopArcsec();
+                uniop = std::make_unique<UniopArcsec>();
             } else if (op == "arcsech") {
-                uniop = new UniopArcsech();
+                uniop = std::make_unique<UniopArcsech>();
             } else if (op == "arccsc") {
-                uniop = new UniopArccsc();
+                uniop = std::make_unique<UniopArccsc>();
             } else if (op == "arccsch") {
-                uniop = new UniopArccsch();
+                uniop = std::make_unique<UniopArccsch>();
             } else if (op == "heaviside") {
-                uniop = new UniopHeaviside();
+                uniop = std::make_unique<UniopHeaviside>();
             } else if (op == "sign") {
-                uniop = new UniopSign();
+                uniop = std::make_unique<UniopSign>();
             } else if (op == "floor") {
-                uniop = new UniopFloor();
+                uniop = std::make_unique<UniopFloor>();
             } else if (op == "ceiling") {
-                uniop = new UniopCeiling();
+                uniop = std::make_unique<UniopCeiling>();
             // Logic uniops
             } else if (op == "isDefined") {
-                uniop = new LogicUniopIsdefined();
+                uniop = std::make_unique<LogicUniopIsdefined>();
             } else if (op == "not") {
-                uniop = new LogicUniopNot();
+                uniop = std::make_unique<LogicUniopNot>();
             }
             uniop->setChild(AstNodeFactory::create(node.getChild()));
-            instance = uniop;
+            instance = std::move(uniop);
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
-            Binop *binop;
+            std::unique_ptr<Binop> binop;
             // Ordinary binops
             if (op == "plus") {
-                binop = new BinopPlus();
+                binop = std::make_unique<BinopPlus>();
             } else if (op == "minus") {
-                binop = new BinopMinus();
+                binop = std::make_unique<BinopMinus>();
             } else if (op == "divide") {
-                binop = new BinopDivide();
+                binop = std::make_unique<BinopDivide>();
             } else if (op == "times") {
-                binop = new BinopTimes();
+                binop = std::make_unique<BinopTimes>();
             } else if (op == "power") {
-                binop = new BinopPower();
+                binop = std::make_unique<BinopPower>();
             } else if (op == "logx") {
-                binop = new BinopLogx();
+                binop = std::make_unique<BinopLogx>();
             } else if (op == "root") {
-                binop = new BinopRoot();
+                binop = std::make_unique<BinopRoot>();
             } else if (op == "min") {
-                binop = new BinopMin();
+                binop = std::make_unique<BinopMin>();
             } else if (op == "max") {
-                binop = new BinopMax();
+                binop = std::make_unique<BinopMax>();
             } else if (op == "rem") {
-                binop = new BinopRem();
+                binop = std::make_unique<BinopRem>();
             } else if (op == "atan2") {
-                binop = new BinopAtan2();
+                binop = std::make_unique<BinopAtan2>();
             // Logic binops
             } else if (op == "lt") {
-                binop = new LogicBinopLt();
+                binop = std::make_unique<LogicBinopLt>();
             } else if (op == "leq") {
-                binop = new LogicBinopLeq();
+                binop = std::make_unique<LogicBinopLeq>();
             } else if (op == "gt") {
-                binop = new LogicBinopGt();
+                binop = std::make_unique<LogicBinopGt>();
             } else if (op == "geq") {
-                binop = new LogicBinopGeq();
+                binop = std::make_unique<LogicBinopGeq>();
             } else if (op == "eq") {
-                binop = new LogicBinopEq();
+                binop = std::make_unique<LogicBinopEq>();
             } else if (op == "neq") {
-                binop = new LogicBinopNeq();
+                binop = std::make_unique<LogicBinopNeq>();
             } else if (op == "and") {
-                binop = new LogicBinopAnd();
+                binop = std::make_unique<LogicBinopAnd>();
             } else if (op == "or") {
-                binop = new LogicBinopOr();
+                binop = std::make_unique<LogicBinopOr>();
             } else if (op == "xor") {
-                binop = new LogicBinopXor();
+                binop = std::make_unique<LogicBinopXor>();
             }
             binop->setLeft(AstNodeFactory::create(node.getChild()));
             binop->setRight(AstNodeFactory::create(node.getLastChild()));
-            instance = binop;
+            instance = std::move(binop);
         } else if (name == "ConstantType") {
             std::string op = node.getAttribute("op").getValue();
-            Constant *constant;
+            std::unique_ptr<Constant> constant;
             if (op == "pi") {
-                constant = new Pi();
+                constant = std::make_unique<Pi>();
             } else if (op == "exponentiale") {
-                constant = new Exponentiale();
+                constant = std::make_unique<Exponentiale>();
             }
-            instance = constant;
+            instance = std::move(constant);
         } else if (name == "SymbRef") {
-            SymbRef *symbref = new SymbRef(node);
-            instance = symbref;
+            std::unique_ptr<SymbRef> symbref = std::make_unique<SymbRef>(node);
+            instance = std::move(symbref);
         } else if (name == "ColumnRef") {
             std::string symbol = node.getAttribute("columnIdRef").getValue();
-            instance = new ColumnRef(symbol);
+            instance = std::make_unique<ColumnRef>(symbol);
         } else if (name == "Int") {
-            instance = new ScalarInt(node);
+            instance = std::make_unique<ScalarInt>(node);
         } else if (name == "Real") {
-            instance = new ScalarReal(node);
+            instance = std::make_unique<ScalarReal>(node);
         } else if (name == "True") {
-            instance = new ScalarBool(true);
+            instance = std::make_unique<ScalarBool>(true);
         } else if (name == "False") {
-            instance = new ScalarBool(false);
+            instance = std::make_unique<ScalarBool>(false);
         } else if (name == "String") {
-            instance = new ScalarString(node);
+            instance = std::make_unique<ScalarString>(node);
         } else if (name == "Id") {
-            instance = new ScalarId(node);
+            instance = std::make_unique<ScalarId>(node);
         } else if (name == "NA") {
-            instance = new ScalarNA();
+            instance = std::make_unique<ScalarNA>();
         } else if (name == "NaN") {
-            instance = new ScalarNaN();
+            instance = std::make_unique<ScalarNaN>();
         } else if (name == "plusInf") {
-            instance = new ScalarPlusInf();
+            instance = std::make_unique<ScalarPlusInf>();
         } else if (name == "minusInf") {
-            instance = new ScalarMinusInf();
+            instance = std::make_unique<ScalarMinusInf>();
         } else if (name == "BLQ") {
-            instance = new ScalarBLQ();
+            instance = std::make_unique<ScalarBLQ>();
         } else if (name == "ALQ") {
-            instance = new ScalarALQ();
+            instance = std::make_unique<ScalarALQ>();
         } else if (name == "Vector") {
             std::string length = node.getAttribute("length").getValue();
             std::string defaultValue = node.getAttribute("default").getValue();
@@ -254,7 +254,7 @@ namespace pharmmlcpp
                 for (xml::Node cell : vectorCells) {
                     std::vector<xml::Node> children = cell.getChildren();
                     int cellIndex = std::stoi(children[0].getText());
-                    AstNode *cellContent = AstNodeFactory::create(children[1]);
+                    std::shared_ptr<AstNode> cellContent = AstNodeFactory::create(children[1]);
 
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
@@ -264,7 +264,7 @@ namespace pharmmlcpp
                     //~ vector->populateSegment(segment);
                 //}
             }
-            instance = vector;
+            instance = std::unique_ptr<AstNode>(vector);
         } else if (name == "Piecewise") {
             Piecewise *piecewise = new Piecewise();
             std::vector<xml::Node> children = node.getChildren();
@@ -282,7 +282,7 @@ namespace pharmmlcpp
                     piece->setOtherwise();
                 }
             }
-            instance = piecewise;
+            instance = std::unique_ptr<AstNode>(piecewise);
         } else if (name == "FunctionCall") {
             FunctionCall *fcall = new FunctionCall();
             std::vector<xml::Node> children = node.getChildren();
@@ -295,9 +295,9 @@ namespace pharmmlcpp
                 arg->setSymbId(n.getAttribute("symbId").getValue());
                 arg->setArgument(AstNodeFactory::create(n.getChild()));
             }
-            instance = fcall;
+            instance = std::unique_ptr<AstNode>(fcall);
         } else if (name == "Interval") {
-            instance = new Interval(node);
+            instance = std::make_unique<Interval>(node);
         }
 
         // The following might and might not be a good idea

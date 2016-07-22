@@ -27,28 +27,31 @@ namespace pharmmlcpp
     class VectorCell
     {
         public:
-            VectorCell(int index, AstNode *content);
+            VectorCell(int index, std::shared_ptr<AstNode> content);
             int getIndex();
-            AstNode *getContent();
+            std::shared_ptr<AstNode> getContent();
         
         private:
             int index;
-            AstNode *content;
+            std::shared_ptr<AstNode> content;
     };
 
     class Vector : public AstNode
     {
         public:
             Vector(std::string length, std::string defaultValue);
-            void addElement(AstNode *element);
+            void addElement(std::shared_ptr<AstNode> element);
             void populateCell(VectorCell *cell);
-            std::vector<AstNode *> getElements();
-            virtual void accept(AstNodeVisitor *visitor);
-        
+            std::vector<std::shared_ptr<AstNode>> getElements();
+            void accept(AstNodeVisitor *visitor) override;
+       
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             int length; // To infer length when implicitly built
             ScalarReal *defaultContent; // To infer value of implicit elements
-            std::vector<AstNode *> elements;
+            std::vector<std::shared_ptr<AstNode>> elements;
     };
 }
 

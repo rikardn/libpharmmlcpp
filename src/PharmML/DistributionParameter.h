@@ -32,13 +32,13 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             std::string getName();
             void setName(std::string name);
-            AstNode *getAssignment();
-            void setAssignment(AstNode *assignment);
+            std::shared_ptr<AstNode> getAssignment();
+            void setAssignment(std::shared_ptr<AstNode> assignment);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
         
         private:
             std::string name;
-            AstNode *assignment;
+            std::shared_ptr<AstNode> assignment;
     };
 }
 

@@ -111,7 +111,7 @@ namespace pharmmlcpp
                 Symbol *symbol_2 = correlation->getPairwiseSymbRefs()[1]->getSymbol();
                 // Is this the correlation we are searching for?
                 if ((symbol_1 == var1 && symbol_2 == var2) || (symbol_2 == var1 && symbol_1 == var2)) {
-                    AstNode *assignment = correlation->getPairwiseAssignment();
+                    std::shared_ptr<AstNode> assignment = correlation->getPairwiseAssignment();
                     AstAnalyzer analyzer;
                     assignment->accept(&analyzer);
                     if (analyzer.getPureScalar() && correlation->getPairwiseType() == "Covariance") {
@@ -121,7 +121,6 @@ namespace pharmmlcpp
                         // A scalar correlation coefficient
                         // cov(X,Y) = cor(X,Y) * stdev(X) * stdev(Y)
                         // Have method initialStdev on a RandomVariable with parameterEstimations as argument
-                        // Why not consolidator? Different possible parameterEstimations can be used. Don't know from consolidator which one to use?
                         std::vector<AstNode *> multiplicands;
                         multiplicands.push_back(analyzer.getPureScalar());
                         multiplicands.push_back(var1->initialStdev(parameterEstimations));
@@ -133,7 +132,7 @@ namespace pharmmlcpp
                         // FIXME: Better way of parameterEstimations lookup
                         for (ParameterEstimation *pe : parameterEstimations) {
                             if (pe->getSymbRef()->getSymbol() == symbol) {
-                                return pe->getInitValue();
+                                return pe->getInitValue().get();        // FIXME: Ownership?
                             }
                         }
                         return new ScalarInt(0);    // FIXME: What to do when we cannot find initial value
@@ -142,7 +141,7 @@ namespace pharmmlcpp
                         for (ParameterEstimation *pe : parameterEstimations) {
                             if (pe->getSymbRef()->getSymbol() == symbol) {
                                 std::vector<AstNode *> multiplicands;
-                                multiplicands.push_back(pe->getInitValue());
+                                multiplicands.push_back(pe->getInitValue().get());
                                 multiplicands.push_back(var1->initialStdev(parameterEstimations));
                                 multiplicands.push_back(var2->initialStdev(parameterEstimations));
                                 return AstBuilder::multiplyMany(multiplicands);

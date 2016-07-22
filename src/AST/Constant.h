@@ -34,19 +34,28 @@ namespace pharmmlcpp
     {
         public:
             virtual void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     // Pi and Euler's constant
     class Pi : public Constant
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 
     class Exponentiale : public Constant
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
     };
 }
 

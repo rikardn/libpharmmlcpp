@@ -71,7 +71,7 @@ namespace pharmmlcpp
     }
 
     // Find and get a specific attribute's assignment
-    AstNode *PKMacro::getAssignment(std::string attribute) {
+    std::shared_ptr<AstNode> PKMacro::getAssignment(std::string attribute) {
         for (MacroValue value : this->values) {
             if (value.first == attribute) {
                 return value.second;
@@ -83,7 +83,7 @@ namespace pharmmlcpp
     void PKMacro::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (MacroValue value : this->values) {
             if (value.second) { // TODO: See above comment
-                this->setupAstSymbRefs(value.second, gathering, blkId);
+                this->setupAstSymbRefs(value.second.get(), gathering, blkId);
             }
         }
     }
@@ -108,15 +108,15 @@ namespace pharmmlcpp
                 return scalar_int->toInt();
             };
             if (value.first == "from") {
-                from_int = get_int( this->getAssignment(value.first) );
+                from_int = get_int( this->getAssignment(value.first).get() );
             } else if (value.first == "to") {
-                to_int = get_int( this->getAssignment(value.first) );
+                to_int = get_int( this->getAssignment(value.first).get() );
             } else if (value.first == "target") {
-                target_int = get_int( this->getAssignment(value.first) );
+                target_int = get_int( this->getAssignment(value.first).get() );
             } else if (value.first == "cmt") {
-                cmt_int = get_int( this->getAssignment(value.first) );
+                cmt_int = get_int( this->getAssignment(value.first).get() );
             } else if (value.first == "adm" || value.first == "type") {
-                adm_int = get_int( this->getAssignment(value.first) );
+                adm_int = get_int( this->getAssignment(value.first).get() );
             } 
         }
 
@@ -179,17 +179,17 @@ namespace pharmmlcpp
         pharmmlcpp::AstAnalyzer ast_analyzer;
         if (this->sub_type == MacroType::Absorption || this->sub_type == MacroType::Depot) {
             // Try to name in order: ka, Tlag, p
-            std::vector<pharmmlcpp::AstNode *> nodes;
-            nodes.push_back( this->getAssignment("ka") );
-            nodes.push_back( this->getAssignment("Tlag") );
-            nodes.push_back( this->getAssignment("p") );
-            for (pharmmlcpp::AstNode *node : nodes) {
+            std::vector<AstNode *> nodes;
+            nodes.push_back( this->getAssignment("ka").get() );
+            nodes.push_back( this->getAssignment("Tlag").get() );
+            nodes.push_back( this->getAssignment("p").get() );
+            for (AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    SymbRef *ref = ast_analyzer.getPureSymbRef();
                     if (ref) {
-                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
+                        Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return("INPUT_" + symbol->getSymbId());
                         }
@@ -202,17 +202,17 @@ namespace pharmmlcpp
             return("INPUT_IV");
         } else if (this->sub_type == MacroType::Compartment || this->sub_type == MacroType::Peripheral) {
             // Try to name in order: amount, cmt
-            std::vector<pharmmlcpp::AstNode *> nodes;
-            nodes.push_back( this->getAssignment("amount") );
-            nodes.push_back( this->getAssignment("cmt") );
-            for (pharmmlcpp::AstNode *node : nodes) {
+            std::vector<AstNode *> nodes;
+            nodes.push_back( this->getAssignment("amount").get() );
+            nodes.push_back( this->getAssignment("cmt").get() );
+            for (AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                    pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
-                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
+                        Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return(symbol->getSymbId());
                         }
@@ -223,17 +223,17 @@ namespace pharmmlcpp
             }
         } else if (this->sub_type == MacroType::Elimination || this->sub_type == MacroType::Transfer) {
             // Try to name in order: from, cmt
-            std::vector<pharmmlcpp::AstNode *> nodes;
-            nodes.push_back( this->getAssignment("from") );
-            nodes.push_back( this->getAssignment("cmt") );
-            for (pharmmlcpp::AstNode *node : nodes) {
+            std::vector<AstNode *> nodes;
+            nodes.push_back( this->getAssignment("from").get() );
+            nodes.push_back( this->getAssignment("cmt").get() );
+            for (AstNode *node : nodes) {
                 if (node) {
                     ast_analyzer.reset();
                     node->accept(&ast_analyzer);
-                    pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                    pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                    SymbRef *ref = ast_analyzer.getPureSymbRef();
+                    ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
-                        pharmmlcpp::Symbol *symbol = ref->getSymbol();
+                        Symbol *symbol = ref->getSymbol();
                         if (symbol) { // FIXME: Shouldn't be necessary
                             return("FROM_" + symbol->getSymbId());
                         }
@@ -244,14 +244,14 @@ namespace pharmmlcpp
             }
         } else if (this->sub_type == MacroType::Effect) {
             // Try to name in order: cmt
-            pharmmlcpp::AstNode *cmt = this->getAssignment("cmt");
+            std::shared_ptr<AstNode> cmt = this->getAssignment("cmt");
             if (cmt) {
                 ast_analyzer.reset();
                 cmt->accept(&ast_analyzer);
-                pharmmlcpp::SymbRef *ref = ast_analyzer.getPureSymbRef();
-                pharmmlcpp::ScalarInt *sint = ast_analyzer.getPureScalarInt();
+                SymbRef *ref = ast_analyzer.getPureSymbRef();
+                ScalarInt *sint = ast_analyzer.getPureScalarInt();
                 if (ref) {
-                    pharmmlcpp::Symbol *symbol = ref->getSymbol();
+                    Symbol *symbol = ref->getSymbol();
                     if (symbol) { // FIXME: Shouldn't be necessary
                         return("EFF_" + symbol->getSymbId());
                     }
@@ -395,7 +395,7 @@ namespace pharmmlcpp
             for (MacroValue value : macro->getValues()) {
                 // Get attribute type and assignment ("cmt" and 1, etc.)
                 std::string attribute = value.first;
-                AstNode *assignment = value.second;
+                std::shared_ptr<AstNode> assignment = value.second;
 
                 if (!assignment) {
                     // Attribute without assignment
@@ -478,9 +478,9 @@ namespace pharmmlcpp
                 if (value.first == "adm") {
                     // Get 'adm' code and resolve it
                     ast_analyzer.reset();
-                    pharmmlcpp::AstNode *assignment = value.second;
+                    std::shared_ptr<AstNode> assignment = value.second;
                     assignment->accept(&ast_analyzer);
-                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     // Compare and return
                     if (scalar_int->toInt() == adm_num) {
                         return macro;
@@ -500,9 +500,9 @@ namespace pharmmlcpp
                 if (value.first == "cmt") {
                     // Get 'cmt' code and resolve it
                     ast_analyzer.reset();
-                    pharmmlcpp::AstNode *assignment = value.second;
+                    std::shared_ptr<AstNode> assignment = value.second;
                     assignment->accept(&ast_analyzer);
-                    pharmmlcpp::ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                    ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
                     // Compare and return
                     if (scalar_int->toInt() == cmt_num) {
                         return macro;

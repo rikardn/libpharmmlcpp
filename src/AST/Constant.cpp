@@ -24,12 +24,27 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> NullValue::clone() {
+        std::unique_ptr<NullValue> cl;
+        return std::move(cl);
+    }
+
     // Pi and Euler's constant
     void Pi::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> Pi::clone() {
+        std::unique_ptr<Pi> cl;
+        return std::move(cl);
+    }
+
     void Exponentiale::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> Exponentiale::clone() {
+        std::unique_ptr<Exponentiale> cl;
+        return std::move(cl);
     }
 }

@@ -38,7 +38,7 @@ namespace pharmmlcpp
             std::string getType();
             pharmmlcpp::Distribution *getDistribution();
             std::vector<Covariate *> getTransformations();
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
@@ -50,7 +50,7 @@ namespace pharmmlcpp
             std::string type;
             pharmmlcpp::Distribution *distribution = nullptr;
             std::vector<Covariate *> transformations;
-            AstNode *assignment = nullptr;
+            std::shared_ptr<AstNode> assignment;
     };
 }
 

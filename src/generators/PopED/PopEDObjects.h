@@ -40,14 +40,14 @@ namespace pharmmlcpp
             bool hasBoluses();
 
             // FIXME: Rushed methods for combining stuff. Should probably be rethinked.
-            AstNode *getCombinationStart();
-            AstNode *getInterventionStart();
+            std::shared_ptr<AstNode> getCombinationStart();
+            std::shared_ptr<AstNode> getInterventionStart();
             std::vector<std::string> getInfFuncCalls();
             std::unordered_map<Symbol *, std::vector<std::string>> getInfusionMap();
-            std::vector<AstNode *> getDoseTimes();
+            std::vector<std::shared_ptr<AstNode>> getDoseTimes();
             int getNumObservations();
-            std::unordered_map<Symbol *, std::vector<AstNode *>> getBolusAmounts();
-            std::unordered_map<Symbol *, std::vector<AstNode *>> getBolusTimes();
+            std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> getBolusAmounts();
+            std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> getBolusTimes();
 
             void visit(Arm *object) override;
             void visit(Administration *object) override;
@@ -67,14 +67,14 @@ namespace pharmmlcpp
             std::vector<IndividualAdministration *> individualAdministrations;
             std::string generateIndividualAdministration(IndividualAdministration *individualAdministration);
             std::string generateAdministration(Administration *administration);
-            AstNode *combination_start;
-            AstNode *intseq_start;
+            std::shared_ptr<AstNode> combination_start;
+            std::shared_ptr<AstNode> intseq_start;
             std::vector<std::string> infFuncCalls;
             std::unordered_map<Symbol *, std::vector<std::string>> infusionMap;
-            std::vector<AstNode *> doseTimes;
+            std::vector<std::shared_ptr<AstNode>> doseTimes;
             int numObservations = 0;
-            std::unordered_map<Symbol *, std::vector<AstNode *>> bolusAmounts;
-            std::unordered_map<Symbol *, std::vector<AstNode *>> bolusTimes;
+            std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> bolusAmounts;
+            std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> bolusTimes;
     };
 }
 

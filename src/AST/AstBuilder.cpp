@@ -21,15 +21,16 @@
 
 namespace pharmmlcpp
 {
+    // FIXME: This code became a mess after smart pointers. Can using copy be made much more general.
     AstNode *AstBuilder::multiplyMany(std::vector<AstNode *> list) {
         BinopTimes *prev = new BinopTimes();
-        prev->setRight(list.end()[-1]);     // The ultimate element
-        prev->setLeft(list.end()[-2]);      // The penultimate element
+        prev->setRight(std::unique_ptr<AstNode>(list.end()[-1]));     // The ultimate element
+        prev->setLeft(std::unique_ptr<AstNode>(list.end()[-2]));      // The penultimate element
         //for (std::vector<AstNode *>::size_type i = list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
             BinopTimes *next = new BinopTimes();
-            next->setRight(prev);
-            next->setLeft(list[i]);
+            next->setRight(std::unique_ptr<AstNode>(prev));
+            next->setLeft(std::unique_ptr<AstNode>(list[i]));
             prev = next;
         }
 
@@ -39,13 +40,13 @@ namespace pharmmlcpp
     // FIXME: Major duplication of code! Need way of creating same Binop Type 
     AstNode *AstBuilder::addMany(std::vector<AstNode *> list) {
         BinopPlus *prev = new BinopPlus();
-        prev->setRight(list.back());     // The ultimate element
-        prev->setLeft(list.end()[-2]);      // The penultimate element
+        prev->setRight(std::unique_ptr<AstNode>(list.back()));     // The ultimate element
+        prev->setLeft(std::unique_ptr<AstNode>(list.end()[-2]));      // The penultimate element
 
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
             BinopPlus *next = new BinopPlus();
-            next->setRight(prev);
-            next->setLeft(list[i]);
+            next->setRight(std::unique_ptr<AstNode>(prev));
+            next->setLeft(std::unique_ptr<AstNode>(list[i]));
             prev = next;
         }
 

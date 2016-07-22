@@ -25,7 +25,7 @@ namespace pharmmlcpp
 {
     namespace AstTransformation         // Using namespace instead of static class
     {
-        std::vector<AstNode *> toVector(AstNode *node);
+        std::vector<std::shared_ptr<AstNode>> toVector(std::shared_ptr<AstNode> node);
     }
 }
 

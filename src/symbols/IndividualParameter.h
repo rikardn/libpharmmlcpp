@@ -34,14 +34,14 @@ namespace pharmmlcpp
             FixedEffect(PharmMLReader &reader, xml::Node node);
 
             SymbRef *getReference();
-            AstNode *getScalar();
+            std::shared_ptr<AstNode> getScalar();
             std::string getCategory();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
 
         private:
             SymbRef *symbRef = nullptr;
-            AstNode *scalar = nullptr; // TODO: Is really a Scalar (but general Scalar has no constructor)
+            std::shared_ptr<AstNode> scalar; // TODO: Is really a Scalar (but general Scalar has no constructor)
             std::string catId;
 
             void parse(PharmMLReader &reader, xml::Node node);
@@ -60,7 +60,7 @@ namespace pharmmlcpp
             bool isGeneric(); // Type 4 (distributional)
 
             std::string getTransformation();
-            AstNode *getPopulationValue();
+            std::shared_ptr<AstNode> getPopulationValue();
 
             std::vector<SymbRef *> getCovariates();
             std::vector<FixedEffect *> getFixedEffects(SymbRef *covariate);
@@ -68,7 +68,7 @@ namespace pharmmlcpp
 
             std::vector<SymbRef *> getRandomEffects();
 
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
 
             AstNode *asExplicit();
 
@@ -84,16 +84,16 @@ namespace pharmmlcpp
             bool is_generic_cov = false;
 
             std::string transformation;
-            std::vector<pharmmlcpp::AstNode *> transformationParameters;
-            pharmmlcpp::AstNode *populationValue = nullptr;
+            std::vector<std::shared_ptr<AstNode>> transformationParameters;
+            std::shared_ptr<AstNode> populationValue;
 
             std::vector<SymbRef *> covariates;
             std::unordered_map<SymbRef *, std::vector<FixedEffect *>> fixedEffects;
 
             std::vector<SymbRef *> randomEffects;
 
-            pharmmlcpp::AstNode *generalAssignment = nullptr;
-            pharmmlcpp::AstNode *explicitAssignment = nullptr;
+            std::shared_ptr<AstNode> generalAssignment;
+            std::shared_ptr<AstNode> explicitAssignment;
 
     };
 }

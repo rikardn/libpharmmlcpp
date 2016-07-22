@@ -170,7 +170,7 @@ namespace pharmmlcpp
         return cm;
     }
 
-    AstNode *ColumnMapping::getAssignment() {
+    std::shared_ptr<AstNode> ColumnMapping::getAssignment() {
         return this->assignment;
     }
 
@@ -190,7 +190,7 @@ namespace pharmmlcpp
         if (this->symbRef) {
             this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
         } else if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
             this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }
         if (this->target_map) {

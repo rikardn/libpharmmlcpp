@@ -41,12 +41,15 @@ namespace pharmmlcpp
         public:
             SteadyStateParameter(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
-            AstNode *getAssignment();
+            std::shared_ptr<AstNode> getAssignment();
             AstNode *getSymbRef();
             void accept(AstNodeVisitor *visitor);
 
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
-            AstNode *assignment = nullptr;
+            std::shared_ptr<AstNode> assignment;
             SymbRef *symbRef = nullptr;
     };
 
@@ -60,15 +63,15 @@ namespace pharmmlcpp
             xml::Node xml();
             std::string getType();
             std::string getTargetType();
-            AstNode *getAmount();
-            std::vector<AstNode *> getAmountAsVector();
+            std::shared_ptr<AstNode> getAmount();
+            std::vector<std::shared_ptr<AstNode>> getAmountAsVector();
             pharmmlcpp::TargetMapping *getTargetMapping();
             pharmmlcpp::SymbRef *getTargetSymbRef();
-            AstNode *getTimes();
-            std::vector<AstNode *> getTimesAsVector();
-            AstNode *getSteady();
-            AstNode *getDuration();
-            AstNode *getRate();
+            std::shared_ptr<AstNode> getTimes();
+            std::vector<std::shared_ptr<AstNode>> getTimesAsVector();
+            std::shared_ptr<AstNode> getSteady();
+            std::shared_ptr<AstNode> getDuration();
+            std::shared_ptr<AstNode> getRate();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void setupTargetMappings(SymbolGathering &gathering);
             void accept(PharmMLVisitor *visitor);
@@ -77,13 +80,13 @@ namespace pharmmlcpp
         private:
             std::string type;
             std::string target_type;
-            AstNode *amount = nullptr;
-            pharmmlcpp::SymbRef *target_symbref = nullptr;
-            pharmmlcpp::TargetMapping *target_mapping = nullptr;
-            AstNode *times = nullptr;
-            AstNode *steady = nullptr;
-            AstNode *duration = nullptr;
-            AstNode *rate = nullptr;
+            std::shared_ptr<AstNode> amount;
+            SymbRef *target_symbref = nullptr;
+            TargetMapping *target_mapping = nullptr;
+            std::shared_ptr<AstNode> times;
+            std::shared_ptr<AstNode> steady;
+            std::shared_ptr<AstNode> duration;
+            std::shared_ptr<AstNode> rate;
     };
 
     class IndividualAdministration : public ObjectReferer, public PharmMLSection
@@ -110,13 +113,13 @@ namespace pharmmlcpp
             SingleIntervention(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::vector<ObjectRef *> getOidRefs();
-            AstNode *getStart();
-            AstNode *getEnd();
+            std::shared_ptr<AstNode> getStart();
+            std::shared_ptr<AstNode> getEnd();
 
         private:
             std::vector<ObjectRef *> oidRefs;
-            AstNode *start;
-            AstNode *end;
+            std::shared_ptr<AstNode> start;
+            std::shared_ptr<AstNode> end;
     };
 
     class InterventionsCombination : public Object, public PharmMLSection
@@ -125,13 +128,13 @@ namespace pharmmlcpp
             InterventionsCombination(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::vector<SingleIntervention *> getSingleInterventions();
-            AstNode *getRelative();
+            std::shared_ptr<AstNode> getRelative();
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             void accept(ObjectVisitor *visitor);
 
         private:
             std::vector<SingleIntervention *> singleInterventions;
-            AstNode *relative;
+            std::shared_ptr<AstNode> relative;
     };
 
     class Interventions

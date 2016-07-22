@@ -23,6 +23,11 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> FunctionCall::clone() {
+        std::unique_ptr<FunctionCall> cl;
+        return std::move(cl);
+    }
+
     void FunctionCall::setFunction(SymbRef *node) {
         this->function = node;
     }
@@ -47,12 +52,17 @@ namespace pharmmlcpp
         return this->symbId;
     }
 
-    void FunctionArgument::setArgument(AstNode *node) {
-        this->argument = node;
+    void FunctionArgument::setArgument(std::unique_ptr<AstNode> node) {
+        this->argument = std::move(node);
     }
 
     AstNode *FunctionArgument::getArgument() {
-        return this->argument;
+        return this->argument.get();
+    }
+
+    std::unique_ptr<AstNode> FunctionArgument::clone() {
+        std::unique_ptr<FunctionArgument> cl;
+        return std::move(cl);
     }
 
     void FunctionArgument::accept(AstNodeVisitor *visitor) {

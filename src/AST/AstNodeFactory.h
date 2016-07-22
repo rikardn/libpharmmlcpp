@@ -26,7 +26,7 @@ namespace pharmmlcpp
     class AstNodeFactory
     {
         public:
-            static AstNode *create(xml::Node node);
+            static std::unique_ptr<AstNode> create(xml::Node node);
     };
 }
 

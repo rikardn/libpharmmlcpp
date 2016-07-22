@@ -235,7 +235,7 @@ namespace pharmmlcpp
         // TODO: Support HeaderRow (HeaderDefinition defines HeaderRow as ColumnDefinition defines Row)
     }
 
-    std::vector<AstNode *> DataColumn::getData() {
+    std::vector<std::shared_ptr<AstNode>> DataColumn::getData() {
         return this->column;
     }
 
@@ -243,7 +243,7 @@ namespace pharmmlcpp
         return this->definition;
     }
 
-    AstNode *DataColumn::getElement(int row) {
+    std::shared_ptr<AstNode> DataColumn::getElement(int row) {
         return this->column[row - 1];
     }
 
@@ -304,7 +304,7 @@ namespace pharmmlcpp
             for (int rowNum = 1; rowNum <= numRows; rowNum++) {
                 xml::Node row = table.createChild("Row");
                 for (DataColumn *column : columns) {
-                    AstNode *element = column->getElement(rowNum);
+                    std::shared_ptr<AstNode> element = column->getElement(rowNum);
                     XMLAstVisitor xml;
                     element->accept(&xml);
                     row.addChild(xml.getValue());

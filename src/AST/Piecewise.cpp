@@ -20,27 +20,26 @@
 namespace pharmmlcpp
 {
     Piece::Piece() {
-
     }
 
-    void Piece::setExpression(AstNode *expression) {
-        this->expression = expression;
+    void Piece::setExpression(std::unique_ptr<AstNode> expression) {
+        this->expression = std::move(expression);
     }
 
-    void Piece::setCondition(AstNode *condition) {
-        this->condition = condition;
+    void Piece::setCondition(std::unique_ptr<AstNode> condition) {
+        this->condition = std::move(condition);
     }
 
     void Piece::setOtherwise() {
         otherwise = true;
     }
 
-    AstNode *Piece::getExpression() {
-        return this->expression;
+    AstNode* Piece::getExpression() {
+        return this->expression.get();
     }
 
-    AstNode *Piece::getCondition() {
-        return this->condition;
+    AstNode* Piece::getCondition() {
+        return this->condition.get();
     }
 
     bool Piece::isOtherwise() {
@@ -51,8 +50,12 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
-    Piecewise::Piecewise() {
+    std::unique_ptr<AstNode> Piece::clone() {
+        std::unique_ptr<Piece> cl;
+        return std::move(cl);
+    }
 
+    Piecewise::Piecewise() {
     }
 
     void Piecewise::addPiece(Piece *piece) {
@@ -65,5 +68,10 @@ namespace pharmmlcpp
 
     void Piecewise::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> Piecewise::clone() {
+        std::unique_ptr<Piecewise> cl;
+        return std::move(cl);
     }
 }

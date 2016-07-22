@@ -50,19 +50,19 @@ namespace pharmmlcpp
         Dataset *ds = individualAdministration->getDataset();
         DataColumn *idv_col = ds->getIdvColumn();
         DataColumn *dose_col = ds->getColumnFromType("dose");
-        std::vector<AstNode *> idv_data = idv_col->getData();
-        std::vector<AstNode *> dose_data = dose_col->getData();
+        std::vector<std::shared_ptr<AstNode>> idv_data = idv_col->getData();
+        std::vector<std::shared_ptr<AstNode>> dose_data = dose_col->getData();
 
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
         for (std::vector<AstNode *>::size_type i = 0; i != idv_data.size(); i++) {
-            this->rast.acceptRoot(dose_data[i]);
+            this->rast.acceptRoot(dose_data[i].get());
             std::string dose_name = "DOSE_" + std::to_string(i + 1) + "_AMT";
             std::string time_name = "DOSE_" + std::to_string(i + 1) + "_TIME";
             this->doseNames.push_back(dose_name);      // Needed for the placebo arm and elsewhere
             this->timeNames.push_back(time_name);
             formatter.add(dose_name + "=" + this->rast.getValue());
-            this->rast.acceptRoot(idv_data[i]);
+            this->rast.acceptRoot(idv_data[i].get());
             formatter.add(time_name + "=" + this->rast.getValue());
         }
         formatter.closeVector();
@@ -71,8 +71,8 @@ namespace pharmmlcpp
     }
 
     std::string PopEDObjects::generateAdministration(Administration *administration) {
-        std::vector<AstNode *> amounts = administration->getAmountAsVector();
-        std::vector<AstNode *> times = administration->getTimesAsVector();
+        std::vector<std::shared_ptr<AstNode>> amounts = administration->getAmountAsVector();
+        std::vector<std::shared_ptr<AstNode>> times = administration->getTimesAsVector();
 
         if (this->doseNames.size() == 0) {      // First visit will get dose names
             for (std::vector<AstNode *>::size_type i = 1; i <= amounts.size(); i++) {
@@ -85,9 +85,9 @@ namespace pharmmlcpp
         formatter.openVector("c()", 0, ", ");
 
         for (std::vector<AstNode *>::size_type i = 0; i < amounts.size(); i++) {
-            this->rast.acceptRoot(amounts[i]);
+            this->rast.acceptRoot(amounts[i].get());
             formatter.add(this->doseNames[i] + "=" + this->rast.getValue());
-            this->rast.acceptRoot(times[i]);
+            this->rast.acceptRoot(times[i].get());
             formatter.add(this->timeNames[i] + "=" + this->rast.getValue());
         }
 
@@ -113,11 +113,11 @@ namespace pharmmlcpp
         return this->has_boluses;
     }
 
-    AstNode *PopEDObjects::getCombinationStart() {
+    std::shared_ptr<AstNode> PopEDObjects::getCombinationStart() {
         return this->combination_start;
     }
 
-    AstNode *PopEDObjects::getInterventionStart() {
+    std::shared_ptr<AstNode> PopEDObjects::getInterventionStart() {
         return this->intseq_start;
     }
 
@@ -129,7 +129,7 @@ namespace pharmmlcpp
         return this->infusionMap;
     }
 
-    std::vector<AstNode *> PopEDObjects::getDoseTimes() {
+    std::vector<std::shared_ptr<AstNode>> PopEDObjects::getDoseTimes() {
         return this->doseTimes;
     }
 
@@ -137,11 +137,11 @@ namespace pharmmlcpp
         return this->numObservations;
     }
 
-    std::unordered_map<Symbol *, std::vector<AstNode *>> PopEDObjects::getBolusAmounts() {
+    std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> PopEDObjects::getBolusAmounts() {
         return this->bolusAmounts;
     }
 
-    std::unordered_map<Symbol *, std::vector<AstNode *>> PopEDObjects::getBolusTimes() {
+    std::unordered_map<Symbol *, std::vector<std::shared_ptr<AstNode>>> PopEDObjects::getBolusTimes() {
         return this->bolusTimes;
     }
 
@@ -193,18 +193,18 @@ namespace pharmmlcpp
             this->has_infusions = true;
             std::string inf_func_call;
             inf_func_call = object->getOid() + " <- inf_func(offset + ";
-            this->rast.acceptRoot(object->getTimesAsVector()[0]);
+            this->rast.acceptRoot(object->getTimesAsVector()[0].get());
             inf_func_call += this->rast.getValue();
             inf_func_call += ", ";
-            this->rast.acceptRoot(object->getAmount());
+            this->rast.acceptRoot(object->getAmount().get());
             inf_func_call += this->rast.getValue();
             inf_func_call += ", Time, ";
 
             if (object->getRate()) {
-                this->rast.acceptRoot(object->getRate());
+                this->rast.acceptRoot(object->getRate().get());
                 inf_func_call += "rate=" + this->rast.getValue();
             } else {    // Have duration
-                this->rast.acceptRoot(object->getDuration());
+                this->rast.acceptRoot(object->getDuration().get());
                 inf_func_call += "duration=" + this->rast.getValue();
             }
             inf_func_call += ")";
@@ -224,9 +224,9 @@ namespace pharmmlcpp
             this->has_boluses = true;
             // FIXME: This is material for library method: Find all interesting boluses with adm => (amounts, times). On Arm? combination? administration?
             Symbol *target = object->getTargetMapping()->getMaps()[0].symbol;
-            AstNode *single_amount = object->getAmount();
-            std::vector<AstNode *> times = object->getTimesAsVector();
-            for (AstNode* time_node : times) {
+            std::shared_ptr<AstNode> single_amount = object->getAmount();
+            std::vector<std::shared_ptr<AstNode>> times = object->getTimesAsVector();
+            for (std::shared_ptr<AstNode> time_node : times) {
                 this->bolusTimes[target].push_back(time_node);
                 this->bolusAmounts[target].push_back(single_amount);
             }
@@ -251,7 +251,7 @@ namespace pharmmlcpp
         SingleIntervention *singleIntervention = object->getSingleInterventions()[0];     // FIXME: Assume one and only one
 
         // Get the start offset for the combination
-        AstNode *start = AstTransformation::toVector(singleIntervention->getStart())[0];    // Assume only one. FIXME: What would more mean?
+        std::shared_ptr<AstNode> start = AstTransformation::toVector(singleIntervention->getStart())[0];    // Assume only one. FIXME: What would more mean?
         this->combination_start = start;
 
         // Handle the first single intervention
@@ -264,8 +264,8 @@ namespace pharmmlcpp
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
 
-        for (AstNode *time_point : object->getObservationTimesAsVector()) {
-            this->rast.acceptRoot(time_point);
+        for (std::shared_ptr<AstNode> time_point : object->getObservationTimesAsVector()) {
+            this->rast.acceptRoot(time_point.get());
             formatter.add(this->rast.getValue());
         }
 
@@ -278,12 +278,12 @@ namespace pharmmlcpp
     void PopEDObjects::visit(IndividualObservations *object) {
         Dataset *ds = object->getDataset();
         DataColumn *col = ds->getIdvColumn();
-        std::vector<AstNode *> data = col->getData();
+        std::vector<std::shared_ptr<AstNode>> data = col->getData();
 
         TextFormatter formatter;
         formatter.openVector("c()", 0, ", ");
-        for (AstNode *node : data) {
-            this->rast.acceptRoot(node);
+        for (std::shared_ptr<AstNode> node : data) {
+            this->rast.acceptRoot(node.get());
             formatter.add(this->rast.getValue());
         }
         formatter.closeVector();

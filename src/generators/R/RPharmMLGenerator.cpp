@@ -57,7 +57,7 @@ namespace pharmmlcpp
         }
         form.indentAdd(head + TextFormatter::createInlineVector(argument_names, "function()", ", ") + " {");
 
-        form.add("return " + this->accept(node->getDefinition()));
+        form.add("return " + this->accept(node->getDefinition().get()));
         form.outdentAdd("}");
 
         this->setValue(form.createString());
@@ -70,9 +70,9 @@ namespace pharmmlcpp
 
     void RPharmMLGenerator::visit(Covariate *node) {
         std::string s = node->getSymbId();
-        AstNode *assign = node->getAssignment();
+        std::shared_ptr<AstNode> assign = node->getAssignment();
         if (assign) {
-            s += " <- " + this->accept(node->getAssignment());
+            s += " <- " + this->accept(node->getAssignment().get());
         }
         this->setValue(s);
     }
@@ -85,7 +85,7 @@ namespace pharmmlcpp
         std::string result;
 
         if (node->isLinear()) {
-            std::string pop = this->accept(node->getPopulationValue());
+            std::string pop = this->accept(node->getPopulationValue().get());
             if (node->getTransformation() != "") {
                 pop = node->getTransformation() + "(" + pop + ")";
             }
@@ -111,7 +111,7 @@ namespace pharmmlcpp
             }
             result = node->getTransformation() + node->getSymbId() + " <- " + pop + cov + " + " + rand;
         } else if (node->isExplicit()) {
-            result = node->getSymbId() + " <- " + this->accept(node->getAssignment());
+            result = node->getSymbId() + " <- " + this->accept(node->getAssignment().get());
         }
 
         this->setValue(result);
@@ -156,11 +156,11 @@ namespace pharmmlcpp
     void RPharmMLGenerator::visit(Variable *node) {
         // Consolidate for more powerful output
         if (node->getAssignment()) {
-            this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment()));
+            this->consol.vars.addVariable(node->getSymbId(), this->accept(node->getAssignment().get()));
 
             // General (non-mandatory) output
             if (node->getAssignment()) {
-                this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment()));
+                this->setValue(node->getSymbId() + " <- " + this->accept(node->getAssignment().get()));
             } else {
                 this->setValue(std::string());
             }
@@ -170,24 +170,24 @@ namespace pharmmlcpp
     void RPharmMLGenerator::visit(DerivativeVariable *node) {
         // Consolidate for more powerful output
         this->consol.derivs.addDerivative(node->getSymbId(),
-                this->accept(node->getAssignment()),
-                this->accept(node->getInitialValue()),
-                this->accept(node->getInitialTime()));
+                this->accept(node->getAssignment().get()),
+                this->accept(node->getInitialValue().get()),
+                this->accept(node->getInitialTime().get()));
 
         // General (non-mandatory) output
         std::string expr;
         if (node->getAssignment()) {
-            expr = node->getSymbId() + " <- " + this->accept(node->getAssignment());
+            expr = node->getSymbId() + " <- " + this->accept(node->getAssignment().get());
         } else {
             expr = std::string();
         }
-        std::string init_val = "x0=" + this->accept(node->getInitialValue());
-        std::string init_t = "t0=" + this->accept(node->getInitialTime());
-        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable()) + ", " + init_val + ", " + init_t + ")");
+        std::string init_val = "x0=" + this->accept(node->getInitialValue().get());
+        std::string init_t = "t0=" + this->accept(node->getInitialTime().get());
+        this->setValue("deriv(" + expr + ", iv=" + this->accept(node->getIndependentVariable().get()) + ", " + init_val + ", " + init_t + ")");
     }
 
     void RPharmMLGenerator::visit(ObservationModel *node) {
-        std::string error = "W <- " + this->accept(node->getErrorModel());
+        std::string error = "W <- " + this->accept(node->getErrorModel().get());
         std::string output = this->accept(node->getOutput());
         std::string res = this->accept(node->getResidualError());
         std::string y = node->getSymbId() + " <- " + output + " + W * " + res;
@@ -197,7 +197,7 @@ namespace pharmmlcpp
     void RPharmMLGenerator::visit(Distribution *node) {
         std::string result = "distribution=\"" + node->getName() + "\"";
         for (DistributionParameter *p : node->getDistributionParameters()) {
-            result += ", " + p->getName() + "=" + this->accept(p->getAssignment());
+            result += ", " + p->getName() + "=" + this->accept(p->getAssignment().get());
         }
         this->setValue(result);
     }
@@ -231,9 +231,9 @@ namespace pharmmlcpp
     void RPharmMLGenerator::visit(DataColumn *node) {
         std::string s = node->getDefinition()->getId() + " = ";
         std::vector<std::string> list;
-        std::vector<AstNode *> data = node->getData();
-        for (AstNode *element: data) {
-            list.push_back(this->accept(element));
+        std::vector<std::shared_ptr<AstNode>> data = node->getData();
+        for (std::shared_ptr<AstNode> element: data) {
+            list.push_back(this->accept(element.get()));
         }
         s += TextFormatter::createInlineVector(list, "c()", ", ");
         setValue(s);
@@ -304,16 +304,16 @@ namespace pharmmlcpp
             // TODO: TargetMapping
         }
         if (node->getTimes()) {
-            s += ", times = " + this->accept(node->getTimes());
+            s += ", times = " + this->accept(node->getTimes().get());
         }
         if (node->getSteady()) {
-            s += ", steady = " + this->accept(node->getSteady());
+            s += ", steady = " + this->accept(node->getSteady().get());
         }
         if (node->getDuration()) {
-            s += ", duration = " + this->accept(node->getDuration());
+            s += ", duration = " + this->accept(node->getDuration().get());
         }
         if (node->getRate()) {
-            s += ", rate = " + this->accept(node->getRate());
+            s += ", rate = " + this->accept(node->getRate().get());
         }
 
         this->setValue(s + ")");
@@ -446,7 +446,7 @@ namespace pharmmlcpp
 
         s += "refs = " + TextFormatter::createInlineVector(node->getOidRefs(), "c()", ", ");
         if (node->getRelative()) {
-            s += ", relative = " + this->accept(node->getRelative());
+            s += ", relative = " + this->accept(node->getRelative().get());
         }
 
         this->setValue(s + ")");
@@ -519,7 +519,7 @@ namespace pharmmlcpp
         }
         s += "refs = " + TextFormatter::createInlineVector(refs, "c()", ", ");
         if (node->getStart()) {
-            s += ", start = " + this->accept(node->getStart());
+            s += ", start = " + this->accept(node->getStart().get());
         }
 
         this->setValue(s + ")");
@@ -534,7 +534,7 @@ namespace pharmmlcpp
         }
         s += "refs = " + TextFormatter::createInlineVector(refs, "c()", ", ");
         if (node->getStart()) {
-            s += ", start = " + this->accept(node->getStart());
+            s += ", start = " + this->accept(node->getStart().get());
         }
 
         this->setValue(s + ")");
@@ -552,16 +552,16 @@ namespace pharmmlcpp
             list.push_back("oidRef = '" + node->getOidRef() + "'");
         }
         if (node->getArmSize()) {
-            list.push_back("size = " + this->accept(node->getArmSize()));
+            list.push_back("size = " + this->accept(node->getArmSize().get()));
         }
         if (node->getNumSamples()) {
-            list.push_back("samples = " + this->accept(node->getNumSamples()));
+            list.push_back("samples = " + this->accept(node->getNumSamples().get()));
         }
         if (node->getNumTimes()) {
-            list.push_back("times = " + this->accept(node->getNumTimes()));
+            list.push_back("times = " + this->accept(node->getNumTimes().get()));
         }
         if (node->getSameTimes()) {
-            list.push_back("same_times = " + this->accept(node->getSameTimes()));
+            list.push_back("same_times = " + this->accept(node->getSameTimes().get()));
         }
         if (!node->getInterventionSequences().empty()) {
             std::string s = "intervention_seq = c(";
@@ -604,35 +604,35 @@ namespace pharmmlcpp
         std::vector<std::string> top;
         // <ArmSize>
         if (node->getArmSize()) {
-            top.push_back("arm_size = " + this->accept(node->getArmSize()));
+            top.push_back("arm_size = " + this->accept(node->getArmSize().get()));
         }
         // <CostFunction>
         if (node->getCostFunction()) {
-            top.push_back("cost_function = " + this->accept(node->getCostFunction()));
+            top.push_back("cost_function = " + this->accept(node->getCostFunction().get()));
         }
         // <NumberArms>
         if (node->getNumArms()) {
-            top.push_back("num_arms = " + this->accept(node->getNumArms()));
+            top.push_back("num_arms = " + this->accept(node->getNumArms().get()));
         }
         // <NumberSamples>
         if (node->getNumSamples()) {
-            top.push_back("num_samples = " + this->accept(node->getNumSamples()));
+            top.push_back("num_samples = " + this->accept(node->getNumSamples().get()));
         }
         // <NumberTimes>
         if (node->getNumTimes()) {
-            top.push_back("num_times = " + this->accept(node->getNumTimes()));
+            top.push_back("num_times = " + this->accept(node->getNumTimes().get()));
         }
         // <SameTimes>
         if (node->getSameTimes()) {
-            top.push_back("same_times = " + this->accept(node->getSameTimes()));
+            top.push_back("same_times = " + this->accept(node->getSameTimes().get()));
         }
         // <TotalCost>
         if (node->getTotalCost()) {
-            top.push_back("total_cost = " + this->accept(node->getTotalCost()));
+            top.push_back("total_cost = " + this->accept(node->getTotalCost().get()));
         }
         // <TotalSize>
         if (node->getTotalSize()) {
-            top.push_back("total_size = " + this->accept(node->getTotalSize()));
+            top.push_back("total_size = " + this->accept(node->getTotalSize().get()));
         }
         if (!top.empty()) {
             s += "arms = " + TextFormatter::createInlineVector(top, "list()", ", ") + "\n";
@@ -696,7 +696,7 @@ namespace pharmmlcpp
         }
         list.push_back("arm_refs = " + TextFormatter::createInlineVector(arm_refs, "c()", ", "));
 
-        AstNode *dosing_times = node->getDosingTimes();
+        AstNode *dosing_times = node->getDosingTimes().get();
         if (dosing_times) {
             list.push_back("dosing_times=" + this->accept(dosing_times));
         }

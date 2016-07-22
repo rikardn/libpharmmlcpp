@@ -20,193 +20,67 @@
 namespace pharmmlcpp
 {
     AstNode *Uniop::getChild() {
-        return this->child;
+        return this->child.get();
     }
 
-    void Uniop::setChild(AstNode *node) {
-        // FIXME: how to dispose of AstNodes ? delete child;
-        this->child = node;
+    void Uniop::setChild(std::unique_ptr<AstNode> node) {
+        this->child = std::move(node);
     }
 
-    // Ordinary uniops
-    void UniopLog::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
+#define UNIOP_METHODS(name) \
+    std::unique_ptr<AstNode> name::clone() { \
+        std::unique_ptr<name> cl = std::make_unique<name>(); \
+        (*cl).child = this->child->clone(); \
+        return std::move(cl); \
+    } \
+    \
+    void name::accept(AstNodeVisitor *visitor) { \
+        visitor->visit(this); \
     }
 
-    void UniopLog2::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopLog10::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopExp::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopMinus::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopAbs::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSqrt::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopLogistic::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopLogit::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopProbit::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopNormcdf::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopFactorial::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopFactln::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopGamma::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopGammaln::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSin::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSinh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCos::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCosh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopTan::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopTanh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCot::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCoth::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSec::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSech::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCsc::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCsch::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArcsin::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArcsinh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccos::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccosh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArctan::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArctanh::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccot::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccoth::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArcsec::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArcsech::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccsc::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopArccsch::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopHeaviside::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopSign::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopFloor::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void UniopCeiling::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    // Logic uniops
-    void LogicUniopIsdefined::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
-
-    void LogicUniopNot::accept(AstNodeVisitor *visitor) {
-         visitor->visit(this);
-    }
+    UNIOP_METHODS(UniopLog)
+    UNIOP_METHODS(UniopLog2)
+    UNIOP_METHODS(UniopLog10)
+    UNIOP_METHODS(UniopExp)
+    UNIOP_METHODS(UniopMinus)
+    UNIOP_METHODS(UniopAbs)
+    UNIOP_METHODS(UniopSqrt)
+    UNIOP_METHODS(UniopLogistic)
+    UNIOP_METHODS(UniopLogit)
+    UNIOP_METHODS(UniopProbit)
+    UNIOP_METHODS(UniopNormcdf)
+    UNIOP_METHODS(UniopFactorial)
+    UNIOP_METHODS(UniopFactln)
+    UNIOP_METHODS(UniopGamma)
+    UNIOP_METHODS(UniopGammaln)
+    UNIOP_METHODS(UniopSin)
+    UNIOP_METHODS(UniopSinh)
+    UNIOP_METHODS(UniopCos)
+    UNIOP_METHODS(UniopCosh)
+    UNIOP_METHODS(UniopTan)
+    UNIOP_METHODS(UniopTanh)
+    UNIOP_METHODS(UniopCot)
+    UNIOP_METHODS(UniopCoth)
+    UNIOP_METHODS(UniopSec)
+    UNIOP_METHODS(UniopSech)
+    UNIOP_METHODS(UniopCsc)
+    UNIOP_METHODS(UniopCsch)
+    UNIOP_METHODS(UniopArcsin)
+    UNIOP_METHODS(UniopArcsinh)
+    UNIOP_METHODS(UniopArccos)
+    UNIOP_METHODS(UniopArccosh)
+    UNIOP_METHODS(UniopArctan)
+    UNIOP_METHODS(UniopArctanh)
+    UNIOP_METHODS(UniopArccot)
+    UNIOP_METHODS(UniopArccoth)
+    UNIOP_METHODS(UniopArcsec)
+    UNIOP_METHODS(UniopArcsech)
+    UNIOP_METHODS(UniopArccsc)
+    UNIOP_METHODS(UniopArccsch)
+    UNIOP_METHODS(UniopHeaviside)
+    UNIOP_METHODS(UniopSign)
+    UNIOP_METHODS(UniopFloor)
+    UNIOP_METHODS(UniopCeiling)
+    UNIOP_METHODS(LogicUniopIsdefined)
+    UNIOP_METHODS(LogicUniopNot)
 }

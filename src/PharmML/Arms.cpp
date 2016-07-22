@@ -35,11 +35,11 @@ namespace pharmmlcpp
         this->end = reader.factory.create(assign.getChild());
     }
 
-    AstNode *OccasionType::getStart() {
+    std::shared_ptr<AstNode> OccasionType::getStart() {
         return this->start;
     }
 
-    AstNode *OccasionType::getEnd() {
+    std::shared_ptr<AstNode> OccasionType::getEnd() {
         return this->end;
     }
 
@@ -78,7 +78,7 @@ namespace pharmmlcpp
         return this->oidRefs;
     }
 
-    AstNode *InterventionSequence::getStart() {
+    std::shared_ptr<AstNode> InterventionSequence::getStart() {
         return this->start;
     }
 
@@ -121,7 +121,7 @@ namespace pharmmlcpp
         return this->oidRefs;
     }
 
-    AstNode *ObservationSequence::getStart() {
+    std::shared_ptr<AstNode> ObservationSequence::getStart() {
         return this->start;
     }
 
@@ -250,19 +250,19 @@ namespace pharmmlcpp
         return this->oidRef;
     }
 
-    AstNode *Arm::getArmSize(){
+    std::shared_ptr<AstNode> Arm::getArmSize(){
         return this->armSize;
     }
 
-    AstNode *Arm::getNumSamples(){
+    std::shared_ptr<AstNode> Arm::getNumSamples(){
         return this->numSamples;
     }
 
-    AstNode *Arm::getNumTimes(){
+    std::shared_ptr<AstNode> Arm::getNumTimes(){
         return this->numTimes;
     }
 
-    AstNode *Arm::getSameTimes(){
+    std::shared_ptr<AstNode> Arm::getSameTimes(){
         return this->sameTimes;
     }
 
@@ -364,35 +364,35 @@ namespace pharmmlcpp
         return this->designParameters;
     }
 
-    AstNode *Arms::getArmSize() {
+    std::shared_ptr<AstNode> Arms::getArmSize() {
         return this->armSize;
     }
 
-    AstNode *Arms::getCostFunction() {
+    std::shared_ptr<AstNode> Arms::getCostFunction() {
         return this->costFunction;
     }
 
-    AstNode *Arms::getNumArms() {
+    std::shared_ptr<AstNode> Arms::getNumArms() {
         return this->numArms;
     }
 
-    AstNode *Arms::getNumSamples() {
+    std::shared_ptr<AstNode> Arms::getNumSamples() {
         return this->numSamples;
     }
 
-    AstNode *Arms::getNumTimes() {
+    std::shared_ptr<AstNode> Arms::getNumTimes() {
         return this->numTimes;
     }
 
-    AstNode *Arms::getSameTimes() {
+    std::shared_ptr<AstNode> Arms::getSameTimes() {
         return this->sameTimes;
     }
 
-    AstNode *Arms::getTotalCost() {
+    std::shared_ptr<AstNode> Arms::getTotalCost() {
         return this->totalCost;
     }
 
-    AstNode *Arms::getTotalSize() {
+    std::shared_ptr<AstNode> Arms::getTotalSize() {
         return this->totalSize;
     }
 

@@ -35,31 +35,31 @@ namespace pharmmlcpp
         }
     }
 
-    AstNode *DerivativeVariable::getIndependentVariable() {
+    std::shared_ptr<AstNode> DerivativeVariable::getIndependentVariable() {
         return this->independent_variable;
     }
 
-    AstNode *DerivativeVariable::getInitialValue() {
+    std::shared_ptr<AstNode> DerivativeVariable::getInitialValue() {
         return this->initial_value;
     }
 
-    AstNode *DerivativeVariable::getInitialTime() {
+    std::shared_ptr<AstNode> DerivativeVariable::getInitialTime() {
         return this->initial_time;
     }
 
 
     void DerivativeVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
         }
         if (this->independent_variable) {
-            this->setupAstSymbRefs(this->independent_variable, gathering, blkId);
+            this->setupAstSymbRefs(this->independent_variable.get(), gathering, blkId);
         }
         if (this->initial_value) {
-            this->setupAstSymbRefs(this->initial_value, gathering, blkId);
+            this->setupAstSymbRefs(this->initial_value.get(), gathering, blkId);
         }
         if (this->initial_time) {
-            this->setupAstSymbRefs(this->initial_time, gathering, blkId);
+            this->setupAstSymbRefs(this->initial_time.get(), gathering, blkId);
         }
     }
 

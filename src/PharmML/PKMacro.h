@@ -30,7 +30,7 @@
 
 namespace pharmmlcpp
 {
-    typedef std::pair<std::string, AstNode *> MacroValue;
+    typedef std::pair<std::string, std::shared_ptr<AstNode>> MacroValue;
     enum class MacroType {Compartment, Peripheral, Effect, Depot, IV, Absorption, Oral, Elimination, Transfer};
     class PKMacro : public PharmMLSection, public Referer
     {
@@ -40,7 +40,7 @@ namespace pharmmlcpp
             std::string getType();
             bool hasAttribute(std::string attribute);
             std::vector<MacroValue> getValues();
-            AstNode *getAssignment(std::string attribute);
+            std::shared_ptr<AstNode> getAssignment(std::string attribute);
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);

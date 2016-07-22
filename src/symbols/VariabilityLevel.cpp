@@ -88,7 +88,7 @@ namespace pharmmlcpp
         return this->levelReference;
     }
 
-    AstNode *VariabilityReference::getRandomEffectsMapping() {
+    std::shared_ptr<AstNode> VariabilityReference::getRandomEffectsMapping() {
         return this->randomEffectsMapping;
     }
 

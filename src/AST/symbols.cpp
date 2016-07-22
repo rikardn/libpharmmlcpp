@@ -33,6 +33,11 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> SymbRef::clone() {
+        std::unique_ptr<SymbRef> cl;
+        return std::move(cl);
+    }
+
     std::string SymbRef::getSymbIdRef() {
         return this->symbIdRef;
     }
@@ -67,6 +72,11 @@ namespace pharmmlcpp
 
     void ColumnRef::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> ColumnRef::clone() {
+        std::unique_ptr<ColumnRef> cl;
+        return std::move(cl);
     }
 
     std::string ColumnRef::toString() {

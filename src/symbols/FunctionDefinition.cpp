@@ -75,13 +75,13 @@ namespace pharmmlcpp
         return this->arguments;
     }
 
-    AstNode *FunctionDefinition::getDefinition() {
+    std::shared_ptr<AstNode> FunctionDefinition::getDefinition() {
         return this->definition;
     }
 
     void FunctionDefinition::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->definition) {
-            this->setupAstSymbRefs(this->definition, gathering, blkId);
+            this->setupAstSymbRefs(this->definition.get(), gathering, blkId);
         }
     }
 

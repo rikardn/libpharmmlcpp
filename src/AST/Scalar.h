@@ -42,9 +42,12 @@ namespace pharmmlcpp
             std::string toString();
             int toInt();
             void set(int value);
-            void set(std::string value);
+            void set(std::string value); 
             void accept(AstNodeVisitor *visitor) override;
-        
+       
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             int value;
     };
@@ -63,7 +66,10 @@ namespace pharmmlcpp
             void set(double value);
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override;
-        
+       
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             std::string value;
     };
@@ -79,6 +85,9 @@ namespace pharmmlcpp
             void set(bool value);
             void accept(AstNodeVisitor *visitor) override;
 
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             bool value;
     };
@@ -93,7 +102,10 @@ namespace pharmmlcpp
             ScalarString(xml::Node xml_node);
             std::string toString();
             void set(std::string value);
-            void accept(AstNodeVisitor *visitor) override;
+            void accept(AstNodeVisitor *visitor) override; 
+
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
 
         private:
             std::string value;
@@ -112,6 +124,9 @@ namespace pharmmlcpp
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override;
 
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             std::string value;
     };
@@ -123,6 +138,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 
     /**
@@ -132,6 +150,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 
     /**
@@ -141,6 +162,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 
     /**
@@ -150,6 +174,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 
     /**
@@ -159,6 +186,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 
     /**
@@ -168,6 +198,9 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
+        
+        protected: 
+            std::unique_ptr<AstNode> clone() override;
     };
 }
 

@@ -40,11 +40,11 @@ namespace pharmmlcpp
         this->name = name;
     }
 
-    AstNode *DistributionParameter::getAssignment() {
+    std::shared_ptr<AstNode> DistributionParameter::getAssignment() {
         return this->assignment;
     }
 
-    void DistributionParameter::setAssignment(AstNode *assignment) {
+    void DistributionParameter::setAssignment(std::shared_ptr<AstNode> assignment) {
         this->assignment = assignment;
     }
 }

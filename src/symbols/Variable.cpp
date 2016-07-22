@@ -33,7 +33,7 @@ namespace pharmmlcpp
         }
     }
 
-    AstNode *CommonVariable::getAssignment() {
+    std::shared_ptr<AstNode> CommonVariable::getAssignment() {
         return this->assignment;
     }
 
@@ -44,7 +44,7 @@ namespace pharmmlcpp
 
     void Variable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
        if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
        }
     }
 

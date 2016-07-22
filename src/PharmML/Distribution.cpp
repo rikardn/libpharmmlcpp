@@ -36,11 +36,11 @@ namespace pharmmlcpp
             // UncertML. Support only normal distribution and make lots of assumptions and hope that UncertML will go away.
             this->name = "Normal2";
             auto mean_param = new DistributionParameter(reader);
-            mean_param->setAssignment(new ScalarReal(node.getChild().getChild().getChild().getText()));
+            mean_param->setAssignment(std::make_shared<ScalarReal>(node.getChild().getChild().getChild().getText()));
             mean_param->setName("mean");
             this->parameters.push_back(mean_param);
             auto stdev_param = new DistributionParameter(reader);
-            stdev_param->setAssignment(new SymbRef(node.getChild().getLastChild().getChild().getAttribute("varId").getValue()));
+            stdev_param->setAssignment(std::make_shared<SymbRef>(node.getChild().getLastChild().getChild().getAttribute("varId").getValue()));
             stdev_param->setName("var");
             this->parameters.push_back(stdev_param);
         }

@@ -75,7 +75,7 @@ namespace CPharmML
         return this->distribution;
     }
 
-    pharmmlcpp::AstNode *Covariate::getDefinition() {
+    std::shared_ptr<pharmmlcpp::AstNode> Covariate::getDefinition() {
         return this->definition;
     }
 

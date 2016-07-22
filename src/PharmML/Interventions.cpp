@@ -38,7 +38,12 @@ namespace pharmmlcpp
         }
     }
 
-    AstNode *SteadyStateParameter::getAssignment() {
+    std::unique_ptr<AstNode> SteadyStateParameter::clone() {
+        std::unique_ptr<SteadyStateParameter> cl;
+        return std::move(cl);
+    }
+
+    std::shared_ptr<AstNode> SteadyStateParameter::getAssignment() {
         return this->assignment;
     }
 
@@ -87,7 +92,7 @@ namespace pharmmlcpp
             xml::Node tree = assign.getChild();
             this->times = reader.factory.create(tree);
         } else if (steady.exists()) {
-            this->steady = new SteadyStateParameter(reader, steady);
+            this->steady = std::make_unique<SteadyStateParameter>(reader, steady);
         }
 
         // Get duration/rate for infusion type
@@ -149,15 +154,15 @@ namespace pharmmlcpp
         return this->target_type;
     }
 
-    AstNode *Administration::getAmount() {
+    std::shared_ptr<AstNode> Administration::getAmount() {
         return this->amount;
     }
 
-    std::vector<AstNode *> Administration::getAmountAsVector() {
+    std::vector<std::shared_ptr<AstNode>> Administration::getAmountAsVector() {
         return AstTransformation::toVector(this->amount);
     }
 
-    std::vector<AstNode *> Administration::getTimesAsVector() {
+    std::vector<std::shared_ptr<AstNode>> Administration::getTimesAsVector() {
         return AstTransformation::toVector(this->times);
     }
 
@@ -169,19 +174,19 @@ namespace pharmmlcpp
         return this->target_symbref;
     }
 
-    AstNode *Administration::getTimes() {
+    std::shared_ptr<AstNode> Administration::getTimes() {
         return this->times;
     }
 
-    AstNode *Administration::getSteady() {
+    std::shared_ptr<AstNode> Administration::getSteady() {
         return this->steady;
     }
 
-    AstNode *Administration::getDuration() {
+    std::shared_ptr<AstNode> Administration::getDuration() {
         return this->duration;
     }
 
-    AstNode *Administration::getRate() {
+    std::shared_ptr<AstNode> Administration::getRate() {
         return this->rate;
     }
 
@@ -190,10 +195,10 @@ namespace pharmmlcpp
             this->setupAstSymbRefs(this->getTargetSymbRef(), gathering, blkId);
         }
         if (this->amount) {
-            this->setupAstSymbRefs(this->amount, gathering, blkId);
+            this->setupAstSymbRefs(this->amount.get(), gathering, blkId);
         }
         if (this->times) {
-            this->setupAstSymbRefs(this->times, gathering, blkId);
+            this->setupAstSymbRefs(this->times.get(), gathering, blkId);
         }
     }
 
@@ -305,11 +310,11 @@ namespace pharmmlcpp
         return this->oidRefs;
     }
 
-    AstNode *SingleIntervention::getStart() {
+    std::shared_ptr<AstNode> SingleIntervention::getStart() {
         return this->start;
     }
 
-    AstNode *SingleIntervention::getEnd() {
+    std::shared_ptr<AstNode> SingleIntervention::getEnd() {
         return this->end;
     }
 
@@ -336,7 +341,7 @@ namespace pharmmlcpp
         return this->singleInterventions;
     }
 
-    AstNode *InterventionsCombination::getRelative() {
+    std::shared_ptr<AstNode> InterventionsCombination::getRelative() {
         return this->relative;
     }
 

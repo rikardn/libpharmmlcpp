@@ -68,7 +68,7 @@ namespace pharmmlcpp
         return this->symbRef;
     }
 
-    AstNode *VariableAssignment::getAssignment() {
+    std::shared_ptr<AstNode> VariableAssignment::getAssignment() {
         return this->assignment;
     }
 
@@ -217,15 +217,15 @@ namespace pharmmlcpp
         return (this->hiBound != nullptr);
     }
 
-    AstNode *ParameterEstimation::getInitValue() {
+    std::shared_ptr<AstNode> ParameterEstimation::getInitValue() {
         return this->init;
     }
 
-    AstNode *ParameterEstimation::getLoBound() {
+    std::shared_ptr<AstNode> ParameterEstimation::getLoBound() {
         return this->loBound;
     }
 
-    AstNode *ParameterEstimation::getHiBound() {
+    std::shared_ptr<AstNode> ParameterEstimation::getHiBound() {
         return this->hiBound;
     }
 
@@ -248,7 +248,7 @@ namespace pharmmlcpp
         return this->name;
     }
 
-    AstNode *OperationProperty::getAssignment() {
+    std::shared_ptr<AstNode> OperationProperty::getAssignment() {
         return this->assignment;
     }
 

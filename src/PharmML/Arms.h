@@ -33,12 +33,12 @@ namespace pharmmlcpp
         public:
             OccasionType(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
-            AstNode *getStart();
-            AstNode *getEnd();
+            std::shared_ptr<AstNode> getStart();
+            std::shared_ptr<AstNode> getEnd();
  
         private:
-            AstNode *start = nullptr;
-            AstNode *end = nullptr;
+            std::shared_ptr<AstNode> start;
+            std::shared_ptr<AstNode> end;
             //~ void accept(AstNodeVisitor *visitor);
     };
 
@@ -49,12 +49,12 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
-            AstNode *getStart();
+            std::shared_ptr<AstNode> getStart();
             void accept(PharmMLVisitor *visitor);
 
         private:
             std::vector<ObjectRef *> oidRefs;
-            AstNode *start = nullptr;
+            std::shared_ptr<AstNode> start;
     };
 
     class ObservationSequence
@@ -64,12 +64,12 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
             std::vector<ObjectRef *> getOidRefs();
-            AstNode *getStart();
+            std::shared_ptr<AstNode> getStart();
             void accept(PharmMLVisitor *visitor);
 
         private:
             std::vector<ObjectRef *> oidRefs;
-            AstNode *start = nullptr;
+            std::shared_ptr<AstNode> start;
     };
 
     class OccasionSequence
@@ -94,10 +94,10 @@ namespace pharmmlcpp
             void gatherObjectRefs(std::unordered_map<std::string, Object *> &oidMap);
             xml::Node xml();
             std::string getOidRef();
-            AstNode *getArmSize();
-            AstNode *getNumSamples();
-            AstNode *getNumTimes();
-            AstNode *getSameTimes();
+            std::shared_ptr<AstNode> getArmSize();
+            std::shared_ptr<AstNode> getNumSamples();
+            std::shared_ptr<AstNode> getNumTimes();
+            std::shared_ptr<AstNode> getSameTimes();
             std::vector<InterventionSequence *> getInterventionSequences();
             std::vector<ObservationSequence *> getObservationSequences();
             void accept(PharmMLVisitor *visitor);   // FIXME: Remove this
@@ -105,10 +105,10 @@ namespace pharmmlcpp
 
         private:
             std::string oidRef;
-            AstNode *armSize = nullptr;
-            AstNode *numSamples = nullptr;
-            AstNode *numTimes = nullptr;
-            AstNode *sameTimes = nullptr;
+            std::shared_ptr<AstNode> armSize;
+            std::shared_ptr<AstNode> numSamples;
+            std::shared_ptr<AstNode> numTimes;
+            std::shared_ptr<AstNode> sameTimes;
             std::vector<InterventionSequence *> interventionSequences;
             std::vector<ObservationSequence *> observationSequences;
             std::vector<OccasionSequence *> occasionSequences;
@@ -120,28 +120,28 @@ namespace pharmmlcpp
             Arms(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::vector<Variable *> getDesignParameters();
-            AstNode *getArmSize();
-            AstNode *getCostFunction();
-            AstNode *getNumArms();
-            AstNode *getNumSamples();
-            AstNode *getNumTimes();
-            AstNode *getSameTimes();
-            AstNode *getTotalCost();
-            AstNode *getTotalSize();
+            std::shared_ptr<AstNode> getArmSize();
+            std::shared_ptr<AstNode> getCostFunction();
+            std::shared_ptr<AstNode> getNumArms();
+            std::shared_ptr<AstNode> getNumSamples();
+            std::shared_ptr<AstNode> getNumTimes();
+            std::shared_ptr<AstNode> getSameTimes();
+            std::shared_ptr<AstNode> getTotalCost();
+            std::shared_ptr<AstNode> getTotalSize();
             std::vector<Arm *> getArms();
             xml::Node xml();
             void accept(PharmMLVisitor *visitor);
 
         private:
             std::vector<pharmmlcpp::Variable *> designParameters;
-            AstNode *armSize = nullptr;
-            AstNode *costFunction = nullptr;
-            AstNode *numArms = nullptr;
-            AstNode *numSamples = nullptr;
-            AstNode *numTimes = nullptr;
-            AstNode *sameTimes = nullptr;
-            AstNode *totalCost = nullptr;
-            AstNode *totalSize = nullptr;
+            std::shared_ptr<AstNode> armSize;
+            std::shared_ptr<AstNode> costFunction;
+            std::shared_ptr<AstNode> numArms;
+            std::shared_ptr<AstNode> numSamples;
+            std::shared_ptr<AstNode> numTimes;
+            std::shared_ptr<AstNode> sameTimes;
+            std::shared_ptr<AstNode> totalCost;
+            std::shared_ptr<AstNode> totalSize;
             std::vector<Arm *> arms;
     };
 }

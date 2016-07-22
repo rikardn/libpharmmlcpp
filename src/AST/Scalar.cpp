@@ -73,6 +73,11 @@ namespace pharmmlcpp
         this->value = std::stoi(value);
     }
 
+    std::unique_ptr<AstNode> ScalarInt::clone() {
+        std::unique_ptr<ScalarInt> cl(new ScalarInt(*this));
+        return std::move(cl);
+    }
+
     void ScalarInt::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -132,6 +137,11 @@ namespace pharmmlcpp
         this->value = value;
     }
 
+    std::unique_ptr<AstNode> ScalarReal::clone() {
+        std::unique_ptr<ScalarReal> cl(new ScalarReal(*this));
+        return std::move(cl);
+    }
+
     void ScalarReal::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -155,6 +165,11 @@ namespace pharmmlcpp
      */
     void ScalarBool::set(bool value) {
         this->value = value;
+    }
+
+    std::unique_ptr<AstNode> ScalarBool::clone() {
+        std::unique_ptr<ScalarBool> cl(new ScalarBool(*this));
+        return std::move(cl);
     }
 
     void ScalarBool::accept(AstNodeVisitor *visitor) {
@@ -187,6 +202,11 @@ namespace pharmmlcpp
      */
     void ScalarString::set(std::string value) {
         this->value = value;
+    }
+
+    std::unique_ptr<AstNode> ScalarString::clone() {
+        std::unique_ptr<ScalarString> cl(new ScalarString(*this));
+        return std::move(cl);
     }
 
     void ScalarString::accept(AstNodeVisitor *visitor) {
@@ -229,6 +249,11 @@ namespace pharmmlcpp
         this->value = value;
     }
 
+    std::unique_ptr<AstNode> ScalarId::clone() {
+        std::unique_ptr<ScalarId> cl(new ScalarId(*this));
+        return std::move(cl);
+    }
+
     void ScalarId::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -237,20 +262,50 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> ScalarNA::clone() {
+        std::unique_ptr<ScalarNA> cl(new ScalarNA(*this));
+        return std::move(cl);
+    }
+
     void ScalarNaN::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> ScalarNaN::clone() {
+        std::unique_ptr<ScalarNaN> cl(new ScalarNaN(*this));
+        return std::move(cl);
     }
 
     void ScalarPlusInf::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> ScalarPlusInf::clone() {
+        std::unique_ptr<ScalarPlusInf> cl(new ScalarPlusInf(*this));
+        return std::move(cl);
+    }
+
     void ScalarMinusInf::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
+    std::unique_ptr<AstNode> ScalarMinusInf::clone() {
+        std::unique_ptr<ScalarMinusInf> cl(new ScalarMinusInf(*this));
+        return std::move(cl);
+    }
+
     void ScalarBLQ::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> ScalarBLQ::clone() {
+        std::unique_ptr<ScalarBLQ> cl(new ScalarBLQ(*this));
+        return std::move(cl);
+    }
+
+    std::unique_ptr<AstNode> ScalarALQ::clone() {
+        std::unique_ptr<ScalarALQ> cl(new ScalarALQ(*this));
+        return std::move(cl);
     }
 
     void ScalarALQ::accept(AstNodeVisitor *visitor) {

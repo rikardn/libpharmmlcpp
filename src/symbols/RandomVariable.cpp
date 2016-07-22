@@ -49,7 +49,7 @@ namespace pharmmlcpp
 
     void RandomVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         for (DistributionParameter *par : this->distribution->getDistributionParameters()) {
-            this->setupAstSymbRefs(par->getAssignment(), gathering, blkId);
+            this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
         }
         for (VariabilityReference *var_ref : this->getVariabilityReferences()) {
             var_ref->setupSymbRefs(gathering, blkId);
@@ -66,6 +66,7 @@ namespace pharmmlcpp
 
     // get the initial value for the stdev.
     // FIXME: Check which distribution
+    // FIXME: Ownership, copy and smart pointers
     AstNode *RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
         for (DistributionParameter *param : this->distribution->getDistributionParameters()) {
             if (param->getName() == "stdev") {
@@ -77,7 +78,7 @@ namespace pharmmlcpp
                     Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
                     for (ParameterEstimation *pe : parameterEstimations) {
                         if (pe->getSymbRef()->getSymbol() == symbol) {
-                            return pe->getInitValue();
+                            return pe->getInitValue().get();
                         }
                     }
                 }
@@ -87,14 +88,14 @@ namespace pharmmlcpp
                 param->getAssignment()->accept(&analyzer);
                 if (analyzer.getPureScalar()) {
                     UniopSqrt *stdev = new UniopSqrt();
-                    stdev->setChild(analyzer.getPureScalar());
+                    stdev->setChild(std::unique_ptr<AstNode>(analyzer.getPureScalar()));
                     return stdev;
                 } else if (analyzer.getPureSymbRef()) {
                     Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
                     for (ParameterEstimation *pe : parameterEstimations) {
                         if (pe->getSymbRef()->getSymbol() == symbol) {
                             UniopSqrt *stdev = new UniopSqrt();
-                            stdev->setChild(pe->getInitValue());
+                            stdev->setChild(std::unique_ptr<AstNode>(pe->getInitValue().get()));
                             return stdev;
                         }
                     }

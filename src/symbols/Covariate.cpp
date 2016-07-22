@@ -100,13 +100,13 @@ namespace pharmmlcpp
         return this->transformations;
     }
 
-    AstNode *Covariate::getAssignment() {
+    std::shared_ptr<AstNode> Covariate::getAssignment() {
         return this->assignment;
     }
 
     void Covariate::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->assignment) {
-            this->setupAstSymbRefs(this->assignment, gathering, blkId);
+            this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
         }
         for (Covariate *cov : this->transformations) {
             cov->setupSymbRefs(gathering, blkId);

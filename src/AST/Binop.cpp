@@ -20,101 +20,52 @@
 
 namespace pharmmlcpp
 {
-    void Binop::setLeft(AstNode *child) {
-        this->left = child;
+    void Binop::setLeft(std::unique_ptr<AstNode> child) {
+        this->left = std::move(child);
     }
 
     AstNode *Binop::getLeft() {
-        return this->left;
+        return this->left.get();
     }
 
-    void Binop::setRight(AstNode *child) {
-        this->right = child;
+    void Binop::setRight(std::unique_ptr<AstNode> child) {
+        this->right = std::move(child);
     }
 
     AstNode *Binop::getRight() {
-        return this->right;
+        return this->right.get();
     }
 
-    // Ordinary binops
-    void BinopPlus::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
+#define BINOP_METHODS(name) \
+    std::unique_ptr<AstNode> name::clone() { \
+        std::unique_ptr<name> cl = std::make_unique<name>(); \
+        (*cl).left = this->left->clone(); \
+        (*cl).right = this->right->clone(); \
+        return std::move(cl); \
+    } \
+    \
+    void name::accept(AstNodeVisitor *visitor) { \
+        visitor->visit(this); \
     }
 
-    void BinopMinus::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopDivide::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopTimes::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopPower::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopLogx::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopRoot::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopMin::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopMax::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopRem::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void BinopAtan2::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    // Logic binops
-    void LogicBinopLt::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopLeq::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopGt::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopGeq::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopEq::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopNeq::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopAnd::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopOr::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
-
-    void LogicBinopXor::accept(AstNodeVisitor *visitor) {
-        visitor->visit(this);
-    }
+    BINOP_METHODS(BinopPlus)
+    BINOP_METHODS(BinopMinus)
+    BINOP_METHODS(BinopDivide)
+    BINOP_METHODS(BinopTimes)
+    BINOP_METHODS(BinopPower)
+    BINOP_METHODS(BinopLogx)
+    BINOP_METHODS(BinopRoot)
+    BINOP_METHODS(BinopMin)
+    BINOP_METHODS(BinopMax)
+    BINOP_METHODS(BinopRem)
+    BINOP_METHODS(BinopAtan2)
+    BINOP_METHODS(LogicBinopLt)
+    BINOP_METHODS(LogicBinopLeq)
+    BINOP_METHODS(LogicBinopGt)
+    BINOP_METHODS(LogicBinopGeq)
+    BINOP_METHODS(LogicBinopEq)
+    BINOP_METHODS(LogicBinopNeq)
+    BINOP_METHODS(LogicBinopAnd)
+    BINOP_METHODS(LogicBinopOr)
+    BINOP_METHODS(LogicBinopXor)
 }

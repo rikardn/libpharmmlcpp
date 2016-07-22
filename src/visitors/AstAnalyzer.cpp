@@ -555,12 +555,12 @@ namespace pharmmlcpp
         }
         std::string s;
         bool first = true;
-        for (AstNode *cnode : node->getElements()) {
+        for (std::shared_ptr<AstNode> cnode : node->getElements()) {
             if (first) {
-                s += this->accept(cnode);
+                s += this->accept(cnode.get());
                 first = false;
             } else {
-                s += ";" + this->accept(cnode);
+                s += ";" + this->accept(cnode.get());
             }
         }
         this->length = node->getElements().size();  // Length of the vector

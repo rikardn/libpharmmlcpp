@@ -35,8 +35,7 @@ namespace pharmmlcpp
             this->symbRef = symbRef;
         } else {
             xml::Node scalar_node = reader.getSingleElement(node, "./ct:Scalar");
-            AstNode *scalar = reader.factory.create(scalar_node);
-            this->scalar = scalar;
+            this->scalar = reader.factory.create(scalar_node);
         }
 
         // Get category (for categorical covariates)
@@ -46,11 +45,11 @@ namespace pharmmlcpp
         }
     }
 
-    pharmmlcpp::SymbRef *FixedEffect::getReference() {
+    SymbRef *FixedEffect::getReference() {
         return this->symbRef;
     }
 
-    pharmmlcpp::AstNode *FixedEffect::getScalar() {
+    std::shared_ptr<AstNode> FixedEffect::getScalar() {
         return this->scalar;
     }
 
@@ -86,7 +85,7 @@ namespace pharmmlcpp
                 // Get transformation parameters (if available)
                 std::vector<xml::Node> trans_params = reader.getElements(trans, "./ct:Parameter");
                 for (xml::Node trans_param : trans_params) {
-                    pharmmlcpp::AstNode *param = reader.factory.create(trans_param.getChild());
+                    std::shared_ptr<AstNode> param = reader.factory.create(trans_param.getChild());
                     this->transformationParameters.push_back(param);
                 }
             }
@@ -193,7 +192,7 @@ namespace pharmmlcpp
         return this->transformation;
     }
 
-    pharmmlcpp::AstNode *IndividualParameter::getPopulationValue() {
+    std::shared_ptr<AstNode> IndividualParameter::getPopulationValue() {
         return this->populationValue;
     }
 
@@ -219,13 +218,13 @@ namespace pharmmlcpp
         return this->randomEffects;
     }
 
-    pharmmlcpp::AstNode *IndividualParameter::getAssignment() {
+    std::shared_ptr<AstNode> IndividualParameter::getAssignment() {
         if (this->is_general_cov) {
             return this->generalAssignment;
         } else if (this->is_explicit_cov) {
             return this->explicitAssignment;
         }
-        return nullptr;
+        return std::shared_ptr<AstNode>(nullptr);
     }
 
     // Convert any structure of parameter into general form
@@ -233,10 +232,11 @@ namespace pharmmlcpp
     AstNode *IndividualParameter::asExplicit() {
         AstNode *result;
         if (this->isExplicit()) {
-            result = this->getAssignment();
+            result = this->getAssignment().get();
         } else {
             // trans^-1(  trans(pop) + fixedeff1*fixedeff2*covariate + ... + randomeffect1 + randomeffect2)
-            if (this->transformation == "log") {
+/* FIXME: This is a regression. Need copy methods to do this right!
+              if (this->transformation == "log") {
                 // FIXME: Smart pointers. Need to copy nodes?
                 std::vector<AstNode *> addition_nodes;
 
@@ -257,21 +257,21 @@ namespace pharmmlcpp
                     addition_nodes.push_back(random_effect);
                 }
 
-                UniopExp *exp_node = new UniopExp();
-                exp_node->setChild(AstBuilder::addMany(addition_nodes));
-                result = exp_node;
-            }
+                auto exp_node = std::make_unique<UniopExp>();
+                exp_node->setChild(std::unique<AstNode>(AstBuilder::addMany(addition_nodes)));
+                result = exp_node.get(); 
+            }*/
         }
 
         return result;
     }
 
     void IndividualParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
-        for (pharmmlcpp::AstNode *trans_param : this->transformationParameters) {
-            this->setupAstSymbRefs(trans_param, gathering, blkId);
+        for (auto trans_param : this->transformationParameters) {
+            this->setupAstSymbRefs(trans_param.get(), gathering, blkId);
         }
         if (this->populationValue) {
-            this->setupAstSymbRefs(this->populationValue, gathering, blkId);
+            this->setupAstSymbRefs(this->populationValue.get(), gathering, blkId);
         }
         for (SymbRef *cov : this->covariates) {
             this->addSymbRef(cov, gathering, blkId);
@@ -284,10 +284,10 @@ namespace pharmmlcpp
             this->addSymbRef(rand_effect, gathering, blkId);
         }
         if (this->generalAssignment) {
-            this->setupAstSymbRefs(this->generalAssignment, gathering, blkId);
+            this->setupAstSymbRefs(this->generalAssignment.get(), gathering, blkId);
         }
         if (this->explicitAssignment) {
-            this->setupAstSymbRefs(this->explicitAssignment, gathering, blkId);
+            this->setupAstSymbRefs(this->explicitAssignment.get(), gathering, blkId);
         }
     }
 

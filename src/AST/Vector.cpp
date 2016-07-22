@@ -15,11 +15,12 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include "Vector.h"
 
 namespace pharmmlcpp
 {
-    VectorCell::VectorCell(int index, AstNode *content) {
+    VectorCell::VectorCell(int index, std::shared_ptr<AstNode> content) {
         this->index = index;
         this->content = content;
     }
@@ -28,7 +29,7 @@ namespace pharmmlcpp
         return this->index;
     }
 
-    AstNode *VectorCell::getContent() {
+    std::shared_ptr<AstNode> VectorCell::getContent() {
         return this->content;
     }
 
@@ -43,7 +44,7 @@ namespace pharmmlcpp
         }
     }
 
-    void Vector::addElement(AstNode *element) {
+    void Vector::addElement(std::shared_ptr<AstNode> element) {
         this->elements.push_back(element);
     }
 
@@ -54,17 +55,22 @@ namespace pharmmlcpp
         int current_length = this->elements.size();
         if (current_length < req_length) {
             for (int i = 0; i < (req_length - current_length); i++) {
-                this->elements.push_back(this->defaultContent);
+                this->elements.push_back(std::shared_ptr<AstNode>(this->defaultContent));
             }
         }
         // Insert content
-        AstNode *content = cell->getContent();
-        this->elements[index-1] = content;
+        //AstNode *content = cell->getContent();
+        this->elements[index-1] = cell->getContent();
     }
 
-    std::vector<AstNode *> Vector::getElements() {
+    std::vector<std::shared_ptr<AstNode>> Vector::getElements() {
         // TODO: Add VectorSelector class (problematic integration since it uses a SymbRef to refer to vector)
         return this->elements;
+    }
+
+    std::unique_ptr<AstNode> Vector::clone() {
+        std::unique_ptr<Vector> cl;
+        return std::move(cl);
     }
 
     void Vector::accept(AstNodeVisitor *visitor) {

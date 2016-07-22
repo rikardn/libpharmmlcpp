@@ -29,17 +29,20 @@ namespace pharmmlcpp
     {
         public:
             Piece();
-            void setExpression(AstNode *expression);
-            void setCondition(AstNode *condition);
+            void setExpression(std::unique_ptr<AstNode> expression);
+            void setCondition(std::unique_ptr<AstNode> condition);
             void setOtherwise();
-            AstNode *getExpression();
-            AstNode *getCondition();
+            AstNode* getExpression();
+            AstNode* getCondition();
             bool isOtherwise();
             void accept(AstNodeVisitor *visitor);
-        
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
-            AstNode *expression;
-            AstNode *condition;
+            std::unique_ptr<AstNode> expression;
+            std::unique_ptr<AstNode> condition;
             bool otherwise = false;
     };
 
@@ -50,6 +53,9 @@ namespace pharmmlcpp
             void addPiece(Piece *piece);
             std::vector<Piece *> getPieces();
             void accept(AstNodeVisitor *visitor);
+
+        protected:
+            std::unique_ptr<AstNode> clone() override;
 
         private:
             std::vector<Piece *> pieces;

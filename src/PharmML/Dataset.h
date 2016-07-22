@@ -79,7 +79,7 @@ namespace pharmmlcpp
         private:
             std::vector<HeaderDefinition *> headers;
             std::vector<ColumnDefinition *> columns;
-            AstNode *ignoreCondition = nullptr;
+            std::shared_ptr<AstNode> ignoreCondition;
             std::string ignoreSymbols; // 1 to 5 non-whitespace characters
     };
 
@@ -109,15 +109,15 @@ namespace pharmmlcpp
         public:
             DataColumn(PharmMLReader &reader, xml::Node table_node, ColumnDefinition *definition);
             void parse(PharmMLReader &reader, xml::Node table_node);
-            std::vector<AstNode *> getData();
+            std::vector<std::shared_ptr<AstNode>> getData();
             ColumnDefinition *getDefinition();
-            AstNode *getElement(int row);
+            std::shared_ptr<AstNode> getElement(int row);
             int getNumRows();
             void accept(PharmMLVisitor *visitor);
 
         private:
             ColumnDefinition *definition;
-            std::vector<AstNode *> column;
+            std::vector<std::shared_ptr<AstNode>> column;
             int numRows;
     };
 

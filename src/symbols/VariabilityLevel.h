@@ -50,12 +50,12 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             SymbRef *getLevelReference();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
-            AstNode *getRandomEffectsMapping();
+            std::shared_ptr<AstNode> getRandomEffectsMapping();
             //~ void accept(AstNodeVisitor *visitor);
         
         private:
             SymbRef *levelReference;
-            AstNode *randomEffectsMapping = nullptr;
+            std::shared_ptr<AstNode> randomEffectsMapping;
     };
 }
 

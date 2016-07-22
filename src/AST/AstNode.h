@@ -18,6 +18,7 @@
 #ifndef PHARMMLCPP_ASTNODE_H_
 #define PHARMMLCPP_ASTNODE_H_
 
+#include <memory>
 #include <string>
 #include <visitors/AstNodeVisitor.h>
 #include <PharmML/PharmMLSection.h>
@@ -30,6 +31,9 @@ namespace pharmmlcpp
             virtual void accept(AstNodeVisitor *visitor) = 0;
             bool hasParentheses() { return this->parenthesized; };
             void elideParentheses() { this->parenthesized = false; };
+
+        //protected:
+            virtual std::unique_ptr<AstNode> clone() = 0;
 
         private:
             bool parenthesized = true;

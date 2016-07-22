@@ -34,6 +34,9 @@ namespace pharmmlcpp
             std::vector<FunctionArgument *> getFunctionArguments();
             virtual void accept(AstNodeVisitor *visitor);
         
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+
         private:
             SymbRef *function;
             std::vector<FunctionArgument *> functionArguments;
@@ -44,13 +47,16 @@ namespace pharmmlcpp
         public:
             void setSymbId(std::string symbId);
             std::string getSymbId();
-            void setArgument(AstNode *node);
+            void setArgument(std::unique_ptr<AstNode> node);
             AstNode *getArgument();
             virtual void accept(AstNodeVisitor *visitor);
         
+        protected:
+            std::unique_ptr<AstNode> clone() override;
+        
         private:
             std::string symbId;
-            AstNode *argument;
+            std::unique_ptr<AstNode> argument;
     };
 }
 

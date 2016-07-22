@@ -37,8 +37,8 @@ namespace pharmmlcpp
             std::vector<ObjectRef *> getObservationRefs();
             std::vector<ObjectRef *> getArmRefs();
             std::vector<SymbRef *> getSymbRefs();
-            AstNode *getAssignment();
-            AstNode *getDosingTimes();
+            std::shared_ptr<AstNode> getAssignment();
+            std::shared_ptr<AstNode> getDosingTimes();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
@@ -48,8 +48,8 @@ namespace pharmmlcpp
             std::vector<ObjectRef *> observationRefs;
             std::vector<ObjectRef *> armRefs;
             std::vector<SymbRef *> symbRefs;
-            AstNode *dosingTimes = nullptr;
-            AstNode *assignment = nullptr;
+            std::shared_ptr<AstNode> dosingTimes;
+            std::shared_ptr<AstNode> assignment;
     };
 
     class DesignSpaces

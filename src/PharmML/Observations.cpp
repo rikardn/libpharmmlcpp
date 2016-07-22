@@ -40,7 +40,7 @@ namespace pharmmlcpp
         if (number.exists()) {
             xml::Node assign = reader.getSingleElement(number, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->numberTimes.reset(reader.factory.create(tree));   // FIXME: Factory should return at least unique_ptr
+            this->numberTimes = reader.factory.create(tree);
         }
 
         // Get observation times
@@ -48,7 +48,7 @@ namespace pharmmlcpp
         if (times.exists()) {
             xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->observationTimes.reset(reader.factory.create(tree));  // same FIXME as above
+            this->observationTimes = reader.factory.create(tree);
         }
 
         // Get continuous and discrete variable output(s)
@@ -103,8 +103,8 @@ namespace pharmmlcpp
         this->observationTimes = observationTimes;
     }
 
-    std::vector<AstNode *> Observation::getObservationTimesAsVector() {
-        return AstTransformation::toVector(&*this->observationTimes);
+    std::vector<std::shared_ptr<AstNode>> Observation::getObservationTimesAsVector() {
+        return AstTransformation::toVector(this->observationTimes);
     }
 
     std::vector<std::shared_ptr<SymbRef>>& Observation::getContinuousVariables() {
@@ -213,7 +213,7 @@ namespace pharmmlcpp
         return this->oidRefs;
     }
 
-    AstNode *ObservationCombination::getRelative() {
+    std::shared_ptr<AstNode> ObservationCombination::getRelative() {
         return this->relative;
     }
 

@@ -73,7 +73,7 @@ namespace pharmmlcpp
 
     void RSymbols::visit(Variable *node) {
         if (node->getAssignment()) {
-            this->astgen->acceptRoot(node->getAssignment());
+            this->astgen->acceptRoot(node->getAssignment().get());
             this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
         } else {
             this->setValue("");
@@ -85,14 +85,14 @@ namespace pharmmlcpp
     }
 
     void RSymbols::visit(DerivativeVariable *node) {
-        this->astgen->acceptRoot(node->getAssignment());
+        this->astgen->acceptRoot(node->getAssignment().get());
         this->setValue("d" + node->getSymbId() + " <- " + this->astgen->getValue());
     }
 
     void RSymbols::visit(Covariate *node) {
-        AstNode *assignment = node->getAssignment();
+        auto assignment = node->getAssignment();
         if (assignment) {
-            this->astgen->acceptRoot(node->getAssignment());
+            this->astgen->acceptRoot(node->getAssignment().get());
             this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
         } else {
             this->setValue("");

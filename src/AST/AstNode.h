@@ -31,8 +31,6 @@ namespace pharmmlcpp
             virtual void accept(AstNodeVisitor *visitor) = 0;
             bool hasParentheses() { return this->parenthesized; };
             void elideParentheses() { this->parenthesized = false; };
-
-        //protected:
             virtual std::unique_ptr<AstNode> clone() = 0;
 
         private:

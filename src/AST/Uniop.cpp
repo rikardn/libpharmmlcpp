@@ -19,10 +19,16 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  Get a pointer to the child node
+     */
     AstNode *Uniop::getChild() {
         return this->child.get();
     }
 
+    /**
+     *  Set a new child node
+     */
     void Uniop::setChild(std::unique_ptr<AstNode> node) {
         this->child = std::move(node);
     }
@@ -30,7 +36,9 @@ namespace pharmmlcpp
 #define UNIOP_METHODS(name) \
     std::unique_ptr<AstNode> name::clone() { \
         std::unique_ptr<name> cl = std::make_unique<name>(); \
-        (*cl).child = this->child->clone(); \
+        if (this->child) { \
+            (*cl).child = this->child->clone(); \
+        } \
         return std::move(cl); \
     } \
     \

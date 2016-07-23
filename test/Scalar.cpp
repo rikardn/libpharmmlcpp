@@ -41,6 +41,17 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
         REQUIRE(x.toInt() == 3);
     }
 
+    SECTION("clone") {
+        ScalarInt si(9);
+        std::unique_ptr<AstNode> cl = si.clone();
+        REQUIRE(si.toInt() == 9);
+        ScalarInt *si2 = static_cast<ScalarInt *>(cl.get());
+        REQUIRE(si2->toInt() == 9);
+        si2->set(8);
+        REQUIRE(si2->toInt() == 8);
+        REQUIRE(si.toInt() == 9);
+    }
+
     SECTION("Assignment") {
         ScalarInt a(9);
         ScalarInt b(12);

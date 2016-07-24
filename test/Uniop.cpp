@@ -41,13 +41,4 @@ TEST_CASE("Uniop", "[Uniop]") {
         REQUIRE(si1->toInt() == 56);
         REQUIRE(si2->toInt() == 28);
     }
-/*
-    SECTION("Assignment") {
-        ScalarInt a(9);
-        ScalarInt b(12);
-        a = b;
-        REQUIRE(a.toInt() == 12);
-        REQUIRE(b.toInt() == 12);
-    }
-*/
 }

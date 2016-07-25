@@ -38,6 +38,8 @@ namespace pharmmlcpp
     /**
      *  Creates a new interval from two endpoints
      *  both endpoints are set to closed
+     *  \param leftEndpoint the left endpoint of the interval
+     *  \param rightEndpoint the right endpoint of the interval
      */
     Interval::Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint) {
         if (!leftEndpoint || !rightEndpoint) {

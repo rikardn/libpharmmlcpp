@@ -40,6 +40,9 @@ namespace pharmmlcpp
      *  both endpoints are set to closed
      */
     Interval::Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint) {
+        if (!leftEndpoint || !rightEndpoint) {
+            throw std::invalid_argument("nullptr");
+        }
         this->leftEndpoint = std::move(leftEndpoint);
         this->rightEndpoint = std::move(rightEndpoint);
     }

@@ -45,6 +45,29 @@ namespace pharmmlcpp
     }
 
     /**
+     *  Copy constructor
+     */
+    Interval::Interval(const Interval& from) {
+        this->leftEndpoint = from.leftEndpoint->clone();
+        this->rightEndpoint = from.rightEndpoint->clone();
+        this->openLeftEndpoint = from.openLeftEndpoint;
+        this->openRightEndpoint = from.openRightEndpoint;
+    }
+
+    /**
+     *  Assignment operator
+     */
+    Interval &Interval::operator=(const Interval &rhs) {
+        if (&rhs != this) {
+            this->leftEndpoint = rhs.leftEndpoint->clone();
+            this->rightEndpoint = rhs.rightEndpoint->clone();
+            this->openLeftEndpoint = rhs.openLeftEndpoint;
+            this->openRightEndpoint = rhs.openRightEndpoint;
+        }
+        return *this;
+    }
+
+    /**
      *  Get the left endpoint of the interval
      */
     AstNode *Interval::getLeftEndpoint() {
@@ -108,13 +131,7 @@ namespace pharmmlcpp
      *  Make a clone (deep copy) of this interval.
      */
     std::unique_ptr<AstNode> Interval::clone() {
-        std::unique_ptr<Interval> cl;
-        if (this->leftEndpoint) {
-            (*cl).leftEndpoint = this->leftEndpoint->clone();
-        }
-        if (this->rightEndpoint) {
-            (*cl).rightEndpoint = this->rightEndpoint->clone();
-        }
+        std::unique_ptr<Interval> cl = std::make_unique<Interval>(this->leftEndpoint->clone(), this->rightEndpoint->clone());
         cl->openLeftEndpoint = this->openLeftEndpoint;
         cl->openRightEndpoint = this->openRightEndpoint;
         return std::move(cl);

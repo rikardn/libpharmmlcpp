@@ -67,33 +67,91 @@ TEST_CASE("Interval", "[Interval]") {
         REQUIRE(a2->toInt() == 16);
     }
 
+    SECTION("OpenClosed Setters") {
+        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
+        Interval interval(std::move(si1), std::move(si2));
+        interval.setLeftEndpointOpenClosed(true);
+        REQUIRE(interval.isLeftEndpointOpenClosed());
+        REQUIRE_FALSE(interval.isRightEndpointOpenClosed());
+        interval.setRightEndpointOpenClosed(true);
+        REQUIRE(interval.isLeftEndpointOpenClosed());
+        REQUIRE(interval.isRightEndpointOpenClosed());    
+    }
 
-/*
+    SECTION("Endpoint setters") {
+        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
+        Interval interval(std::move(si1), std::move(si2));
+        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(99);
+        interval.setLeftEndpoint(std::move(si3));
+        ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
+        ScalarInt *a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
+        REQUIRE(a1->toInt() == 99);
+        REQUIRE(a2->toInt() == 56);
+        std::unique_ptr<ScalarInt> si4 = std::make_unique<ScalarInt>(-1);
+        interval.setRightEndpoint(std::move(si4));
+        a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
+        a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
+        REQUIRE(a1->toInt() == 99);
+        REQUIRE(a2->toInt() == -1);
+    }
+
     SECTION("clone method") {
-        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
-        UniopMinus *ex = new UniopMinus(std::move(si));
-        std::unique_ptr<AstNode> cl = ex->clone();
-        UniopMinus *cl_cast = static_cast<UniopMinus *>(cl.get());
-        ScalarInt *si1 = static_cast<ScalarInt *>(ex->getChild()); 
-        ScalarInt *si2 = static_cast<ScalarInt *>(cl_cast->getChild());
-        REQUIRE(si1->toInt() == 28);
-        REQUIRE(si2->toInt() == 28);
-        si1->set(56);
-        REQUIRE(si1->toInt() == 56);
-        REQUIRE(si2->toInt() == 28);
+        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
+        Interval interval(std::move(si1), std::move(si2));
+        std::unique_ptr<AstNode> cl = interval.clone();
+        
+        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(2);
+        interval.setLeftEndpoint(std::move(si3));
+        
+        ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
+        ScalarInt *a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
+        REQUIRE(a1->toInt() == 2);
+        REQUIRE(a2->toInt() == 56);
+
+        a1 = static_cast<ScalarInt *>(static_cast<Interval *>(cl.get())->getLeftEndpoint());
+        a2 = static_cast<ScalarInt *>(static_cast<Interval *>(cl.get())->getRightEndpoint());
+        REQUIRE(a1->toInt() == 28);
+        REQUIRE(a2->toInt() == 56);
+    }
+    
+    SECTION("Copy construct") {
+        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
+        Interval interval(std::move(si1), std::move(si2));
+
+        Interval cp{interval};
+        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(2);
+        cp.setLeftEndpoint(std::move(si3));
+        
+        ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
+        ScalarInt *a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
+        REQUIRE(a1->toInt() == 28);
+        REQUIRE(a2->toInt() == 56);
+
+        a1 = static_cast<ScalarInt *>(cp.getLeftEndpoint());
+        a2 = static_cast<ScalarInt *>(cp.getRightEndpoint());
+        REQUIRE(a1->toInt() == 2);
+        REQUIRE(a2->toInt() == 56);
+
     }
 
-    SECTION("Copy construct") {
-        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
-        UniopLog lg{std::move(si)};
-        UniopLog x(lg);
-        ScalarInt *si1 = static_cast<ScalarInt *>(lg.getChild());
-        ScalarInt *si2 = static_cast<ScalarInt *>(x.getChild());
-        REQUIRE(si1->toInt() == 28);
-        REQUIRE(si2->toInt() == 28);
-        si1->set(56);
-        REQUIRE(si1->toInt() == 56);
-        REQUIRE(si2->toInt() == 28);
+    SECTION("Assignment") {
+        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
+        Interval interval1(std::move(si1), std::move(si2));
+
+        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(-2);
+        std::unique_ptr<ScalarInt> si4 = std::make_unique<ScalarInt>(-4);
+        Interval interval2(std::move(si3), std::move(si4));
+
+        interval1 = interval2;
+        
+        ScalarInt *a1 = static_cast<ScalarInt *>(interval1.getLeftEndpoint());
+        ScalarInt *a2 = static_cast<ScalarInt *>(interval1.getRightEndpoint());
+        REQUIRE(a1->toInt() == -2);
+        REQUIRE(a2->toInt() == -4);
     }
-*/
 }

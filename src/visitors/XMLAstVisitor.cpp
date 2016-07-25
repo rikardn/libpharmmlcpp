@@ -449,11 +449,11 @@ namespace pharmmlcpp
     void XMLAstVisitor::visit(Interval *node) {
         xml::Node interval("Interval", xml::Namespace::ct);
         xml::Node le("LeftEndpoint", xml::Namespace::ct);
-        if (node->isLeftEndpointOpen()) {
+        if (node->isLeftEndpointOpenClosed()) {
             le.setAttribute("type", "open");
         }
         xml::Node re("RightEndpoint", xml::Namespace::ct);
-        if (node->isRightEndpointOpen()) {
+        if (node->isRightEndpointOpenClosed()) {
             re.setAttribute("type", "open");
         }
         interval.addChild(le);

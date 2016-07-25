@@ -485,8 +485,8 @@ namespace pharmmlcpp
     void RAstGenerator::visit(Interval *node) {
         std::string result = "list(left=" + this->accept(node->getLeftEndpoint());
         result += ", right=" + this->accept(node->getRightEndpoint());
-        result += ", openleft=" + this->getLogicLiteral(node->isLeftEndpointOpen());
-        result += ", openright=" + this->getLogicLiteral(node->isRightEndpointOpen());
+        result += ", openleft=" + this->getLogicLiteral(node->isLeftEndpointOpenClosed());
+        result += ", openright=" + this->getLogicLiteral(node->isRightEndpointOpenClosed());
         result += ")";
         this->setParenthesizedValue(node, result);
     }

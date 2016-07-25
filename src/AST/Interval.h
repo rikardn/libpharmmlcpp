@@ -24,26 +24,30 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  An interval with two endpoints. Each endpoint can be either open or closed
+     */
     class Interval : public AstNode
     {
         public:
             Interval(xml::Node node);
+            Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint);
             AstNode *getLeftEndpoint();
             AstNode *getRightEndpoint();
             void setLeftEndpoint(std::unique_ptr<AstNode> node);
             void setRightEndpoint(std::unique_ptr<AstNode> node);
-            bool isLeftEndpointOpen();
-            bool isRightEndpointOpen();
-            void setLeftEndpointOpen(bool open);
-            void setRightEndpointOpen(bool open);
+            bool isLeftEndpointOpenClosed();
+            bool isRightEndpointOpenClosed();
+            void setLeftEndpointOpenClosed(bool open);
+            void setRightEndpointOpenClosed(bool open);
             void accept(AstNodeVisitor *visitor) override;
 
         protected:
             std::unique_ptr<AstNode> clone() override;
 
         private:
-            std::unique_ptr<AstNode> LeftEndpoint;
-            std::unique_ptr<AstNode> RightEndpoint;
+            std::unique_ptr<AstNode> leftEndpoint;
+            std::unique_ptr<AstNode> rightEndpoint;
             bool openLeftEndpoint = false;
             bool openRightEndpoint = false;
     };

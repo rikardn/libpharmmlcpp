@@ -127,7 +127,7 @@ namespace pharmmlcpp
                 uniop = std::make_unique<UniopFloor>();
             } else if (op == "ceiling") {
                 uniop = std::make_unique<UniopCeiling>();
-            // Logic uniops
+            // Logic uniops. FIXME: This is really an error. not could as well be a Uniop here.
             } else if (op == "isDefined") {
                 uniop = std::make_unique<LogicUniopIsdefined>();
             } else if (op == "not") {

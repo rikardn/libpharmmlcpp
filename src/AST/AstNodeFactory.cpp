@@ -291,17 +291,7 @@ namespace pharmmlcpp
             }
             instance = std::unique_ptr<AstNode>(piecewise);
         } else if (name == "FunctionCall") {
-            FunctionCall *fcall = new FunctionCall();
-            std::vector<xml::Node> children = node.getChildren();
-            xml::Node name_node = children[0];
-            children.erase(children.begin());
-            fcall->setFunction(std::make_unique<SymbRef>(name_node));
-            auto &arg_vector = fcall->getFunctionArguments();
-            for (xml::Node n : children) {
-                auto arg = std::make_unique<FunctionArgument>(n);
-                arg_vector.push_back(std::move(arg));
-            }
-            instance = std::unique_ptr<AstNode>(fcall);
+            instance = std::make_unique<FunctionCall>(node); 
         } else if (name == "Interval") {
             instance = std::make_unique<Interval>(node);
         }

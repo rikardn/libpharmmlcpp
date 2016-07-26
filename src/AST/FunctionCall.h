@@ -32,10 +32,12 @@ namespace pharmmlcpp
     class FunctionCall : public AstNode
     {
         public:
+            FunctionCall(std::unique_ptr<SymbRef> function);
+            FunctionCall(xml::Node node);
             void setFunction(std::unique_ptr<SymbRef> node);
             SymbRef *getFunction();
             std::vector<std::unique_ptr<FunctionArgument>>& getFunctionArguments();
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
 
         private:
@@ -57,7 +59,7 @@ namespace pharmmlcpp
             std::string getSymbId();
             void setArgument(std::unique_ptr<AstNode> node);
             AstNode *getArgument();
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
         
         private:

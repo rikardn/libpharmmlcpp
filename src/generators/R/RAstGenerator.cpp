@@ -464,7 +464,7 @@ namespace pharmmlcpp
     void RAstGenerator::visit(FunctionCall *node) {
         bool first = true;
         std::string argument_list;
-        for (FunctionArgument *arg : node->getFunctionArguments()) {
+        for (auto const &arg : node->getFunctionArguments()) {
             if (first) {
                 first = false;
             } else {

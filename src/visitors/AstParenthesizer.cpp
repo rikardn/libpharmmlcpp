@@ -542,7 +542,7 @@ namespace pharmmlcpp
         node->elideParentheses();
         SymbRef *func_ref = node->getFunction();
         func_ref->elideParentheses();
-        for (FunctionArgument *farg : node->getFunctionArguments()) {
+        for (auto const &farg : node->getFunctionArguments()) {
             farg->elideParentheses();
         }
     }

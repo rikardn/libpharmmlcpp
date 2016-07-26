@@ -26,28 +26,33 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  A function call with name of function and argument list
+     */
     class FunctionCall : public AstNode
     {
         public:
-            void setFunction(SymbRef *node);
+            void setFunction(std::unique_ptr<SymbRef> node);
             SymbRef *getFunction();
-            void addFunctionArgument(FunctionArgument *farg);
-            std::vector<FunctionArgument *> getFunctionArguments();
+            std::vector<std::unique_ptr<FunctionArgument>>& getFunctionArguments();
             virtual void accept(AstNodeVisitor *visitor);
-        
-        protected:
             std::unique_ptr<AstNode> clone() override;
 
         private:
-            SymbRef *function;
-            std::vector<FunctionArgument *> functionArguments;
+            std::unique_ptr<SymbRef> function;
+            std::vector<std::unique_ptr<FunctionArgument>> functionArguments;
     };
 
+    /**
+     *  A function argument for a function call. Really a key value pair.
+     */
     class FunctionArgument : public AstNode
     {
         public:
             FunctionArgument(std::string symbId, std::unique_ptr<AstNode> value);
             FunctionArgument(xml::Node xml);
+            FunctionArgument(const FunctionArgument &from);
+            FunctionArgument &operator=(const FunctionArgument &rhs);
             void setSymbId(std::string symbId);
             std::string getSymbId();
             void setArgument(std::unique_ptr<AstNode> node);

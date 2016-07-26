@@ -361,7 +361,7 @@ namespace pharmmlcpp
 
     void SymbRefFinder::visit(FunctionCall *node) {
         this->symbRefs.insert(node->getFunction());
-        for (FunctionArgument *farg : node->getFunctionArguments()) {
+        for (auto const &farg : node->getFunctionArguments()) {
             farg->accept(this);
         }
     }

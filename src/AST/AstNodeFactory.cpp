@@ -295,10 +295,11 @@ namespace pharmmlcpp
             std::vector<xml::Node> children = node.getChildren();
             xml::Node name_node = children[0];
             children.erase(children.begin());
-            fcall->setFunction(new SymbRef(name_node));
+            fcall->setFunction(std::make_unique<SymbRef>(name_node));
+            auto &arg_vector = fcall->getFunctionArguments();
             for (xml::Node n : children) {
-                FunctionArgument *arg = new FunctionArgument(n);
-                fcall->addFunctionArgument(arg);
+                auto arg = std::make_unique<FunctionArgument>(n);
+                arg_vector.push_back(std::move(arg));
             }
             instance = std::unique_ptr<AstNode>(fcall);
         } else if (name == "Interval") {

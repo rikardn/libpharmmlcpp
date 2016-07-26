@@ -621,11 +621,11 @@ namespace pharmmlcpp
         }
         std::string s = this->accept(node->getFunction()) + "(";
         bool first = true;
-        for (FunctionArgument *argument : node->getFunctionArguments()) {
+        for (auto const &argument : node->getFunctionArguments()) {
             if (first) {
-                s += this->accept(argument);
+                s += this->accept(argument.get());
             } else {
-                s += ";" + this->accept(argument);
+                s += ";" + this->accept(argument.get());
             }
         }
         this->setValue(s + ")");

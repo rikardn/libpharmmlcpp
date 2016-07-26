@@ -54,64 +54,49 @@ TEST_CASE("FunctionArgument", "[FunctionArgument]") {
         REQUIRE(a->toInt() == -23);
     }
 
-    /*
     SECTION("clone method") {
-        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
-        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
-        Interval interval(std::move(si1), std::move(si2));
-        std::unique_ptr<AstNode> cl = interval.clone();
+        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
+        FunctionArgument fa("argname", std::move(si));
+        std::unique_ptr<AstNode> cl = fa.clone();
         
-        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(2);
-        interval.setLeftEndpoint(std::move(si3));
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(2);
+        fa.setArgument(std::move(si2));
         
-        ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
-        ScalarInt *a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
-        REQUIRE(a1->toInt() == 2);
-        REQUIRE(a2->toInt() == 56);
+        ScalarInt *a = static_cast<ScalarInt *>(fa.getArgument());
+        REQUIRE(a->toInt() == 2);
 
-        a1 = static_cast<ScalarInt *>(static_cast<Interval *>(cl.get())->getLeftEndpoint());
-        a2 = static_cast<ScalarInt *>(static_cast<Interval *>(cl.get())->getRightEndpoint());
-        REQUIRE(a1->toInt() == 28);
-        REQUIRE(a2->toInt() == 56);
+        a = static_cast<ScalarInt *>(static_cast<FunctionArgument *>(cl.get())->getArgument());
+        REQUIRE(a->toInt() == 28);
+
+        (static_cast<FunctionArgument *>(cl.get()))->setSymbId("changed");
+        REQUIRE(fa.getSymbId() == "argname");
     }
-    
+
     SECTION("Copy construct") {
-        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
-        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
-        Interval interval(std::move(si1), std::move(si2));
+        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
+        FunctionArgument fa("arg", std::move(si));
 
-        Interval cp{interval};
-        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(2);
-        cp.setLeftEndpoint(std::move(si3));
+        FunctionArgument cp{fa};
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(2);
+        cp.setArgument(std::move(si2));
         
-        ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
-        ScalarInt *a2 = static_cast<ScalarInt *>(interval.getRightEndpoint());
-        REQUIRE(a1->toInt() == 28);
-        REQUIRE(a2->toInt() == 56);
+        ScalarInt *a = static_cast<ScalarInt *>(fa.getArgument());
+        REQUIRE(a->toInt() == 28);
 
-        a1 = static_cast<ScalarInt *>(cp.getLeftEndpoint());
-        a2 = static_cast<ScalarInt *>(cp.getRightEndpoint());
-        REQUIRE(a1->toInt() == 2);
-        REQUIRE(a2->toInt() == 56);
-
+        a = static_cast<ScalarInt *>(cp.getArgument());
+        REQUIRE(a->toInt() == 2);
     }
 
     SECTION("Assignment") {
-        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
-        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
-        Interval interval1(std::move(si1), std::move(si2));
+        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
+        FunctionArgument fa("arg", std::move(si));
 
-        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(-2);
-        std::unique_ptr<ScalarInt> si4 = std::make_unique<ScalarInt>(-4);
-        Interval interval2(std::move(si3), std::move(si4));
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(-4);
+        FunctionArgument fa2("arg2", std::move(si2));
 
-        interval1 = interval2;
+        fa = fa2;
         
-        ScalarInt *a1 = static_cast<ScalarInt *>(interval1.getLeftEndpoint());
-        ScalarInt *a2 = static_cast<ScalarInt *>(interval1.getRightEndpoint());
-        REQUIRE(a1->toInt() == -2);
-        REQUIRE(a2->toInt() == -4);
+        ScalarInt *a = static_cast<ScalarInt *>(fa.getArgument());
+        REQUIRE(a->toInt() == -4);
     }
-
-*/
 }

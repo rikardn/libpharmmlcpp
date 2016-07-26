@@ -28,20 +28,16 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
-    void FunctionCall::setFunction(SymbRef *node) {
-        this->function = node;
+    void FunctionCall::setFunction(std::unique_ptr<SymbRef> node) {
+        this->function = std::move(node);
     }
 
-    std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
+    std::vector<std::unique_ptr<FunctionArgument>>& FunctionCall::getFunctionArguments() {
         return this->functionArguments;
     }
 
     SymbRef *FunctionCall::getFunction() {
-        return this->function;
-    }
-
-    void FunctionCall::addFunctionArgument(FunctionArgument *farg) {
-        this->functionArguments.push_back(farg);
+        return this->function.get();
     }
 
     /**
@@ -65,6 +61,19 @@ namespace pharmmlcpp
         this->argument = AstNodeFactory::create(node.getChild());
     }
 
+    FunctionArgument::FunctionArgument(const FunctionArgument &from) {
+        this->symbId = from.symbId;
+        this->argument = from.argument->clone();
+    }
+
+    FunctionArgument &FunctionArgument::operator=(const FunctionArgument &rhs) {
+        if (&rhs != this) {
+            this->symbId = rhs.symbId;
+            this->argument = rhs.argument->clone();
+        }
+        return *this;
+    }
+
     void FunctionArgument::setSymbId(std::string symbId) {
         this->symbId = symbId;
     }
@@ -82,7 +91,7 @@ namespace pharmmlcpp
     }
 
     std::unique_ptr<AstNode> FunctionArgument::clone() {
-        std::unique_ptr<FunctionArgument> cl;
+        std::unique_ptr<FunctionArgument> cl = std::make_unique<FunctionArgument>(this->symbId, this->argument->clone());
         return std::move(cl);
     }
 

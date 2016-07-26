@@ -22,6 +22,7 @@
 #include <unordered_set>
 #include "AstNode.h"
 #include "symbols/Symbol.h"
+#include <AST/AstNodeFactory.h>
 
 namespace pharmmlcpp
 {
@@ -45,13 +46,13 @@ namespace pharmmlcpp
     class FunctionArgument : public AstNode
     {
         public:
+            FunctionArgument(std::string symbId, std::unique_ptr<AstNode> value);
+            FunctionArgument(xml::Node xml);
             void setSymbId(std::string symbId);
             std::string getSymbId();
             void setArgument(std::unique_ptr<AstNode> node);
             AstNode *getArgument();
             virtual void accept(AstNodeVisitor *visitor);
-        
-        protected:
             std::unique_ptr<AstNode> clone() override;
         
         private:

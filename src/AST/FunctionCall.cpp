@@ -32,6 +32,10 @@ namespace pharmmlcpp
         this->function = node;
     }
 
+    std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
+        return this->functionArguments;
+    }
+
     SymbRef *FunctionCall::getFunction() {
         return this->function;
     }
@@ -40,8 +44,25 @@ namespace pharmmlcpp
         this->functionArguments.push_back(farg);
     }
 
-    std::vector<FunctionArgument *> FunctionCall::getFunctionArguments() {
-        return this->functionArguments;
+    /**
+     *  Creates a new FunctionArgument
+     *  \param symbId The name of the function argument
+     *  \param value The value of the function argument
+     */
+    FunctionArgument::FunctionArgument(std::string symbId, std::unique_ptr<AstNode> value) {
+        if (!value) {
+            throw std::invalid_argument("nullptr");
+        }
+        this->symbId = symbId;
+        this->argument = std::move(value);
+    }
+
+    /**
+     *  Creates a new FunctionArgument from PharmML xml
+     */
+    FunctionArgument::FunctionArgument(xml::Node node) {
+        this->symbId = node.getAttribute("symbId").getValue();
+        this->argument = AstNodeFactory::create(node.getChild());
     }
 
     void FunctionArgument::setSymbId(std::string symbId) {

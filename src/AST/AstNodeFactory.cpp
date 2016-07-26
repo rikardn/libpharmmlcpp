@@ -37,6 +37,13 @@ namespace pharmmlcpp
         std::unique_ptr<AstNode> instance;
 
         std::string name = node.getName();
+
+        // Skip past initial ct:Assign
+        if (name == "Assign") {
+            node = node.getChild();
+            name = node.getName();
+        }
+
         if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Uniop> uniop;
@@ -290,10 +297,8 @@ namespace pharmmlcpp
             children.erase(children.begin());
             fcall->setFunction(new SymbRef(name_node));
             for (xml::Node n : children) {
-                FunctionArgument *arg = new FunctionArgument();
+                FunctionArgument *arg = new FunctionArgument(n);
                 fcall->addFunctionArgument(arg);
-                arg->setSymbId(n.getAttribute("symbId").getValue());
-                arg->setArgument(AstNodeFactory::create(n.getChild()));
             }
             instance = std::unique_ptr<AstNode>(fcall);
         } else if (name == "Interval") {

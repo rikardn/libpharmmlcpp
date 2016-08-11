@@ -66,7 +66,7 @@ namespace pharmmlcpp
 
     void MDLSymbols::visit(Variable *node) {
         if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " = " + this->ast_gen->accept(node->getAssignment()));
+            this->setValue(node->getSymbId() + " = " + this->ast_gen->accept(node->getAssignment().get()));
         } else {
             this->setValue(node->getSymbId() + "::dosingVar"); // FIXME: This is a hack! I'm not sure if dosingVar is the only reasonable alternative.
         }
@@ -82,9 +82,9 @@ namespace pharmmlcpp
 
         std::string name = node->getSymbId();
         form.openVector(name + " : {}", 0, ", ");
-        form.add("deriv = " + this->ast_gen->accept(node->getAssignment()));
-        form.add("init = " + this->ast_gen->accept(node->getInitialValue()));
-        form.add("x0 = " + this->ast_gen->accept(node->getInitialTime()));
+        form.add("deriv = " + this->ast_gen->accept(node->getAssignment().get()));
+        form.add("init = " + this->ast_gen->accept(node->getInitialValue().get()));
+        form.add("x0 = " + this->ast_gen->accept(node->getInitialTime().get()));
         form.closeVector();
 
         this->setValue(form.createString());

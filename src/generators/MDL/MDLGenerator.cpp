@@ -275,7 +275,7 @@ namespace pharmmlcpp
                 pharmmlcpp::Correlation *corr = variabilityParameter->getCorrelation();
                 std::string name = variabilityParameter->getName();
                 if (corr->isPairwise()) {
-                    std::string value = this->accept(corr->getPairwiseAssignment());
+                    std::string value = this->accept(corr->getPairwiseAssignment().get());
                     form.add(name + " : {value = " + value + "}");
                     this->variabilityParameterNames.push_back(name); // TODO: Fix this ugly global variable
                 } else {
@@ -338,7 +338,7 @@ namespace pharmmlcpp
         std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
         for (CPharmML::Covariate *cov : covs) {
             std::string name = cov->getName();
-            AstNode *assign = cov->getDefinition();
+            AstNode *assign = cov->getDefinition().get();
             form.add(name);
             if (assign) {
                 form.append(" = " + this->accept(assign));
@@ -559,12 +559,12 @@ namespace pharmmlcpp
                 form.add("to=" + target_name);
 
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
-                AstNode *tlag = macro->getAssignment("Tlag");
-                AstNode *p = macro->getAssignment("p");
-                AstNode *tk0 = macro->getAssignment("Tk0");
-                AstNode *ka = macro->getAssignment("ka");
-                AstNode *ktr = macro->getAssignment("Ktr");
-                AstNode *mtt = macro->getAssignment("Mtt");
+                AstNode *tlag = macro->getAssignment("Tlag").get();
+                AstNode *p = macro->getAssignment("p").get();
+                AstNode *tk0 = macro->getAssignment("Tk0").get();
+                AstNode *ka = macro->getAssignment("ka").get();
+                AstNode *ktr = macro->getAssignment("Ktr").get();
+                AstNode *mtt = macro->getAssignment("Mtt").get();
                 if (tlag) {
                     form.add("tlag=" + this->accept(tlag));
                 }
@@ -590,8 +590,8 @@ namespace pharmmlcpp
                 form.add("to=" + target_name);
 
                 // Get parameterization
-                AstNode *tlag = macro->getAssignment("Tlag");
-                AstNode *p = macro->getAssignment("p");
+                AstNode *tlag = macro->getAssignment("Tlag").get();
+                AstNode *p = macro->getAssignment("p").get();
                 if (tlag) {
                     form.add("tlag=" + this->accept(tlag));
                 }
@@ -623,9 +623,9 @@ namespace pharmmlcpp
                 form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
 
                 // Get parameterization
-                AstNode *vol = macro->getAssignment("volume");
-                AstNode *conc = macro->getAssignment("concentration");
-                AstNode *ke0 = macro->getAssignment("ke0");
+                AstNode *vol = macro->getAssignment("volume").get();
+                AstNode *conc = macro->getAssignment("concentration").get();
+                AstNode *ke0 = macro->getAssignment("ke0").get();
                 if (vol) {
                     form.add("volume=" + this->accept(vol));
                 }
@@ -668,10 +668,10 @@ namespace pharmmlcpp
                 }
 
                 // Get (linear) elimination parameterization
-                AstNode *vol = macro->getAssignment("volume");
-                AstNode *k = macro->getAssignment("k");
-                AstNode *cl = macro->getAssignment("CL");
-                AstNode *v = macro->getAssignment("V");
+                AstNode *vol = macro->getAssignment("volume").get();
+                AstNode *k = macro->getAssignment("k").get();
+                AstNode *cl = macro->getAssignment("CL").get();
+                AstNode *v = macro->getAssignment("V").get();
                 if (vol) {
                     form.add("volume=" + this->accept(vol));
                 }
@@ -686,8 +686,8 @@ namespace pharmmlcpp
                 }
 
                 // Get (MM) elimination parameterization
-                AstNode *km = macro->getAssignment("Km");
-                AstNode *vm = macro->getAssignment("Vm");
+                AstNode *km = macro->getAssignment("Km").get();
+                AstNode *vm = macro->getAssignment("Vm").get();
                 if (km) {
                     form.add("km=" + this->accept(km));
                 }
@@ -696,9 +696,9 @@ namespace pharmmlcpp
                 }
 
                 // Get transfer parameterization
-                AstNode *from = macro->getAssignment("from");
-                AstNode *to = macro->getAssignment("to");
-                AstNode *kt = macro->getAssignment("kt");
+                AstNode *from = macro->getAssignment("from").get();
+                AstNode *to = macro->getAssignment("to").get();
+                AstNode *kt = macro->getAssignment("kt").get();
                 if (from) {
                     form.add("from=" + this->accept(from));
                 }
@@ -726,7 +726,7 @@ namespace pharmmlcpp
         std::string obs_name = om->getSymbId();
         if (om->hasStandardErrorModel()) {
             // Determine if error model is a pure function call
-            AstNode *error_model = om->getErrorModel();
+            AstNode *error_model = om->getErrorModel().get();
             this->ast_analyzer.reset();
             error_model->accept(&this->ast_analyzer);
             FunctionCall *function_call = this->ast_analyzer.getPureFunctionCall();
@@ -735,10 +735,10 @@ namespace pharmmlcpp
                 FunctionDefinition *function_def = model->resolveFunctionCall(function_call);
 
                 // Get the caller arguments
-                std::vector<FunctionArgument *> call_args = function_call->getFunctionArguments();
+                auto &call_args = function_call->getFunctionArguments();
                 std::unordered_map<std::string, FunctionArgument *> call_arg_map;
-                for (FunctionArgument *call_arg : call_args) {
-                    call_arg_map[call_arg->getSymbId()] = call_arg;
+                for (const std::unique_ptr<FunctionArgument> &call_arg : call_args) {
+                    call_arg_map[call_arg->getSymbId()] = call_arg.get();
                 }
 
                 // Determine if function is known to MDL (tricky stuff)
@@ -817,7 +817,7 @@ namespace pharmmlcpp
             }
         } else if (om->hasGeneralErrorModel()) {
             // General error model, so dump explicit assignment
-            AstNode *assignment = om->getAssignment();
+            AstNode *assignment = om->getAssignment().get();
             form.add(obs_name + " = " + this->accept(assignment));
         }
 
@@ -903,7 +903,7 @@ namespace pharmmlcpp
 
         std::string name = node->getSymbId();
         form.openVector("FUNCTION(" + name + "){}", 1, "");
-        form.addMany(this->accept(node->getDefinition()));
+        form.addMany(this->accept(node->getDefinition().get()));
         form.closeVector();
 
         this->setValue(form.createString());
@@ -944,7 +944,7 @@ namespace pharmmlcpp
 
             if (node->isLinear()) {
                  // Get population value (how is 'grp' with 'general' in MDL translated to PharmML?)
-                std::string pop = this->accept(node->getPopulationValue());
+                std::string pop = this->accept(node->getPopulationValue().get());
                 form.add("pop = " + pop);
 
                 // Get covariates and fixed effects
@@ -956,7 +956,7 @@ namespace pharmmlcpp
                         if (fix_eff->getReference()) {
                             coeff = this->accept(fix_eff->getReference());
                         } else {
-                            coeff = this->accept(fix_eff->getScalar());
+                            coeff = this->accept(fix_eff->getScalar().get());
                         }
                         coeffs.push_back(coeff);
                     }
@@ -984,7 +984,7 @@ namespace pharmmlcpp
                 form.add("ranEff = " + TextFormatter::createInlineVector(rands, "[]", ", "));
             }
         } else {
-            std::string assign = this->accept(node->getAssignment());
+            std::string assign = this->accept(node->getAssignment().get());
             form.add(name + " = " + assign);
         }
 
@@ -1007,7 +1007,7 @@ namespace pharmmlcpp
             std::vector<std::string> unknown_param_types;
             for (pharmmlcpp::DistributionParameter *dist_param : dist_params) {
                 std::string name = dist_param->getName();
-                std::string assign = this->accept(dist_param->getAssignment());
+                std::string assign = this->accept(dist_param->getAssignment().get());
                 if (name == "mean") {
                     form.add("mean = " + assign);
                 } else if (name == "stdev") {
@@ -1039,7 +1039,7 @@ namespace pharmmlcpp
 
         std::vector<std::string> attr;
         if (node->isPairwise()) {
-            attr.push_back("value = " + this->accept(node->getPairwiseAssignment()));
+            attr.push_back("value = " + this->accept(node->getPairwiseAssignment().get()));
         } else {
             // TODO: Matrix support
         }
@@ -1053,7 +1053,7 @@ namespace pharmmlcpp
 
     void MDLGenerator::visit(Variable *node) {
         if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " = " + this->accept(node->getAssignment()));
+            this->setValue(node->getSymbId() + " = " + this->accept(node->getAssignment().get()));
         } else {
             this->setValue(node->getSymbId());
         }
@@ -1064,9 +1064,9 @@ namespace pharmmlcpp
 
         std::string name = node->getSymbId();
         form.openVector(name + " : {}", 0, ", ");
-        form.add("deriv = " + this->accept(node->getAssignment()));
-        form.add("init = " + this->accept(node->getInitialValue()));
-        form.add("x0 = " + this->accept(node->getInitialTime()));
+        form.add("deriv = " + this->accept(node->getAssignment().get()));
+        form.add("init = " + this->accept(node->getInitialValue().get()));
+        form.add("x0 = " + this->accept(node->getInitialTime().get()));
         form.closeVector();
 
         this->setValue(form.createString());
@@ -1193,13 +1193,13 @@ namespace pharmmlcpp
     void MDLGenerator::visit(ParameterEstimation *node) {
         std::vector<std::string> attr;
         if (node->hasInitValue()) {
-            attr.push_back("value = " + this->accept(node->getInitValue()));
+            attr.push_back("value = " + this->accept(node->getInitValue().get()));
         }
         if (node->hasLoBound()) {
-            attr.push_back("lo = " + this->accept(node->getLoBound()));
+            attr.push_back("lo = " + this->accept(node->getLoBound().get()));
         }
         if (node->hasHiBound()) {
-            attr.push_back("hi = " + this->accept(node->getHiBound()));
+            attr.push_back("hi = " + this->accept(node->getHiBound().get()));
         }
         if (node->isFixed()) {
             attr.push_back("fix = true");

@@ -378,10 +378,10 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(Vector *node) {
-        std::vector<AstNode *> elements = node->getElements();
+        std::vector<std::shared_ptr<AstNode>> elements = node->getElements();
         std::vector<std::string> str_elements;
-        for (AstNode *element : elements) {
-            str_elements.push_back(this->accept(element));
+        for (std::shared_ptr<AstNode> element : elements) {
+            str_elements.push_back(this->accept(element.get()));
         }
 
         this->setValue(TextFormatter::createInlineVector(str_elements, "[]", ", "));
@@ -448,8 +448,8 @@ namespace pharmmlcpp
 
         std::string name = this->accept(node->getFunction());
         form.openVector(name + "()", 0, ", ");
-        for (FunctionArgument *arg : node->getFunctionArguments()) {
-            form.add(this->accept(arg));
+        for (const std::unique_ptr<FunctionArgument> &arg : node->getFunctionArguments()) {
+            form.add(this->accept(arg.get()));
         }
         form.closeVector();
 
@@ -465,8 +465,8 @@ namespace pharmmlcpp
     void MDLAstGenerator::visit(Interval *node) {
         std::string result = "list(left=" + this->accept(node->getLeftEndpoint());
         result += ", right=" + this->accept(node->getRightEndpoint());
-        result += ", openleft=" + this->getLogicLiteral(node->isLeftEndpointOpen());
-        result += ", openright=" + this->getLogicLiteral(node->isRightEndpointOpen());
+        result += ", openleft=" + this->getLogicLiteral(node->isLeftEndpointOpenClosed());
+        result += ", openright=" + this->getLogicLiteral(node->isRightEndpointOpenClosed());
         result += ")";
         this->setValue(result);
     }

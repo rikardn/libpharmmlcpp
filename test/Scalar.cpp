@@ -52,14 +52,6 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
         REQUIRE(si.toInt() == 9);
     }
 
-    SECTION("Assignment") {
-        ScalarInt a(9);
-        ScalarInt b(12);
-        a = b;
-        REQUIRE(a.toInt() == 12);
-        REQUIRE(b.toInt() == 12);
-    }
-
     SECTION("Getters") {
         ScalarInt si(89);
         REQUIRE(si.toString() == "89");
@@ -103,14 +95,6 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
         REQUIRE(x.toDouble() == 3.0);
     }
 
-    SECTION("Assignment") {
-        ScalarReal a(9.0);
-        ScalarReal b(12.0);
-        a = b;
-        REQUIRE(a.toDouble() == 12.0);
-        REQUIRE(b.toDouble() == 12.0);
-    }
-
     SECTION("Getters") {
         ScalarReal sr(89.0);
         // FIXME: Trailing zeros to be removed here! REQUIRE(si.toString() == "89");
@@ -136,14 +120,6 @@ TEST_CASE("ScalarBool", "[ScalarBool]") {
         x.set(false);
         REQUIRE(sb.toBool());
         REQUIRE(!x.toBool());
-    }
-
-    SECTION("Assignment") {
-        ScalarBool a(true);
-        ScalarBool b(false);
-        a = b;
-        REQUIRE_FALSE(a.toBool());
-        REQUIRE_FALSE(b.toBool());
     }
 }
 
@@ -172,14 +148,6 @@ TEST_CASE("ScalarString", "[ScalarString]") {
         REQUIRE(ss.toString() == "One");
         REQUIRE(x.toString() == "Two");
    }
-
-    SECTION("Assignment") {
-        ScalarString a("MyString");
-        ScalarString b("Lizard");
-        a = b;
-        REQUIRE(a.toString() == "Lizard");
-        REQUIRE(b.toString() == "Lizard");
-    }
 }
 
 TEST_CASE("ScalarId", "[ScalarId]") {
@@ -208,13 +176,5 @@ TEST_CASE("ScalarId", "[ScalarId]") {
         x.set("Two");
         REQUIRE(sid.toString() == "One");
         REQUIRE(x.toString() == "Two");
-    }
-
-    SECTION("Assignment") {
-        ScalarId a("MyString");
-        ScalarId b("Lizard");
-        a = b;
-        REQUIRE(a.toString() == "Lizard");
-        REQUIRE(b.toString() == "Lizard");
     }
 }

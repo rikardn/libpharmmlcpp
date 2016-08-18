@@ -48,17 +48,6 @@ namespace pharmmlcpp
         }
     }
 
-    FunctionCall &FunctionCall::operator=(const FunctionCall &rhs) {
-        if (&rhs != this) {
-            this->function = std::make_unique<SymbRef>(*rhs.function.get());
-            for (auto &arg : rhs.functionArguments) {
-                auto new_arg = std::make_unique<FunctionArgument>(*arg.get());
-                this->functionArguments.push_back(std::move(new_arg));
-            }
-        }
-        return *this;
-    }
-
     void FunctionCall::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -123,14 +112,6 @@ namespace pharmmlcpp
     FunctionArgument::FunctionArgument(const FunctionArgument &from) {
         this->symbId = from.symbId;
         this->argument = from.argument->clone();
-    }
-
-    FunctionArgument &FunctionArgument::operator=(const FunctionArgument &rhs) {
-        if (&rhs != this) {
-            this->symbId = rhs.symbId;
-            this->argument = rhs.argument->clone();
-        }
-        return *this;
     }
 
     /**

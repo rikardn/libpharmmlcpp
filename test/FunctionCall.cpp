@@ -86,19 +86,6 @@ TEST_CASE("FunctionArgument", "[FunctionArgument]") {
         a = static_cast<ScalarInt *>(cp.getArgument());
         REQUIRE(a->toInt() == 2);
     }
-
-    SECTION("Assignment") {
-        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
-        FunctionArgument fa("arg", std::move(si));
-
-        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(-4);
-        FunctionArgument fa2("arg2", std::move(si2));
-
-        fa = fa2;
-        
-        ScalarInt *a = static_cast<ScalarInt *>(fa.getArgument());
-        REQUIRE(a->toInt() == -4);
-    }
 }
 
 TEST_CASE("FunctionCall", "[FunctionCall]") {

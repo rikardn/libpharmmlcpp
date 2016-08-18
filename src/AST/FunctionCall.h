@@ -35,7 +35,6 @@ namespace pharmmlcpp
             FunctionCall(std::unique_ptr<SymbRef> function);
             FunctionCall(xml::Node node);
             FunctionCall(const FunctionCall &from);
-            FunctionCall &operator=(const FunctionCall &rhs);
             void setFunction(std::unique_ptr<SymbRef> node);
             SymbRef *getFunction();
             std::vector<std::unique_ptr<FunctionArgument>>& getFunctionArguments();
@@ -56,7 +55,6 @@ namespace pharmmlcpp
             FunctionArgument(std::string symbId, std::unique_ptr<AstNode> value);
             FunctionArgument(xml::Node xml);
             FunctionArgument(const FunctionArgument &from);
-            FunctionArgument &operator=(const FunctionArgument &rhs);
             void setSymbId(std::string symbId);
             std::string getSymbId();
             void setArgument(std::unique_ptr<AstNode> node);

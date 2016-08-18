@@ -137,21 +137,4 @@ TEST_CASE("Interval", "[Interval]") {
         REQUIRE(a2->toInt() == 56);
 
     }
-
-    SECTION("Assignment") {
-        std::unique_ptr<ScalarInt> si1 = std::make_unique<ScalarInt>(28);
-        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(56);
-        Interval interval1(std::move(si1), std::move(si2));
-
-        std::unique_ptr<ScalarInt> si3 = std::make_unique<ScalarInt>(-2);
-        std::unique_ptr<ScalarInt> si4 = std::make_unique<ScalarInt>(-4);
-        Interval interval2(std::move(si3), std::move(si4));
-
-        interval1 = interval2;
-        
-        ScalarInt *a1 = static_cast<ScalarInt *>(interval1.getLeftEndpoint());
-        ScalarInt *a2 = static_cast<ScalarInt *>(interval1.getRightEndpoint());
-        REQUIRE(a1->toInt() == -2);
-        REQUIRE(a2->toInt() == -4);
-    }
 }

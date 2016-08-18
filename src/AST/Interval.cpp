@@ -60,19 +60,6 @@ namespace pharmmlcpp
     }
 
     /**
-     *  Assignment operator
-     */
-    Interval &Interval::operator=(const Interval &rhs) {
-        if (&rhs != this) {
-            this->leftEndpoint = rhs.leftEndpoint->clone();
-            this->rightEndpoint = rhs.rightEndpoint->clone();
-            this->openLeftEndpoint = rhs.openLeftEndpoint;
-            this->openRightEndpoint = rhs.openRightEndpoint;
-        }
-        return *this;
-    }
-
-    /**
      *  Get the left endpoint of the interval
      */
     AstNode *Interval::getLeftEndpoint() {

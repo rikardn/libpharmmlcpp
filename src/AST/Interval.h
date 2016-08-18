@@ -33,7 +33,6 @@ namespace pharmmlcpp
             Interval(xml::Node node);
             Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint);
             Interval(const Interval& from);
-            Interval &operator=(const Interval &rhs);
             AstNode *getLeftEndpoint();
             AstNode *getRightEndpoint();
             void setLeftEndpoint(std::unique_ptr<AstNode> node);

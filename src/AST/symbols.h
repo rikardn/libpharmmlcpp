@@ -25,25 +25,28 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  A reference to a symbol
+     */
     class SymbRef : public AstNode
     {
         public:
             SymbRef(std::string ref);
             SymbRef(xml::Node node);
-            virtual void accept(AstNodeVisitor *visitor);
             std::string getSymbIdRef();
+            void setSymbIdRef(std::string symbId);
             std::string getBlkIdRef();
+            void setBlkIdRef(std::string blkId);
             std::string getBlkIdRef(std::string defaultBlkId);
             void setSymbol(Symbol *symbol);
             Symbol *getSymbol();
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
 
         private:
             std::string blkIdRef;
             std::string symbIdRef;
-            Symbol *symbol;
+            Symbol *symbol = nullptr;
     };
 
     class ColumnRef : public AstNode
@@ -51,10 +54,8 @@ namespace pharmmlcpp
         public:
             ColumnRef(std::string ref);
             ColumnRef(xml::Node node);
-            virtual void accept(AstNodeVisitor *visitor);
             std::string toString();
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
 
         private:

@@ -20,10 +20,16 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  Creates a new SymbRef given a symbId
+     */
     SymbRef::SymbRef(std::string ref) {
         this->symbIdRef = ref;
     }
 
+    /**
+     *  Creates a new SymbRef from the xml PharmML code
+     */
     SymbRef::SymbRef(xml::Node node) {
         this->blkIdRef = node.getAttribute("blkIdRef").getValue();
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
@@ -33,19 +39,35 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    /**
+     *  Make a clone of this symbref.
+     *  Note that the symbol to which it refers will not be copied just the pointer to it.
+     */
     std::unique_ptr<AstNode> SymbRef::clone() {
-        std::unique_ptr<SymbRef> cl;
+        std::unique_ptr<SymbRef> cl = std::make_unique<SymbRef>(this->symbIdRef);
+        cl->blkIdRef = this->blkIdRef;
+        cl->symbol = this->symbol;  // Refers to same symbol. No deep copy here
         return std::move(cl);
     }
 
+    /**
+     *  Get the symbol Id to which this SymbRef refers
+     */
     std::string SymbRef::getSymbIdRef() {
         return this->symbIdRef;
     }
 
+    /**
+     *  Get the block Id for the symbol to which this SymbRef refers
+     */
     std::string SymbRef::getBlkIdRef() {
         return this->blkIdRef;
     }
 
+    /**
+     *  Get the block Id for the symbol to which this SymbRef refers
+     *  and return defaultBlkId if none exists.
+     */
     std::string SymbRef::getBlkIdRef(std::string defaultBlkId) {
         if (this->blkIdRef.empty()) {
             return defaultBlkId;
@@ -54,10 +76,34 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Set the symbol to which this SymbRef refers
+     *  This is done by the setup methods and should
+     *  not be called separately.
+     */
     void SymbRef::setSymbol(Symbol *symbol) {
         this->symbol = symbol;
     }
 
+    /**
+     *  Set the symbIdRef
+     *  Note that this will not automatically change the symbol
+     */
+    void SymbRef::setSymbIdRef(std::string symbId) {
+        this->symbIdRef = symbId;
+    }
+    
+    /**
+     *  Set the blkIdRef
+     *  Note that this will not automatically change the symbol
+     */
+    void SymbRef::setBlkIdRef(std::string blkId) {
+        this->blkIdRef = blkId;
+    }
+
+    /**
+     *  Get a pointer to the symbol to which this SymbRef refers
+     */
     Symbol *SymbRef::getSymbol() {
         return this->symbol;
     }

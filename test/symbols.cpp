@@ -53,12 +53,4 @@ TEST_CASE("SymbRef", "[SymbRef]") {
         REQUIRE(sr2->getSymbIdRef() == "CACHE");
         REQUIRE(sr.getSymbIdRef() == "REFFY");
     }
-
-    SECTION("assignment") {
-        SymbRef a("GREP");
-        SymbRef b("VIM");
-        a = b;
-        REQUIRE(a.getSymbIdRef() == "VIM");
-        REQUIRE(b.getSymbIdRef() == "VIM");
-    }
 }

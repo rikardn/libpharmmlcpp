@@ -100,3 +100,72 @@ TEST_CASE("FunctionArgument", "[FunctionArgument]") {
         REQUIRE(a->toInt() == -4);
     }
 }
+
+TEST_CASE("FunctionCall", "[FunctionCall]") {
+    SECTION("Constructor") {
+        std::unique_ptr<SymbRef> sr = std::make_unique<SymbRef>("SWAN");
+        FunctionCall fc(std::move(sr));
+        REQUIRE(fc.getFunction()->getSymbIdRef() == "SWAN");
+        REQUIRE(fc.getFunctionArguments().empty());
+    }
+
+    SECTION("Construct from xml") {
+        PharmMLReader reader = PharmMLReader::createTestReader(R"(
+            <math:FunctionCall>
+                <ct:SymbRef symbIdRef="proportionalError"/>
+                <math:FunctionArgument symbId="proportional">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="CV"/>
+                </math:FunctionArgument>
+                <math:FunctionArgument symbId="f">
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="WTOT"/>
+                </math:FunctionArgument>
+            </math:FunctionCall>
+        )");
+        FunctionCall fc(reader.getRoot());
+        REQUIRE(fc.getFunction()->getSymbIdRef() == "proportionalError");
+        REQUIRE(fc.getFunctionArguments().size() == 2);
+    }
+
+    SECTION("Setters") {
+        std::unique_ptr<SymbRef> sr = std::make_unique<SymbRef>("SWAN");
+        FunctionCall fc(std::move(sr));
+        std::unique_ptr<SymbRef> another = std::make_unique<SymbRef>("NAMED");
+        fc.setFunction(std::move(another));
+        REQUIRE(fc.getFunction()->getSymbIdRef() == "NAMED");
+
+        auto &args = fc.getFunctionArguments();
+
+        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<FunctionArgument> fa = std::make_unique<FunctionArgument>("MyID", std::move(si));
+        args.push_back(std::move(fa));
+        REQUIRE(fc.getFunctionArguments().size() == 1);
+    }
+
+    SECTION("Copy construct") {
+        std::unique_ptr<SymbRef> sr = std::make_unique<SymbRef>("SWAN");
+        FunctionCall fc(std::move(sr));
+
+        std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
+        std::unique_ptr<FunctionArgument> fa = std::make_unique<FunctionArgument>("arg", std::move(si));
+        auto &args = fc.getFunctionArguments();
+        args.push_back(std::move(fa));
+        
+        FunctionCall cp{fc};
+
+        REQUIRE(cp.getFunction()->getSymbIdRef() == "SWAN");
+        std::unique_ptr<SymbRef> sr2 = std::make_unique<SymbRef>("GOLDEN");
+        cp.setFunction(std::move(sr2));
+        REQUIRE(cp.getFunction()->getSymbIdRef() == "GOLDEN");
+        REQUIRE(fc.getFunction()->getSymbIdRef() == "SWAN");
+       
+        auto &cp_args = cp.getFunctionArguments();
+        REQUIRE(cp_args[0]->getSymbId() == "arg");
+        std::unique_ptr<ScalarInt> si2 = std::make_unique<ScalarInt>(99);
+        std::unique_ptr<FunctionArgument> fa2 = std::make_unique<FunctionArgument>("fixed", std::move(si2));
+        cp_args[0] = std::move(fa2);
+        REQUIRE(cp_args[0]->getSymbId() == "fixed");
+        auto &fc_args = fc.getFunctionArguments();
+        REQUIRE(fc_args[0]->getSymbId() == "arg");
+    }
+
+}

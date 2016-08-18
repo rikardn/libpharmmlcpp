@@ -21,6 +21,7 @@ namespace pharmmlcpp
 {
     /**
      *  Create a FunctionCall starting with no arguments
+     *  \param function A SymbRef refering to the function to call
      */
     FunctionCall::FunctionCall(std::unique_ptr<SymbRef> function) {
         this->function = std::move(function);
@@ -39,23 +40,61 @@ namespace pharmmlcpp
         }
     }
 
+    FunctionCall::FunctionCall(const FunctionCall &from) {
+        this->function = std::make_unique<SymbRef>(*from.function.get());
+        for (auto &arg : from.functionArguments) {
+            auto new_arg = std::make_unique<FunctionArgument>(*arg.get());
+            this->functionArguments.push_back(std::move(new_arg));
+        }
+    }
+
+    FunctionCall &FunctionCall::operator=(const FunctionCall &rhs) {
+        if (&rhs != this) {
+            this->function = std::make_unique<SymbRef>(*rhs.function.get());
+            for (auto &arg : rhs.functionArguments) {
+                auto new_arg = std::make_unique<FunctionArgument>(*arg.get());
+                this->functionArguments.push_back(std::move(new_arg));
+            }
+        }
+        return *this;
+    }
+
     void FunctionCall::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
 
+    /**
+     *  Create a deep copy
+     */
     std::unique_ptr<AstNode> FunctionCall::clone() {
-        std::unique_ptr<FunctionCall> cl;
+        std::unique_ptr<AstNode> func = this->function->clone();
+        std::unique_ptr<SymbRef> sr(static_cast<SymbRef *>(func.release()));
+        std::unique_ptr<FunctionCall> cl = std::make_unique<FunctionCall>(std::move(sr));
+        for (auto &arg : this->functionArguments) {
+            std::unique_ptr<AstNode> arg_clone_ast = arg->clone();
+            std::unique_ptr<FunctionArgument> arg_clone(static_cast<FunctionArgument *>(arg_clone_ast.release()));
+            cl->functionArguments.push_back(std::move(arg_clone));
+        }
         return std::move(cl);
     }
 
+    /**
+     *  Set the SymbRef pointing to the function for this call
+     */
     void FunctionCall::setFunction(std::unique_ptr<SymbRef> node) {
         this->function = std::move(node);
     }
 
+    /**
+     *  Get the vector of FunctionArguments
+     */
     std::vector<std::unique_ptr<FunctionArgument>>& FunctionCall::getFunctionArguments() {
         return this->functionArguments;
     }
 
+    /**
+     *  Get the SymbRef pointing to the function for this call
+     */
     SymbRef *FunctionCall::getFunction() {
         return this->function.get();
     }
@@ -94,22 +133,37 @@ namespace pharmmlcpp
         return *this;
     }
 
+    /**
+     *  Set the name of this argument
+     */
     void FunctionArgument::setSymbId(std::string symbId) {
         this->symbId = symbId;
     }
 
+    /**
+     *  Get the name of this argument
+     */
     std::string FunctionArgument::getSymbId() {
         return this->symbId;
     }
 
+    /**
+     *  Set the actual argument
+     */
     void FunctionArgument::setArgument(std::unique_ptr<AstNode> node) {
         this->argument = std::move(node);
     }
 
+    /**
+     *  Get the actual argument
+     */
     AstNode *FunctionArgument::getArgument() {
         return this->argument.get();
     }
 
+    /**
+     *  Create a clone
+     */
     std::unique_ptr<AstNode> FunctionArgument::clone() {
         std::unique_ptr<FunctionArgument> cl = std::make_unique<FunctionArgument>(this->symbId, this->argument->clone());
         return std::move(cl);

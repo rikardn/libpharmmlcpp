@@ -34,6 +34,8 @@ namespace pharmmlcpp
         public:
             FunctionCall(std::unique_ptr<SymbRef> function);
             FunctionCall(xml::Node node);
+            FunctionCall(const FunctionCall &from);
+            FunctionCall &operator=(const FunctionCall &rhs);
             void setFunction(std::unique_ptr<SymbRef> node);
             SymbRef *getFunction();
             std::vector<std::unique_ptr<FunctionArgument>>& getFunctionArguments();

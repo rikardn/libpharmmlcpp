@@ -21,6 +21,18 @@ pharmml2poped: pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopED
 mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
 	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
+pharmmltool: utils/pharmmltool.cpp
+	$(CC) utils/pharmmltool.cpp -opharmmltool `xml2-config --libs --cflags`
+
+.PHONY: install
+install:
+	cp pharmmltool /usr/bin
+	mkdir -p /usr/share/libpharmmlcpp
+	cp -rf pharmml_internalRelease_0_8_1 /usr/share/libpharmmlcpp
+
+
+
+
 output: output.cpp libpharmmlc.a
 	$(CC) output.cpp -ooutput -lpharmmlc $(CFLAGS) -L. $(LIBS)
 

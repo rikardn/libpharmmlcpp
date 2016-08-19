@@ -24,6 +24,9 @@ namespace pharmmlcpp
      *  \param function A SymbRef refering to the function to call
      */
     FunctionCall::FunctionCall(std::unique_ptr<SymbRef> function) {
+        if (!function) {
+            throw std::invalid_argument("nullptr");
+        }
         this->function = std::move(function);
     }
 
@@ -71,6 +74,9 @@ namespace pharmmlcpp
      *  Set the SymbRef pointing to the function for this call
      */
     void FunctionCall::setFunction(std::unique_ptr<SymbRef> node) {
+        if (!node) {
+            throw std::invalid_argument("nullptr");
+        }
         this->function = std::move(node);
     }
 
@@ -132,6 +138,9 @@ namespace pharmmlcpp
      *  Set the actual argument
      */
     void FunctionArgument::setArgument(std::unique_ptr<AstNode> node) {
+        if (!node) {
+            throw std::invalid_argument("nullptr");
+        }
         this->argument = std::move(node);
     }
 

@@ -77,6 +77,9 @@ namespace pharmmlcpp
      *  Set the left endpoint of the interval
      */
     void Interval::setLeftEndpoint(std::unique_ptr<AstNode> node) {
+        if (!node) {
+            throw std::invalid_argument("nullptr");
+        }
         this->leftEndpoint = std::move(node);
     }
 
@@ -84,6 +87,9 @@ namespace pharmmlcpp
      *  Set the right endpoint of the interval
      */
     void Interval::setRightEndpoint(std::unique_ptr<AstNode> node) {
+        if (!node) {
+            throw std::invalid_argument("nullptr");
+        }
         this->rightEndpoint = std::move(node);
     }
 

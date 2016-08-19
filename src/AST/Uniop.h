@@ -22,6 +22,7 @@
 #include <string>
 #include <AST/AstNode.h>
 #include <visitors/AstNodeVisitor.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -49,8 +50,9 @@ namespace pharmmlcpp
             UniopLog() {};
             UniopLog(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopLog(const UniopLog &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -62,8 +64,9 @@ namespace pharmmlcpp
             UniopLog2() {};
             UniopLog2(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopLog2(const UniopLog2 &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -75,8 +78,9 @@ namespace pharmmlcpp
             UniopLog10() {};
             UniopLog10(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopLog10(const UniopLog10 &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -88,8 +92,9 @@ namespace pharmmlcpp
             UniopExp() {};
             UniopExp(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopExp(const UniopExp &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -101,8 +106,9 @@ namespace pharmmlcpp
             UniopMinus() {};
             UniopMinus(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopMinus(const UniopMinus &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -114,8 +120,9 @@ namespace pharmmlcpp
             UniopAbs() {};
             UniopAbs(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopAbs(const UniopAbs &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -127,8 +134,9 @@ namespace pharmmlcpp
             UniopSqrt() {};
             UniopSqrt(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSqrt(const UniopSqrt &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -140,8 +148,9 @@ namespace pharmmlcpp
             UniopLogistic() {};
             UniopLogistic(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopLogistic(const UniopLogistic &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -153,8 +162,9 @@ namespace pharmmlcpp
             UniopLogit() {};
             UniopLogit(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopLogit(const UniopLogit &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -166,8 +176,9 @@ namespace pharmmlcpp
             UniopProbit() {};
             UniopProbit(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopProbit(const UniopProbit &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -179,8 +190,9 @@ namespace pharmmlcpp
             UniopNormcdf() {};
             UniopNormcdf(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopNormcdf(const UniopNormcdf &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -192,8 +204,9 @@ namespace pharmmlcpp
             UniopFactorial() {};
             UniopFactorial(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopFactorial(const UniopFactorial &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -205,8 +218,9 @@ namespace pharmmlcpp
             UniopFactln() {};
             UniopFactln(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopFactln(const UniopFactln &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -218,8 +232,9 @@ namespace pharmmlcpp
             UniopGamma() {};
             UniopGamma(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopGamma(const UniopGamma &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -231,8 +246,9 @@ namespace pharmmlcpp
             UniopGammaln() {};
             UniopGammaln(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopGammaln(const UniopGammaln &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -244,8 +260,9 @@ namespace pharmmlcpp
             UniopSin() {};
             UniopSin(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSin(const UniopSin &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -257,8 +274,9 @@ namespace pharmmlcpp
             UniopSinh() {};
             UniopSinh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSinh(const UniopSinh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -270,8 +288,9 @@ namespace pharmmlcpp
             UniopCos() {};
             UniopCos(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCos(const UniopCos &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -283,8 +302,9 @@ namespace pharmmlcpp
             UniopCosh() {};
             UniopCosh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCosh(const UniopCosh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -296,8 +316,9 @@ namespace pharmmlcpp
             UniopTan() {};
             UniopTan(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopTan(const UniopTan &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -309,8 +330,9 @@ namespace pharmmlcpp
             UniopTanh() {};
             UniopTanh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopTanh(const UniopTanh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -322,8 +344,9 @@ namespace pharmmlcpp
             UniopCot() {};
             UniopCot(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCot(const UniopCot &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -335,8 +358,9 @@ namespace pharmmlcpp
             UniopCoth() {};
             UniopCoth(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCoth(const UniopCoth &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -348,8 +372,9 @@ namespace pharmmlcpp
             UniopSec() {};
             UniopSec(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSec(const UniopSec &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -361,8 +386,9 @@ namespace pharmmlcpp
             UniopSech() {};
             UniopSech(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSech(const UniopSech &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -374,8 +400,9 @@ namespace pharmmlcpp
             UniopCsc() {};
             UniopCsc(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCsc(const UniopCsc &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -387,8 +414,9 @@ namespace pharmmlcpp
             UniopCsch() {};
             UniopCsch(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCsch(const UniopCsch &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -400,8 +428,9 @@ namespace pharmmlcpp
             UniopArcsin() {};
             UniopArcsin(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArcsin(const UniopArcsin &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -413,8 +442,9 @@ namespace pharmmlcpp
             UniopArcsinh() {};
             UniopArcsinh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArcsinh(const UniopArcsinh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -426,8 +456,9 @@ namespace pharmmlcpp
             UniopArccos() {};
             UniopArccos(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccos(const UniopArccos &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -439,8 +470,9 @@ namespace pharmmlcpp
             UniopArccosh() {};
             UniopArccosh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccosh(const UniopArccosh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -452,8 +484,9 @@ namespace pharmmlcpp
             UniopArctan() {};
             UniopArctan(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArctan(const UniopArctan &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -465,8 +498,9 @@ namespace pharmmlcpp
             UniopArctanh() {};
             UniopArctanh(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArctanh(const UniopArctanh &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -478,8 +512,9 @@ namespace pharmmlcpp
             UniopArccot() {};
             UniopArccot(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccot(const UniopArccot &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -491,8 +526,9 @@ namespace pharmmlcpp
             UniopArccoth() {};
             UniopArccoth(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccoth(const UniopArccoth &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -504,8 +540,9 @@ namespace pharmmlcpp
             UniopArcsec() {};
             UniopArcsec(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArcsec(const UniopArcsec &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -517,8 +554,9 @@ namespace pharmmlcpp
             UniopArcsech() {};
             UniopArcsech(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArcsech(const UniopArcsech &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -530,8 +568,9 @@ namespace pharmmlcpp
             UniopArccsc() {};
             UniopArccsc(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccsc(const UniopArccsc &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -543,8 +582,9 @@ namespace pharmmlcpp
             UniopArccsch() {};
             UniopArccsch(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopArccsch(const UniopArccsch &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -556,8 +596,9 @@ namespace pharmmlcpp
             UniopHeaviside() {};
             UniopHeaviside(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopHeaviside(const UniopHeaviside &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -569,8 +610,9 @@ namespace pharmmlcpp
             UniopSign() {};
             UniopSign(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopSign(const UniopSign &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -582,8 +624,9 @@ namespace pharmmlcpp
             UniopFloor() {};
             UniopFloor(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopFloor(const UniopFloor &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -595,8 +638,9 @@ namespace pharmmlcpp
             UniopCeiling() {};
             UniopCeiling(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             UniopCeiling(const UniopCeiling &from) : Uniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -617,8 +661,9 @@ namespace pharmmlcpp
             LogicUniopIsdefined() {};
             LogicUniopIsdefined(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             LogicUniopIsdefined(const LogicUniopIsdefined &from) : LogicUniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -630,8 +675,9 @@ namespace pharmmlcpp
             LogicUniopNot() {};
             LogicUniopNot(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
             LogicUniopNot(const LogicUniopNot &from) : LogicUniop(from) {};
-            virtual void accept(AstNodeVisitor *visitor);
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 }
 

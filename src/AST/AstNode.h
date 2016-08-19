@@ -22,6 +22,7 @@
 #include <string>
 #include <visitors/AstNodeVisitor.h>
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -32,6 +33,7 @@ namespace pharmmlcpp
             bool hasParentheses() { return this->parenthesized; };
             void elideParentheses() { this->parenthesized = false; };
             virtual std::unique_ptr<AstNode> clone() = 0;
+            virtual xml::Node xml(PharmMLWriter &writer) = 0;
 
         private:
             bool parenthesized = true;

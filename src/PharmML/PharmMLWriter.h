@@ -19,16 +19,13 @@
 #define PHARMMLCPP_PHARMMLWRITER_H_
 
 #include <unordered_map>
-#include <xml/xml.h>
-#include <AST/AstNodeFactory.h>
-#include <AST/symbols.h>
-#include <helpers/Logger.h>
 #include <memory>
+#include <xml/xml.h>
+#include <helpers/Logger.h>
 #include <helpers/Version.h>
 
 namespace pharmmlcpp
 {
-    class PharmML;
     class PharmMLWriter
     {
         public:

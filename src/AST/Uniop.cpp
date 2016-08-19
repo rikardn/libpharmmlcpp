@@ -33,7 +33,7 @@ namespace pharmmlcpp
         this->child = std::move(node);
     }
 
-#define UNIOP_METHODS(name) \
+#define UNIOP_METHODS(name, type, op) \
     std::unique_ptr<AstNode> name::clone() { \
         std::unique_ptr<name> cl = std::make_unique<name>(); \
         if (this->child) { \
@@ -44,51 +44,57 @@ namespace pharmmlcpp
     \
     void name::accept(AstNodeVisitor *visitor) { \
         visitor->visit(this); \
+    } \
+    xml::Node name::xml(PharmMLWriter &writer) { \
+        xml::Node uniop(type, xml::Namespace::math); \
+        uniop.setAttribute("op", op); \
+        uniop.addChild(this->child->xml(writer)); \
+        return uniop; \
     }
 
-    UNIOP_METHODS(UniopLog)
-    UNIOP_METHODS(UniopLog2)
-    UNIOP_METHODS(UniopLog10)
-    UNIOP_METHODS(UniopExp)
-    UNIOP_METHODS(UniopMinus)
-    UNIOP_METHODS(UniopAbs)
-    UNIOP_METHODS(UniopSqrt)
-    UNIOP_METHODS(UniopLogistic)
-    UNIOP_METHODS(UniopLogit)
-    UNIOP_METHODS(UniopProbit)
-    UNIOP_METHODS(UniopNormcdf)
-    UNIOP_METHODS(UniopFactorial)
-    UNIOP_METHODS(UniopFactln)
-    UNIOP_METHODS(UniopGamma)
-    UNIOP_METHODS(UniopGammaln)
-    UNIOP_METHODS(UniopSin)
-    UNIOP_METHODS(UniopSinh)
-    UNIOP_METHODS(UniopCos)
-    UNIOP_METHODS(UniopCosh)
-    UNIOP_METHODS(UniopTan)
-    UNIOP_METHODS(UniopTanh)
-    UNIOP_METHODS(UniopCot)
-    UNIOP_METHODS(UniopCoth)
-    UNIOP_METHODS(UniopSec)
-    UNIOP_METHODS(UniopSech)
-    UNIOP_METHODS(UniopCsc)
-    UNIOP_METHODS(UniopCsch)
-    UNIOP_METHODS(UniopArcsin)
-    UNIOP_METHODS(UniopArcsinh)
-    UNIOP_METHODS(UniopArccos)
-    UNIOP_METHODS(UniopArccosh)
-    UNIOP_METHODS(UniopArctan)
-    UNIOP_METHODS(UniopArctanh)
-    UNIOP_METHODS(UniopArccot)
-    UNIOP_METHODS(UniopArccoth)
-    UNIOP_METHODS(UniopArcsec)
-    UNIOP_METHODS(UniopArcsech)
-    UNIOP_METHODS(UniopArccsc)
-    UNIOP_METHODS(UniopArccsch)
-    UNIOP_METHODS(UniopHeaviside)
-    UNIOP_METHODS(UniopSign)
-    UNIOP_METHODS(UniopFloor)
-    UNIOP_METHODS(UniopCeiling)
-    UNIOP_METHODS(LogicUniopIsdefined)
-    UNIOP_METHODS(LogicUniopNot)
+    UNIOP_METHODS(UniopLog, "Uniop", "log")
+    UNIOP_METHODS(UniopLog2, "Uniop", "log2")
+    UNIOP_METHODS(UniopLog10, "Uniop", "log10")
+    UNIOP_METHODS(UniopExp, "Uniop", "exp")
+    UNIOP_METHODS(UniopMinus, "Uniop", "minus")
+    UNIOP_METHODS(UniopAbs, "Uniop", "abs")
+    UNIOP_METHODS(UniopSqrt, "Uniop", "sqrt")
+    UNIOP_METHODS(UniopLogistic, "Uniop", "logistic")
+    UNIOP_METHODS(UniopLogit, "Uniop", "logit")
+    UNIOP_METHODS(UniopProbit, "Uniop", "probit")
+    UNIOP_METHODS(UniopNormcdf, "Uniop", "normcdf" )
+    UNIOP_METHODS(UniopFactorial, "Uniop", "factorial")
+    UNIOP_METHODS(UniopFactln, "Uniop", "factln")
+    UNIOP_METHODS(UniopGamma, "Uniop", "gamma")
+    UNIOP_METHODS(UniopGammaln, "Uniop", "gammaln")
+    UNIOP_METHODS(UniopSin, "Uniop", "sin")
+    UNIOP_METHODS(UniopSinh, "Uniop", "sinh")
+    UNIOP_METHODS(UniopCos, "Uniop", "cos")
+    UNIOP_METHODS(UniopCosh, "Uniop", "cosh")
+    UNIOP_METHODS(UniopTan, "Uniop", "tan")
+    UNIOP_METHODS(UniopTanh, "Uniop", "tanh")
+    UNIOP_METHODS(UniopCot, "Uniop", "cot")
+    UNIOP_METHODS(UniopCoth, "Uniop", "coth")
+    UNIOP_METHODS(UniopSec, "Uniop", "sec")
+    UNIOP_METHODS(UniopSech, "Uniop", "sech")
+    UNIOP_METHODS(UniopCsc, "Uniop", "csc")
+    UNIOP_METHODS(UniopCsch, "Uniop", "csch")
+    UNIOP_METHODS(UniopArcsin, "Uniop", "arcsin")
+    UNIOP_METHODS(UniopArcsinh, "Uniop", "arcsinh")
+    UNIOP_METHODS(UniopArccos, "Uniop", "arccos")
+    UNIOP_METHODS(UniopArccosh, "Uniop", "arccosh")
+    UNIOP_METHODS(UniopArctan, "Uniop", "arctan")
+    UNIOP_METHODS(UniopArctanh, "Uniop", "arctanh")
+    UNIOP_METHODS(UniopArccot, "Uniop", "arccot")
+    UNIOP_METHODS(UniopArccoth, "Uniop", "arccoth")
+    UNIOP_METHODS(UniopArcsec, "Uniop", "arcsec")
+    UNIOP_METHODS(UniopArcsech, "Uniop", "arcsech")
+    UNIOP_METHODS(UniopArccsc, "Uniop", "arccsc")
+    UNIOP_METHODS(UniopArccsch, "Uniop", "arccsch")
+    UNIOP_METHODS(UniopHeaviside, "Uniop", "heaviside")
+    UNIOP_METHODS(UniopSign, "Uniop", "sign")
+    UNIOP_METHODS(UniopFloor, "Uniop", "floor")
+    UNIOP_METHODS(UniopCeiling, "Uniop", "ceiling")
+    UNIOP_METHODS(LogicUniopIsdefined, "LogicUniop", "isDefined")
+    UNIOP_METHODS(LogicUniopNot, "LogicUniop", "not")
 }

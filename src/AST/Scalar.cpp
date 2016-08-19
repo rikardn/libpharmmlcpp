@@ -82,6 +82,12 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    xml::Node ScalarInt::xml(PharmMLWriter &writer) {
+        xml::Node scalar("Int", xml::Namespace::ct);
+        scalar.setContent(this->toString());
+        return scalar;
+    }
+
     /**
      *  Create a new ScalarReal from a double value
      */
@@ -146,6 +152,12 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    xml::Node ScalarReal::xml(PharmMLWriter &writer) {
+        xml::Node scalar("Real", xml::Namespace::ct);
+        scalar.setContent(this->toString());
+        return scalar;
+    }
+
     /**
      *  Create a new ScalarBool from a boolean value
      */
@@ -174,6 +186,14 @@ namespace pharmmlcpp
 
     void ScalarBool::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    xml::Node ScalarBool::xml(PharmMLWriter &writer) {
+        if (value) {
+            return xml::Node("True", xml::Namespace::ct);
+        } else {
+            return xml::Node("False", xml::Namespace::ct);
+        }
     }
 
     /**
@@ -211,6 +231,12 @@ namespace pharmmlcpp
 
     void ScalarString::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    xml::Node ScalarString::xml(PharmMLWriter &writer) {
+        xml::Node scalar("String", xml::Namespace::ct);
+        scalar.setContent(this->value);
+        return scalar;
     }
 
     /**
@@ -258,6 +284,12 @@ namespace pharmmlcpp
         visitor->visit(this);
     }
 
+    xml::Node ScalarId::xml(PharmMLWriter &writer) {
+        xml::Node scalar("Id", xml::Namespace::ct);
+        scalar.setContent(this->value);
+        return scalar;
+    }
+
     void ScalarNA::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -265,6 +297,10 @@ namespace pharmmlcpp
     std::unique_ptr<AstNode> ScalarNA::clone() {
         std::unique_ptr<ScalarNA> cl(new ScalarNA(*this));
         return std::move(cl);
+    }
+
+    xml::Node ScalarNA::xml(PharmMLWriter &writer) {
+        return xml::Node("NA", xml::Namespace::ct);
     }
 
     void ScalarNaN::accept(AstNodeVisitor *visitor) {
@@ -276,6 +312,10 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node ScalarNaN::xml(PharmMLWriter &writer) {
+        return xml::Node("NaN", xml::Namespace::ct);
+    }
+
     void ScalarPlusInf::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -283,6 +323,10 @@ namespace pharmmlcpp
     std::unique_ptr<AstNode> ScalarPlusInf::clone() {
         std::unique_ptr<ScalarPlusInf> cl(new ScalarPlusInf(*this));
         return std::move(cl);
+    }
+
+    xml::Node ScalarPlusInf::xml(PharmMLWriter &writer) {
+        return xml::Node("plusInf", xml::Namespace::ct);
     }
 
     void ScalarMinusInf::accept(AstNodeVisitor *visitor) {
@@ -294,6 +338,10 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node ScalarMinusInf::xml(PharmMLWriter &writer) {
+        return xml::Node("minusInf", xml::Namespace::ct);
+    }
+
     void ScalarBLQ::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -303,6 +351,10 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node ScalarBLQ::xml(PharmMLWriter &writer) {
+        return xml::Node("BLQ", xml::Namespace::ct);
+    }
+
     std::unique_ptr<AstNode> ScalarALQ::clone() {
         std::unique_ptr<ScalarALQ> cl(new ScalarALQ(*this));
         return std::move(cl);
@@ -310,5 +362,9 @@ namespace pharmmlcpp
 
     void ScalarALQ::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
+    }
+
+    xml::Node ScalarALQ::xml(PharmMLWriter &writer) {
+        return xml::Node("ALQ", xml::Namespace::ct);
     }
 }

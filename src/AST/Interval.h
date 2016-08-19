@@ -43,6 +43,7 @@ namespace pharmmlcpp
             void setRightEndpointOpenClosed(bool open);
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::unique_ptr<AstNode> leftEndpoint;

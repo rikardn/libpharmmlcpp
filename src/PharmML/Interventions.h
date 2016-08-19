@@ -43,10 +43,9 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             std::shared_ptr<AstNode> getAssignment();
             AstNode *getSymbRef();
-            void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::shared_ptr<AstNode> assignment;

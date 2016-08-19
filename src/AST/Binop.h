@@ -20,6 +20,7 @@
 
 #include <AST/AstNode.h>
 #include <visitors/AstNodeVisitor.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -40,100 +41,89 @@ namespace pharmmlcpp
     class BinopPlus : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopMinus : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopDivide : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopTimes : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopPower : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopLogx : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopRoot : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopMin : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopMax : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopRem : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class BinopAtan2 : public Binop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     // Logic binops
@@ -145,82 +135,73 @@ namespace pharmmlcpp
     class LogicBinopLt : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopLeq : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopGt : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopGeq : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopEq : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopNeq : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopAnd : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopOr : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class LogicBinopXor : public LogicBinop
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 }
 

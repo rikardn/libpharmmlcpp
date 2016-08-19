@@ -45,6 +45,7 @@ namespace pharmmlcpp
             void set(std::string value); 
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             int value;
@@ -65,6 +66,7 @@ namespace pharmmlcpp
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::string value;
@@ -81,6 +83,7 @@ namespace pharmmlcpp
             void set(bool value);
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             bool value;
@@ -98,6 +101,7 @@ namespace pharmmlcpp
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override; 
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::string value;
@@ -116,6 +120,7 @@ namespace pharmmlcpp
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::string value;
@@ -129,6 +134,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -139,6 +145,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -149,6 +156,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -159,6 +167,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -169,6 +178,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     /**
@@ -179,6 +189,7 @@ namespace pharmmlcpp
         public:
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 }
 

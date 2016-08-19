@@ -40,6 +40,7 @@ namespace pharmmlcpp
             std::vector<std::unique_ptr<FunctionArgument>>& getFunctionArguments();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::unique_ptr<SymbRef> function;
@@ -61,6 +62,7 @@ namespace pharmmlcpp
             AstNode *getArgument();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
         
         private:
             std::string symbId;

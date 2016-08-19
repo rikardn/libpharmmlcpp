@@ -22,6 +22,15 @@ namespace pharmmlcpp
     Piece::Piece() {
     }
 
+    xml::Node Piece::xml(PharmMLWriter &writer) {
+        xml::Node piece("Piece", xml::Namespace::math);
+        piece.addChild(this->expression->xml(writer));
+        xml::Node condition("Condition", xml::Namespace::math);
+        piece.addChild(condition);
+        condition.addChild(this->condition->xml(writer));
+        return piece;
+    }
+
     void Piece::setExpression(std::unique_ptr<AstNode> expression) {
         this->expression = std::move(expression);
     }
@@ -56,6 +65,14 @@ namespace pharmmlcpp
     }
 
     Piecewise::Piecewise() {
+    }
+
+    xml::Node Piecewise::xml(PharmMLWriter &writer) {
+        xml::Node pw("Piecewise", xml::Namespace::math);
+        for (const auto &piece : this->pieces) {
+            pw.addChild(piece->xml(writer));
+        }
+        return pw;
     }
 
     void Piecewise::addPiece(Piece *piece) {

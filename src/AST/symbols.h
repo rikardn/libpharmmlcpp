@@ -22,6 +22,7 @@
 #include <xml/xml.h>
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -42,6 +43,7 @@ namespace pharmmlcpp
             Symbol *getSymbol();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::string blkIdRef;
@@ -57,6 +59,7 @@ namespace pharmmlcpp
             std::string toString();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::string columnIdRef;

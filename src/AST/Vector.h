@@ -44,9 +44,8 @@ namespace pharmmlcpp
             void populateCell(VectorCell *cell);
             std::vector<std::shared_ptr<AstNode>> getElements();
             void accept(AstNodeVisitor *visitor) override;
-       
-        protected:
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             int length; // To infer length when implicitly built

@@ -38,6 +38,12 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node SteadyStateParameter::xml(PharmMLWriter &writer) {
+        xml::Node ssp("SteadyStateParameter", xml::Namespace::ct);
+            // FIXME: This is neither correct nor complete
+        return ssp;
+    }
+
     std::unique_ptr<AstNode> SteadyStateParameter::clone() {
         std::unique_ptr<SteadyStateParameter> cl;
         return std::move(cl);

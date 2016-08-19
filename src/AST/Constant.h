@@ -26,17 +26,15 @@ namespace pharmmlcpp
 {
     class Constant : public AstNode
     {
-
     };
 
     // Null value (example usage: missing otherwise piece)
     class NullValue : public Constant
     {
         public:
-            virtual void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     // Pi and Euler's constant
@@ -44,18 +42,16 @@ namespace pharmmlcpp
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
-
-        protected:
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 
     class Exponentiale : public Constant
     {
         public:
             void accept(AstNodeVisitor *visitor) override;
-
-        protected:
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 }
 

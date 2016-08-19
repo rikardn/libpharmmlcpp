@@ -29,6 +29,10 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node NullValue::xml(PharmMLWriter &writer) {
+        return xml::Node("Null", xml::Namespace::ct);
+    }
+
     // Pi and Euler's constant
     void Pi::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
@@ -39,6 +43,12 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node Pi::xml(PharmMLWriter &writer) {
+        xml::Node constant("Constant", xml::Namespace::math);
+        constant.setAttribute("op", "pi");
+        return constant;
+    }
+
     void Exponentiale::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -46,5 +56,11 @@ namespace pharmmlcpp
     std::unique_ptr<AstNode> Exponentiale::clone() {
         std::unique_ptr<Exponentiale> cl;
         return std::move(cl);
+    }
+
+    xml::Node Exponentiale::xml(PharmMLWriter &writer) {
+        xml::Node constant("Constant", xml::Namespace::math);
+        constant.setAttribute("op", "exponentiale");
+        return constant;
     }
 }

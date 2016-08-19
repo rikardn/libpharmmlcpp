@@ -70,6 +70,15 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node FunctionCall::xml(PharmMLWriter &writer) {
+        xml::Node fc("FunctionCall", xml::Namespace::math);
+        fc.addChild(this->function->xml(writer));
+        for (const auto &arg : this->functionArguments) {
+            fc.addChild(arg->xml(writer));
+        }
+        return fc;
+    }
+
     /**
      *  Set the SymbRef pointing to the function for this call
      */
@@ -113,6 +122,15 @@ namespace pharmmlcpp
     FunctionArgument::FunctionArgument(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
         this->argument = AstNodeFactory::create(node.getChild());
+    }
+    
+    xml::Node FunctionArgument::xml(PharmMLWriter &writer) {
+        xml::Node fa("FunctionArgument", xml::Namespace::math);
+        fa.setAttribute("symbId", this->symbId);
+        xml::Node assign("Assign", xml::Namespace::math);
+        fa.addChild(assign);
+        assign.addChild(this->argument->xml(writer));
+        return fa; 
     }
 
     FunctionArgument::FunctionArgument(const FunctionArgument &from) {

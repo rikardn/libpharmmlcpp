@@ -35,6 +35,13 @@ namespace pharmmlcpp
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
     }
 
+    xml::Node SymbRef::xml(PharmMLWriter &writer) {
+        xml::Node symbref("SymbRef", xml::Namespace::ct);
+        symbref.setAttribute("symbIdRef", this->symbIdRef);
+        symbref.setAttribute("blkIdRef", this->blkIdRef);
+        return symbref; 
+    }
+
     void SymbRef::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }
@@ -108,12 +115,19 @@ namespace pharmmlcpp
         return this->symbol;
     }
 
+
     ColumnRef::ColumnRef(std::string ref) {
         this->columnIdRef = ref;
     }
 
     ColumnRef::ColumnRef(xml::Node node) {
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
+    }
+
+    xml::Node ColumnRef::xml(PharmMLWriter &writer) {
+        xml::Node colref("SymbRef", xml::Namespace::ct);
+        colref.setAttribute("columnIdRef", this->columnIdRef);
+        return colref; 
     }
 
     void ColumnRef::accept(AstNodeVisitor *visitor) {

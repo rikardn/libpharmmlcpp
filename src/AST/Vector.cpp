@@ -44,6 +44,12 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node Vector::xml(PharmMLWriter &writer) {
+        xml::Node vec("Vector", xml::Namespace::ct);
+            //FIXME: To be filled
+        return vec;
+    }
+
     void Vector::addElement(std::shared_ptr<AstNode> element) {
         this->elements.push_back(element);
     }

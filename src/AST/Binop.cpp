@@ -36,7 +36,7 @@ namespace pharmmlcpp
         return this->right.get();
     }
 
-#define BINOP_METHODS(name) \
+#define BINOP_METHODS(name, type, op) \
     std::unique_ptr<AstNode> name::clone() { \
         std::unique_ptr<name> cl = std::make_unique<name>(); \
         (*cl).left = this->left->clone(); \
@@ -46,26 +46,34 @@ namespace pharmmlcpp
     \
     void name::accept(AstNodeVisitor *visitor) { \
         visitor->visit(this); \
+    } \
+    xml::Node name::xml(PharmMLWriter &writer) { \
+        xml::Node binop(type, xml::Namespace::math); \
+        binop.setAttribute("op", op); \
+        binop.addChild(this->left->xml(writer)); \
+        binop.addChild(this->right->xml(writer)); \
+        return binop; \
     }
 
-    BINOP_METHODS(BinopPlus)
-    BINOP_METHODS(BinopMinus)
-    BINOP_METHODS(BinopDivide)
-    BINOP_METHODS(BinopTimes)
-    BINOP_METHODS(BinopPower)
-    BINOP_METHODS(BinopLogx)
-    BINOP_METHODS(BinopRoot)
-    BINOP_METHODS(BinopMin)
-    BINOP_METHODS(BinopMax)
-    BINOP_METHODS(BinopRem)
-    BINOP_METHODS(BinopAtan2)
-    BINOP_METHODS(LogicBinopLt)
-    BINOP_METHODS(LogicBinopLeq)
-    BINOP_METHODS(LogicBinopGt)
-    BINOP_METHODS(LogicBinopGeq)
-    BINOP_METHODS(LogicBinopEq)
-    BINOP_METHODS(LogicBinopNeq)
-    BINOP_METHODS(LogicBinopAnd)
-    BINOP_METHODS(LogicBinopOr)
-    BINOP_METHODS(LogicBinopXor)
+
+    BINOP_METHODS(BinopPlus, "Binop", "plus")
+    BINOP_METHODS(BinopMinus, "Binop", "minus")
+    BINOP_METHODS(BinopDivide, "Binop", "divide")
+    BINOP_METHODS(BinopTimes, "Binop", "times")
+    BINOP_METHODS(BinopPower, "Binop", "power")
+    BINOP_METHODS(BinopLogx, "Binop", "logx")
+    BINOP_METHODS(BinopRoot, "Binop", "root")
+    BINOP_METHODS(BinopMin, "Binop", "min")
+    BINOP_METHODS(BinopMax, "Binop", "max")
+    BINOP_METHODS(BinopRem, "Binop", "rem")
+    BINOP_METHODS(BinopAtan2, "Binop", "atan2")
+    BINOP_METHODS(LogicBinopLt, "LogicBinop", "lt")
+    BINOP_METHODS(LogicBinopLeq, "LogicBinop", "leq")
+    BINOP_METHODS(LogicBinopGt, "LogicBinop", "gt")
+    BINOP_METHODS(LogicBinopGeq, "LogicBinop", "geq")
+    BINOP_METHODS(LogicBinopEq, "LogicBinop", "eq")
+    BINOP_METHODS(LogicBinopNeq, "LogicBinop", "neq")
+    BINOP_METHODS(LogicBinopAnd, "LogicBinop", "and")
+    BINOP_METHODS(LogicBinopOr, "LogicBinop", "or")
+    BINOP_METHODS(LogicBinopXor, "LogicBinop", "xor")
 }

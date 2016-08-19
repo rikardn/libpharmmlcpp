@@ -35,10 +35,9 @@ namespace pharmmlcpp
             AstNode* getExpression();
             AstNode* getCondition();
             bool isOtherwise();
-            void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::unique_ptr<AstNode> expression;
@@ -52,10 +51,9 @@ namespace pharmmlcpp
             Piecewise();
             void addPiece(Piece *piece);
             std::vector<Piece *> getPieces();
-            void accept(AstNodeVisitor *visitor);
-
-        protected:
+            void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::vector<Piece *> pieces;

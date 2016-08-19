@@ -135,6 +135,27 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    xml::Node Interval::xml(PharmMLWriter &writer) {
+        xml::Node interval("Interval", xml::Namespace::ct);
+        xml::Node le("LeftEndpoint", xml::Namespace::ct);
+        if (this->openLeftEndpoint) {
+            le.setAttribute("type", "open");
+        }
+        xml::Node re("RightEndpoint", xml::Namespace::ct);
+        if (this->openRightEndpoint) {
+            re.setAttribute("type", "open");
+        }
+        interval.addChild(le);
+        interval.addChild(re);
+        xml::Node le_assign("Assign", xml::Namespace::ct);
+        le.addChild(le_assign);
+        xml::Node re_assign("Assign", xml::Namespace::ct);
+        re.addChild(re_assign);
+        le_assign.addChild(this->leftEndpoint->xml(writer));
+        re_assign.addChild(this->rightEndpoint->xml(writer));
+        return interval;
+    }
+
     void Interval::accept(AstNodeVisitor *visitor) {
         visitor->visit(this);
     }

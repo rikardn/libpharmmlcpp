@@ -8,10 +8,9 @@ using namespace pharmmlcpp;
 
 TEST_CASE("Uniop", "[Uniop]") {
     SECTION("Construct, get and set") {
-        UniopExp ex{};
         std::unique_ptr<ScalarInt> si = std::make_unique<ScalarInt>(28);
         ScalarInt *myadd = si.get();
-        ex.setChild(std::move(si));
+        UniopExp ex{std::move(si)};
         REQUIRE(myadd == ex.getChild());    // The correct child pointer was inserted
     }
 

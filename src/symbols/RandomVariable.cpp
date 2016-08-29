@@ -87,15 +87,15 @@ namespace pharmmlcpp
                 AstAnalyzer analyzer;
                 param->getAssignment()->accept(&analyzer);
                 if (analyzer.getPureScalar()) {
-                    UniopSqrt *stdev = new UniopSqrt();
-                    stdev->setChild(std::unique_ptr<AstNode>(analyzer.getPureScalar()));
+                    auto child = std::unique_ptr<AstNode>(analyzer.getPureScalar());
+                    UniopSqrt *stdev = new UniopSqrt(std::move(child));
                     return stdev;
                 } else if (analyzer.getPureSymbRef()) {
                     Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
                     for (ParameterEstimation *pe : parameterEstimations) {
                         if (pe->getSymbRef()->getSymbol() == symbol) {
-                            UniopSqrt *stdev = new UniopSqrt();
-                            stdev->setChild(std::unique_ptr<AstNode>(pe->getInitValue().get()));
+                            auto child = std::unique_ptr<AstNode>(pe->getInitValue().get());
+                            UniopSqrt *stdev = new UniopSqrt(std::move(child));
                             return stdev;
                         }
                     }

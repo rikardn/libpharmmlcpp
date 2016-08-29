@@ -47,100 +47,100 @@ namespace pharmmlcpp
         if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Uniop> uniop;
+            std::unique_ptr<AstNode> child = AstNodeFactory::create(node.getChild());
             // Ordinary uniops
             if (op == "log") {
-                uniop = std::make_unique<UniopLog>();
+                uniop = std::make_unique<UniopLog>(std::move(child));
             } else if (op == "log2") {
-                uniop = std::make_unique<UniopLog2>();
+                uniop = std::make_unique<UniopLog2>(std::move(child));
             } else if (op == "log10") {
-                uniop = std::make_unique<UniopLog10>();
+                uniop = std::make_unique<UniopLog10>(std::move(child));
             } else if (op == "exp") {
-                uniop = std::make_unique<UniopExp>();
+                uniop = std::make_unique<UniopExp>(std::move(child));
             } else if (op == "minus") {
-                uniop = std::make_unique<UniopMinus>();
+                uniop = std::make_unique<UniopMinus>(std::move(child));
             } else if (op == "abs") {
-                uniop = std::make_unique<UniopAbs>();
+                uniop = std::make_unique<UniopAbs>(std::move(child));
             } else if (op == "sqrt") {
-                uniop = std::make_unique<UniopSqrt>();
+                uniop = std::make_unique<UniopSqrt>(std::move(child));
             } else if (op == "logistic") {
-                uniop = std::make_unique<UniopLogistic>();
+                uniop = std::make_unique<UniopLogistic>(std::move(child));
             } else if (op == "logit") {
-                uniop = std::make_unique<UniopLogit>();
+                uniop = std::make_unique<UniopLogit>(std::move(child));
             } else if (op == "probit") {
-                uniop = std::make_unique<UniopProbit>();
+                uniop = std::make_unique<UniopProbit>(std::move(child));
             } else if (op == "normcdf") {
-                uniop = std::make_unique<UniopNormcdf>();
+                uniop = std::make_unique<UniopNormcdf>(std::move(child));
             } else if (op == "factorial") {
-                uniop = std::make_unique<UniopFactorial>();
+                uniop = std::make_unique<UniopFactorial>(std::move(child));
             } else if (op == "factln") {
-                uniop = std::make_unique<UniopFactln>();
+                uniop = std::make_unique<UniopFactln>(std::move(child));
             } else if (op == "gamma") {
-                uniop = std::make_unique<UniopGamma>();
+                uniop = std::make_unique<UniopGamma>(std::move(child));
             } else if (op == "gammaln") {
-                uniop = std::make_unique<UniopGammaln>();
+                uniop = std::make_unique<UniopGammaln>(std::move(child));
             } else if (op == "sin") {
-                uniop = std::make_unique<UniopSin>();
+                uniop = std::make_unique<UniopSin>(std::move(child));
             } else if (op == "sinh") {
-                uniop = std::make_unique<UniopSinh>();
+                uniop = std::make_unique<UniopSinh>(std::move(child));
             } else if (op == "cos") {
-                uniop = std::make_unique<UniopCos>();
+                uniop = std::make_unique<UniopCos>(std::move(child));
             } else if (op == "cosh") {
-                uniop = std::make_unique<UniopCosh>();
+                uniop = std::make_unique<UniopCosh>(std::move(child));
             } else if (op == "tan") {
-                uniop = std::make_unique<UniopTan>();
+                uniop = std::make_unique<UniopTan>(std::move(child));
             } else if (op == "tanh") {
-                uniop = std::make_unique<UniopTanh>();
+                uniop = std::make_unique<UniopTanh>(std::move(child));
             } else if (op == "cot") {
-                uniop = std::make_unique<UniopCot>();
+                uniop = std::make_unique<UniopCot>(std::move(child));
             } else if (op == "coth") {
-                uniop = std::make_unique<UniopCoth>();
+                uniop = std::make_unique<UniopCoth>(std::move(child));
             } else if (op == "sec") {
-                uniop = std::make_unique<UniopSec>();
+                uniop = std::make_unique<UniopSec>(std::move(child));
             } else if (op == "sech") {
-                uniop = std::make_unique<UniopSech>();
+                uniop = std::make_unique<UniopSech>(std::move(child));
             } else if (op == "csc") {
-                uniop = std::make_unique<UniopCsc>();
+                uniop = std::make_unique<UniopCsc>(std::move(child));
             } else if (op == "csch") {
-                uniop = std::make_unique<UniopCsch>();
+                uniop = std::make_unique<UniopCsch>(std::move(child));
             } else if (op == "arcsin") {
-                uniop = std::make_unique<UniopArcsin>();
+                uniop = std::make_unique<UniopArcsin>(std::move(child));
             } else if (op == "arcsinh") {
-                uniop = std::make_unique<UniopArcsinh>();
+                uniop = std::make_unique<UniopArcsinh>(std::move(child));
             } else if (op == "arccos") {
-                uniop = std::make_unique<UniopArccos>();
+                uniop = std::make_unique<UniopArccos>(std::move(child));
             } else if (op == "arccosh") {
-                uniop = std::make_unique<UniopArccosh>();
+                uniop = std::make_unique<UniopArccosh>(std::move(child));
             } else if (op == "arctan") {
-                uniop = std::make_unique<UniopArctan>();
+                uniop = std::make_unique<UniopArctan>(std::move(child));
             } else if (op == "arctanh") {
-                uniop = std::make_unique<UniopArctanh>();
+                uniop = std::make_unique<UniopArctanh>(std::move(child));
             } else if (op == "arccot") {
-                uniop = std::make_unique<UniopArccot>();
+                uniop = std::make_unique<UniopArccot>(std::move(child));
             } else if (op == "arccoth") {
-                uniop = std::make_unique<UniopArccoth>();
+                uniop = std::make_unique<UniopArccoth>(std::move(child));
             } else if (op == "arcsec") {
-                uniop = std::make_unique<UniopArcsec>();
+                uniop = std::make_unique<UniopArcsec>(std::move(child));
             } else if (op == "arcsech") {
-                uniop = std::make_unique<UniopArcsech>();
+                uniop = std::make_unique<UniopArcsech>(std::move(child));
             } else if (op == "arccsc") {
-                uniop = std::make_unique<UniopArccsc>();
+                uniop = std::make_unique<UniopArccsc>(std::move(child));
             } else if (op == "arccsch") {
-                uniop = std::make_unique<UniopArccsch>();
+                uniop = std::make_unique<UniopArccsch>(std::move(child));
             } else if (op == "heaviside") {
-                uniop = std::make_unique<UniopHeaviside>();
+                uniop = std::make_unique<UniopHeaviside>(std::move(child));
             } else if (op == "sign") {
-                uniop = std::make_unique<UniopSign>();
+                uniop = std::make_unique<UniopSign>(std::move(child));
             } else if (op == "floor") {
-                uniop = std::make_unique<UniopFloor>();
+                uniop = std::make_unique<UniopFloor>(std::move(child));
             } else if (op == "ceiling") {
-                uniop = std::make_unique<UniopCeiling>();
+                uniop = std::make_unique<UniopCeiling>(std::move(child));
             // Logic uniops. FIXME: This is really an error. not could as well be a Uniop here.
             } else if (op == "isDefined") {
-                uniop = std::make_unique<LogicUniopIsdefined>();
+                uniop = std::make_unique<LogicUniopIsdefined>(std::move(child));
             } else if (op == "not") {
-                uniop = std::make_unique<LogicUniopNot>();
+                uniop = std::make_unique<LogicUniopNot>(std::move(child));
             }
-            uniop->setChild(AstNodeFactory::create(node.getChild()));
             instance = std::move(uniop);
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();

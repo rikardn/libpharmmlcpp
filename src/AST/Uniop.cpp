@@ -35,10 +35,8 @@ namespace pharmmlcpp
 
 #define UNIOP_METHODS(name, type, op) \
     std::unique_ptr<AstNode> name::clone() { \
-        std::unique_ptr<name> cl = std::make_unique<name>(); \
-        if (this->child) { \
-            (*cl).child = this->child->clone(); \
-        } \
+        std::unique_ptr<AstNode> child_clone = this->child->clone(); \
+        std::unique_ptr<name> cl = std::make_unique<name>(std::move(child_clone)); \
         return std::move(cl); \
     } \
     \

@@ -20,27 +20,39 @@
 
 namespace pharmmlcpp
 {
+    /**
+     *  Set a new left child
+     */
     void Binop::setLeft(std::unique_ptr<AstNode> child) {
         this->left = std::move(child);
     }
 
+    /**
+     *  Get a pointer to the left child
+     */
     AstNode *Binop::getLeft() {
         return this->left.get();
     }
 
+    /**
+     *  Set a new right child
+     */
     void Binop::setRight(std::unique_ptr<AstNode> child) {
         this->right = std::move(child);
     }
 
+    /**
+     *  Get a pointer to the right child
+     */
     AstNode *Binop::getRight() {
         return this->right.get();
     }
 
 #define BINOP_METHODS(name, type, op) \
     std::unique_ptr<AstNode> name::clone() { \
-        std::unique_ptr<name> cl = std::make_unique<name>(); \
-        (*cl).left = this->left->clone(); \
-        (*cl).right = this->right->clone(); \
+        std::unique_ptr<AstNode> left_clone = this->left->clone(); \
+        std::unique_ptr<AstNode> right_clone = this->right->clone(); \
+        std::unique_ptr<name> cl = std::make_unique<name>(std::move(left_clone), std::move(right_clone)); \
         return std::move(cl); \
     } \
     \

@@ -145,51 +145,51 @@ namespace pharmmlcpp
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Binop> binop;
+            std::unique_ptr<AstNode> left = AstNodeFactory::create(node.getChild());
+            std::unique_ptr<AstNode> right = AstNodeFactory::create(node.getLastChild());
             // Ordinary binops
             if (op == "plus") {
-                binop = std::make_unique<BinopPlus>();
+                binop = std::make_unique<BinopPlus>(std::move(left), std::move(right));
             } else if (op == "minus") {
-                binop = std::make_unique<BinopMinus>();
+                binop = std::make_unique<BinopMinus>(std::move(left), std::move(right));
             } else if (op == "divide") {
-                binop = std::make_unique<BinopDivide>();
+                binop = std::make_unique<BinopDivide>(std::move(left), std::move(right));
             } else if (op == "times") {
-                binop = std::make_unique<BinopTimes>();
+                binop = std::make_unique<BinopTimes>(std::move(left), std::move(right));
             } else if (op == "power") {
-                binop = std::make_unique<BinopPower>();
+                binop = std::make_unique<BinopPower>(std::move(left), std::move(right));
             } else if (op == "logx") {
-                binop = std::make_unique<BinopLogx>();
+                binop = std::make_unique<BinopLogx>(std::move(left), std::move(right));
             } else if (op == "root") {
-                binop = std::make_unique<BinopRoot>();
+                binop = std::make_unique<BinopRoot>(std::move(left), std::move(right));
             } else if (op == "min") {
-                binop = std::make_unique<BinopMin>();
+                binop = std::make_unique<BinopMin>(std::move(left), std::move(right));
             } else if (op == "max") {
-                binop = std::make_unique<BinopMax>();
+                binop = std::make_unique<BinopMax>(std::move(left), std::move(right));
             } else if (op == "rem") {
-                binop = std::make_unique<BinopRem>();
+                binop = std::make_unique<BinopRem>(std::move(left), std::move(right));
             } else if (op == "atan2") {
-                binop = std::make_unique<BinopAtan2>();
+                binop = std::make_unique<BinopAtan2>(std::move(left), std::move(right));
             // Logic binops
             } else if (op == "lt") {
-                binop = std::make_unique<LogicBinopLt>();
+                binop = std::make_unique<LogicBinopLt>(std::move(left), std::move(right));
             } else if (op == "leq") {
-                binop = std::make_unique<LogicBinopLeq>();
+                binop = std::make_unique<LogicBinopLeq>(std::move(left), std::move(right));
             } else if (op == "gt") {
-                binop = std::make_unique<LogicBinopGt>();
+                binop = std::make_unique<LogicBinopGt>(std::move(left), std::move(right));
             } else if (op == "geq") {
-                binop = std::make_unique<LogicBinopGeq>();
+                binop = std::make_unique<LogicBinopGeq>(std::move(left), std::move(right));
             } else if (op == "eq") {
-                binop = std::make_unique<LogicBinopEq>();
+                binop = std::make_unique<LogicBinopEq>(std::move(left), std::move(right));
             } else if (op == "neq") {
-                binop = std::make_unique<LogicBinopNeq>();
+                binop = std::make_unique<LogicBinopNeq>(std::move(left), std::move(right));
             } else if (op == "and") {
-                binop = std::make_unique<LogicBinopAnd>();
+                binop = std::make_unique<LogicBinopAnd>(std::move(left), std::move(right));
             } else if (op == "or") {
-                binop = std::make_unique<LogicBinopOr>();
+                binop = std::make_unique<LogicBinopOr>(std::move(left), std::move(right));
             } else if (op == "xor") {
-                binop = std::make_unique<LogicBinopXor>();
+                binop = std::make_unique<LogicBinopXor>(std::move(left), std::move(right));
             }
-            binop->setLeft(AstNodeFactory::create(node.getChild()));
-            binop->setRight(AstNodeFactory::create(node.getLastChild()));
             instance = std::move(binop);
         } else if (name == "ConstantType") {
             std::string op = node.getAttribute("op").getValue();

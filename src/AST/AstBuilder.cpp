@@ -23,14 +23,9 @@ namespace pharmmlcpp
 {
     // FIXME: This code became a mess after smart pointers. Can using copy be made much more general.
     AstNode *AstBuilder::multiplyMany(std::vector<AstNode *> list) {
-        BinopTimes *prev = new BinopTimes();
-        prev->setRight(std::unique_ptr<AstNode>(list.end()[-1]));     // The ultimate element
-        prev->setLeft(std::unique_ptr<AstNode>(list.end()[-2]));      // The penultimate element
-        //for (std::vector<AstNode *>::size_type i = list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
+        BinopTimes *prev = new BinopTimes(std::unique_ptr<AstNode>(list.end()[-2]), std::unique_ptr<AstNode>(list.end()[-1]));      // The ultimate and penultimate element
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
-            BinopTimes *next = new BinopTimes();
-            next->setRight(std::unique_ptr<AstNode>(prev));
-            next->setLeft(std::unique_ptr<AstNode>(list[i]));
+            BinopTimes *next = new BinopTimes(std::unique_ptr<AstNode>(list[i]), std::unique_ptr<AstNode>(prev));
             prev = next;
         }
 
@@ -39,14 +34,9 @@ namespace pharmmlcpp
 
     // FIXME: Major duplication of code! Need way of creating same Binop Type 
     AstNode *AstBuilder::addMany(std::vector<AstNode *> list) {
-        BinopPlus *prev = new BinopPlus();
-        prev->setRight(std::unique_ptr<AstNode>(list.back()));     // The ultimate element
-        prev->setLeft(std::unique_ptr<AstNode>(list.end()[-2]));      // The penultimate element
-
+        BinopPlus *prev = new BinopPlus(std::unique_ptr<AstNode>(list.end()[-2]), std::unique_ptr<AstNode>(list.end()[-1]));      // The ultimate and penultimate element
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
-            BinopPlus *next = new BinopPlus();
-            next->setRight(std::unique_ptr<AstNode>(prev));
-            next->setLeft(std::unique_ptr<AstNode>(list[i]));
+            BinopPlus *next = new BinopPlus(std::unique_ptr<AstNode>(list[i]), std::unique_ptr<AstNode>(prev));
             prev = next;
         }
 

@@ -674,14 +674,10 @@ namespace pharmmlcpp
                             if (dist_par->getName() == "var") {
                                 value = pop_param->getParameterEstimation()->getInitValue().get();
                             } else if (dist_par->getName() == "stdev") {
-                                std::unique_ptr<BinopPower> power(new BinopPower());
-                                power->setLeft(pop_param->getParameterEstimation()->getInitValue()->clone());
-                                power->setRight(std::make_unique<ScalarInt>(2));
+                                std::unique_ptr<AstNode> left = pop_param->getParameterEstimation()->getInitValue()->clone();
+                                std::unique_ptr<AstNode> right = std::make_unique<ScalarInt>(2);
+                                std::unique_ptr<BinopPower> power(new BinopPower(std::move(left), std::move(right)));
                                 value = power.release();    // Until value is a smart pointer
-                                //BinopPower *power = new BinopPower();
-                                //power->setLeft(pop_param->getParameterEstimation()->getInitValue());
-                                //power->setRight(new ScalarInt(2));
-                                //value = power;
                             }
                         }
                         d_formatter.add(rand_var->getSymbId() + "=" + this->accept(value));

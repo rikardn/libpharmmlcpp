@@ -33,7 +33,7 @@ namespace pharmmlcpp
     {
         public:
             Uniop(std::unique_ptr<AstNode> child) { this->child = std::move(child); };
-            Uniop(const Uniop &from) { if (from.child) this->child = from.child->clone(); };
+            Uniop(const Uniop &from) { this->child = from.child->clone(); };
             AstNode *getChild();
             void setChild(std::unique_ptr<AstNode> node);
 

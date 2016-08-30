@@ -181,8 +181,7 @@ namespace pharmmlcpp
                 if (type == "amt") {
                     column_mappings[id] = column_mappings[id] + "::dosingTarget";
                 } else if (type == "dv") {
-                    // FIXME: Consolidate the map with the targets (to determine type)
-                    column_mappings[id] = column_mappings[id] + "::continuousObs";
+                    column_mappings[id] = column_mappings[id] + "::observation";
                 }
 
                 form.closeVector();
@@ -520,14 +519,14 @@ namespace pharmmlcpp
                 mdl_cmt[adm_macro] = mdl_cmt_iterator++;
             }
         }
-        
+
         // Number compartments consecutively and build ordered list of compartments and mass transfers
         std::vector<pharmmlcpp::PKMacro *> cmt_macros = pk_macros->getCompartments();
         std::vector<pharmmlcpp::PKMacro *> trans_macros = pk_macros->getTransfers();
         std::vector<pharmmlcpp::PKMacro *> cmt_trans_macros; // To contain both of the above in good order
         for (pharmmlcpp::PKMacro *cmt_macro : cmt_macros) {
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
-            
+
             // Find transfers FROM this compartment
             int cmt_num = cmt_macro->getCmtNum();
             for (pharmmlcpp::PKMacro *trans_macro : trans_macros) {
@@ -549,13 +548,13 @@ namespace pharmmlcpp
             // Get target of administration (MDL uses the names when refering)
             int target_num = macro->getTargetNum();
             std::string target_name = pk_macros->getCompartment(target_num)->getName();
-            
+
             // Add differently if depot-ish administration or direct (IV)
             if (macro->getSubType() != MacroType::IV) {
                 form.add("type is depot");
                 form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
 
-                // Output compartment target 
+                // Output compartment target
                 form.add("to=" + target_name);
 
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
@@ -601,7 +600,7 @@ namespace pharmmlcpp
             }
             form.closeVector();
         }
-        
+
         // Output compartments and mass transfers (in a order of transfers directly following associated compartment)
         for (pharmmlcpp::PKMacro *macro : cmt_trans_macros) {
             if (macro->isCompartment()) { // Treat all compartments similarly

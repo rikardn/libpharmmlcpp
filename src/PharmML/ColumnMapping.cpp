@@ -138,7 +138,7 @@ namespace pharmmlcpp
         this->columnIdRef = ref_node.getAttribute("columnIdRef").getValue();
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         xml::Node symbref_node = reader.getSingleElement(node, "./ct:SymbRef");
-        xml::Node piecewise_node = reader.getSingleElement(node, "./ds:Piecewise");
+        xml::Node piecewise_node = reader.getSingleElement(node, "./math:Piecewise");
         // TODO: Support CategoryMapping (for categorical covariates)
 
         // Store mapping expression (should only contain one symbol reference)

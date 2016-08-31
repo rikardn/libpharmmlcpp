@@ -92,10 +92,9 @@ namespace pharmmlcpp
         ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
         MDLObject object;
         object.name = par_model->getBlkId();
-        std::vector<EstimationStep *> estim_steps = model->getModellingSteps()->getEstimationSteps();
+        std::vector<EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
         //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
-        CPharmML::PopulationParameters *populationParameters = model->getConsolidator()->getPopulationParameters(); // TODO: Plurality support for multiple parameter models
-        object.code = this->genParObj(populationParameters);
+        object.code = this->genParObj(par_model, est_steps);
         objects.parameter.push_back(object);
         //~ }
 
@@ -194,66 +193,74 @@ namespace pharmmlcpp
         }
     }
 
-    std::string MDLGenerator::genParObj(CPharmML::PopulationParameters *populationParameters) {
+    std::string MDLGenerator::genParObj(ParameterModel *par_model, std::vector<EstimationStep *> est_steps) {
         TextFormatter form;
 
         form.indentAdd("parObj {");
 
-        std::vector<CPharmML::PopulationParameter *> cpop_params = populationParameters->getPopulationParameters();
-        // Split into structural and variability parameters
-        std::vector<CPharmML::PopulationParameter *> structuralParameters;
-        std::vector<CPharmML::PopulationParameter *> variabilityParameters;
-        std::vector<std::string> correlatedVariables;
-        for (CPharmML::PopulationParameter *cpop_param : cpop_params) {
-            if (cpop_param->isVariabilityParameter()) {
-                variabilityParameters.push_back(cpop_param);
-            } else if (cpop_param->isCorrelation()) {
-                variabilityParameters.push_back(cpop_param);
-                // Get correlated variable names
-                std::vector<SymbRef *> symbRefs = cpop_param->getCorrelation()->getPairwiseSymbRefs();
-                correlatedVariables.push_back(this->accept(symbRefs[0]));
-                correlatedVariables.push_back(this->accept(symbRefs[1]));
-            } else {
-                structuralParameters.push_back(cpop_param);
-            }
-        }
+        std::vector<PopulationParameter *> pop_params = par_model->getPopulationParameters();
 
-        // Fill DECLARED_VARIABLES with correlated variable names
-        if (!correlatedVariables.empty()) {
-            form.openVector("DECLARED_VARIABLES {}", 0, " ");
-            for (std::string corr_name : correlatedVariables) {
-                form.add(corr_name);
+        // Split into structural and variability parameters
+        std::vector<PopulationParameter *> structural_params;
+        std::vector<PopulationParameter *> variability_params;
+        for (PopulationParameter *pop_param : pop_params) {
+            std::vector<RandomVariable *> ref_rand_vars = par_model->getRandomVariables(pop_param);
+            std::vector<IndividualParameter *> ref_ind_params = par_model->getIndividualParameters(pop_param);
+            std::vector<Correlation *> ref_corrs = par_model->getCorrelations(pop_param);
+            if (!ref_ind_params.empty()) {
+                // Refered by IndividualParameter -> structural parameter
+                structural_params.push_back(pop_param);
             }
-            form.closeVector();
-            form.emptyLine();
+            if (!ref_rand_vars.empty()) {
+                // Refered by RandomVariable -> variability parameter
+                variability_params.push_back(pop_param);
+            }
+            if (!ref_corrs.empty()) {
+                // Refered by Correlation -> variability parameter
+                for (Correlation *corr : ref_corrs) {
+                    if (corr->isPairwise()) {
+                        variability_params.push_back(pop_param);
+                    } else {
+                        pop_param->accept(this);
+                        std::string name = this->getValue();
+                        //~ this->logger->error("Correlation refered by parameter '" + name + "' is of unsupported Matrix type", corr);
+                        // TODO: Matrix support
+                    }
+                }
+            }
+            if (ref_rand_vars.empty() && ref_ind_params.empty() && ref_corrs.empty()) {
+                // Refered by neither IP, RV or C -> unsupported parameter type
+                pop_param->accept(this);
+                std::string name = this->getValue();
+                //~ this->logger->warning("PopulationParameter '" + name + "' not associated with RandomVariable, IndividualParameter or Correlation; Ignored", pop_param);
+            }
         }
 
         // Generate STRUCTURAL and VARIABILITY block
-        form.addMany(this->genStructuralBlock(structuralParameters));
+        form.addMany(this->genStructuralBlock(structural_params));
         form.emptyLine();
-        form.addMany(this->genVariabilityBlock(variabilityParameters));
+        form.addMany(this->genVariabilityBlock(variability_params));
 
         form.outdentAdd("}");
 
         return form.createString();
     }
 
-    std::string MDLGenerator::genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters) {
+    std::string MDLGenerator::genStructuralBlock(std::vector<PopulationParameter *> structural_params) {
         // Generate MDL STRUCTURAL block
         TextFormatter form;
         form.indentAdd("STRUCTURAL {");
 
-        for (CPharmML::PopulationParameter *structuralParameter : structuralParameters) {
-            // TODO: Implement CPharmMLVisitor (instead of visiting the pharmmlcpp::PopulationParameter objects, which is better suited for model object)
-            structuralParameter->getPopulationParameter()->accept(this);
+        for (PopulationParameter *param : structural_params) {
+            param->accept(this);
             std::string name = this->getValue();
-            this->structuralParameterNames.push_back(name);
 
             // Add the init attributes
-            structuralParameter->getParameterEstimation()->accept(this);
-            std::vector<std::string> init_attr = this->getValues();
+            //~ structuralParameter->getParameterEstimation()->accept(this);
+            //~ std::vector<std::string> init_attr = this->getValues();
             form.openVector(name + " : {}", 0, ", ");
-            form.addMany(init_attr);
+            this->structuralParameterNames.push_back(name);
+            //~ form.addMany(init_attr);
 
             form.closeVector();
         }
@@ -262,60 +269,23 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters) {
+    std::string MDLGenerator::genVariabilityBlock(std::vector<PopulationParameter *> variability_params) {
         // Generate MDL VARIABILITY block
         TextFormatter form;
         form.indentAdd("VARIABILITY {");
 
-        for (CPharmML::PopulationParameter *variabilityParameter : variabilityParameters) {
-            // TODO: Implement CPharmMLVisitor (instead of visiting the pharmmlcpp::PopulationParameter objects, which is better suited for model object)
-            if (variabilityParameter->isCorrelation()) {
-                // Correlations
-                pharmmlcpp::Correlation *corr = variabilityParameter->getCorrelation();
-                std::string name = variabilityParameter->getName();
-                if (corr->isPairwise()) {
-                    std::string value = this->accept(corr->getPairwiseAssignment().get());
-                    form.add(name + " : {value = " + value + "}");
-                    this->variabilityParameterNames.push_back(name); // TODO: Fix this ugly global variable
-                } else {
-                    this->logger->error("Correlation '" + name + "' is of unsupported Matrix type", corr);
-                    form.add("# " + name + " correlation of unsupported matrix type");
-                    // TODO: Matrix support
-                }
-            } else {
-                // Ordinary variability parameters
-                variabilityParameter->getPopulationParameter()->accept(this);
-                std::string name = this->getValue();
-                this->variabilityParameterNames.push_back(name);
+        for (PopulationParameter *param : variability_params) {
+            param->accept(this);
+            std::string name = this->getValue();
 
-                // Add the init attributes
-                variabilityParameter->getParameterEstimation()->accept(this);
-                std::vector<std::string> init_attr = this->getValues();
-                form.openVector(name + " : {}", 0, ", ");
-                form.addMany(init_attr);
+            // Add the init attributes
+            //~ variabilityParameter->getParameterEstimation()->accept(this);
+            //~ std::vector<std::string> init_attr = this->getValues();
+            form.openVector(name + " : {}", 0, ", ");
+            this->variabilityParameterNames.push_back(name);
+            //~ form.addMany(init_attr);
 
-                // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
-                std::string dist_name = variabilityParameter->getDistributionName();
-                std::string dist_param = variabilityParameter->getDistributionParameterType();
-                std::string comment;
-                if (variabilityParameter->inDifferentParameterizations()) {
-                    comment = " # Parameter in different distributions/parameterizations!";
-                } else {
-                    if (dist_name == "Normal1" || dist_name == "Normal2") {
-                        if (dist_param == "stdev") {
-                            form.add("type is sd");
-                        } else if (dist_param == "var") {
-                            form.add("type is var");
-                        } else {
-                            comment = " # Unknown ProbOnto " + dist_name + " parameter type (" + dist_param + ")!";
-                        }
-                    } else {
-                        comment = " # Unknown ProbOnto distribution (" + dist_name + ") and parameter type (" + dist_param + ")!";
-                    }
-                }
-                form.closeVector();
-                form.append(comment);
-            }
+            form.closeVector();
         }
 
         form.outdentAdd("}");

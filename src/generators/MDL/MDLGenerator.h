@@ -80,9 +80,9 @@ namespace pharmmlcpp
             std::string genDataObj(ExternalDataset *ext_ds);
             std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
 
-            std::string genParObj(CPharmML::PopulationParameters *populationParameters);
-            std::string genStructuralBlock(std::vector<CPharmML::PopulationParameter *> structuralParameters);
-            std::string genVariabilityBlock(std::vector<CPharmML::PopulationParameter *> variabilityParameters);
+            std::string genParObj(ParameterModel *par_model, std::vector<EstimationStep *> est_steps);
+            std::string genStructuralBlock(std::vector<PopulationParameter *> structural_params);
+            std::string genVariabilityBlock(std::vector<PopulationParameter *> variability_params);
             std::string genRandomVariableDefinitionBlock(pharmmlcpp::VariabilityLevel *level, std::vector<pharmmlcpp::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
             std::string genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(pharmmlcpp::StructuralModel *structuralModel);

@@ -157,4 +157,48 @@ namespace pharmmlcpp
         }
         return new ScalarInt(0);        // No covariance 
     }
+
+    /* THOUGHTS ON IMPLEMENTATION BELOW:
+     * postParse() for linking refering RandomVariable, IndividualParameter and Correlation to PopulationParameter
+     * does not work since SymbRef's are not setup at construction time AND it would mean cache invalidation mess if
+     * internals are accessed!
+     * 
+     * FIXME: What kind of pointer list type to return? A reference to source object is not senseful since
+     * none such exists; list is subset of source object. Shared pointer list? */
+
+    // Get RandomVariable's referencing a given PopulationParameter (i.e. it's (possibly?) a variability parameter)
+    std::vector<RandomVariable *> ParameterModel::getRandomVariables(PopulationParameter *pop_param) {
+        std::vector<RandomVariable *> rand_vars;
+        for (RandomVariable *rand_var : this->randomVariables) {
+            bool depends_on_pop = rand_var->referencedSymbols.hasSymbol(pop_param);
+            if (depends_on_pop) {
+                rand_vars.push_back(rand_var);
+            }
+        }
+        return rand_vars;
+    }
+
+    // Get IndividualParameter's referencing a given PopulationParameter (i.e. it's a structural parameter)
+    std::vector<IndividualParameter *> ParameterModel::getIndividualParameters(PopulationParameter *pop_param) {
+        std::vector<IndividualParameter *> ind_params;
+        for (IndividualParameter *ind_param : this->individualParameters) {
+            bool depends_on_pop = ind_param->referencedSymbols.hasSymbol(pop_param);
+            if (depends_on_pop) {
+                ind_params.push_back(ind_param);
+            }
+        }
+        return ind_params;
+    }
+
+    // Get Correlation's referencing a given PopulationParameter (i.e. it's a variability/correlation parameter)
+    std::vector<Correlation *> ParameterModel::getCorrelations(PopulationParameter *pop_param) {
+        std::vector<Correlation *> corrs;
+        for (Correlation *corr : this->correlations) {
+            bool depends_on_pop = corr->referencedSymbols.hasSymbol(pop_param);
+            if (depends_on_pop) {
+                corrs.push_back(corr);
+            }
+        }
+        return corrs;
+    }
 }

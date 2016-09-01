@@ -145,8 +145,9 @@ namespace pharmmlcpp
             AstAnalyzer ast_analyzer;
             std::shared_ptr<Logger> logger;
 
-            std::vector<std::string> structuralParameterNames;
-            std::vector<std::string> variabilityParameterNames;
+            // Global state variables (to link model together)
+            std::vector<std::string> structural_parameters;
+            std::vector<std::string> variability_parameters;
 
             std::string value;
             void setValue(std::string str);

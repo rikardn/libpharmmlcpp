@@ -270,7 +270,7 @@ namespace pharmmlcpp
         for (PopulationParameter *param : structural_params) {
             param->accept(this);
             std::string name = this->getValue();
-            this->structuralParameterNames.push_back(name);
+            this->structural_parameters.push_back(name);
 
             // Add the init attributes (if available)
             form.openVector(name + " : {}", 0, ", ");
@@ -300,7 +300,7 @@ namespace pharmmlcpp
         for (PopulationParameter *param : variability_params) {
             param->accept(this);
             std::string name = this->getValue();
-            this->variabilityParameterNames.push_back(name);
+            this->variability_parameters.push_back(name);
 
             // Add the init attributes (if available)
             form.openVector(name + " : {}", 0, ", ");
@@ -370,13 +370,13 @@ namespace pharmmlcpp
 
         // Generate STRUCTURAL_PARAMETERS block
         form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");
-        form.addMany(this->structuralParameterNames);
+        form.addMany(this->structural_parameters);
         form.closeVector();
         form.emptyLine();
 
         // Generate VARIABILITY_PARAMETERS block
         form.openVector("VARIABILITY_PARAMETERS {}", 1, "");
-        form.addMany(this->variabilityParameterNames);
+        form.addMany(this->variability_parameters);
         form.closeVector();
         form.emptyLine();
 

@@ -81,7 +81,8 @@ namespace pharmmlcpp
         std::vector<ExternalDataset *> ext_dss = model->getTrialDesign()->getExternalDatasets();
         for (ExternalDataset *ext_ds : ext_dss) {
             MDLObject object;
-            object.name = ext_ds->getOid();
+            object.name = ext_ds->getOid(); // FIXME: getOid() is not optimal. Ideally, SymbolNamer should be able to accept oid objects as well (and generate names)!
+            this->data_object_names.insert(object.name); // Store for selection by parameter object and linkage in MOG later
             object.code = this->genDataObj(ext_ds);
             objects.data.push_back(object);
         }
@@ -237,14 +238,25 @@ namespace pharmmlcpp
             }
         }
 
-        // Get an EstimationStep to use
-        EstimationStep *est_step = nullptr;
+        // Get an EstimationStep to use (by matching to a data object generated)
+        EstimationStep *selected_est_step = nullptr;
         if (msteps) {
             std::vector<EstimationStep *> est_steps = msteps->getEstimationSteps();
             if (!est_steps.empty()) {
-                est_step = est_steps[0];
-                if (est_steps.size() > 1) {
-                    this->logger->warning("ModellingSteps (%a) contains multiple EstimationStep's (%b); Only first step (" + est_step->getOid() + ") used", msteps, est_steps[1]);
+                for (EstimationStep *est_step : est_steps) {
+                    std::string data_object_reference = est_step->getExternalDatasetRef(); // FIXME: As pointed out in data object name fetch, this should be handled by SymbolNamer to avoid collisions and illegals
+                    auto got = this->data_object_names.find(data_object_reference);
+                    if (data_object_reference != "" && got != this->data_object_names.end()) {
+                        if (selected_est_step == nullptr) {
+                            selected_est_step = est_step;
+                            this->selected_data_object = data_object_reference;
+                        } else {
+                            this->logger->warning("Another EstimationStep refers to a valid ExternalDataSet in model; First match selected (%a --> '" + this->selected_data_object + "')", selected_est_step);
+                        }
+                    }
+                }
+                if (selected_est_step == nullptr) {
+                    this->logger->warning("ModellingSteps contains EstimationStep(s) but none refers to an ExternalDataSet in model; No initial values or bounds available", msteps);
                 }
             } else {
                 this->logger->error("ModellingSteps contains no EstimationStep; No initial values or bounds available", msteps);
@@ -254,9 +266,9 @@ namespace pharmmlcpp
         }
 
         // Generate STRUCTURAL and VARIABILITY block
-        form.addMany(this->genStructuralBlock(structural_params, est_step));
+        form.addMany(this->genStructuralBlock(structural_params, selected_est_step));
         form.emptyLine();
-        form.addMany(this->genVariabilityBlock(variability_params, est_step));
+        form.addMany(this->genVariabilityBlock(variability_params, selected_est_step));
 
         form.outdentAdd("}");
 

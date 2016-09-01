@@ -149,8 +149,10 @@ namespace pharmmlcpp
             MDLSymbolNamer symbol_namer;
 
             // Global state variables (to link model together)
+            std::unordered_set<std::string> data_object_names;
             std::vector<std::string> structural_parameters;
             std::vector<std::string> variability_parameters;
+            std::string selected_data_object;
 
             std::string value;
             void setValue(std::string str);

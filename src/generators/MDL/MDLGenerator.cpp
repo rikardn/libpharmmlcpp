@@ -92,9 +92,8 @@ namespace pharmmlcpp
         ParameterModel *par_model = model->getModelDefinition()->getParameterModel();
         MDLObject object;
         object.name = par_model->getBlkId();
-        std::vector<EstimationStep *> est_steps = model->getModellingSteps()->getEstimationSteps();
-        //~ form.addMany(name + " = " + this->genParObj(par_model, estim_steps));
-        object.code = this->genParObj(par_model, est_steps);
+        ModellingSteps *msteps = model->getModellingSteps();
+        object.code = this->genParObj(par_model, msteps);
         objects.parameter.push_back(object);
         //~ }
 
@@ -193,7 +192,7 @@ namespace pharmmlcpp
         }
     }
 
-    std::string MDLGenerator::genParObj(ParameterModel *par_model, std::vector<EstimationStep *> est_steps) {
+    std::string MDLGenerator::genParObj(ParameterModel *par_model, ModellingSteps *msteps) {
         TextFormatter form;
 
         form.indentAdd("parObj {");
@@ -237,17 +236,33 @@ namespace pharmmlcpp
             }
         }
 
+        // Get an EstimationStep to use
+        EstimationStep *est_step = nullptr;
+        if (msteps) {
+            std::vector<EstimationStep *> est_steps = msteps->getEstimationSteps();
+            if (!est_steps.empty()) {
+                est_step = est_steps[0];
+                if (est_steps.size() > 1) {
+                    this->logger->warning("ModellingSteps (%a) contains multiple EstimationStep's (%b); Only first step (" + est_step->getOid() + ") used", msteps, est_steps[1]);
+                }
+            } else {
+                this->logger->error("ModellingSteps contains no EstimationStep; No initial values or bounds available", msteps);
+            }
+        } else {
+            this->logger->error("No ModellingSteps found; No initial values or bounds available");
+        }
+
         // Generate STRUCTURAL and VARIABILITY block
-        form.addMany(this->genStructuralBlock(structural_params));
+        form.addMany(this->genStructuralBlock(structural_params, est_step));
         form.emptyLine();
-        form.addMany(this->genVariabilityBlock(variability_params));
+        form.addMany(this->genVariabilityBlock(variability_params, est_step));
 
         form.outdentAdd("}");
 
         return form.createString();
     }
 
-    std::string MDLGenerator::genStructuralBlock(std::vector<PopulationParameter *> structural_params) {
+    std::string MDLGenerator::genStructuralBlock(std::vector<PopulationParameter *> structural_params, EstimationStep *est_step) {
         // Generate MDL STRUCTURAL block
         TextFormatter form;
         form.indentAdd("STRUCTURAL {");
@@ -255,13 +270,20 @@ namespace pharmmlcpp
         for (PopulationParameter *param : structural_params) {
             param->accept(this);
             std::string name = this->getValue();
-
-            // Add the init attributes
-            //~ structuralParameter->getParameterEstimation()->accept(this);
-            //~ std::vector<std::string> init_attr = this->getValues();
-            form.openVector(name + " : {}", 0, ", ");
             this->structuralParameterNames.push_back(name);
-            //~ form.addMany(init_attr);
+
+            // Add the init attributes (if available)
+            form.openVector(name + " : {}", 0, ", ");
+            if (est_step) {
+                ParameterEstimation *par_est = est_step->getParameterEstimation(param);
+                if (par_est) {
+                    par_est->accept(this);
+                    std::vector<std::string> init_attr = this->getValues();
+                    form.addMany(init_attr);
+                } else {
+                    this->logger->error("No ParameterEstimation for structural parameter '" + name + "' found in EstimationStep; No initial values or bounds available", est_step);
+                }
+            }
 
             form.closeVector();
         }
@@ -270,7 +292,7 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genVariabilityBlock(std::vector<PopulationParameter *> variability_params) {
+    std::string MDLGenerator::genVariabilityBlock(std::vector<PopulationParameter *> variability_params, EstimationStep *est_step) {
         // Generate MDL VARIABILITY block
         TextFormatter form;
         form.indentAdd("VARIABILITY {");
@@ -278,13 +300,20 @@ namespace pharmmlcpp
         for (PopulationParameter *param : variability_params) {
             param->accept(this);
             std::string name = this->getValue();
-
-            // Add the init attributes
-            //~ variabilityParameter->getParameterEstimation()->accept(this);
-            //~ std::vector<std::string> init_attr = this->getValues();
-            form.openVector(name + " : {}", 0, ", ");
             this->variabilityParameterNames.push_back(name);
-            //~ form.addMany(init_attr);
+
+            // Add the init attributes (if available)
+            form.openVector(name + " : {}", 0, ", ");
+            if (est_step) {
+                ParameterEstimation *par_est = est_step->getParameterEstimation(param);
+                if (par_est) {
+                    par_est->accept(this);
+                    std::vector<std::string> init_attr = this->getValues();
+                    form.addMany(init_attr);
+                } else {
+                    this->logger->error("No ParameterEstimation for variability parameter '" + name + "' found in EstimationStep; No initial values or bounds available", est_step);
+                }
+            }
 
             form.closeVector();
         }

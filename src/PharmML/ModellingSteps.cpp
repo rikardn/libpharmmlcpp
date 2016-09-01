@@ -435,6 +435,7 @@ namespace pharmmlcpp
     }
 
     EstimationStep::EstimationStep(PharmMLReader &reader, xml::Node node) : CommonStepType(reader, node) {
+        this->setXMLNode(node);
         this->parse(reader, node);
     }
 
@@ -460,6 +461,17 @@ namespace pharmmlcpp
 
     std::vector<Operation *> EstimationStep::getOperations() {
         return this->operations;
+    }
+
+    // TODO: Move to CommonStepType (with more general name)? How are initials encoded in SimulationStep?
+    ParameterEstimation *EstimationStep::getParameterEstimation(Symbol *symbol) {
+        for (ParameterEstimation *par_est : this->parameterEstimations) {
+            bool depends_on_symbol = par_est->referencedSymbols.hasSymbol(symbol);
+            if (depends_on_symbol) {
+                return par_est;
+            }
+        }
+        return nullptr;
     }
 
     SimulationStep::SimulationStep(PharmMLReader &reader, xml::Node node) : CommonStepType(reader, node) {

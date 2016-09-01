@@ -37,7 +37,7 @@ namespace pharmmlcpp
         public:
             TargetTool(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
-        
+
         private:
             std::string oid;
             std::string name;
@@ -120,7 +120,7 @@ namespace pharmmlcpp
             bool isReal();
             bool isBool();
             bool isString();
-            
+
             int getInt();
             double getReal();
             bool getBool();
@@ -176,7 +176,7 @@ namespace pharmmlcpp
             Algorithm *algorithm = nullptr;
     };
 
-    class EstimationStep : CommonStepType
+    class EstimationStep : public CommonStepType, public PharmMLSection
     {
         public:
             EstimationStep(PharmMLReader &reader, xml::Node node);
@@ -184,13 +184,15 @@ namespace pharmmlcpp
             std::vector<ParameterEstimation *> getParameters();
             std::vector<Operation *> getOperations();
 
+            ParameterEstimation *getParameterEstimation(Symbol *symbol);
+
         private:
             std::vector<ParameterEstimation *> parameterEstimations;
             std::vector<Operation *> operations;
 
     };
 
-    class SimulationStep : CommonStepType
+    class SimulationStep : public CommonStepType
     {
         public:
             SimulationStep(PharmMLReader &reader, xml::Node node);

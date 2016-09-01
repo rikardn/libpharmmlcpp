@@ -63,7 +63,10 @@ namespace pharmmlcpp
             this->pairwiseAssignment = reader.factory.create(tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
-            this->matrixType = node.getAttribute("deviationMatrixType").getValue();
+            xml::Attribute dev_matrix_type = node.getAttribute("deviationMatrixType");
+            if (dev_matrix_type.exists()) {
+                this->matrixType = dev_matrix_type.getValue();
+            }
         }
     }
 

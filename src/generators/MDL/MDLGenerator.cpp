@@ -69,7 +69,8 @@ namespace pharmmlcpp
 
     // Generators
     std::string MDLGenerator::generateModel(PharmML *model) {
-        // FIXME: Bad design to put in model here? A smell of visitor pattern breakdown. Solution might be visitor on PharmML level.
+        // Use the MDLSymbolNamer for symbol naming
+        model->setSymbolNamer(&this->symbol_namer);
 
         // Store generated objects here
         MDLObjects objects;
@@ -352,14 +353,14 @@ namespace pharmmlcpp
         std::vector<pharmmlcpp::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
         std::vector<int>::size_type level = par_levels.size() + err_levels.size();
         for (; level - err_levels.size() > 0; level--) {
-            std::string name = par_levels[level - err_levels.size() - 1]->getSymbId();
+            std::string name = par_levels[level - err_levels.size() - 1]->getName();
             form.openVector(name + " : {}", 0, ", ");
             form.add("level = " + std::to_string(level));
             form.add("type is parameter");
             form.closeVector();
         }
         for (; level > 0; level--) {
-            std::string name = err_levels[level - 1]->getSymbId();
+            std::string name = err_levels[level - 1]->getName();
             form.openVector(name + " : {}", 0, ", ");
             form.add("level = " + std::to_string(level));
             form.add("type is observation");
@@ -486,6 +487,7 @@ namespace pharmmlcpp
         std::vector<CommonVariable *> vars = structuralModel->getVariables();
         SymbolSet var_set(std::unordered_set<Symbol *>(vars.begin(), vars.end()));
         for (Symbol *var : var_set.getOrdered()) {
+            // FIXME: Think about MDLSymbols... Is it needed? It appears to ONLY be used here. Why?
             var->accept(this->symb_gen.get());
             form.addMany(symb_gen->getValue());
         }
@@ -722,7 +724,7 @@ namespace pharmmlcpp
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
 
-        std::string obs_name = om->getSymbId();
+        std::string obs_name = om->getName();
         if (om->hasStandardErrorModel()) {
             // Determine if error model is a pure function call
             AstNode *error_model = om->getErrorModel().get();
@@ -737,7 +739,7 @@ namespace pharmmlcpp
                 auto &call_args = function_call->getFunctionArguments();
                 std::unordered_map<std::string, FunctionArgument *> call_arg_map;
                 for (const std::unique_ptr<FunctionArgument> &call_arg : call_args) {
-                    call_arg_map[call_arg->getSymbId()] = call_arg.get();
+                    call_arg_map[call_arg->getSymbId()] = call_arg.get(); // Note that SymbolNamer is NOT used since FA is not a Symbol (TODO: Use SymbolNamer?)
                 }
 
                 // Determine if function is known to MDL (tricky stuff)
@@ -778,7 +780,7 @@ namespace pharmmlcpp
                             case StandardFunctionArgument::prediction   : standard_arg_name = "prediction";
                                                                           break;
                         }
-                        std::string actual_arg_name = def_arg.second->getSymbId();
+                        std::string actual_arg_name = def_arg.second->getName();
 
                         // Check if it's a prediction argument and output the argument in standardized form
                         FunctionArgument *call_arg = call_arg_map[actual_arg_name];
@@ -804,7 +806,7 @@ namespace pharmmlcpp
                 } else {
                     // TODO: Non-standard function call must be resolved
                     form.openVector(obs_name + " : {}", 0, ", ");
-                    form.add("type is \"" + function_def->getSymbId() + "\"");
+                    form.add("type is \"" + function_def->getName() + "\"");
                     form.closeVector();
                     form.append(" # Error function definition not recognized as MDL standard");
                 }
@@ -900,7 +902,7 @@ namespace pharmmlcpp
     void MDLGenerator::visit(FunctionDefinition *node) {
         TextFormatter form;
 
-        std::string name = node->getSymbId();
+        std::string name = node->getName();
         form.openVector("FUNCTION(" + name + "){}", 1, "");
         form.addMany(this->accept(node->getDefinition().get()));
         form.closeVector();
@@ -913,14 +915,14 @@ namespace pharmmlcpp
     void MDLGenerator::visit(Covariate *node) { }
 
     void MDLGenerator::visit(PopulationParameter *node) {
-        setValue(node->getSymbId());
+        setValue(node->getName());
     }
 
     void MDLGenerator::visit(IndividualParameter *node) {
         TextFormatter form;
 
         // Get name
-        std::string name = node->getSymbId();
+        std::string name = node->getName();
 
         if (node->isStructured()) {
             form.openVector(name + " : {}", 0, ", ");
@@ -995,7 +997,7 @@ namespace pharmmlcpp
         TextFormatter form;
 
         // Get name of random variable and associated distribution
-        std::string name = node->getSymbId();
+        std::string name = node->getName();
         pharmmlcpp::Distribution *dist = node->getDistribution();
 
         // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
@@ -1030,7 +1032,7 @@ namespace pharmmlcpp
     }
 
     void MDLGenerator::visit(VariabilityLevel *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLGenerator::visit(Correlation *node) {
@@ -1047,21 +1049,21 @@ namespace pharmmlcpp
     }
 
     void MDLGenerator::visit(IndependentVariable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLGenerator::visit(Variable *node) {
         if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " = " + this->accept(node->getAssignment().get()));
+            this->setValue(node->getName() + " = " + this->accept(node->getAssignment().get()));
         } else {
-            this->setValue(node->getSymbId());
+            this->setValue(node->getName());
         }
     }
 
     void MDLGenerator::visit(DerivativeVariable *node) {
         TextFormatter form;
 
-        std::string name = node->getSymbId();
+        std::string name = node->getName();
         form.openVector(name + " : {}", 0, ", ");
         form.add("deriv = " + this->accept(node->getAssignment().get()));
         form.add("init = " + this->accept(node->getInitialValue().get()));
@@ -1079,7 +1081,7 @@ namespace pharmmlcpp
         std::string id = node->getColumnIdRef();
         std::string name = "UNDEF";
         if (node->getMappedSymbol()) {
-            name = node->getMappedSymbol()->getSymbId();
+            name = node->getMappedSymbol()->getName();
         }
         stringpair pair = {id, name};
         this->setValue(pair);

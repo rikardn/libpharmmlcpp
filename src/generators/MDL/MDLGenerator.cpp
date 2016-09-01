@@ -223,16 +223,17 @@ namespace pharmmlcpp
                     } else {
                         pop_param->accept(this);
                         std::string name = this->getValue();
-                        //~ this->logger->error("Correlation refered by parameter '" + name + "' is of unsupported Matrix type", corr);
+                        this->logger->error("Correlation refered by parameter '" + name + "' is of unsupported Matrix type", corr);
                         // TODO: Matrix support
                     }
                 }
             }
             if (ref_rand_vars.empty() && ref_ind_params.empty() && ref_corrs.empty()) {
-                // Refered by neither IP, RV or C -> unsupported parameter type
+                // Refered by neither IP, RV or C -> assumed to be structural parameter (e.g. in ErrorModel in ObservationModel)
                 pop_param->accept(this);
                 std::string name = this->getValue();
-                //~ this->logger->warning("PopulationParameter '" + name + "' not associated with RandomVariable, IndividualParameter or Correlation; Ignored", pop_param);
+                this->logger->warning("PopulationParameter '" + name + "' not associated with RandomVariable, IndividualParameter or Correlation; Assumed to be structural parameter", pop_param);
+                structural_params.push_back(pop_param);
             }
         }
 

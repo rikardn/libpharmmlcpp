@@ -20,12 +20,13 @@
 
 #include <AST/symbols.h>
 #include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLSection.h>
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp
 {
-    class PopulationParameter : public Symbol
+    class PopulationParameter : public Symbol, public PharmMLSection
     {
         public:
             PopulationParameter(std::string symbId);

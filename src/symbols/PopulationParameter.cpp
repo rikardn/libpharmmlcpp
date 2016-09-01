@@ -21,10 +21,11 @@ namespace pharmmlcpp
 {
     // FIXME: How to get context when created like this
     PopulationParameter::PopulationParameter(std::string symbId) {
-        this->symbId = symbId;        
+        this->symbId = symbId;
     }
 
     PopulationParameter::PopulationParameter(PharmMLReader &reader, xml::Node node) {
+        this->setXMLNode(node);
         this->PopulationParameter::parse(reader, node);
     }
 

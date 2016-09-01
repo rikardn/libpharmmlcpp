@@ -38,37 +38,37 @@ namespace pharmmlcpp
     }
 
     void MDLSymbols::visit(ObservationModel *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(Parameter *node) {
     }
 
     void MDLSymbols::visit(PopulationParameter *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(IndividualParameter *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(RandomVariable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(VariabilityLevel *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(IndependentVariable *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(Variable *node) {
         if (node->getAssignment()) {
-            this->setValue(node->getSymbId() + " = " + this->ast_gen->accept(node->getAssignment().get()));
+            this->setValue(node->getName() + " = " + this->ast_gen->accept(node->getAssignment().get()));
         } else {
-            this->setValue(node->getSymbId() + "::dosingVar"); // FIXME: This is a hack! I'm not sure if dosingVar is the only reasonable alternative.
+            this->setValue(node->getName() + "::dosingVar"); // FIXME: This is a hack! I'm not sure if dosingVar is the only reasonable alternative.
         }
     }
 
@@ -80,7 +80,7 @@ namespace pharmmlcpp
     void MDLSymbols::visit(DerivativeVariable *node) {
         TextFormatter form;
 
-        std::string name = node->getSymbId();
+        std::string name = node->getName();
         form.openVector(name + " : {}", 0, ", ");
         form.add("deriv = " + this->ast_gen->accept(node->getAssignment().get()));
         form.add("init = " + this->ast_gen->accept(node->getInitialValue().get()));
@@ -91,14 +91,14 @@ namespace pharmmlcpp
     }
 
     void MDLSymbols::visit(Covariate *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(FunctionDefinition *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 
     void MDLSymbols::visit(FunctionArgumentDefinition *node) {
-        this->setValue(node->getSymbId());
+        this->setValue(node->getName());
     }
 }

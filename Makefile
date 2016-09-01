@@ -18,8 +18,8 @@ endif
 pharmml2poped: pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDAstGenerator.h src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDGenerator.h src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.h src/generators/PopED/PopEDSymbols.h src/generators/PopED/PopEDObjects.cpp src/generators/PopED/PopEDObjects.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h src/generators/R/RSymbolNamer.cpp src/generators/R/RSymbolNamer.h libpharmmlc.a
 	$(CC) pharmml2poped.cpp src/popedconvert.cpp src/generators/PopED/PopEDAstGenerator.cpp src/generators/PopED/PopEDGenerator.cpp src/generators/PopED/PopEDSymbols.cpp src/generators/PopED/PopEDPastDerivativesSymbols.cpp src/generators/PopED/PopEDObjects.cpp src/generators/R/RSymbolNamer.cpp -o$(OUTPUT) -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
-mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h libpharmmlc.a
-	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
+mdl: mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLAstGenerator.h src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLSymbols.h src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLGenerator.h src/generators/TextFormatter.cpp src/generators/TextFormatter.h src/generators/MDL/MDLSymbolNamer.cpp src/generators/MDL/MDLSymbolNamer.h libpharmmlc.a
+	$(CC) mdl.cpp src/generators/MDL/MDLAstGenerator.cpp src/generators/MDL/MDLSymbols.cpp src/generators/MDL/MDLGenerator.cpp src/generators/MDL/MDLSymbolNamer.h -omdl -lpharmmlc $(CFLAGS) -L. $(LIBS)
 
 pharmmltool: utils/pharmmltool.cpp
 	$(CC) utils/pharmmltool.cpp -opharmmltool `xml2-config --libs --cflags`
@@ -317,8 +317,8 @@ windep:
 	cp windep/zlib-1.2.8/libz.dll.a windep/lib
 	wget -P windep ftp://xmlsoft.org/libxml2/libxml2-2.9.3.tar.gz
 	cd windep; tar xvfz libxml2-2.9.3.tar.gz
-	cd windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=.. --with-iconv=..; make 
-#	--without-html --without-legacy --without-regexps --without-sax1 --without-schemas --without-valid --without-xpath 
+	cd windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=.. --with-iconv=..; make
+#	--without-html --without-legacy --without-regexps --without-sax1 --without-schemas --without-valid --without-xpath
 	cp -r windep/libxml2-2.9.3/include/libxml windep/include
 	cp windep/libxml2-2.9.3/.libs/libxml2-2.dll windep/lib
 	cp windep/libxml2-2.9.3/.libs/libxml2.dll.a windep/lib

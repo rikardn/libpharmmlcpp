@@ -49,6 +49,8 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <consolidators/Consolidator.h>
 #include <consolidators/PopulationParameters.h>
 
+#include <generators/MDL/MDLSymbolNamer.h>
+
 #include <helpers/Logger.h>
 
 namespace pharmmlcpp
@@ -144,6 +146,7 @@ namespace pharmmlcpp
             std::unique_ptr<MDLSymbols> symb_gen;
             AstAnalyzer ast_analyzer;
             std::shared_ptr<Logger> logger;
+            MDLSymbolNamer symbol_namer;
 
             // Global state variables (to link model together)
             std::vector<std::string> structural_parameters;

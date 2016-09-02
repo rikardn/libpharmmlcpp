@@ -1,6 +1,7 @@
 AC_INIT(pharmmlcpp, 0.3)
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_SILENT_RULES([yes])
 
 AC_PROG_RANLIB
 AC_PROG_CXX

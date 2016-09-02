@@ -1,0 +1,12 @@
+AC_INIT(pharmmlcpp, 0.3)
+AC_CONFIG_MACRO_DIRS([m4])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
+
+AC_PROG_RANLIB
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
+
+PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.4)
+
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT

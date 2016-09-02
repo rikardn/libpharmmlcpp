@@ -1,3 +1,16 @@
+autom4te.cache/
+config.log
+config.status
+configure
+aclocal.m4
+Makefile
+depcomp
+install-sh
+Makefile.in
+missing
+*.deps
+*.dirstamp
+
 *.o
 *.d
 *.swp
@@ -7,13 +20,11 @@ pharmml2poped
 pharmml2poped.exe
 mdl
 pharmmltool
-libpharmmlc.a
-libpharmmlc.d.a
+libpharmmlcpp.a
 test/test
 
 output
 output.xml
-
 html/*
 latex/*
 

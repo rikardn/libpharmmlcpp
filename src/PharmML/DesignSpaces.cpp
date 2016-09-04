@@ -42,7 +42,7 @@ namespace pharmmlcpp
         }
         xml::Node dosing_times = reader.getSingleElement(node, "./design:DosingTimes");
         if (dosing_times.exists()) {
-            this->dosingTimes = reader.factory.create(dosing_times.getChild().getChild());
+            this->dosingTimes = reader.factory.create(reader, dosing_times.getChild().getChild());
         }
         std::vector<xml::Node> symbref_nodes = reader.getElements(node, "./ct:SymbRef");
         for (xml::Node symbref_node : symbref_nodes) {
@@ -50,7 +50,7 @@ namespace pharmmlcpp
         }
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         if (assign_node.exists()) {
-            this->assignment = reader.factory.create(assign_node.getChild());
+            this->assignment = reader.factory.create(reader, assign_node.getChild());
         }
     }
 

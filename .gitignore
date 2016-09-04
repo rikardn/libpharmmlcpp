@@ -10,10 +10,15 @@ Makefile.in
 missing
 *.deps
 *.dirstamp
+test-driver
+*.log
+*.trs
+
 
 *.o
 *.d
 *.swp
+unit
 main
 main.exe
 pharmml2poped

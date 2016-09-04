@@ -31,7 +31,7 @@ namespace pharmmlcpp
     Covariate::Covariate(PharmMLReader &reader, xml::Node name_node, xml::Node assign_node) {
         this->Symbol::parse(name_node);
         xml::Node tree = assign_node.getChild();
-        this->assignment = reader.factory.create(tree);
+        this->assignment = reader.factory.create(reader, tree);
         this->transformed = true;
     }
 
@@ -71,7 +71,7 @@ namespace pharmmlcpp
             xml::Node assign = reader.getSingleElement(cont_node, "./ct:Assign");
             if (assign.exists()) {
                 xml::Node tree = assign.getChild();
-                this->assignment = reader.factory.create(tree);
+                this->assignment = reader.factory.create(reader, tree);
             }
         } else {
             this->continuous = false;

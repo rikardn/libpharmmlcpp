@@ -38,10 +38,10 @@ namespace pharmmlcpp
             xml::Node assign_node = reader.getSingleElement(val_node, "./ct:Assign");
             if (assign_node.exists()) {
                 xml::Node tree_node = assign_node.getChild();
-                value.second = reader.factory.create(tree_node);
+                value.second = reader.factory.create(reader, tree_node);
             } else if (val_node.getChild().exists()) {
                 // SymbRef or Scalar
-                value.second = reader.factory.create(val_node.getChild());
+                value.second = reader.factory.create(reader, val_node.getChild());
             } else {
                 // TODO: Shouldn't this be schema illegal? Doesn't seem to stop me from crashing the code...
                 value.second = nullptr;

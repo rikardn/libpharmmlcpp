@@ -40,7 +40,7 @@ namespace pharmmlcpp
         if (number.exists()) {
             xml::Node assign = reader.getSingleElement(number, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->numberTimes = reader.factory.create(tree);
+            this->numberTimes = reader.factory.create(reader, tree);
         }
 
         // Get observation times
@@ -48,7 +48,7 @@ namespace pharmmlcpp
         if (times.exists()) {
             xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->observationTimes = reader.factory.create(tree);
+            this->observationTimes = reader.factory.create(reader, tree);
         }
 
         // Get continuous and discrete variable output(s)
@@ -201,7 +201,7 @@ namespace pharmmlcpp
         if (relative.exists()) {
             xml::Node assign = reader.getSingleElement(relative, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->relative = reader.factory.create(tree);
+            this->relative = reader.factory.create(reader, tree);
         }
     }
 

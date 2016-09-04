@@ -23,7 +23,7 @@ TEST_CASE("FunctionArgument", "[FunctionArgument]") {
                 <ct:SymbRef blkIdRef="pm" symbIdRef="CV"/>
             </math:FunctionArgument>
         )");
-        FunctionArgument fa(reader.getRoot());
+        FunctionArgument fa(reader, reader.getRoot());
         REQUIRE(fa.getSymbId() == "proportional");
         SymbRef *a = static_cast<SymbRef *>(fa.getArgument());
         REQUIRE(a->getSymbIdRef() == "CV");
@@ -37,7 +37,7 @@ TEST_CASE("FunctionArgument", "[FunctionArgument]") {
                 </ct:Assign>
             </math:FunctionArgument>
         )");
-        FunctionArgument fa(reader.getRoot());
+        FunctionArgument fa(reader, reader.getRoot());
         REQUIRE(fa.getSymbId() == "proportional");
         ScalarInt *a = static_cast<ScalarInt *>(fa.getArgument());
         REQUIRE(a->toInt() == 99);
@@ -108,7 +108,7 @@ TEST_CASE("FunctionCall", "[FunctionCall]") {
                 </math:FunctionArgument>
             </math:FunctionCall>
         )");
-        FunctionCall fc(reader.getRoot());
+        FunctionCall fc(reader, reader.getRoot());
         REQUIRE(fc.getFunction()->getSymbIdRef() == "proportionalError");
         REQUIRE(fc.getFunctionArguments().size() == 2);
     }

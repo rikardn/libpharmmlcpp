@@ -33,13 +33,13 @@ namespace pharmmlcpp
     /**
      *  Create a FunctionCall from PharmML xml
      */
-    FunctionCall::FunctionCall(xml::Node node) {
+    FunctionCall::FunctionCall(PharmMLReader &reader, xml::Node node) {
         std::vector<xml::Node> children = node.getChildren();
         xml::Node name_node = children[0];
         children.erase(children.begin());
         this->function = std::make_unique<SymbRef>(name_node);
         for (xml::Node n : children) {
-            functionArguments.push_back(std::make_unique<FunctionArgument>(n));
+            functionArguments.push_back(std::make_unique<FunctionArgument>(reader, n));
         }
     }
 
@@ -119,9 +119,9 @@ namespace pharmmlcpp
     /**
      *  Creates a new FunctionArgument from PharmML xml
      */
-    FunctionArgument::FunctionArgument(xml::Node node) {
+    FunctionArgument::FunctionArgument(PharmMLReader &reader, xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
-        this->argument = AstNodeFactory::create(node.getChild());
+        this->argument = AstNodeFactory::create(reader, node.getChild());
     }
     
     xml::Node FunctionArgument::xml(PharmMLWriter &writer) {

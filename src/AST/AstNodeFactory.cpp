@@ -33,7 +33,7 @@
 
 namespace pharmmlcpp
 {
-    std::unique_ptr<AstNode> AstNodeFactory::create(xml::Node node) {
+    std::unique_ptr<AstNode> AstNodeFactory::create(PharmMLReader &reader, xml::Node node) {
         std::unique_ptr<AstNode> instance;
 
         std::string name = node.getName();
@@ -47,7 +47,7 @@ namespace pharmmlcpp
         if (name == "Uniop" || name == "LogicUniop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Uniop> uniop;
-            std::unique_ptr<AstNode> child = AstNodeFactory::create(node.getChild());
+            std::unique_ptr<AstNode> child = AstNodeFactory::create(reader, node.getChild());
             // Ordinary uniops
             if (op == "log") {
                 uniop = std::make_unique<UniopLog>(std::move(child));
@@ -145,8 +145,8 @@ namespace pharmmlcpp
         } else if (name == "Binop" || name == "LogicBinop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Binop> binop;
-            std::unique_ptr<AstNode> left = AstNodeFactory::create(node.getChild());
-            std::unique_ptr<AstNode> right = AstNodeFactory::create(node.getLastChild());
+            std::unique_ptr<AstNode> left = AstNodeFactory::create(reader, node.getChild());
+            std::unique_ptr<AstNode> right = AstNodeFactory::create(reader, node.getLastChild());
             // Ordinary binops
             if (op == "plus") {
                 binop = std::make_unique<BinopPlus>(std::move(left), std::move(right));
@@ -254,14 +254,14 @@ namespace pharmmlcpp
                 xml::Node elements_node = vectorElements[0];
                 std::vector<xml::Node> elements = elements_node.getChildren();
                 for (xml::Node element : elements) {
-                    vector->addElement(AstNodeFactory::create(element));
+                    vector->addElement(AstNodeFactory::create(reader, element));
                 }
             } else if (!(vectorCells.empty() && vectorSegments.empty())) {
                 // Build vector from cells
                 for (xml::Node cell : vectorCells) {
                     std::vector<xml::Node> children = cell.getChildren();
                     int cellIndex = std::stoi(children[0].getText());
-                    std::shared_ptr<AstNode> cellContent = AstNodeFactory::create(children[1]);
+                    std::shared_ptr<AstNode> cellContent = AstNodeFactory::create(reader, children[1]);
 
                     VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
                     vector->populateCell(vectorCell);
@@ -282,8 +282,8 @@ namespace pharmmlcpp
                 // Assumes expression is first child and condition last child
                 xml::Node expression = n.getChild();
                 xml::Node condition = n.getLastChild().getChild();
-                piece->setExpression(AstNodeFactory::create(expression));
-                piece->setCondition(AstNodeFactory::create(condition));
+                piece->setExpression(AstNodeFactory::create(reader, expression));
+                piece->setCondition(AstNodeFactory::create(reader, condition));
                 // Otherwise property gets lost in translation from xml::Node to AstNode so save it now
                 if (condition.getName() == "Otherwise") {
                     piece->setOtherwise();
@@ -291,9 +291,9 @@ namespace pharmmlcpp
             }
             instance = std::unique_ptr<AstNode>(piecewise);
         } else if (name == "FunctionCall") {
-            instance = std::make_unique<FunctionCall>(node); 
+            instance = std::make_unique<FunctionCall>(reader, node); 
         } else if (name == "Interval") {
-            instance = std::make_unique<Interval>(node);
+            instance = std::make_unique<Interval>(reader, node);
         }
 
         // The following might and might not be a good idea

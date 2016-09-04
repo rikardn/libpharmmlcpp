@@ -23,10 +23,12 @@
 
 namespace pharmmlcpp
 {
+    class PharmMLReader;
+
     class AstNodeFactory
     {
         public:
-            static std::unique_ptr<AstNode> create(xml::Node node);
+            static std::unique_ptr<AstNode> create(PharmMLReader &reader, xml::Node node);
     };
 }
 

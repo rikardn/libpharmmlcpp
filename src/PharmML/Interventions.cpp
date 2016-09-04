@@ -34,7 +34,7 @@ namespace pharmmlcpp
         xml::Node assign = reader.getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = reader.factory.create(tree);
+            this->assignment = reader.factory.create(reader, tree);
         }
     }
 
@@ -77,7 +77,7 @@ namespace pharmmlcpp
         xml::Node assign = reader.getSingleElement(dose, "./design:DoseAmount/ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->amount = reader.factory.create(tree);
+            this->amount = reader.factory.create(reader, tree);
         }
 
         // Get dose target (TargetMapping or SymbRef)
@@ -96,7 +96,7 @@ namespace pharmmlcpp
         if (times.exists()) {
             xml::Node assign = reader.getSingleElement(times, "./ct:Assign");
             xml::Node tree = assign.getChild();
-            this->times = reader.factory.create(tree);
+            this->times = reader.factory.create(reader, tree);
         } else if (steady.exists()) {
             this->steady = std::make_unique<SteadyStateParameter>(reader, steady);
         }
@@ -110,7 +110,7 @@ namespace pharmmlcpp
                 this->duration = nullptr;
             } else if (rate.exists()) {
                 // TODO: Support <Rate>
-                this->rate = reader.factory.create(rate.getChild().getChild());
+                this->rate = reader.factory.create(reader, rate.getChild().getChild());
             }
         }
     }
@@ -304,11 +304,11 @@ namespace pharmmlcpp
         }
         xml::Node start_node = reader.getSingleElement(node, "./design:Start");
         if (start_node.exists()) {
-            this->start = reader.factory.create(start_node.getChild().getChild());
+            this->start = reader.factory.create(reader, start_node.getChild().getChild());
         }
         xml::Node end_node = reader.getSingleElement(node, "./design:End");
         if (end_node.exists()) {
-            this->end = reader.factory.create(end_node.getChild().getChild());
+            this->end = reader.factory.create(reader, end_node.getChild().getChild());
         }
     }
 
@@ -334,7 +334,7 @@ namespace pharmmlcpp
         this->Object::parse(node);
         xml::Node relative_node = reader.getSingleElement(node, "./design:Relative");
         if (relative_node.exists()) {
-            this->relative = reader.factory.create(relative_node.getChild());
+            this->relative = reader.factory.create(reader, relative_node.getChild());
         }
         std::vector<xml::Node> interventions_nodes = reader.getElements(node, "./design:Interventions");
         for (xml::Node intervention_node : interventions_nodes) {

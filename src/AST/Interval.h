@@ -30,7 +30,7 @@ namespace pharmmlcpp
     class Interval : public AstNode
     {
         public:
-            Interval(xml::Node node);
+            Interval(PharmMLReader &reader, xml::Node node);
             Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint);
             Interval(const Interval& from);
             AstNode *getLeftEndpoint();

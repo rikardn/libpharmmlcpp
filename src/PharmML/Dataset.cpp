@@ -137,7 +137,7 @@ namespace pharmmlcpp
             xml::Node condition = reader.getSingleElement(ignore, "./math:Condition");
             if (condition.exists()) {
                 // TODO: Include deps below via moving creation of AstNode to Factory
-                this->ignoreCondition = AstNodeFactory::create(condition);
+                this->ignoreCondition = AstNodeFactory::create(reader, condition);
             }
             this->ignoreSymbols = ignore.getAttribute("symbol").getValue();
         }
@@ -229,7 +229,7 @@ namespace pharmmlcpp
         for (xml::Node row_node : rows) {
             std::vector<xml::Node> values = row_node.getChildren();
             xml::Node value_node = values[colIndex];
-            column.push_back(AstNodeFactory::create(value_node));
+            column.push_back(AstNodeFactory::create(reader, value_node));
         }
 
         // TODO: Support HeaderRow (HeaderDefinition defines HeaderRow as ColumnDefinition defines Row)

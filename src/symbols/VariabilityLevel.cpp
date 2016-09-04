@@ -80,7 +80,7 @@ namespace pharmmlcpp
         // "Type defining the stdev or variance to be referenced in the VariabilityReference element"
         xml::Node map_node = reader.getSingleElement(node, "./ct:RandomEffectMapping/ct:SymbRef");
         if (map_node.exists()) {
-            this->randomEffectsMapping = reader.factory.create(map_node);
+            this->randomEffectsMapping = reader.factory.create(reader, map_node);
         }
     }
 

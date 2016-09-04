@@ -34,7 +34,7 @@ TEST_CASE("Interval", "[Interval]") {
 						</ct:RightEndpoint>
 					</ct:Interval>
         )");
-        Interval interval(reader.getRoot());
+        Interval interval(reader, reader.getRoot());
         REQUIRE_FALSE(interval.isLeftEndpointOpenClosed());
         REQUIRE_FALSE(interval.isRightEndpointOpenClosed());
         ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());
@@ -58,7 +58,7 @@ TEST_CASE("Interval", "[Interval]") {
 						</ct:RightEndpoint>
 					</ct:Interval>
         )");
-        Interval interval(reader.getRoot());
+        Interval interval(reader, reader.getRoot());
         REQUIRE(interval.isLeftEndpointOpenClosed());
         REQUIRE_FALSE(interval.isRightEndpointOpenClosed());
         ScalarInt *a1 = static_cast<ScalarInt *>(interval.getLeftEndpoint());

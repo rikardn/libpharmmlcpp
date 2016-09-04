@@ -33,7 +33,7 @@ namespace pharmmlcpp
     {
         public:
             FunctionCall(std::unique_ptr<SymbRef> function);
-            FunctionCall(xml::Node node);
+            FunctionCall(PharmMLReader &reader, xml::Node node);
             FunctionCall(const FunctionCall &from);
             void setFunction(std::unique_ptr<SymbRef> node);
             SymbRef *getFunction();
@@ -54,7 +54,7 @@ namespace pharmmlcpp
     {
         public:
             FunctionArgument(std::string symbId, std::unique_ptr<AstNode> value);
-            FunctionArgument(xml::Node xml);
+            FunctionArgument(PharmMLReader &reader, xml::Node xml);
             FunctionArgument(const FunctionArgument &from);
             void setSymbId(std::string symbId);
             std::string getSymbId();

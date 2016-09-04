@@ -95,3 +95,18 @@ mdl_SOURCES = \
 	src/generators/MDL/MDLAstGenerator.cpp \
 	src/generators/MDL/MDLGenerator.cpp \
 	src/generators/MDL/MDLSymbols.cpp
+
+TESTS = unit 
+check_PROGRAMS = unit
+unit_SOURCES = \
+	test/unit.cpp \
+	test/IndependentVariable.cpp \
+	test/symbols.cpp \
+	test/Scalar.cpp \
+	test/Uniop.cpp \
+	test/Binop.cpp \
+	test/Interval.cpp \
+	test/FunctionCall.cpp \
+	test/SymbolSet.cpp \
+	test/SymbolNamer.cpp
+unit_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)

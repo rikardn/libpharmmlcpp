@@ -60,7 +60,7 @@ namespace pharmmlcpp
             } else {
                 this->pure_symbref_assignment = false;
             }
-            this->pairwiseAssignment = reader.factory.create(tree);
+            this->pairwiseAssignment = reader.factory.create(reader, tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
             xml::Attribute dev_matrix_type = node.getAttribute("deviationMatrixType");

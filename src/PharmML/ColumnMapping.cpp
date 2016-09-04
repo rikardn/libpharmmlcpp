@@ -145,9 +145,9 @@ namespace pharmmlcpp
         if (symbref_node.exists()) {
             this->symbRef = new SymbRef(symbref_node);
         } else if (assign_node.exists()) {
-            this->assignment = reader.factory.create(assign_node);
+            this->assignment = reader.factory.create(reader, assign_node);
         } else if (piecewise_node.exists()) {
-            this->assignment = reader.factory.create(piecewise_node);
+            this->assignment = reader.factory.create(reader, piecewise_node);
         }
 
         // Get target map (e.g. to PK macros)

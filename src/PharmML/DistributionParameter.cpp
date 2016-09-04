@@ -29,7 +29,7 @@ namespace pharmmlcpp
 
     void DistributionParameter::parse(PharmMLReader &reader, xml::Node node) {
         this->name = node.getAttribute("name").getValue();
-        this->assignment = reader.factory.create(node.getChild().getChild());
+        this->assignment = reader.factory.create(reader, node.getChild().getChild());
     }
 
     std::string DistributionParameter::getName() {

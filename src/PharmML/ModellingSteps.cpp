@@ -61,7 +61,7 @@ namespace pharmmlcpp
         // Get the assignment of that SymbRef
         xml::Node assign = reader.getSingleElement(node, "./ct:Assign");
         xml::Node tree = assign.getChild();
-        this->assignment = reader.factory.create(tree);
+        this->assignment = reader.factory.create(reader, tree);
     }
 
     SymbRef *VariableAssignment::getSymbRef() {
@@ -179,21 +179,21 @@ namespace pharmmlcpp
         if (init_node.exists()) {
             this->fixed = (init_node.getAttribute("fixed").getValue() == "true") ? true : false;
             xml::Node tree = init_node.getChild();
-            this->init = reader.factory.create(tree);
+            this->init = reader.factory.create(reader, tree);
         }
 
         // Get lower bound
         xml::Node lbnd_node = reader.getSingleElement(node, "./msteps:LowerBound");
         if (lbnd_node.exists()) {
             xml::Node tree = lbnd_node.getChild();
-            this->loBound = reader.factory.create(tree);
+            this->loBound = reader.factory.create(reader, tree);
         }
 
         // Get upper bound
         xml::Node ubnd_node = reader.getSingleElement(node, "./msteps:UpperBound");
         if (ubnd_node.exists()) {
             xml::Node tree = ubnd_node.getChild();
-            this->hiBound = reader.factory.create(tree);
+            this->hiBound = reader.factory.create(reader, tree);
         }
     }
 
@@ -241,7 +241,7 @@ namespace pharmmlcpp
     void OperationProperty::parse(PharmMLReader &reader, xml::Node node) {
         this->name = node.getAttribute("name").getValue();
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
-        this->assignment = reader.factory.create(assign_node.getChild());
+        this->assignment = reader.factory.create(reader, assign_node.getChild());
     }
 
     std::string OperationProperty::getName() {

@@ -20,7 +20,7 @@ TEST_CASE("ScalarInt", "[ScalarInt]") {
 
     SECTION("Construct from xml") {
         PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:Int>56</ct:Int>)");
-        ScalarInt si(reader.getRoot());
+        ScalarInt si(reader, reader.getRoot());
         REQUIRE(si.toInt() == 56);
     }
 
@@ -74,7 +74,7 @@ TEST_CASE("ScalarReal", "[ScalarReal]") {
 
     SECTION("Construct from xml") {
         PharmMLReader reader = PharmMLReader::createTestReader("<ct:Real>790.3</ct:Real>");
-        ScalarReal sr(reader.getRoot());
+        ScalarReal sr(reader, reader.getRoot());
         REQUIRE(Approx(sr.toDouble()) == 790.3);
     }
 
@@ -131,7 +131,7 @@ TEST_CASE("ScalarString", "[ScalarString]") {
 
     SECTION("Construct from xml") {
         PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:String>AString</ct:String>)");
-        ScalarString ss(reader.getRoot());
+        ScalarString ss(reader, reader.getRoot());
         REQUIRE(ss.toString() == "AString");
     }
 
@@ -159,7 +159,7 @@ TEST_CASE("ScalarId", "[ScalarId]") {
 
     SECTION("Construct from xml") {
         PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:Id>AString</ct:Id>)");
-        ScalarId sid(reader.getRoot());
+        ScalarId sid(reader, reader.getRoot());
         REQUIRE(sid.toString() == "AString");
     }
 

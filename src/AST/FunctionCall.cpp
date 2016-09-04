@@ -37,7 +37,7 @@ namespace pharmmlcpp
         std::vector<xml::Node> children = node.getChildren();
         xml::Node name_node = children[0];
         children.erase(children.begin());
-        this->function = std::make_unique<SymbRef>(name_node);
+        this->function = std::make_unique<SymbRef>(reader, name_node);
         for (xml::Node n : children) {
             functionArguments.push_back(std::make_unique<FunctionArgument>(reader, n));
         }

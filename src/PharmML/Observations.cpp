@@ -57,13 +57,13 @@ namespace pharmmlcpp
         if (continuous.exists()) {
             std::vector<xml::Node> variables = reader.getElements(continuous, "./ct:SymbRef");
             for (xml::Node variable : variables) {
-                this->continuousVariables.push_back(std::make_shared<SymbRef>(variable));
+                this->continuousVariables.push_back(std::make_shared<SymbRef>(reader, variable));
             }
         }
         if (discrete.exists()) {
             std::vector<xml::Node> variables = reader.getElements(discrete, "./ct:SymbRef");
             for (xml::Node variable : variables) {
-                this->discreteVariables.push_back(std::make_shared<SymbRef>(variable));
+                this->discreteVariables.push_back(std::make_shared<SymbRef>(reader, variable));
             }
         }
     }

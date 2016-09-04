@@ -30,7 +30,7 @@ namespace pharmmlcpp
     /**
      *  Creates a new SymbRef from the xml PharmML code
      */
-    SymbRef::SymbRef(xml::Node node) {
+    SymbRef::SymbRef(PharmMLReader &reader, xml::Node node) {
         this->blkIdRef = node.getAttribute("blkIdRef").getValue();
         this->symbIdRef = node.getAttribute("symbIdRef").getValue();
     }
@@ -120,7 +120,7 @@ namespace pharmmlcpp
         this->columnIdRef = ref;
     }
 
-    ColumnRef::ColumnRef(xml::Node node) {
+    ColumnRef::ColumnRef(PharmMLReader &reader, xml::Node node) {
         this->columnIdRef = node.getAttribute("columnIdRef").getValue();
     }
 

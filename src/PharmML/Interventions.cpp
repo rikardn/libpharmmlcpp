@@ -29,7 +29,7 @@ namespace pharmmlcpp
 
     void SteadyStateParameter::parse(PharmMLReader &reader, xml::Node node) {
         xml::Node symbol = reader.getSingleElement(node, ".//ct:SymbRef");
-        symbRef = new SymbRef(symbol);
+        symbRef = new SymbRef(reader, symbol);
 
         xml::Node assign = reader.getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
@@ -85,7 +85,7 @@ namespace pharmmlcpp
         xml::Node symbref = reader.getSingleElement(dose, "./design:DoseAmount/ct:SymbRef");
         xml::Node mapping = reader.getSingleElement(dose, "./design:DoseAmount/design:TargetMapping");
         if (symbref.exists()) {
-            this->target_symbref = new SymbRef(symbref);
+            this->target_symbref = new SymbRef(reader, symbref);
         } else if (mapping.exists()) {
             this->target_mapping = new TargetMapping(reader, mapping);
         }

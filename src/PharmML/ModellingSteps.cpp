@@ -56,7 +56,7 @@ namespace pharmmlcpp
     void VariableAssignment::parse(PharmMLReader &reader, xml::Node node) {
         // Get SymbRef
         xml::Node ref_node = reader.getSingleElement(node, "./ct:SymbRef");
-        this->symbRef = new SymbRef(ref_node);
+        this->symbRef = new SymbRef(reader, ref_node);
 
         // Get the assignment of that SymbRef
         xml::Node assign = reader.getSingleElement(node, "./ct:Assign");
@@ -172,7 +172,7 @@ namespace pharmmlcpp
     void ParameterEstimation::parse(PharmMLReader &reader, xml::Node node) {
         // Get SymbRef (parameter to estimate)
         xml::Node ref_node = reader.getSingleElement(node, "./ct:SymbRef");
-        this->symbRef = new SymbRef(ref_node);
+        this->symbRef = new SymbRef(reader, ref_node);
 
         // Get initial estimate
         xml::Node init_node = reader.getSingleElement(node, "./msteps:InitialEstimate");
@@ -527,7 +527,7 @@ namespace pharmmlcpp
         // Get symbol references
         std::vector<xml::Node> symb_nodes = reader.getElements(node, "./ct:SymbRef");
         for (xml::Node symb_node : symb_nodes) {
-            pharmmlcpp::SymbRef *symbRef = new SymbRef(symb_node);
+            SymbRef *symbRef = new SymbRef(reader, symb_node);
             this->symbols.push_back(symbRef);
         }
     }

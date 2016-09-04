@@ -37,7 +37,7 @@ namespace pharmmlcpp
         // Get parent reference
         xml::Node parent_ref_node = reader.getSingleElement(node, "./mdef:ParentLevel");
         if (parent_ref_node.exists()) {
-            this->parentLevelRef = new SymbRef(parent_ref_node.getChild());
+            this->parentLevelRef = new SymbRef(reader, parent_ref_node.getChild());
         }
     }
 
@@ -74,7 +74,7 @@ namespace pharmmlcpp
     void VariabilityReference::parse(PharmMLReader &reader, xml::Node node) {
         // Get the variability level reference
         xml::Node ref_node = reader.getSingleElement(node, "./ct:SymbRef");
-        this->levelReference = new SymbRef(ref_node);
+        this->levelReference = new SymbRef(reader, ref_node);
 
         // Get random effect mapping (what does it mean?)
         // "Type defining the stdev or variance to be referenced in the VariabilityReference element"

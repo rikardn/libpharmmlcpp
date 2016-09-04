@@ -39,7 +39,7 @@ namespace pharmmlcpp
     /**
      *  Creates a new ScalarInt from the PharmML xml node
      */
-    ScalarInt::ScalarInt(xml::Node xml_node) {
+    ScalarInt::ScalarInt(PharmMLReader &reader, xml::Node xml_node) {
         this->value = std::stoi(xml_node.getText());
     }
 
@@ -108,7 +108,7 @@ namespace pharmmlcpp
     /**
      *  Create a new ScalarReal from a PharmML xml node
      */
-    ScalarReal::ScalarReal(xml::Node xml_node) {
+    ScalarReal::ScalarReal(PharmMLReader &reader, xml::Node xml_node) {
         this->value = xml_node.getText();
     }
 
@@ -206,7 +206,7 @@ namespace pharmmlcpp
     /**
      *  Create a new ScalarString from the PharmML xml node
      */
-    ScalarString::ScalarString(xml::Node xml_node) {
+    ScalarString::ScalarString(PharmMLReader &reader, xml::Node xml_node) {
         this->value = xml_node.getText();
     }
 
@@ -253,7 +253,7 @@ namespace pharmmlcpp
     /**
      *  Create a new ScalarString from the PharmML xml node
      */
-    ScalarId::ScalarId(xml::Node xml_node) {
+    ScalarId::ScalarId(PharmMLReader &reader, xml::Node xml_node) {
         this->value = xml_node.getText();
     }
 

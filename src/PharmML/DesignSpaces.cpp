@@ -46,7 +46,7 @@ namespace pharmmlcpp
         }
         std::vector<xml::Node> symbref_nodes = reader.getElements(node, "./ct:SymbRef");
         for (xml::Node symbref_node : symbref_nodes) {
-            this->symbRefs.push_back(new SymbRef(symbref_node));
+            this->symbRefs.push_back(new SymbRef(reader, symbref_node));
         }
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         if (assign_node.exists()) {

@@ -31,7 +31,7 @@ namespace pharmmlcpp
         // Get either SymbRef or Scalar
         xml::Node symbref_node = reader.getSingleElement(node, "./ct:SymbRef");
         if (symbref_node.exists()) {
-            SymbRef *symbRef = new SymbRef(symbref_node);
+            SymbRef *symbRef = new SymbRef(reader, symbref_node);
             this->symbRef = symbRef;
         } else {
             xml::Node scalar_node = reader.getSingleElement(node, "./ct:Scalar");
@@ -114,7 +114,7 @@ namespace pharmmlcpp
                 for (xml::Node cov_node : cov_nodes) {
                     // Get SymbRef (to the covariate)
                     xml::Node symbref_node = reader.getSingleElement(cov_node, "./ct:SymbRef");
-                    pharmmlcpp::SymbRef *cov_symbref = new SymbRef(symbref_node);
+                    SymbRef *cov_symbref = new SymbRef(reader, symbref_node);
                     this->covariates.push_back(cov_symbref);
 
                     // Get fixed effects (unlimited amount per covariate)
@@ -145,7 +145,7 @@ namespace pharmmlcpp
             for (xml::Node rand_node : rand_nodes) {
                 // Get SymbRef (to the covariate)
                 xml::Node symbref_node = reader.getSingleElement(rand_node, "./ct:SymbRef");
-                pharmmlcpp::SymbRef *symbRef = new SymbRef(symbref_node);
+                SymbRef *symbRef = new SymbRef(reader, symbref_node);
                 this->randomEffects.push_back(symbRef);
             }
         } else {

@@ -201,23 +201,23 @@ namespace pharmmlcpp
             }
             instance = std::move(constant);
         } else if (name == "SymbRef") {
-            std::unique_ptr<SymbRef> symbref = std::make_unique<SymbRef>(node);
+            std::unique_ptr<SymbRef> symbref = std::make_unique<SymbRef>(reader, node);
             instance = std::move(symbref);
         } else if (name == "ColumnRef") {
             std::string symbol = node.getAttribute("columnIdRef").getValue();
             instance = std::make_unique<ColumnRef>(symbol);
         } else if (name == "Int") {
-            instance = std::make_unique<ScalarInt>(node);
+            instance = std::make_unique<ScalarInt>(reader, node);
         } else if (name == "Real") {
-            instance = std::make_unique<ScalarReal>(node);
+            instance = std::make_unique<ScalarReal>(reader, node);
         } else if (name == "True") {
             instance = std::make_unique<ScalarBool>(true);
         } else if (name == "False") {
             instance = std::make_unique<ScalarBool>(false);
         } else if (name == "String") {
-            instance = std::make_unique<ScalarString>(node);
+            instance = std::make_unique<ScalarString>(reader, node);
         } else if (name == "Id") {
-            instance = std::make_unique<ScalarId>(node);
+            instance = std::make_unique<ScalarId>(reader, node);
         } else if (name == "NA") {
             instance = std::make_unique<ScalarNA>();
         } else if (name == "NaN") {

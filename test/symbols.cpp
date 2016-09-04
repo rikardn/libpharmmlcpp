@@ -15,7 +15,7 @@ TEST_CASE("SymbRef", "[SymbRef]") {
 
     SECTION("Construct from xml") {
         PharmMLReader reader = PharmMLReader::createTestReader(R"(<ct:SymbRef symbIdRef="POP" blkIdRef="MYBLK"/>)");
-        SymbRef sr(reader.getRoot());
+        SymbRef sr(reader, reader.getRoot());
         REQUIRE(sr.getSymbIdRef() == "POP");
         REQUIRE(sr.getBlkIdRef() == "MYBLK");
         REQUIRE(sr.getSymbol() == nullptr);

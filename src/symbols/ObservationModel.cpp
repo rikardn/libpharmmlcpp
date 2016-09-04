@@ -67,7 +67,7 @@ namespace pharmmlcpp
 
                 // Get output from the structural model (f)
                 xml::Node output_node = reader.getSingleElement(stand_node, "./mdef:Output");
-                this->output = new SymbRef(output_node.getChild());
+                this->output = new SymbRef(reader, output_node.getChild());
 
                 // Get error model (g)
                 xml::Node error_assign = reader.getSingleElement(stand_node, "./mdef:ErrorModel/ct:Assign");
@@ -75,7 +75,7 @@ namespace pharmmlcpp
 
                 // Get residual error (eps)
                 xml::Node res_node = reader.getSingleElement(stand_node, "./mdef:ResidualError");
-                this->residualError = new SymbRef(res_node.getChild());
+                this->residualError = new SymbRef(reader, res_node.getChild());
             } else if (general_node.exists()) {
                 // General/distributional error model (type 2/3): h(y) = H(f, xi, eps) / u(y) ~ distribution(parameter1, parameter2, ...)
                 this->Symbol::parse(general_node);

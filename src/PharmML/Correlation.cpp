@@ -39,9 +39,9 @@ namespace pharmmlcpp
         if (pairwise_node.exists()) {
             // Get the two correlated random variables
             xml::Node var1_node = reader.getSingleElement(pairwise_node, "./mdef:RandomVariable1/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new SymbRef(var1_node));
+            this->pairwiseSymbRefs.push_back(new SymbRef(reader, var1_node));
             xml::Node var2_node = reader.getSingleElement(pairwise_node, "./mdef:RandomVariable2/ct:SymbRef");
-            this->pairwiseSymbRefs.push_back(new SymbRef(var2_node));
+            this->pairwiseSymbRefs.push_back(new SymbRef(reader, var2_node));
 
             // Get correlation type
             xml::Node corr_node = reader.getSingleElement(pairwise_node, "./mdef:CorrelationCoefficient");

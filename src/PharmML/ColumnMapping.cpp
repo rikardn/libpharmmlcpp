@@ -143,7 +143,7 @@ namespace pharmmlcpp
 
         // Store mapping expression (should only contain one symbol reference)
         if (symbref_node.exists()) {
-            this->symbRef = new SymbRef(symbref_node);
+            this->symbRef = new SymbRef(reader, symbref_node);
         } else if (assign_node.exists()) {
             this->assignment = reader.factory.create(reader, assign_node);
         } else if (piecewise_node.exists()) {

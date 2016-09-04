@@ -20,6 +20,7 @@
 
 #include <AST/AstNode.h>
 #include <xml/xml.h>
+#include <PharmML/PharmMLReader.h>
 
 namespace pharmmlcpp
 {
@@ -38,7 +39,7 @@ namespace pharmmlcpp
         public:
             ScalarInt(int value);
             ScalarInt(std::string s);
-            ScalarInt(xml::Node xml_node);
+            ScalarInt(PharmMLReader &reader, xml::Node xml_node);
             std::string toString();
             int toInt();
             void set(int value);
@@ -59,7 +60,7 @@ namespace pharmmlcpp
         public:
             ScalarReal(double value);
             ScalarReal(std::string s);
-            ScalarReal(xml::Node xml_node);
+            ScalarReal(PharmMLReader &reader, xml::Node xml_node);
             std::string toString();
             double toDouble();
             void set(double value);
@@ -96,7 +97,7 @@ namespace pharmmlcpp
     {
         public:
             ScalarString(std::string value);
-            ScalarString(xml::Node xml_node);
+            ScalarString(PharmMLReader &reader, xml::Node xml_node);
             std::string toString();
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override; 
@@ -115,7 +116,7 @@ namespace pharmmlcpp
     {
         public:
             ScalarId(std::string value);
-            ScalarId(xml::Node xml_node);
+            ScalarId(PharmMLReader &reader, xml::Node xml_node);
             std::string toString();
             void set(std::string value);
             void accept(AstNodeVisitor *visitor) override;

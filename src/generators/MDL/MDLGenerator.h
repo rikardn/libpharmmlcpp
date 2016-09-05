@@ -66,6 +66,7 @@ namespace pharmmlcpp
         std::vector<MDLObject> model;
         std::vector<MDLObject> task;
         std::vector<MDLObject> mog;
+        std::vector<MDLObject> design;
     };
 
     class MDLGenerator : public PharmMLVisitor
@@ -93,6 +94,8 @@ namespace pharmmlcpp
 
             std::string genMdlObj(pharmmlcpp::PharmML *model);
             std::string genTaskObj();
+            std::string genDesignObj(PharmML *model);
+            void genDesignSampling(TextFormatter &form, Observations *observations);
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
 

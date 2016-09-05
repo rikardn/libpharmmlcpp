@@ -110,6 +110,13 @@ namespace pharmmlcpp
         object.code = this->genTaskObj();
         objects.task.push_back(object);
 
+        // Generate the MDL design object(s)
+        object.name = "design_obj";
+        object.code = this->genDesignObj(model);
+        if (!object.code.empty()) {
+            objects.design.push_back(object);
+        }
+
         // Generate the MDL mog object(s)
         object.name = "mog_obj";
         object.code = this->genMogObj(objects);
@@ -852,6 +859,57 @@ namespace pharmmlcpp
         return form.createString();
     }
 
+    std::string MDLGenerator::genDesignObj(PharmML *model) {
+        TrialDesign *td = model->getTrialDesign();
+        Arms *arms = nullptr;
+        if (td) {
+            arms = td->getArms();
+        }
+        // Do not create the object if no arms could be found. 
+        // This might be a too loose criteria for omission of the design object
+        if (!arms) {
+            return "";
+        }
+
+        TextFormatter form;
+
+        form.indentAdd("designObj {");
+
+        Observations *observations = td->getObservations();
+        if (observations) {
+            genDesignSampling(form, observations);
+        }
+
+        form.outdentAdd("}");
+
+        return form.createString();
+    }
+
+    void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {
+        form.indentAdd("SAMPLING {");
+
+        // FIXME: Check MDL documentation. 1. Other types than simple?
+        // FIXME: 2. multiple outcomes? 2b. Continuous vs categorical? 3. Other possibilites? Else warn!
+        // FIXME: No deparenthesiser?
+
+        for (Observation *observation : observations->getObservations()) {
+            std::string sampling = observation->getOid() + " : { type is simple, outcome=";
+            auto &continuous = observation->getContinuousVariables();
+            sampling += continuous[0]->getSymbIdRef();
+            sampling += ", sampleTime=[";
+            auto times = observation->getObservationTimesAsVector();
+            std::vector<std::string> samples;
+            for (auto &time_point : times) {
+                samples.push_back(this->accept(time_point.get()));
+            }
+            sampling += TextFormatter::createInlineVector(samples);
+            sampling += "] }";
+            form.add(sampling);
+        }
+
+        form.outdentAdd("}");
+    }
+
     std::string MDLGenerator::genMogObj(MDLObjects &objects) {
         TextFormatter form;
 
@@ -863,7 +921,8 @@ namespace pharmmlcpp
             {"dataObj", objects.data},
             {"parObj", objects.parameter},
             {"mdlObj", objects.model},
-            {"taskObj", objects.task}
+            {"taskObj", objects.task},
+            {"designObj", objects.design},
         });
         for (auto it = typed_objects.begin(); it != typed_objects.end(); ++it) {
             std::string type = (*it).first;
@@ -897,6 +956,7 @@ namespace pharmmlcpp
             {"mdlObj", objects.model},
             {"taskObj", objects.task},
             {"mogObj", objects.mog},
+            {"designObj", objects.design},
         });
         for (auto it = typed_objects.begin(); it != typed_objects.end(); ++it) {
             std::string type = (*it).first;

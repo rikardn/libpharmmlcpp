@@ -37,6 +37,7 @@ namespace pharmmlcpp
             bool onResidualError();
             bool onParameter();
             std::vector<pharmmlcpp::VariabilityLevel *> getVariabilityLevels();
+            std::vector<pharmmlcpp::VariabilityLevel *> getVariabilityLevelHierarchy();
             void gatherSymbols(SymbolGathering &gathering);
 
         private:

@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cstdlib> // FIXME: Remove when logger implemented (see comment in getVariabilityLevelHieararchy)
 
 #include "VariabilityModel.h"
 
@@ -62,7 +63,57 @@ namespace pharmmlcpp
     std::vector<pharmmlcpp::VariabilityLevel *> VariabilityModel::getVariabilityLevels() {
         return this->variabilityLevels;
     }
-            
+
+    // Get VariabilityLevel's in dependency order (parents first, children last)
+    // TODO: Consider if cross-reference between VariabilityModel's could be a problem?
+    // TODO: Consider what it means to have ->isReferenceLevel() == true for a VariabilityLevel?
+    std::vector<pharmmlcpp::VariabilityLevel *> VariabilityModel::getVariabilityLevelHierarchy() {
+        // Build associative set of level->parent_level_symbol
+        std::unordered_map<pharmmlcpp::VariabilityLevel *, pharmmlcpp::Symbol *> parent;
+        for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
+            pharmmlcpp::SymbRef *parent_ref = level->getParentReference();
+            if (parent_ref) {
+                parent[level] = parent_ref->getSymbol();
+            }
+        }
+
+        // Build dependency chain via adding and depleting list of levels
+        std::vector<pharmmlcpp::VariabilityLevel *> chain;
+        std::unordered_map<pharmmlcpp::Symbol *, bool> added;
+        size_t last_num_added = added.size();
+        do {
+            for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
+                // Don't add duplicates
+                if (!added[level]) {
+                    // If level has no parent, it is top-level and should be added first
+                    auto got = parent.find(level);
+                    if (got == parent.end()) {
+                        chain.push_back(level);
+                        added[level] = true;
+                    // If level has parent but it has already been added, add this child level
+                    } else if (added[parent[level]]) {
+                        chain.push_back(level);
+                        added[level] = true;
+                    }
+                }
+            }
+            // Check if depletion has stagnated -> non-resolvable dependencies
+            if (added.size() == last_num_added) {
+                for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
+                    if (!added[level]) {
+                        // FIXME: How access to a logger?
+                        // this->logger("VariabilityLevel could not be included in hiearchy due to parent not existing", level);
+                        abort(); // FIXME: Remove when logger is implemented
+                    }
+                }
+                break;
+            } else {
+                last_num_added = added.size();
+            }
+        } while (chain.size() < this->variabilityLevels.size());
+        return chain;
+    }
+
     void VariabilityModel::gatherSymbols(SymbolGathering &gathering) {
         gathering.newBlock(this);
         for (VariabilityLevel *varlev : this->variabilityLevels) {

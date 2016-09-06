@@ -20,6 +20,20 @@
 
 namespace pharmmlcpp
 {
+    // Parenthesize from a (root) node, accept it and return string
+    std::string MDLAstGenerator::acceptRoot(AstNode *node) {
+        node->accept(&this->parenthesizer);
+        return this->accept(node);
+    }
+
+    // Set string value and parenthesize it if required
+    void MDLAstGenerator::setParenthesizedValue(AstNode *node, std::string str) {
+        if (node->hasParentheses()) {
+            str = "(" + str + ")";
+        }
+        this->value = str;
+    }
+
     // private
     void MDLAstGenerator::setValue(std::string str) {
         this->value = str;
@@ -265,15 +279,13 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(ScalarInt *node) {
-        //~ this->setValue("(" + node->toString() + ")");
-        this->setValue(node->toString());
+        this->setParenthesizedValue(node, node->toString());
     }
 
     void MDLAstGenerator::visit(ScalarReal *node) {
-        //~ this->setValue("(" + node->toString() + ")");
         std::string s = node->toString();
         s.erase (s.find_last_not_of('0') + 1, std::string::npos);
-        this->setValue(s);
+        this->setParenthesizedValue(node, s);
     }
 
     void MDLAstGenerator::visit(ScalarBool *node) {
@@ -289,19 +301,19 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(BinopPlus *node) {
-        this->setValue("(" + this->acceptLeft(node) + " + " + this->acceptRight(node) + ")");
+        this->setParenthesizedValue(node, this->acceptLeft(node) + " + " + this->acceptRight(node));
     }
 
     void MDLAstGenerator::visit(BinopMinus *node) {
-        this->setValue("(" + this->acceptLeft(node) + " - " + this->acceptRight(node) + ")");
+        this->setParenthesizedValue(node, this->acceptLeft(node) + " - " + this->acceptRight(node));
     }
 
     void MDLAstGenerator::visit(BinopDivide *node) {
-        this->setValue("(" + this->acceptLeft(node) + " / " + this->acceptRight(node) + ")");
+        this->setParenthesizedValue(node, this->acceptLeft(node) + " / " + this->acceptRight(node));
     }
 
     void MDLAstGenerator::visit(BinopTimes *node) {
-        this->setValue("(" + this->acceptLeft(node) + " * " + this->acceptRight(node) + ")");
+        this->setParenthesizedValue(node, this->acceptLeft(node) + " * " + this->acceptRight(node));
     }
 
     void MDLAstGenerator::visit(BinopPower *node) {

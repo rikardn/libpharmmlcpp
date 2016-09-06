@@ -22,6 +22,7 @@
 #include <string>
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/AstAnalyzer.h>
+#include <visitors/AstParenthesizer.h>
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
 #include <AST/Binop.h>
@@ -46,6 +47,8 @@ namespace pharmmlcpp
             MDLAstGenerator(std::shared_ptr<Logger> logger);
             std::string getValue();
             std::string accept(AstNode *node);
+            std::string acceptRoot(AstNode *node);
+            void setParenthesizedValue(AstNode *node, std::string str);
 
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;
@@ -148,6 +151,7 @@ namespace pharmmlcpp
             std::string getLogicLiteral(bool value);
         
         private:
+            AstParenthesizer parenthesizer;
             std::shared_ptr<Logger> logger;
             AstAnalyzer ast_analyzer;
     };

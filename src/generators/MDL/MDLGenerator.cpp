@@ -37,8 +37,7 @@ namespace pharmmlcpp
     }
 
     std::string MDLGenerator::accept(AstNode *node) {
-        node->accept(this->ast_gen.get());
-        return ast_gen->getValue();
+        return this->ast_gen->acceptRoot(node);
     }
 
     // public
@@ -888,7 +887,6 @@ namespace pharmmlcpp
     void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {
         form.indentAdd("SAMPLING {");
 
-        // FIXME: 2b. Don't support categorical! 3. numberTimes but only one of
         // FIXME: What does deltaTime, alq and blq convert to?
         // FIXME: xml line numbers for errors/warnings if present
         // FIXME: No deparenthesiser?
@@ -903,15 +901,21 @@ namespace pharmmlcpp
             if (continuous.size() == 0) {
                 this->logger->error("No continuous outcomes in observation");
             }
-            sampling += continuous[0]->getSymbIdRef();
-            sampling += ", sampleTime=[";
-            auto times = observation->getObservationTimesAsVector();
-            std::vector<std::string> samples;
-            for (auto &time_point : times) {
-                samples.push_back(this->accept(time_point.get()));
+            sampling += continuous[0]->getSymbIdRef() + ", ";
+
+            if (observation->getNumberTimes()) {    // Either we have numberTimes or sampleTime
+                sampling += "numberTimes=" + this->accept(observation->getNumberTimes().get());
+            } else {
+                sampling += "sampleTime=[";
+                auto times = observation->getObservationTimesAsVector();
+                std::vector<std::string> samples;
+                for (auto &time_point : times) {
+                    samples.push_back(this->accept(time_point.get()));
+                }
+                sampling += TextFormatter::createInlineVector(samples);
+                sampling += "]";
             }
-            sampling += TextFormatter::createInlineVector(samples);
-            sampling += "] }";
+            sampling += " }";
             form.add(sampling);
         }
 

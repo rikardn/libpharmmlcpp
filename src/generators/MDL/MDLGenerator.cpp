@@ -888,13 +888,21 @@ namespace pharmmlcpp
     void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {
         form.indentAdd("SAMPLING {");
 
-        // FIXME: Check MDL documentation. 1. Other types than simple?
-        // FIXME: 2. multiple outcomes? 2b. Continuous vs categorical? 3. Other possibilites? Else warn!
+        // FIXME: 2b. Don't support categorical! 3. numberTimes but only one of
+        // FIXME: What does deltaTime, alq and blq convert to?
+        // FIXME: xml line numbers for errors/warnings if present
         // FIXME: No deparenthesiser?
 
         for (Observation *observation : observations->getObservations()) {
             std::string sampling = observation->getOid() + " : { type is simple, outcome=";
+            // Do we have discrete variables?
+            if (observation->getDiscreteVariables().size() > 0) {
+                this->logger->warning("Discrete outcomes in observation not supported");
+            }
             auto &continuous = observation->getContinuousVariables();
+            if (continuous.size() == 0) {
+                this->logger->error("No continuous outcomes in observation");
+            }
             sampling += continuous[0]->getSymbIdRef();
             sampling += ", sampleTime=[";
             auto times = observation->getObservationTimesAsVector();

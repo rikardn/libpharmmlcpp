@@ -864,7 +864,7 @@ namespace pharmmlcpp
         if (td) {
             arms = td->getArms();
         }
-        // Do not create the object if no arms could be found. 
+        // Do not create the object if no arms could be found.
         // This might be a too loose criteria for omission of the design object
         if (!arms) {
             return "";
@@ -906,14 +906,12 @@ namespace pharmmlcpp
             if (observation->getNumberTimes()) {    // Either we have numberTimes or sampleTime
                 sampling += "numberTimes=" + this->accept(observation->getNumberTimes().get());
             } else {
-                sampling += "sampleTime=[";
                 auto times = observation->getObservationTimesAsVector();
                 std::vector<std::string> samples;
                 for (auto &time_point : times) {
                     samples.push_back(this->accept(time_point.get()));
                 }
-                sampling += TextFormatter::createInlineVector(samples);
-                sampling += "]";
+                sampling += TextFormatter::createInlineVector(samples, "sampleTime=[]");
             }
             sampling += " }";
             form.add(sampling);

@@ -926,9 +926,10 @@ namespace pharmmlcpp
     void MDLGenerator::genDesignIntervention(TextFormatter &form, Interventions *interventions) {
         form.indentAdd("INTERVENTION {");
 
+        // Administration
         for (Administration *administration : interventions->getAdministrations()) {
             std::string name = administration->getOid();
-            std::string type = administration->getType();
+            std::string type = administration->getType();           // FIXME: Currently only supports bolus
             std::transform(type.begin(), type.end(), type.begin(), ::tolower);
             SymbRef *target_symbref = administration->getTargetSymbRef();
             std::string target;
@@ -948,7 +949,29 @@ namespace pharmmlcpp
             form.add(name + " : { type is " + type + ", input=" + target + ", amount=" + amount + ", doseTime=" + doseTime + " }");
         }
 
-        form.outdentAdd("}");
+        // Interventions combinations
+        for (InterventionsCombination *combination : interventions->getInterventionsCombinations()) {
+            std::string name = combination->getOid();
+            SingleIntervention *si = combination->getSingleInterventions()[0];  // FIXME: Can MDL really handle more than one? Multiple starts?
+            std::string start;
+            if (si->getStart()) {
+                start = ",start=" + this->accept(si->getStart().get());
+            }
+            std::string end;
+            if (si->getEnd()) {
+                end = ",end=" + this->accept(si->getEnd().get());
+            }
+            std::vector<std::string> oids;
+            for (ObjectRef *objref : si->getOidRefs()) {
+                oids.push_back(objref->getOidRef());
+            }
+            std::string combination_str = TextFormatter::createInlineVector(oids, "[]");
+
+            // FIXME: Get parens round start if it is a vector with one element
+            form.add(name + " : { type is combi, combination=" + combination_str + start + end + " }");
+        }
+
+        form.outdentAdd("}"); 
     }
 
     void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {

@@ -877,6 +877,12 @@ namespace pharmmlcpp
         Observations *observations = td->getObservations();
         if (observations) {
             genDesignSampling(form, observations);
+            form.emptyLine();
+        }
+
+        Interventions *interventions = td->getInterventions();
+        if (interventions) {
+            genDesignIntervention(form, interventions);
         }
 
         form.outdentAdd("}");
@@ -884,12 +890,24 @@ namespace pharmmlcpp
         return form.createString();
     }
 
+    void MDLGenerator::genDesignIntervention(TextFormatter &form, Interventions *interventions) {
+        form.indentAdd("INTERVENTION {");
+
+        for (Administration *administration : interventions->getAdministrations()) {
+            std::string name = administration->getOid();
+            std::string type = administration->getType();
+            std::transform(type.begin(), type.end(), type.begin(), ::tolower);
+            form.add(name + " : { type is " + type + " }");
+        }
+
+        form.outdentAdd("}");
+    }
+
     void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {
         form.indentAdd("SAMPLING {");
 
         // FIXME: What does deltaTime, alq and blq convert to?
         // FIXME: xml line numbers for errors/warnings if present
-        // FIXME: No deparenthesiser?
 
         for (Observation *observation : observations->getObservations()) {
             std::string sampling = observation->getOid() + " : { type is simple, outcome=";

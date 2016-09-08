@@ -16,6 +16,7 @@
  */
 
 #include "MDLGenerator.h"
+#include <AST/AstTransformation.h>
 
 namespace pharmmlcpp
 {
@@ -955,11 +956,21 @@ namespace pharmmlcpp
             SingleIntervention *si = combination->getSingleInterventions()[0];  // FIXME: Can MDL really handle more than one? Multiple starts?
             std::string start;
             if (si->getStart()) {
-                start = ",start=" + this->accept(si->getStart().get());
+                std::vector<std::shared_ptr<AstNode>> start_vector = AstTransformation::toVector(si->getStart());
+                std::vector<std::string> start_str;
+                for (auto &s : start_vector) {
+                    start_str.push_back(this->accept(s.get()));
+                }
+                start = TextFormatter::createInlineVector(start_str, ",start=[]");
             }
             std::string end;
             if (si->getEnd()) {
-                end = ",end=" + this->accept(si->getEnd().get());
+                std::vector<std::shared_ptr<AstNode>> end_vector = AstTransformation::toVector(si->getEnd());
+                std::vector<std::string> end_str;
+                for (auto &s : end_vector) {
+                    end_str.push_back(this->accept(s.get()));
+                }
+                end = TextFormatter::createInlineVector(end_str, ",end=[]");
             }
             std::vector<std::string> oids;
             for (ObjectRef *objref : si->getOidRefs()) {

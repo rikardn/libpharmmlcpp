@@ -64,8 +64,8 @@ namespace pharmmlcpp
             std::string getTargetType();
             std::shared_ptr<AstNode> getAmount();
             std::vector<std::shared_ptr<AstNode>> getAmountAsVector();
-            pharmmlcpp::TargetMapping *getTargetMapping();
-            pharmmlcpp::SymbRef *getTargetSymbRef();
+            TargetMapping *getTargetMapping();
+            SymbRef *getTargetSymbRef();
             std::shared_ptr<AstNode> getTimes();
             std::vector<std::shared_ptr<AstNode>> getTimesAsVector();
             std::shared_ptr<AstNode> getSteady();

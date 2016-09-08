@@ -930,7 +930,22 @@ namespace pharmmlcpp
             std::string name = administration->getOid();
             std::string type = administration->getType();
             std::transform(type.begin(), type.end(), type.begin(), ::tolower);
-            form.add(name + " : { type is " + type + " }");
+            SymbRef *target_symbref = administration->getTargetSymbRef();
+            std::string target;
+            if (target_symbref) {
+                target = target_symbref->getSymbol()->getName(); 
+            } else {
+                target = administration->getTargetMapping()->getMaps()[0].symbol->getName();
+                // FIXME: Error here if more than one
+            }
+            std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
+            std::vector<std::string> dose_times;
+            for (auto &time_point : administration->getTimesAsVector()) {
+                dose_times.push_back(this->accept(time_point.get()));
+            }
+            std::string doseTime = TextFormatter::createInlineVector(dose_times, "[]");
+
+            form.add(name + " : { type is " + type + ", input=" + target + ", amount=" + amount + ", doseTime=" + doseTime + " }");
         }
 
         form.outdentAdd("}");

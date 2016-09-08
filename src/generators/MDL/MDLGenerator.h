@@ -95,6 +95,7 @@ namespace pharmmlcpp
             std::string genMdlObj(pharmmlcpp::PharmML *model);
             std::string genTaskObj();
             std::string genDesignObj(PharmML *model);
+            void genDesignIntervention(TextFormatter &form, Interventions *interventions);
             void genDesignSampling(TextFormatter &form, Observations *observations);
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);

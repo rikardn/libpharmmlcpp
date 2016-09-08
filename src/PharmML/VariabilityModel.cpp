@@ -34,7 +34,7 @@ namespace pharmmlcpp
 
     void VariabilityModel::parse(PharmMLReader &reader, xml::Node node) {
         // Get type and name
-        this->type = node.getAttribute("type").getValue();
+        this->type = node.getAttribute("type").getValue(); // TODO: Validate to either "residualError" or "parameterVariability"
         xml::Node name_node = reader.getSingleElement(node, "./ct:Name");
         if (name_node.exists()) {
             this->name = reader.getSingleElement(node, "./ct:Name").getText();

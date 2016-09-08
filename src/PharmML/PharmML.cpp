@@ -169,7 +169,7 @@ namespace pharmmlcpp
         this->setupTargetMappings(gathering);
     }
 
-    // Gather all Objects and setup ObjectRefs 
+    // Gather all Objects and setup ObjectRefs
     void PharmML::setupObjects() {
         std::unordered_set<std::string> allOids;
 

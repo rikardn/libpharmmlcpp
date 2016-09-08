@@ -366,26 +366,59 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Generate VARIABILITY_LEVELS block
+        model->getModelDefinition();
         form.openVector("VARIABILITY_LEVELS {}", 1, "");
-        std::vector<pharmmlcpp::VariabilityLevel *> par_levels = model->getConsolidator()->getVariabilityModels()->getParameterLevelChain();
-        std::vector<pharmmlcpp::VariabilityLevel *> err_levels = model->getConsolidator()->getVariabilityModels()->getResidualErrorLevelChain();
-        std::vector<int>::size_type level = par_levels.size() + err_levels.size();
-        for (; level - err_levels.size() > 0; level--) {
-            std::string name = par_levels[level - err_levels.size() - 1]->getName();
+        ModelDefinition *model_def = model->getModelDefinition();
+        std::vector<VariabilityModel *> var_models = model_def->getVariabilityModels();
+        // Split into parameter and residual error variability model (TODO: This + warnings might be better in the libpharmmlcpp class)
+        int level_num = 0;
+        std::vector<VariabilityLevel *> par_levels;
+        std::vector<VariabilityLevel *> err_levels;
+        if (!var_models.empty()) {
+            for (VariabilityModel *var_model : var_models) {
+                if (var_model->onParameter()) {
+                    if (par_levels.empty()) {
+                        par_levels = var_model->getVariabilityLevelHierarchy();
+                        level_num += par_levels.size();
+                    } else {
+                        // TODO: Make VariabilityModel a PharmMLSection
+                        this->logger->warning("Another parameter variability model found: Only first will be used");
+                    }
+                } else if (var_model->onResidualError()) {
+                    if (err_levels.empty()) {
+                        err_levels = var_model->getVariabilityLevelHierarchy();
+                        level_num += err_levels.size();
+                    } else {
+                        // TODO: Make VariabilityModel a PharmMLSection
+                        this->logger->warning("Another residual error variability model found: Only first will be used");
+                    }
+                }
+            }
+        } else {
+            // TODO: Make ModelDefinition a PharmMLSection
+            this->logger->warning("ModelDefinition contains no VariabilityModel's: VARIABILITY_LEVELS absent");
+        }
+        // Output levels in hierarchial order with parameter levels before residual error levels
+        // TODO: Allow collision/link names for Column's with names for VariabilityLevel's. Apparently MDL
+        // likes these to share name (e.g. DV, ID) but in PharmML it's two different symbols altogether.
+        // Also, FIXME: getName() override in VariabilityLevel of Symbol getName() (before someone gets hurt)!
+        for (VariabilityLevel *level : par_levels) {
+            // std::string name = level->getName(); // See above comment
+            std::string name = level->getSymbId();
             form.openVector(name + " : {}", 0, ", ");
-            form.add("level = " + std::to_string(level));
+            form.add("level = " + std::to_string(level_num--));
             form.add("type is parameter");
             form.closeVector();
         }
-        for (; level > 0; level--) {
-            std::string name = err_levels[level - 1]->getName();
+        for (VariabilityLevel *level : err_levels) {
+            // std::string name = level->getName(); // See above comment
+            std::string name = level->getSymbId();
             form.openVector(name + " : {}", 0, ", ");
-            form.add("level = " + std::to_string(level));
+            form.add("level = " + std::to_string(level_num--));
             form.add("type is observation");
             form.closeVector();
         }
         form.closeVector();
-        form.emptyLine();
 
         // Generate STRUCTURAL_PARAMETERS block
         form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");

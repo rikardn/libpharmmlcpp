@@ -345,6 +345,7 @@ namespace pharmmlcpp
         TextFormatter form;
 
         form.indentAdd("mdlObj {");
+        ModelDefinition *mdef = model->getModelDefinition();
 
         // Generate IDV block
         model->getIndependentVariable()->accept(this);
@@ -366,10 +367,8 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Generate VARIABILITY_LEVELS block
-        model->getModelDefinition();
         form.openVector("VARIABILITY_LEVELS {}", 1, "");
-        ModelDefinition *model_def = model->getModelDefinition();
-        std::vector<VariabilityModel *> var_models = model_def->getVariabilityModels();
+        std::vector<VariabilityModel *> var_models = mdef->getVariabilityModels();
         // Split into parameter and residual error variability model (TODO: This + warnings might be better in the libpharmmlcpp class)
         int level_num = 0;
         std::vector<VariabilityLevel *> par_levels;
@@ -419,6 +418,7 @@ namespace pharmmlcpp
             form.closeVector();
         }
         form.closeVector();
+        form.emptyLine();
 
         // Generate STRUCTURAL_PARAMETERS block
         form.openVector("STRUCTURAL_PARAMETERS {}", 1, "");
@@ -433,11 +433,10 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for parameter variability)
-        for (auto it = par_levels.rbegin(); it != par_levels.rend(); ++it) {
-            std::vector<pharmmlcpp::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::vector<pharmmlcpp::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
-            std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
-            std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
+        for (VariabilityLevel *var_level : par_levels) {
+            std::vector<pharmmlcpp::RandomVariable *> rand_vars = mdef->getParameterModel()->getRandomVariablesOnLevel(var_level);
+            std::vector<pharmmlcpp::Correlation *> corrs = mdef->getParameterModel()->getCorrelationsOnLevel(var_level);
+            std::string block = this->genRandomVariableDefinitionBlock(var_level, rand_vars, corrs);
             form.addMany(block);
             form.emptyLine();
         }
@@ -453,11 +452,10 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Generate RANDOM_VARIABLE_DEFINITION blocks (for residual error)
-        for (auto it = err_levels.rbegin(); it != err_levels.rend(); ++it) {
-            std::vector<pharmmlcpp::RandomVariable *> random_vars = model->getConsolidator()->getVariabilityModels()->getRandomVariablesOnLevel(*it);
-            std::vector<pharmmlcpp::Correlation *> corrs = model->getConsolidator()->getVariabilityModels()->getCorrelationsOnLevel(*it);
-            std::vector<CPharmML::PopulationParameter *> cpop_corrs = model->getConsolidator()->getPopulationParameters()->getPopulationParameters(corrs);
-            std::string block = this->genRandomVariableDefinitionBlock(*it, random_vars, cpop_corrs);
+        for (VariabilityLevel *var_level : err_levels) {
+            std::vector<pharmmlcpp::RandomVariable *> rand_vars = mdef->getParameterModel()->getRandomVariablesOnLevel(var_level);
+            std::vector<pharmmlcpp::Correlation *> corrs = mdef->getParameterModel()->getCorrelationsOnLevel(var_level);
+            std::string block = this->genRandomVariableDefinitionBlock(var_level, rand_vars, corrs);
             form.addMany(block);
             form.emptyLine();
         }
@@ -473,20 +471,16 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genRandomVariableDefinitionBlock(pharmmlcpp::VariabilityLevel *level, std::vector<pharmmlcpp::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs) {
+    std::string MDLGenerator::genRandomVariableDefinitionBlock(VariabilityLevel *level, std::vector<RandomVariable *> rand_vars, std::vector<Correlation *> corrs) {
         TextFormatter form;
-        this->visit(level);
-        std::string name = getValue();
+        std::string name = level->getSymbId();
         form.openVector("RANDOM_VARIABLE_DEFINITION(level=" + name + ") {}", 1, "");
 
-        for (pharmmlcpp::RandomVariable *random_var : random_vars) {
-            this->visit(random_var);
+        for (RandomVariable *rand_var : rand_vars) {
+            this->visit(rand_var);
             form.add(this->getValue());
         }
-        for (CPharmML::PopulationParameter *cpop_corr : cpop_corrs) {
-            std::string name = cpop_corr->getName();
-
-            pharmmlcpp::Correlation *corr = cpop_corr->getCorrelation();
+        for (Correlation *corr : corrs) {
             if (corr->isPairwise()) {
                 form.openVector(":: {}", 0, ", ");
 
@@ -498,7 +492,7 @@ namespace pharmmlcpp
                 } else if (type == "Covariance") {
                     form.add("type is covariance");
                 }
-                form.add("value = " + name);
+                form.add("value = " + this->accept(corr->getPairwiseAssignment().get()));
 
                 form.closeVector();
             } else {
@@ -1147,7 +1141,7 @@ namespace pharmmlcpp
     }
 
     void MDLGenerator::visit(VariabilityLevel *node) {
-        this->setValue(node->getName());
+        // this->setValue(node->getName());
     }
 
     void MDLGenerator::visit(Correlation *node) {

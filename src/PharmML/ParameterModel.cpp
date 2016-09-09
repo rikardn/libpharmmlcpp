@@ -155,47 +155,72 @@ namespace pharmmlcpp
                 return nullptr;
             }
         }
-        return new ScalarInt(0);        // No covariance 
+        return new ScalarInt(0);        // No covariance
     }
 
     /* THOUGHTS ON IMPLEMENTATION BELOW:
      * postParse() for linking refering RandomVariable, IndividualParameter and Correlation to PopulationParameter
      * does not work since SymbRef's are not setup at construction time AND it would mean cache invalidation mess if
      * internals are accessed!
-     * 
+     *
      * FIXME: What kind of pointer list type to return? A reference to source object is not senseful since
      * none such exists; list is subset of source object. Shared pointer list? */
 
-    // Get RandomVariable's referencing a given PopulationParameter (i.e. it's (possibly?) a variability parameter)
-    std::vector<RandomVariable *> ParameterModel::getRandomVariables(PopulationParameter *pop_param) {
+    // Get RandomVariable's referencing a given Symbol (if PopulationParameter: (possibly?) a variability parameter)
+    std::vector<RandomVariable *> ParameterModel::getRandomVariables(Symbol *symbol) {
         std::vector<RandomVariable *> rand_vars;
         for (RandomVariable *rand_var : this->randomVariables) {
-            bool depends_on_pop = rand_var->referencedSymbols.hasSymbol(pop_param);
-            if (depends_on_pop) {
+            bool depends_on_symbol = rand_var->referencedSymbols.hasSymbol(symbol);
+            if (depends_on_symbol) {
                 rand_vars.push_back(rand_var);
             }
         }
         return rand_vars;
     }
 
-    // Get IndividualParameter's referencing a given PopulationParameter (i.e. it's a structural parameter)
-    std::vector<IndividualParameter *> ParameterModel::getIndividualParameters(PopulationParameter *pop_param) {
+    // Get IndividualParameter's referencing a given Symbol (if PopulationParameter: it's a structural parameter)
+    std::vector<IndividualParameter *> ParameterModel::getIndividualParameters(Symbol *symbol) {
         std::vector<IndividualParameter *> ind_params;
         for (IndividualParameter *ind_param : this->individualParameters) {
-            bool depends_on_pop = ind_param->referencedSymbols.hasSymbol(pop_param);
-            if (depends_on_pop) {
+            bool depends_on_symbol = ind_param->referencedSymbols.hasSymbol(symbol);
+            if (depends_on_symbol) {
                 ind_params.push_back(ind_param);
             }
         }
         return ind_params;
     }
 
-    // Get Correlation's referencing a given PopulationParameter (i.e. it's a variability/correlation parameter)
-    std::vector<Correlation *> ParameterModel::getCorrelations(PopulationParameter *pop_param) {
+    // Get Correlation's referencing a given Symbol (if PopulationParameter: it's a variability/correlation parameter)
+    std::vector<Correlation *> ParameterModel::getCorrelations(Symbol *symbol) {
         std::vector<Correlation *> corrs;
         for (Correlation *corr : this->correlations) {
-            bool depends_on_pop = corr->referencedSymbols.hasSymbol(pop_param);
-            if (depends_on_pop) {
+            bool depends_on_symbol = corr->referencedSymbols.hasSymbol(symbol);
+            if (depends_on_symbol) {
+                corrs.push_back(corr);
+            }
+        }
+        return corrs;
+    }
+
+    // Get RandomVariables on a specific VariabilityLevel
+    std::vector<RandomVariable *> ParameterModel::getRandomVariablesOnLevel(VariabilityLevel *level) {
+        std::vector<RandomVariable *> rand_vars;
+        for (RandomVariable *rand_var : this->randomVariables) {
+            for (VariabilityReference *var_ref : rand_var->getVariabilityReferences()) {
+                if (var_ref->referencedSymbols.hasSymbol(level)) {
+                    rand_vars.push_back(rand_var);
+                }
+            }
+        }
+        return rand_vars;
+    }
+
+    // Get Correlations on a specific VariabilityLevel
+    std::vector<Correlation *> ParameterModel::getCorrelationsOnLevel(VariabilityLevel *level) {
+        std::vector<Correlation *> corrs;
+        for (Correlation *corr : this->correlations) {
+            VariabilityReference *var_ref = corr->getVariabilityReference();
+            if (var_ref->referencedSymbols.hasSymbol(level)) {
                 corrs.push_back(corr);
             }
         }

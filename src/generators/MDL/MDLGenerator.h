@@ -86,7 +86,7 @@ namespace pharmmlcpp
             std::string genParObj(ParameterModel *par_model, ModellingSteps *msteps);
             std::string genStructuralBlock(std::vector<PopulationParameter *> structural_params, EstimationStep *est_step);
             std::string genVariabilityBlock(std::vector<PopulationParameter *> variability_params, EstimationStep *est_step);
-            std::string genRandomVariableDefinitionBlock(pharmmlcpp::VariabilityLevel *level, std::vector<pharmmlcpp::RandomVariable *> random_vars, std::vector<CPharmML::PopulationParameter *> cpop_corrs);
+            std::string genRandomVariableDefinitionBlock(VariabilityLevel *level, std::vector<RandomVariable *> rand_vars, std::vector<Correlation *> corrs);
             std::string genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
             std::string genModelPredictionBlock(pharmmlcpp::StructuralModel *structuralModel);
             std::string genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros);

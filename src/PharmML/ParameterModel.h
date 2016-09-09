@@ -44,9 +44,12 @@ namespace pharmmlcpp
             void gatherSymbols(SymbolGathering &gatherer) override;
 
             AstNode *initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations);
-            std::vector<RandomVariable *> getRandomVariables(PopulationParameter *pop_param);
-            std::vector<IndividualParameter *> getIndividualParameters(PopulationParameter *pop_param);
-            std::vector<Correlation *> getCorrelations(PopulationParameter *pop_param);
+            std::vector<RandomVariable *> getRandomVariables(Symbol *symbol);
+            std::vector<IndividualParameter *> getIndividualParameters(Symbol *symbol);
+            std::vector<Correlation *> getCorrelations(Symbol *symbol);
+
+            std::vector<RandomVariable *> getRandomVariablesOnLevel(VariabilityLevel *level);
+            std::vector<Correlation *> getCorrelationsOnLevel(VariabilityLevel *level);
 
         private:
             std::vector<Parameter *> parameters;

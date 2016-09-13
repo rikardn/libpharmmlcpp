@@ -195,6 +195,15 @@ namespace pharmmlcpp
         }
         if (this->target_map) {
             this->target_map->setupSymbolRefs(gathering);
+            // Below seems like a reasonable thing to do. I.e. let this->mappedSymbol be the symbol in TargetMapping
+            // (for getMappedSymbol()) if, and only if, there's a single symbol with no dataSymbol string.
+            std::unordered_map<std::string, Symbol *> data_symbol_maps = this->target_map->getDataSymbolMap();
+            if (data_symbol_maps.size() == 1) {
+                auto got = data_symbol_maps.find("");
+                if (got != data_symbol_maps.end()) {
+                    this->mappedSymbol = got->second;
+                }
+            }
         }
     }
 

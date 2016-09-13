@@ -946,7 +946,7 @@ namespace pharmmlcpp
             SymbRef *target_symbref = administration->getTargetSymbRef();
             std::string target;
             if (target_symbref) {
-                target = target_symbref->getSymbol()->getName(); 
+                target = target_symbref->getSymbol()->getName();
             } else {
                 target = administration->getTargetMapping()->getMaps()[0].symbol->getName();
                 // FIXME: Error here if more than one
@@ -993,7 +993,7 @@ namespace pharmmlcpp
             form.add(name + " : { type is combi, combination=" + combination_str + start + end + " }");
         }
 
-        form.outdentAdd("}"); 
+        form.outdentAdd("}");
     }
 
     void MDLGenerator::genDesignSampling(TextFormatter &form, Observations *observations) {
@@ -1297,55 +1297,52 @@ namespace pharmmlcpp
         TextFormatter form;
         std::string tool = node->getToolName();
 
-        if (tool == "NONMEM") {
-            // Generate associative array of mapping targets (to be trimmed before output)
-            stringmap mappings;
-            std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
-            for (ColumnMapping *col_map : col_maps) {
-                col_map->accept(this);
-                stringpair pair = this->getPairValue();
-                mappings.insert(pair);
-            }
+        if (tool != "NONMEM") {
+            this->logger->warning("ExternalDataset refers tool '" + tool + "' instead of NONMEM: Heuristics may be wrong", node);
+        }
+        // Generate associative array of mapping targets (to be trimmed before output)
+        stringmap mappings;
+        std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
+        for (ColumnMapping *col_map : col_maps) {
+            col_map->accept(this);
+            stringpair pair = this->getPairValue();
+            mappings.insert(pair);
+        }
 
-            Dataset *dataset = node->getDataset();
-            if (dataset->isExternal()) {
-                // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
-                std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
-                if (!mappings.empty()) {
-                    // Output pruned and formatted map from genDataInputVariablesBlock
-                    form.openVector("DECLARED_VARIABLES {}", 0, " ");
-                    for (stringpair pair : mappings) {
-                        form.add(pair.second);
-                    }
-                    form.closeVector();
-                    form.add("");
+        Dataset *dataset = node->getDataset();
+        if (dataset->isExternal()) {
+            // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
+            std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
+            if (!mappings.empty()) {
+                // Output pruned and formatted map from genDataInputVariablesBlock
+                form.openVector("DECLARED_VARIABLES {}", 0, " ");
+                for (stringpair pair : mappings) {
+                    form.add(pair.second);
                 }
-
-                // Output DATA_INPUT_VARIABLES
-                form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
-                form.addMany(data_input_vars);
                 form.closeVector();
                 form.add("");
-
-                // Generate SOURCE
-                form.openVector("SOURCE {}", 1, "");
-                ExternalFile *file = dataset->getExternal();
-                form.add("# Name: \"" + file->getOid() +
-                    "\", type: " + file->getFormat() +
-                    ", delimiter: \"" + file->getDelimiter() + "\"");
-                form.openVector("srcfile : {}", 1, ", ");
-                form.add("file = \"" + file->getPath() + "\"");
-                form.add("inputFormat is nonmemFormat");
-                form.closeVector();
-                form.closeVector();
-            } else {
-                this->logger->error("Table as opposed to external resource not supported in ExternalDataset", dataset);
-                form.add("# No external dataset file");
             }
+
+            // Output DATA_INPUT_VARIABLES
+            form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
+            form.addMany(data_input_vars);
+            form.closeVector();
+            form.add("");
+
+            // Generate SOURCE
+            form.openVector("SOURCE {}", 1, "");
+            ExternalFile *file = dataset->getExternal();
+            form.add("# Name: \"" + file->getOid() +
+                "\", type: " + file->getFormat() +
+                ", delimiter: \"" + file->getDelimiter() + "\"");
+            form.openVector("srcfile : {}", 1, ", ");
+            form.add("file = \"" + file->getPath() + "\"");
+            form.add("inputFormat is nonmemFormat"); // TODO: What would change this?
+            form.closeVector();
+            form.closeVector();
         } else {
-            this->logger->error("Unknown dataset encoding tool/style '" + tool + "'", node);
-            form.add("# Unknown dataset encoding tool/style: \"" + tool + "\"!");
-            form.add("# Current support is limited to NONMEM datasets");
+            this->logger->error("Table as opposed to external resource not supported in ExternalDataset", dataset);
+            form.add("# No external dataset file");
         }
 
         this->setValue(form.createString());

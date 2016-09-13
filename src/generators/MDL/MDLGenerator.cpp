@@ -902,6 +902,12 @@ namespace pharmmlcpp
 
         form.indentAdd("designObj {");
 
+        auto design_parameters = td->getDesignParameters();
+        if (design_parameters.size() > 0) {
+            genDesignParameters(form, design_parameters);
+            form.emptyLine();
+        }
+
         Observations *observations = td->getObservations();
         if (observations) {
             genDesignSampling(form, observations);
@@ -916,6 +922,17 @@ namespace pharmmlcpp
         form.outdentAdd("}");
 
         return form.createString();
+    }
+
+    void MDLGenerator::genDesignParameters(TextFormatter &form, std::vector<DesignParameter *> designParameters) {
+        form.indentAdd("DESIGN_PARAMETERS {");
+
+        for (auto &param : designParameters) {
+            this->visit(param);
+            form.add(this->getValue());
+        }
+
+        form.outdentAdd("}");
     }
 
     void MDLGenerator::genDesignIntervention(TextFormatter &form, Interventions *interventions) {

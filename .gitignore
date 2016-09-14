@@ -43,6 +43,10 @@ peripheral/
 .gdb_history
 powermake
 
+test/mdl-roundtrip-test
+!test/mdl-roundtrip-test/mdl_roundtrip_test.sh
+!test/mdl-roundtrip-test/*/README.txt
+
 # vim files
 .ycm_extra_conf.py
 .ycm_extra_conf.pyc

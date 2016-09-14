@@ -21,7 +21,7 @@ if [ ! -d "$TESTFILES_DIR" ]; then
 fi
 WD="$(pwd)"
 cd "$TESTFILES_DIR"
-TESTFILES=(`find -type f -name "*.mdl" | sed "s|^\./||"`)
+TESTFILES=(`find -type f -name "*.mdl" | sed "s|^\./||" | sort -V`)
 cd "$WD"
 
 # Check converter availability
@@ -38,7 +38,7 @@ fi
 HASH="$(git rev-parse --short HEAD)"
 TIME="$(git log -1 --date=format:"%y%m%d-%H%M" --format=%ad)"
 LONG_TIME="$(git log -1 --date=local --format=%ad)"
-WD="${HASH}.${TIME}"
+WD="${TIME}.${HASH}"
 
 # Output some information
 echo "Last Git commit: ${PUR}$HASH${NOR} ($LONG_TIME)"
@@ -107,7 +107,7 @@ for i in "${!PASS1_PHARMML[@]}"; do
     fi
     
     # Output logfile
-    echo $warnings > $log_file
+    echo "$warnings" > $log_file
 done
 
 ####################################################
@@ -174,7 +174,7 @@ for i in "${!PASS2_PHARMML[@]}"; do
     fi
     
     # Output logfile
-    echo $warnings > $log_file
+    echo "$warnings" > $log_file
 done
 
 ###################

@@ -917,11 +917,29 @@ namespace pharmmlcpp
         Interventions *interventions = td->getInterventions();
         if (interventions) {
             genDesignIntervention(form, interventions);
+            form.emptyLine();
+        }
+
+        DesignSpaces *design_spaces = td->getDesignSpaces();
+        if (design_spaces) {
+            genDesignSpaces(form, design_spaces);
+            form.emptyLine();
         }
 
         form.outdentAdd("}");
 
         return form.createString();
+    }
+
+    void MDLGenerator::genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces) {
+        form.indentAdd("DESIGN_SPACES {");
+
+        for (auto &design_space : design_spaces->getDesignSpaces()) {
+            std::string name = symbol_namer.getNameString("ds");    // DesignSpaces have no names in PharmML 0.8.1
+            form.add(name + " : {}");
+        }
+
+        form.outdentAdd("}");
     }
 
     void MDLGenerator::genDesignParameters(TextFormatter &form, std::vector<DesignParameter *> designParameters) {

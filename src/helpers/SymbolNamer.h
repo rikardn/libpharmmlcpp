@@ -66,6 +66,7 @@ namespace pharmmlcpp
             // Name getters
             std::u32string getName(Symbol *symbol);
             std::string getNameString(Symbol *symbol);
+            std::string getNameString(std::string symbId);
 
         private:
             // Target tool restrictions
@@ -80,6 +81,7 @@ namespace pharmmlcpp
             std::unordered_map<Symbol*, std::u32string> name_map;
 
             // Private helper functions
+            std::u32string createNameString(std::string symbId);
             bool charInSet(char32_t ch, const std::unordered_set<char32_t> &ch_set);
             
             char32_t substituteStandardChar(char32_t ch, const std::unordered_set<char32_t> &legal_chars);

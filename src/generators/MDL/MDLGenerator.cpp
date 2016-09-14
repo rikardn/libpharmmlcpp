@@ -944,12 +944,22 @@ namespace pharmmlcpp
             std::string type = administration->getType();           // FIXME: Currently only supports bolus
             std::transform(type.begin(), type.end(), type.begin(), ::tolower);
             SymbRef *target_symbref = administration->getTargetSymbRef();
-            std::string target;
+            std::string target = "UNDEF";
             if (target_symbref) {
                 target = target_symbref->getSymbol()->getName();
             } else {
-                target = administration->getTargetMapping()->getMaps()[0].symbol->getName();
-                // FIXME: Error here if more than one
+                TargetMapping *target_map = administration->getTargetMapping();
+                std::vector<MapType> maps = target_map->getMaps();
+                if (maps.size() > 1) {
+                    // FIXME: Error here if more than one
+                    this->logger->error("TargetMapping contains several references where only one is supported; Using first found", target_map);
+                }
+                // Pull single symbol or macro name
+                if (maps[0].symbol) {
+                    target = maps[0].symbol->getName();
+                } else if (maps[0].macro) {
+                    target = maps[0].macro->getName();
+                }
             }
             std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
             std::vector<std::string> dose_times;
@@ -1275,6 +1285,8 @@ namespace pharmmlcpp
         std::string name = "UNDEF";
         if (node->getMappedSymbol()) {
             name = node->getMappedSymbol()->getName();
+        } else if (node->getMappedMacro()) {
+            name = node->getMappedMacro()->getName();
         }
         stringpair pair = {id, name};
         this->setValue(pair);

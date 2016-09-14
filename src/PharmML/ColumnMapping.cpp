@@ -178,8 +178,24 @@ namespace pharmmlcpp
         return this->columnIdRef;
     }
 
+    // Return mapped Symbol if only one (naked SymbRef, Assign or TargetMapping with only one Map w/o dataSymbol string)
     Symbol *ColumnMapping::getMappedSymbol() {
         return this->mappedSymbol;
+    }
+
+    // Return mappped PKMacro if only one (TargetMapping with only one Map w/o dataSymbol string)
+    PKMacro *ColumnMapping::getMappedMacro() {
+        PKMacro *mappedMacro = nullptr;
+        if (this->target_map) {
+            std::unordered_map<std::string, PKMacro *> data_macro_maps = this->target_map->getDataMacroMap();
+            if (data_macro_maps.size() == 1) {
+                auto got = data_macro_maps.find("");
+                if (got != data_macro_maps.end()) {
+                    mappedMacro = got->second;
+                }
+            }
+        }
+        return mappedMacro;
     }
 
     TargetMapping *ColumnMapping::getTargetMapping() {
@@ -191,6 +207,7 @@ namespace pharmmlcpp
             this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
         } else if (this->assignment) {
             this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
+            // TODO: Below assignment should only happen when there's a single SymbRef in assign tree (see TargetMapping equivalent below)
             this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }
         if (this->target_map) {

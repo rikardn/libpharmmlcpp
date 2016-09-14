@@ -76,11 +76,12 @@ namespace pharmmlcpp
             ColumnMapping(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
-            
+
             std::shared_ptr<AstNode> getAssignment();
             std::string getColumnIdRef();
 
             Symbol *getMappedSymbol();
+            PKMacro *getMappedMacro();
 
             TargetMapping *getTargetMapping();
 

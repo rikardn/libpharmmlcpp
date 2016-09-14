@@ -926,9 +926,43 @@ namespace pharmmlcpp
             form.emptyLine();
         }
 
+        if (arms) {
+            genStudyDesign(form, arms);
+            form.emptyLine();
+        }
+
         form.outdentAdd("}");
 
         return form.createString();
+    }
+
+    void MDLGenerator::genStudyDesign(TextFormatter &form, Arms *arms) {
+        form.indentAdd("STUDY_DESIGN {");
+
+        for (Arm *arm : arms->getArms()) {
+            std::string name = arm->getOid();
+            std::string size = this->accept(arm->getArmSize().get());
+
+            InterventionSequence *seq = arm->getInterventionSequences()[0];     // FIXME: Only the first one.
+            std::vector<std::string> ref_names;
+            for (ObjectRef *ref : seq->getOidRefs()) {
+                ref_names.push_back(ref->getOidRef());
+            }
+            std::string ref_vector = TextFormatter::createInlineVector(ref_names, "[]");
+            std::string start = this->accept(seq->getStart().get());
+
+            ObservationSequence *obs = arm->getObservationSequences()[0];       // FIXME: as above
+            std::vector<std::string> obs_names;
+            for (ObjectRef *ref : obs->getOidRefs()) {
+                obs_names.push_back(ref->getOidRef());
+            }
+            std::string obs_vector = TextFormatter::createInlineVector(obs_names, "[]");
+            std::string obs_start = this->accept(obs->getStart().get());        // FIXME: this is a bug. Should get first value of vector
+
+            form.add(name + " : { armSize =  " + size + ", interventionSequence = { admin=" + ref_vector + ", start=" + start + " } " + ", samplingSequence = { sample=" + obs_vector + ", start=" + obs_start + " } " + " }");
+        }
+
+        form.outdentAdd("}");
     }
 
     void MDLGenerator::genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces) {

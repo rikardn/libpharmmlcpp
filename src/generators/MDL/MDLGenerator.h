@@ -99,6 +99,7 @@ namespace pharmmlcpp
             void genDesignIntervention(TextFormatter &form, Interventions *interventions);
             void genDesignSampling(TextFormatter &form, Observations *observations);
             void genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces);
+            void genStudyDesign(TextFormatter &form, Arms *arms);
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
 

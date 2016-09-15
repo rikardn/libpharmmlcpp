@@ -220,8 +220,9 @@ namespace pharmmlcpp
                     suffix = "::covariate"; // Unsure about this suffix
                 } else if (col_type == "dose") {
                     form.add("use is amt");
-                    suffix = "::doseTarget";
+                    suffix = "::dosingTarget";
                 } else if (col_type == "dv") {
+                    form.add("use is dv");
                     suffix = "::observation";
                 } else {
                     form.add("use is " + col_type);

@@ -81,7 +81,7 @@ namespace pharmmlcpp
             std::string generateModel(PharmML *model);
 
             std::string genDataObj(ExternalDataset *ext_ds);
-            std::string genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings);
+            std::string genDataInputVariablesBlock(Dataset *node, std::vector<ColumnMapping *> col_maps, std::vector<std::string> &declared_vars);
 
             std::string genParObj(ParameterModel *par_model, ModellingSteps *msteps);
             std::string genStructuralBlock(std::vector<PopulationParameter *> structural_params, EstimationStep *est_step);

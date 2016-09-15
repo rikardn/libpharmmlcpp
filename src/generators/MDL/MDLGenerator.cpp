@@ -139,56 +139,138 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *node, stringmap &column_mappings) {
-        // TODO: Consolidator here
-        // TODO: idv only implicit if indpendent variable is T I believe
-        stringmap implicit_mappings = {{"id", "ID"}, {"idv", "T"}};
-        if (node->isExternal()) {
+    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *ds, std::vector<ColumnMapping *> col_maps, std::vector<std::string> &declared_vars) {
+        // Fetch mappings from column id's to name of (model) symbols/macros (with data symbol codes if present) in string map
+        std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> variables; // vec<col_id, vec<data_symbol, symbol/macro_name>>
+        for (ColumnMapping *col_map : col_maps) {
+            // Create entry for this column id
+            std::string col_id = col_map->getColumnIdRef();
+            std::vector<std::pair<std::string, std::string>> data_to_name;
+            variables.emplace(col_id, data_to_name);
+
+            // Get the mapping itself
+            if (col_map->getMappedSymbol()) {
+                // Column maps single symbol (w/o associated data symbol)
+                Symbol *symbol = col_map->getMappedSymbol();
+                data_to_name.push_back(std::make_pair("", symbol->getName()));
+            } else if (col_map->getMappedMacro()) {
+                // Column maps single macro (w/o associated data symbol)
+                PKMacro *macro = col_map->getMappedMacro();
+                data_to_name.push_back(std::make_pair("", macro->getName()));
+            } else if (col_map->getTargetMapping()) {
+                // Column maps multiple symbols/macros (w/ associated data symbols)
+                TargetMapping *target_map = col_map->getTargetMapping();
+                std::vector<MapType> maps = target_map->getMaps();
+                for (MapType map : maps) {
+                    if (map.symbol) {
+                        data_to_name.push_back(std::make_pair(map.dataSymbol, map.symbol->getName()));
+                    } else if (map.macro) {
+                        data_to_name.push_back(std::make_pair(map.dataSymbol, map.macro->getName()));
+                    }
+                }
+            }
+
+            // Store the fetched mapping
+            variables[col_id] = data_to_name;
+        }
+
+        // Parse mappings and create the DATA_INPUT_VARIABLES block for external datasets
+        if (ds->isExternal()) {
+            int num_cols = ds->getDefinition()->getNumColumns();
+            // Create associative array of column types to column names (used to find column id containing dataSymbols refered by other column)
+            std::unordered_map<std::string, std::vector<std::string>> columns_of_type;
+            for (int num = 1; num <= num_cols; ++num) {
+                ColumnDefinition *col_def = ds->getDefinition()->getColumnDefinition(num);
+                std::string col_id = col_def->getId();
+                std::string col_type = col_def->getType();
+                auto got = columns_of_type.find(col_type);
+                if (got == columns_of_type.end()) {
+                    columns_of_type.emplace(col_type, std::vector<std::string>());
+                }
+                columns_of_type[col_type].push_back(col_id);
+            }
+
             TextFormatter form;
 
             // Output one row for each column definition
-            int num_cols = node->getDefinition()->getNumColumns();
             for (int num = 1; num <= num_cols; ++num) {
-                // Get column id
-                ColumnDefinition *col_def = node->getDefinition()->getColumnDefinition(num);
-                std::string id = col_def->getId();
+                // Get column id and type
+                ColumnDefinition *col_def = ds->getDefinition()->getColumnDefinition(num);
+                std::string col_id = col_def->getId();
+                std::string col_type = col_def->getType();
+
+                // Get the mapping entry for this column id (and the lone var name if present)
+                std::vector<std::pair<std::string, std::string>> col_maps = variables[col_id];
+                std::string lone_mapped_var;
+                if (col_maps.size() == 1) {
+                    lone_mapped_var = (col_maps[0].first == "") ? col_maps[0].second : "";
+                }
 
                 // Open vector with column id as header
-                form.openVector(id + " : {}", 0, ", ");
+                form.openVector(col_id + " : {}", 0, ", ");
 
-                // Set type as MDL expects
-                std::string type = col_def->getType();
-                if (type == "undefined") {
-                    type = "ignore";
-                } else if (type == "reg") {
-                    type = "covariate";
-                } else if (type == "dose") {
-                    type = "amt";
-                }
-                form.add("use is " + type);
-
-                // Prune column map for caller
-                if (type == "covariate" && id == column_mappings[id]) {
-                    // Trim column_mappings to not contain implicit (same-name) covariate mappings
-                    column_mappings.erase(id);
+                // Set type as MDL expects (not same keywords used as in PharmML), and set suffix
+                std::string suffix = "::UNKNOWN"; // Suffix for DECLARED_VARIABLES block
+                if (col_type == "undefined") {
+                    // Likely means that this column is to be ignored, but are we sure?
+                    form.add("use is ignore");
+                } else if (col_type == "reg") {
+                    // 'reg' stands for regressor which MDL uses 'covariate' for
+                    form.add("use is covariate");
+                    suffix = "::covariate"; // Unsure about this suffix
+                } else if (col_type == "dose") {
+                    form.add("use is amt");
+                    suffix = "::doseTarget";
+                } else if (col_type == "dv") {
+                    suffix = "::observation";
                 } else {
-                    // Find match in column mappings and add it (if found and not implicit)
-                    auto got_map = column_mappings.find(id);
-                    if (got_map != column_mappings.end()) {
-                        if (column_mappings[id] != implicit_mappings[type]) {
-                            form.add("variable = " + column_mappings[id]);
+                    form.add("use is " + col_type);
+                }
+
+                // Add variable/define attribute for mapped model symbols/macros
+                if (lone_mapped_var != "") {
+                    // Add single-variable variable attribute (unless implicit rules)
+                    if (!(col_type == "id" && lone_mapped_var == "ID") && !(col_type == "idv" && lone_mapped_var == "T") && !(col_type == "covariate" && lone_mapped_var == col_id)) {
+                        form.add("variable = " + lone_mapped_var);
+                        // Model symbol is declared elsewhere, let caller output DECLARED_VARIABLES block
+                        declared_vars.push_back(lone_mapped_var + suffix);
+                    }
+                } else if (!col_maps.empty()) {
+                    // Add define attribute for (multiple-variable) data symbol -> model symbol/macro
+                    form.openVector("define = {}", 0, ", ");
+
+                    // Find column name which is supposed to contain the data symbols (i.e. X in "define = {1 in X as TARGET_A, 2 in X as TARGET_B, ..}")
+                    std::string data_symbol_column = "UNDEF";
+                    if (col_type == "dose") {
+                        // 'dose' columns seems to expect this to be of type 'adm' (often called 'CMT')
+                        auto got = columns_of_type.find("adm");
+                        if (got != columns_of_type.end()) {
+                            this->logger->error("Dose column '" + col_id + "' maps multiple symbols but no 'adm' type column found (containing data symbols)", ds);
+                        } else if (got->second.size() > 1) {
+                            this->logger->error("Dose column '" + col_id + "' maps multiple symbols but multiple 'adm' type columns found (containing data symbols)", ds);
                         } else {
-                            // Trim column_mappings to only contain maps required by MDL
-                            column_mappings.erase(id);
+                            data_symbol_column = got->second[0];
+                        }
+                    } else if (col_type == "dv") {
+                        // 'dv' columns seems to expect this to be of type 'dvid' (often called 'DVID')
+                        // FIXME: MultipleDVMapping is often (always?) used instead of TargetMapping in the ColumnMapping itself!
+                        auto got = columns_of_type.find("DVID");
+                        if (got != columns_of_type.end()) {
+                            this->logger->error("Observation column '" + col_id + "' maps multiple symbols but no 'dvid' type column found (containing data symbols)", ds);
+                        } else if (got->second.size() > 1) {
+                            this->logger->error("Observation column '" + col_id + "' maps multiple symbols but multiple 'dvid' type columns found (containing data symbols)", ds);
+                        } else {
+                            data_symbol_column = got->second[0];
                         }
                     }
-                }
 
-                // Add type value to caller map
-                if (type == "amt") {
-                    column_mappings[id] = column_mappings[id] + "::dosingTarget";
-                } else if (type == "dv") {
-                    column_mappings[id] = column_mappings[id] + "::observation";
+                    // Add all the mappings to the define vector
+                    for (std::pair<std::string, std::string> map: col_maps) {
+                        form.add(map.first + " in " + data_symbol_column + " as " + map.second);
+                         // Model symbol/macro is declared elsewhere, let caller output DECLARED_VARIABLES block
+                        declared_vars.push_back(map.second + suffix);
+                    }
+                    form.closeVector();
                 }
 
                 form.closeVector();
@@ -1309,28 +1391,36 @@ namespace pharmmlcpp
         TextFormatter form;
         std::string tool = node->getToolName();
 
+        // Warn if encoding style is not "NONMEM" (TODO: Figure out heuristics for other encoding style's, such as "Monolix")
         if (tool != "NONMEM") {
             this->logger->warning("ExternalDataset refers tool '" + tool + "' instead of NONMEM: Heuristics may be wrong", node);
         }
-        // Generate associative array of mapping targets (to be trimmed before output)
-        stringmap mappings;
+
+        // Generate array of mapping targets (to be trimmed before output)
+        // std::vector<std::string, std::vector<std::pair<std::string, Symbol *>>> mappings; // vector<col_id, vector<pair<data_symbol, symbol/macro>>>
         std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
-        for (ColumnMapping *col_map : col_maps) {
-            col_map->accept(this);
-            stringpair pair = this->getPairValue();
-            mappings.insert(pair);
-        }
+        // for (ColumnMapping *col_map : col_maps) {
+        //     std::string id = col_map->getColumnIdRef();
+        //     std::vector<std::pair<std::string, Symbol *>> data_to_symbols;
+        //     if (col_map->getMappedSymbol()) {
+        //         Symbol *symbol = col_map->getMappedSymbol();
+        //
+        //     } else if (col_map->getMappedMacro()) {
+        //         Symbol *symbol = col_map->getMappedMacro();
+        //     }
+        //     stringpair pair = {id, name};
+        //     mappings.insert(pair);
+        // }
 
         Dataset *dataset = node->getDataset();
         if (dataset->isExternal()) {
             // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
-            std::string data_input_vars = this->genDataInputVariablesBlock(dataset, mappings);
-            if (!mappings.empty()) {
+            std::vector<std::string> declared_vars;
+            std::string data_input_vars = this->genDataInputVariablesBlock(dataset, col_maps, declared_vars);
+            if (!declared_vars.empty()) {
                 // Output pruned and formatted map from genDataInputVariablesBlock
                 form.openVector("DECLARED_VARIABLES {}", 0, " ");
-                for (stringpair pair : mappings) {
-                    form.add(pair.second);
-                }
+                form.addMany(declared_vars);
                 form.closeVector();
                 form.add("");
             }

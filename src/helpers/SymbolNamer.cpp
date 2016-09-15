@@ -77,7 +77,30 @@ namespace pharmmlcpp
 
         // Start with symbId as name
         std::string legacy_name = symbol->getSymbId(); // TODO: Remove when full Unicode support
-        std::u32string name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.from_bytes(legacy_name);
+        std::u32string new_name = this->createNameString(legacy_name);
+        this->name_map[symbol] = new_name;
+        return new_name;
+    }
+
+    // Wrapper for getNameString above (return string instead of u32string)
+    std::string SymbolNamer::getNameString(Symbol *symbol) {
+        std::u32string name = this->getName(symbol);
+        std::string legacy_name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(name);
+        return legacy_name;
+    }
+
+    // Method to name anything that is not a symbol or object.
+    std::string SymbolNamer::getNameString(std::string symbId) {
+        std::u32string res = this->createNameString(symbId);
+        std::string utf8_name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(res);
+        return utf8_name;
+    }
+
+    // Private helper functions
+
+    // Create a name
+    std::u32string SymbolNamer::createNameString(std::string symbId) {
+        std::u32string name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.from_bytes(symbId);
 
         // Try to shift case for each character if illegal
         name = this->shiftIllegalCase(name, this->legal_chars);
@@ -103,18 +126,10 @@ namespace pharmmlcpp
 
         // Remember and return generated name
         names.insert(name);
-        this->name_map[symbol] = name;
         return name;
     }
 
-    // Wrapper for getNameString above (return string instead of u32string)
-    std::string SymbolNamer::getNameString(Symbol *symbol) {
-        std::u32string name = this->getName(symbol);
-        std::string legacy_name = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(name);
-        return legacy_name;
-    }
 
-    // Private helper functions
 
     // Returns true if char is in set
     bool SymbolNamer::charInSet(char32_t ch, const std::unordered_set<char32_t> &ch_set) {

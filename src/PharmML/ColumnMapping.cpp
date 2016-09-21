@@ -147,7 +147,9 @@ namespace pharmmlcpp
         } else if (assign_node.exists()) {
             this->assignment = reader.factory.create(reader, assign_node);
         } else if (piecewise_node.exists()) {
+            // TODO: Remove first assignment below?
             this->assignment = reader.factory.create(reader, piecewise_node);
+            this->piecewise = reader.factory.create(reader, piecewise_node);
         }
 
         // Get target map (e.g. to PK macros)
@@ -172,6 +174,11 @@ namespace pharmmlcpp
 
     std::shared_ptr<AstNode> ColumnMapping::getAssignment() {
         return this->assignment;
+    }
+
+    // Return pointer to piecewise AST tree when present (special mapping style employed by MDL conversion)
+    std::shared_ptr<AstNode> ColumnMapping::getPiecewise() {
+        return this->piecewise;
     }
 
     std::string ColumnMapping::getColumnIdRef() {
@@ -207,6 +214,9 @@ namespace pharmmlcpp
             this->mappedSymbol = this->addSymbRef(this->symbRef, gathering, blkId);
         } else if (this->assignment) {
             this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
+            if (this->piecewise) {
+                this->setupAstSymbRefs(this->piecewise.get(), gathering, blkId);
+            }
             // TODO: Below assignment should only happen when there's a single SymbRef in assign tree (see TargetMapping equivalent below)
             this->mappedSymbol = *(this->referencedSymbols.begin()); // There shall only be one
         }

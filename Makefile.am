@@ -93,10 +93,11 @@ mdl_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
 mdl_SOURCES = \
 	mdl.cpp \
 	src/generators/MDL/MDLAstGenerator.cpp \
+	src/generators/MDL/MDLColumnMappingAstGenerator.cpp \
 	src/generators/MDL/MDLGenerator.cpp \
 	src/generators/MDL/MDLSymbols.cpp
 
-TESTS = unit 
+TESTS = unit
 check_PROGRAMS = unit
 unit_SOURCES = \
 	test/unit.cpp \

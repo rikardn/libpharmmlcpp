@@ -43,6 +43,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ModellingSteps.h>
 #include <generators/MDL/MDLSymbols.h>
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy)
+#include "MDLColumnMappingAstGenerator.h" // TODO: More elegant parser of Piecewise trees in ColumnMapping
 #include <PharmML/PharmML.h>
 #include <generators/TextFormatter.h>
 
@@ -150,6 +151,7 @@ namespace pharmmlcpp
 
         private:
             std::unique_ptr<MDLAstGenerator> ast_gen;
+            std::unique_ptr<MDLColumnMappingAstGenerator> col_map_ast_gen;
             std::unique_ptr<MDLSymbols> symb_gen;
             AstAnalyzer ast_analyzer;
             std::shared_ptr<Logger> logger;

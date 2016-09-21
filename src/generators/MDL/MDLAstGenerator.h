@@ -149,7 +149,7 @@ namespace pharmmlcpp
             std::string infix(Binop *binop, std::string op);
             std::string acceptChild(Uniop *uniop);
             std::string getLogicLiteral(bool value);
-        
+
         private:
             AstParenthesizer parenthesizer;
             std::shared_ptr<Logger> logger;

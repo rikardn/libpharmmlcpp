@@ -78,6 +78,7 @@ namespace pharmmlcpp
             xml::Node xml();
 
             std::shared_ptr<AstNode> getAssignment();
+            std::shared_ptr<AstNode> getPiecewise();
             std::string getColumnIdRef();
 
             Symbol *getMappedSymbol();
@@ -91,6 +92,7 @@ namespace pharmmlcpp
         private:
             std::string columnIdRef;
             std::shared_ptr<AstNode> assignment;
+            std::shared_ptr<AstNode> piecewise;
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
             TargetMapping *target_map = nullptr;

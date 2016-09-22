@@ -225,7 +225,6 @@ namespace pharmmlcpp
                     lone_mapped_var = (col_maps[0].first == "") ? col_maps[0].second : "";
                 }
 
-                // Open vector with column id as header
                 form.openVector(col_id + " : {}", 0, ", ");
 
                 // Set type as MDL expects (not same keywords used as in PharmML), and set suffix

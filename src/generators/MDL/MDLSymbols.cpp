@@ -65,11 +65,7 @@ namespace pharmmlcpp
     }
 
     void MDLSymbols::visit(Variable *node) {
-        if (node->getAssignment()) {
-            this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
-        } else {
-            this->setValue(node->getName() + "::dosingVar"); // FIXME: This is a hack! I'm not sure if dosingVar is the only reasonable alternative.
-        }
+        this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
     }
 
     void MDLSymbols::visit(DesignParameter *node) {

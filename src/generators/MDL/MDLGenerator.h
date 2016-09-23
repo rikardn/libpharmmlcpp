@@ -101,6 +101,7 @@ namespace pharmmlcpp
             void genDesignSampling(TextFormatter &form, Observations *observations);
             void genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces);
             void genStudyDesign(TextFormatter &form, Arms *arms);
+            std::string genDesignDeclaredVariables();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
 
@@ -162,6 +163,7 @@ namespace pharmmlcpp
             std::vector<std::string> structural_parameters;
             std::vector<std::string> variability_parameters;
             std::string selected_data_object;
+            std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
 
             std::string value;
             void setValue(std::string str);

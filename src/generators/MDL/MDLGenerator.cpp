@@ -249,7 +249,6 @@ namespace pharmmlcpp
                     std::string comment = this->col_map_ast_gen->getColumnMappingComment(col_id);
                     if (attr != "") {
                         form.add(attr);
-                        form.closeVector();
                         if (comment != "") {
                             form.append(" " + comment);
                         }
@@ -257,6 +256,7 @@ namespace pharmmlcpp
                             declared_vars.insert(declared_var);
                         }
                     }
+                    form.closeVector();
                 } else {
                     // Add variable/define attribute for mapped model symbols/macros
                     if (lone_mapped_var != "") {

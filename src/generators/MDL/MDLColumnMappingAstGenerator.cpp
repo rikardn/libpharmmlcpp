@@ -32,10 +32,15 @@ namespace pharmmlcpp
 
     /// Set the current column type before accepting Piecewise in ColumnMapping, i.e. from ColumnDefinition in DataSet (necessary for MDL logic to resolve fully)
     void MDLColumnMappingAstGenerator::setColumnType(std::string type) {
-        if (type != "dose" && type != "covariate" && type != "idv") {
-            throw std::invalid_argument("type not 'dose', 'covariate' or 'idv'");
+        if (type != "dose" && type != "covariate" && type != "reg" && type != "idv") {
+            throw std::invalid_argument("type not 'dose', 'covariate', 'reg' or 'idv'");
         }
-        this->current_col_type = type;
+        if (type == "reg") {
+            // TODO: Any difference between 'reg' and 'covariate'?
+            this->current_col_type = "covariate";
+        } else {
+            this->current_col_type = type;
+        }
     }
 
     /// Check if the specified column id has been sucessfully parsed as a piecewise style column mapping
@@ -72,7 +77,7 @@ namespace pharmmlcpp
                 full_attribute = form.createString();
             } else {
                 // No mapping codes means that the single 'variable' attribute must be used
-                if (column.type == "covariate" && column.single_target != id) {
+                if (!(column.type == "covariate" && column.single_target == id)) {
                     std::string var = (column.single_target == "") ? "UNDEF" : column.single_target;
                     full_attribute = "variable = " + var;
                     column.declared_variables.push_back(var + "::dosingTarget");

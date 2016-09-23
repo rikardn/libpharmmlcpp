@@ -65,7 +65,11 @@ namespace pharmmlcpp
     }
 
     void MDLSymbols::visit(Variable *node) {
-        this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
+        if (node->getAssignment()) {
+            this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
+        } else {
+            this->setValue(node->getName());
+        }
     }
 
     void MDLSymbols::visit(DesignParameter *node) {

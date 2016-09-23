@@ -44,7 +44,10 @@ namespace pharmmlcpp
         return (got != this->mapped_columns.end());
     }
 
-    /// Get MDL formatted full mapping expression for a column id (e.g. "define = {1 in CMT as GUT, 2 in CMT as CENTRAL}" or "variable = GUT")
+    /**
+     *  Get MDL formatted full mapping expression for a column id (e.g. "define = {1 in CMT as GUT, 2 in CMT as CENTRAL}" or "variable = GUT").
+     *  Empty string returned if no mapping parsed or target shares name in "variable" form for covariates.
+     */
     std::string MDLColumnMappingAstGenerator::getColumnMappingAttribute(std::string id) {
         auto got = this->mapped_columns.find(id);
         if (got == this->mapped_columns.end()) {
@@ -69,9 +72,11 @@ namespace pharmmlcpp
                 full_attribute = form.createString();
             } else {
                 // No mapping codes means that the single 'variable' attribute must be used
-                std::string var = (column.single_target == "") ? "UNDEF" : column.single_target;
-                full_attribute = "variable = " + var;
-                column.declared_variables.push_back(var + "::dosingTarget");
+                if (column.type == "covariate" && column.single_target != id) {
+                    std::string var = (column.single_target == "") ? "UNDEF" : column.single_target;
+                    full_attribute = "variable = " + var;
+                    column.declared_variables.push_back(var + "::dosingTarget");
+                }
             }
         }
         return full_attribute;

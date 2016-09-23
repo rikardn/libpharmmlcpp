@@ -249,19 +249,19 @@ namespace pharmmlcpp
                     std::string comment = this->col_map_ast_gen->getColumnMappingComment(col_id);
                     if (attr != "") {
                         form.add(attr);
-                    }
-                    form.closeVector();
-                    if (comment != "") {
-                        form.append(" " + comment);
-                    }
-                    for (std::string declared_var : this->col_map_ast_gen->getDeclaredVariables(col_id)) {
-                        declared_vars.insert(declared_var);
+                        form.closeVector();
+                        if (comment != "") {
+                            form.append(" " + comment);
+                        }
+                        for (std::string declared_var : this->col_map_ast_gen->getDeclaredVariables(col_id)) {
+                            declared_vars.insert(declared_var);
+                        }
                     }
                 } else {
                     // Add variable/define attribute for mapped model symbols/macros
                     if (lone_mapped_var != "") {
                         // Add single-variable variable attribute (unless implicit rules)
-                        if (!(col_type == "id" && lone_mapped_var == "ID") && !(col_type == "idv" && lone_mapped_var == "T") && !(col_type == "covariate" && lone_mapped_var == col_id)) {
+                        if (!(col_type == "id" && lone_mapped_var == "ID") && !(col_type == "idv" && lone_mapped_var == "T") && !((col_type == "covariate" || col_type == "reg") && lone_mapped_var == col_id)) {
                             form.add("variable = " + lone_mapped_var);
                             // Model symbol is declared elsewhere, let caller output DECLARED_VARIABLES block
                             declared_vars.insert(lone_mapped_var + suffix);

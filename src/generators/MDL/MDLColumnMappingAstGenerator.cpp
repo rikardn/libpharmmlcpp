@@ -20,65 +20,211 @@
 
 namespace pharmmlcpp
 {
-    // constructor
+    /// Construct a visitor to parse Piecewise object syntax found in ColumnMapping for MDL translation. Extends MDLAstGenerator visitor.
     MDLColumnMappingAstGenerator::MDLColumnMappingAstGenerator(std::shared_ptr<Logger> logger) : MDLAstGenerator(logger) {
         this->reset();
     }
 
-    // public methods
-    bool MDLColumnMappingAstGenerator::isPiecewiseMapped() {
-        return this->piecewise_mapping;
+    /// Set the current column id before accepting Piecewise in ColumnMapping (as a reference for fetching results)
+    void MDLColumnMappingAstGenerator::setColumnId(std::string id) {
+        this->current_col_id = id;
     }
 
-    // Get MDL formatted full mapping expression (e.g. "define = {1 in CMT as GUT, 2 in CMT as CENTRAL}" or "variable = GUT");
-    std::string MDLColumnMappingAstGenerator::getColumnMappingExpression() {
-        return this->mapped_full_expression;
+    /// Set the current column type before accepting Piecewise in ColumnMapping, i.e. from ColumnDefinition in DataSet (necessary for MDL logic to resolve fully)
+    void MDLColumnMappingAstGenerator::setColumnType(std::string type) {
+        if (type != "dose" && type != "covariate" && type != "idv") {
+            throw std::invalid_argument("type not 'dose', 'covariate' or 'idv'");
+        }
+        this->current_col_type = type;
     }
 
-    // Get mapping comment (extra non-translateable expression, e.g. "# Additional conditions: (AMT > 0), (AMT > 0)"
-    std::string MDLColumnMappingAstGenerator::getColumnMappingComment() {
-        return this->mapped_comment;
+    /// Check if the specified column id has been sucessfully parsed as a piecewise style column mapping
+    bool MDLColumnMappingAstGenerator::isPiecewiseMapped(std::string id) {
+        auto got = this->mapped_columns.find(id);
+        return (got != this->mapped_columns.end());
     }
 
-    // Get declared variables (e.g. <"GUT", "CENTRAL">)
-    std::vector<std::string> MDLColumnMappingAstGenerator::getDeclaredVariables() {
-        return this->declared_variables;
+    /// Get MDL formatted full mapping expression for a column id (e.g. "define = {1 in CMT as GUT, 2 in CMT as CENTRAL}" or "variable = GUT")
+    std::string MDLColumnMappingAstGenerator::getColumnMappingAttribute(std::string id) {
+        auto got = this->mapped_columns.find(id);
+        if (got == this->mapped_columns.end()) {
+            return "";
+        }
+
+        std::string full_attribute;
+        MappedColumn &column = this->mapped_columns[id];
+        if (column.type == "dose" || column.type == "covariate") {
+            // Mapping attribute only defined for dose and covariate columns
+            if (!column.code_columns.empty()) {
+                // Mapping codes means that the 'define' list attribute must be used
+                TextFormatter form;
+                form.openVector("define = {}", 0, ", ");
+                for (std::string code_column : column.code_columns) {
+                    for (auto code_target_pair : column.code_target_pairs[code_column]) {
+                        form.add(code_target_pair.first + " in " + code_column + " as " + code_target_pair.second);
+                        column.declared_variables.push_back(code_target_pair.second + "::dosingTarget");
+                    }
+                }
+                form.noFinalNewline();
+                full_attribute = form.createString();
+            } else {
+                // No mapping codes means that the single 'variable' attribute must be used
+                std::string var = (column.single_target == "") ? "UNDEF" : column.single_target;
+                full_attribute = "variable = " + var;
+                column.declared_variables.push_back(var + "::dosingTarget");
+            }
+        }
+        return full_attribute;
     }
 
+    /// Get mapping comment (extra non-translateable expression, e.g. "# (AMT > 0), (AMT > 0)"
+    std::string MDLColumnMappingAstGenerator::getColumnMappingComment(std::string id) {
+        auto got = this->mapped_columns.find(id);
+        if (got == this->mapped_columns.end()) {
+            return "";
+        }
+
+        std::string comment;
+        MappedColumn column = this->mapped_columns[id];
+        if (!column.extra_conditions.empty()) {
+            if (!column.code_columns.empty()) {
+                bool has_extra_conditions = false;
+                TextFormatter form;
+                form.openVector("", 0, ", ");
+                for (std::string code_column : column.code_columns) {
+                    for (std::string code : column.codes[code_column]) {
+                        std::string cond = "NONE";
+                        if (column.extra_conditions[code_column][code] != "") {
+                            cond = column.extra_conditions[code_column][code];
+                            has_extra_conditions = true;
+                        }
+                        form.add(cond);
+                    }
+                }
+                form.noFinalNewline();
+                comment = has_extra_conditions ? "# " + form.createString() : "";
+            } else {
+                std::string cond = column.single_extra_condition;
+                comment = cond == "" ? "" : "# " + column.single_extra_condition;
+            }
+        }
+        return comment;
+    }
+
+    /**
+     *  Get data derived variables for columns that support it (idv). These are entries which referers
+     *  backwards to another column's mapping definition, e.g. "DT : { use is doseTime, idvColumn=TIME, dosingVar=GUT }".
+     */
+    std::vector<std::string> MDLColumnMappingAstGenerator::getDataDerivedVariables(std::string id) {
+        std::vector<std::string> derived_vars;
+        auto got = this->mapped_columns.find(id);
+        if (got == this->mapped_columns.end()) {
+            return derived_vars;
+        }
+
+        MappedColumn &idv_column = this->mapped_columns[id];
+        MappedColumn *dose_column = getMappedColumnOfType("dose");
+        if (idv_column.type == "idv") {
+            // Data derived variables only defined for idv columns
+            if (!idv_column.codes.empty() && dose_column) {
+                // Requires codes as well as a dose column (which is being implicitly refered)
+                for (std::string code_column : idv_column.code_columns) {
+                    for (auto code_target_pair : idv_column.code_target_pairs[code_column]) {
+                        // Create a data derived variable statement for each code-target pair of idv column mapping
+                        TextFormatter form;
+                        form.noFinalNewline();
+                        std::string code = code_target_pair.first;
+                        std::string variable = code_target_pair.second;
+
+                        form.openVector(variable + " : {}", 0, ", ");
+                        form.add("use is doseTime");
+                        form.add("idvColumn = " + id);
+                        std::string dosing_var = getTargetMappedBy(*dose_column, code_column, code);
+                        dosing_var = dosing_var == "" ? "UNDEF" : dosing_var;
+                        form.add("dosingVar = " + dosing_var);
+                        idv_column.declared_variables.push_back(dosing_var + "::dosingTarget");
+                        form.closeVector();
+                        // form.append(" " + getColumnMappingComment(id));
+
+                        derived_vars.push_back(form.createString());
+                    }
+                }
+            } else {
+                this->logger->error("Derived variable '" + idv_column.single_target + "' in Piecewise ColumnMapping 'idv' column, but no mapping resolved");
+            }
+        }
+        return derived_vars;
+    }
+
+    /// Get declared variables for a column, including the type prefix (e.g. <"dosingTarget::GUT", "dosingTarget::CENTRAL">)
+    std::vector<std::string> MDLColumnMappingAstGenerator::getDeclaredVariables(std::string id) {
+        auto got = this->mapped_columns.find(id);
+        if (got == this->mapped_columns.end()) {
+            return std::vector<std::string>();
+        } else {
+            return got->second.declared_variables;
+        }
+    }
+
+    /// General accept of an AstNode
     std::string MDLColumnMappingAstGenerator::accept(AstNode *node) {
         node->accept(this);
         return this->getValue();
     }
 
-    // Parenthesize from a (root) node, accept it and return string
+    /// Parenthesize from a (root) node, accept it and return string
     std::string MDLColumnMappingAstGenerator::acceptRoot(AstNode *node) {
         node->accept(&this->parenthesizer);
         return this->accept(node);
     }
 
-    // private methods
+    /// Get a specific parsed column by its type (useful for 'idv' and 'dose')
+    MDLColumnMappingAstGenerator::MappedColumn *MDLColumnMappingAstGenerator::getMappedColumnOfType(std::string type) {
+        for (auto mapped_column : this->mapped_columns) {
+            if (mapped_column.second.type == type) {
+                return &(mapped_columns[mapped_column.first]);
+            }
+        }
+        return nullptr;
+    }
+
+    /// Get a target string (e.g. "GUT") from a parsed column, a code column and a code. Useful for data derived variables generation.
+    std::string MDLColumnMappingAstGenerator::getTargetMappedBy(MappedColumn &column, std::string code_column, std::string code) {
+        auto got = std::find(column.code_columns.begin(), column.code_columns.end(), code_column);
+        if (got != column.code_columns.end()) {
+            for (auto code_target_pair : column.code_target_pairs[code_column]) {
+                if (code_target_pair.first == code) {
+                    return code_target_pair.second;
+                }
+            }
+        } else if (code_column == "" && code == "") {
+            return column.single_target;
+        }
+        return "";
+    }
+
+    /// Reset the state of this visitor to a fully clean state as created by constructor
     void MDLColumnMappingAstGenerator::reset() {
-        // Reset the internal state to a fully clean state
         this->value = "";
         this->piecewise_mapping = false;
-        this->expression_mapping_mode = false;
-        this->mapped_full_expression = "";
-        this->mapped_comment = "";
+        this->current_col_id = "";
+        this->current_col_type = "";
+        this->mapped_columns.clear();
         this->resetPiece();
     }
 
+    /// Reset the state of this visitor to be ready to accept a new Piece
     void MDLColumnMappingAstGenerator::resetPiece() {
-        // Reset the internal state for a fresh Piece accept
         this->mapped_target_name = "";
-        this->mapped_num_code = "";
+        this->mapped_code = "";
         this->mapped_code_column = "";
+        this->expression_mapping_mode = false;
         this->first_condition_node_mode = true;
         this->contains_and_operator = false;
         this->contains_eq_operator = false;
-        this->declared_variables.clear();
     }
 
-    // visitor methods
+    /// Accept a SymbRef (used to pull the target name)
     void MDLColumnMappingAstGenerator::visit(SymbRef *node) {
         std::string name;
         Symbol *symbol = node->getSymbol();
@@ -87,13 +233,13 @@ namespace pharmmlcpp
         }
         if (this->piecewise_mapping && this->expression_mapping_mode) {
             this->mapped_target_name = name;
-            this->declared_variables.push_back(name);
         } else {
             this->setValue(name);
             this->logger->warning("SymbRef encountered outside of Piece expression in Piecewise ColumnMapping", node);
         }
     }
 
+    /// Accept a LogicBinopEq (used to map code column to code in a target Piece)
     void MDLColumnMappingAstGenerator::visit(LogicBinopEq *node) {
         if (this->piecewise_mapping) {
             if (this->contains_and_operator && this->contains_eq_operator) {
@@ -124,12 +270,13 @@ namespace pharmmlcpp
                 right_node_is_code_column = false;
             }
             this->mapped_code_column = left_node_is_code_column ? left_node : right_node;
-            this->mapped_num_code = right_node_is_code_column ? left_node : right_node;
+            this->mapped_code = right_node_is_code_column ? left_node : right_node;
         } else {
-            this->setValue(this->infix(node, " && "));
+            this->setValue(this->infix(node, " == "));
         }
     }
 
+    /// Accept a LogicBinopAnd (often preludes LogicBinopEq in conjunction with "(AMT > 0)", which is not parsed
     void MDLColumnMappingAstGenerator::visit(LogicBinopAnd *node) {
         if (this->piecewise_mapping) {
             if (this->first_condition_node_mode) {
@@ -137,7 +284,7 @@ namespace pharmmlcpp
                 this->contains_and_operator = true;
 
                 this->acceptRoot(node->getLeft());
-                // Save extra condition for comment (not the 'eq' condition used for code_column and num_code)
+                // Save extra condition for comment (not the 'eq' condition used for code_column and code)
                 if (!this->contains_eq_operator) {
                     std::string peripheral_condition = this->getValue();
                     this->acceptRoot(node->getRight());
@@ -151,7 +298,24 @@ namespace pharmmlcpp
         }
     }
 
+    /// Accept a Piecewise (contains the whole mapping tree for a ColumnMapping)
     void MDLColumnMappingAstGenerator::visit(Piecewise *node) {
+        // Type check (no duplicate dose or idv for example)
+        std::string type = this->current_col_type;
+        if (type == "") {
+            return;
+        } else {
+            if ((type == "dose" || type == "idv") && getMappedColumnOfType(type)) {
+                this->logger->error("Multiple Piecewise ColumnMapping for type '" + type + "' is not supported; Ignored", node);
+                return;
+            }
+        }
+
+        // Prepare data structure for result of parsing
+        this->mapped_columns.emplace(this->current_col_id, MappedColumn{});
+        MappedColumn &column = this->mapped_columns[this->current_col_id];
+        column.type = this->current_col_type;
+
         // Piecewise mapping detected, initialize parsing of this special (cumbersome) form
         this->piecewise_mapping = true;
 
@@ -161,56 +325,44 @@ namespace pharmmlcpp
             // If one piece there might not be a conditional mapping (e.g. AMT->D when AMT>0)
             this->resetPiece();
             pieces[0]->accept(this);
-            if (this->mapped_num_code == "" && this->mapped_code_column == "") {
+            if (this->mapped_code == "") {
                 // There's no mapping condition (except as a comment)
-                this->mapped_full_expression = "variable = " + (this->mapped_target_name == "" ? "UNDEF" : this->mapped_target_name);
-                this->mapped_comment = this->getValue() == "" ? "" : ("# " + this->getValue());
-                return; // Return early (no define list needs to be created)
+                column.single_target = this->mapped_target_name;
+                column.single_extra_condition = this->getValue();
+                return;
             }
         }
-        std::vector<std::string> target_names, num_codes, code_columns, comments;
-        bool has_comments = false;
+        std::vector<std::string> target_names, codes, code_columns, comments;
         for (Piece *piece : pieces) {
             if (piece->isOtherwise()) {
                 this->logger->error("Piecewise in ColumnMapping can't contain 'otherwise' condition (no MDL support); Piece ignored", piece);
             } else {
                 this->resetPiece();
                 piece->accept(this);
-                target_names.push_back(this->mapped_target_name == "" ? "UNDEF" : this->mapped_target_name);
-                num_codes.push_back(this->mapped_num_code == "" ? "UNDEF" : this->mapped_num_code);
-                code_columns.push_back(this->mapped_code_column == "" ? "UNDEF" : this->mapped_code_column);
+                if (this->mapped_code != "") {
+                    auto got = std::find(column.code_columns.begin(), column.code_columns.end(), this->mapped_code_column);
+                    if (got == column.code_columns.end()) {
+                        // Initialize with empty T in members which maps via this code column
+                        column.codes.emplace(this->mapped_code_column, std::vector<std::string>());
+                        column.code_target_pairs.emplace(this->mapped_code_column, std::vector<std::pair<std::string, std::string>>());
+                        column.extra_conditions.emplace(this->mapped_code_column, std::unordered_map<std::string, std::string>());
+                        column.code_columns.push_back(this->mapped_code_column);
+                    }
 
-                // Add comments containing the additional logic to list
-                if (this->getValue() != "") {
-                    has_comments = true;
-                    comments.push_back(this->getValue());
-                } else {
-                    comments.push_back("NONE");
+                    // Add codes, code-target pairs and extra conditions if present
+                    column.codes[this->mapped_code_column].push_back(this->mapped_code);
+                    column.code_target_pairs[this->mapped_code_column].push_back(std::make_pair(this->mapped_code, this->mapped_target_name));
+                    column.extra_conditions[this->mapped_code_column][this->mapped_code] = this->getValue();
                 }
             }
         }
 
-        // Create string for 'define' attribute (e.g. "1 in CMT as GUT")
-        TextFormatter define_form, comment_form;
-        define_form.openVector("{}", 0, ", ");
-        comment_form.openVector("", 0, ", ");
-        for (std::vector<int>::size_type i = 0; i != target_names.size(); i++) {
-            define_form.add(num_codes[i] + " in " + code_columns[i] + " as " + target_names[i]);
-            comment_form.add(comments[i]);
-        }
-        define_form.closeVector();
-        comment_form.closeVector();
-
-        define_form.noFinalNewline();
-        comment_form.noFinalNewline();
-        this->mapped_full_expression = "define = " + define_form.createString();
-        this->mapped_comment = "# Additional conditions: " + comment_form.createString();
-
         this->setValue(""); // It should not be used, so flush it
     }
 
+    /// Accept a Piece (contains the per-target mapping binding code column and code to it)
     void MDLColumnMappingAstGenerator::visit(Piece *node) {
-        std::string target_name, num_code, code_column;
+        std::string target_name, code, code_column;
 
         // Check for (unsupported) nested Piecewise node
         this->ast_analyzer.reset();
@@ -222,13 +374,12 @@ namespace pharmmlcpp
             this->expression_mapping_mode = true;
             this->acceptRoot(node->getExpression());
             if (this->mapped_target_name == "") {
-                this->logger->error("Piece in Piecewise in ColumnMapping did not contain any target", node);
+                this->logger->error("Piece in Piecewise in ColumnMapping does not contain any target", node);
             }
             this->expression_mapping_mode = false;
 
             // Visit condition to fetch code column and code
             this->acceptRoot(node->getCondition());
-            this->mapped_comment = this->getValue();
         }
 
     }

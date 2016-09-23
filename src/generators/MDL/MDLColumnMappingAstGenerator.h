@@ -19,6 +19,7 @@
 #define PHARMMLCPP_MDLCOLUMNMAPPINGASTGENERATOR_H_
 
 #include <string>
+#include <exception>
 #include <visitors/AstParenthesizer.h>
 #include <visitors/AstNodeVisitor.h>
 #include <generators/MDL/MDLAstGenerator.h>
@@ -32,20 +33,25 @@
 
 namespace pharmmlcpp
 {
+    /// Visitor to parse Piecewise object syntax found in ColumnMapping for MDL translation. Extends MDLAstGenerator visitor.
     class MDLColumnMappingAstGenerator : public MDLAstGenerator
     {
         public:
             MDLColumnMappingAstGenerator(std::shared_ptr<Logger> logger);
-            bool isPiecewiseMapped();
-            std::string getColumnMappingExpression();
-            std::string getColumnMappingComment();
-            std::vector<std::string> getDeclaredVariables();
+            void setColumnId(std::string id);
+            void setColumnType(std::string type);
 
-            void visit(SymbRef *node); // override
-            void visit(LogicBinopEq *node); // override
-            void visit(LogicBinopAnd *node); // override
-            void visit(Piecewise *node); // override
-            void visit(Piece *node); // override
+            bool isPiecewiseMapped(std::string id);
+            std::string getColumnMappingAttribute(std::string id);
+            std::string getColumnMappingComment(std::string id);
+            std::vector<std::string> getDataDerivedVariables(std::string id);
+            std::vector<std::string> getDeclaredVariables(std::string id);
+
+            void visit(SymbRef *node); ///< overrides MDLAstGenerator::visit(SymbRef *node)
+            void visit(LogicBinopEq *node); ///< overrides MDLAstGenerator::visit(LogicBinopEq *node)
+            void visit(LogicBinopAnd *node); ///< overrides MDLAstGenerator::visit(LogicBinopAnd *node)
+            void visit(Piecewise *node); ///< overrides MDLAstGenerator::visit(Piecewise *node)
+            void visit(Piece *node); ///< overrides MDLAstGenerator::visit(Piece *node)
 
         private:
             std::shared_ptr<Logger> logger;
@@ -57,20 +63,41 @@ namespace pharmmlcpp
             std::string accept(AstNode *node);
             std::string acceptRoot(AstNode *node);
 
-            // Piecewise mapping state variables
+
+            //@{
+            /** Piecewise mapping current column variables */
+            std::string current_col_id;
+            std::string current_col_type;
+            //@}
+
+            //@{
+            /** Piecewise mapping state variables */
             bool piecewise_mapping;
             bool expression_mapping_mode;
             bool first_condition_node_mode;
             bool contains_and_operator;
             bool contains_eq_operator;
             std::string mapped_target_name;
-            std::string mapped_num_code;
+            std::string mapped_code;
             std::string mapped_code_column;
+            //@}
 
-            // Results from full parsing
-            std::string mapped_full_expression;
-            std::string mapped_comment;
-            std::vector<std::string> declared_variables;
+            //@{
+            /** Results from full parsing of a ColumnMapping */
+            struct MappedColumn {
+                std::string type;
+                std::string single_target, single_extra_condition; ///< single target/additional condition if no code column/code exists
+                std::vector<std::string> code_columns; ///< set of all code columns
+                std::unordered_map<std::string, std::vector<std::string>> codes; ///< all codes, mapped by code column
+                std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> code_target_pairs; ///< all code-target pairs, mapped by code column
+                std::unordered_map<std::string, std::unordered_map<std::string, std::string>> extra_conditions; ///< additional conditions, mapped by code column and then code
+                std::vector<std::string> declared_variables;
+            };
+            //@}
+            std::unordered_map<std::string, MappedColumn> mapped_columns; ///< all columns parsed, mapped by column id
+
+            MDLColumnMappingAstGenerator::MappedColumn *getMappedColumnOfType(std::string type);
+            std::string getTargetMappedBy(MappedColumn &column, std::string code_column = "", std::string code = "");
     };
 }
 

@@ -141,51 +141,43 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *ds, std::vector<ColumnMapping *> col_maps, std::vector<std::string> &declared_vars) {
+    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *ds, std::vector<ColumnMapping *> col_maps, std::unordered_set<std::string> &declared_vars) {
         // Fetch mappings from column id's to name of (model) symbols/macros (with data symbol codes if present) in string map
         std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> variables; // vec<col_id, vec<data_symbol, symbol/macro_name>>
-        std::unordered_map<std::string, std::string> piecewise_expressions; // full 'variable'/'define' expressions created from visits to piecewise tree's
-        std::unordered_map<std::string, std::string> piecewise_comments; // comments with extra (non-translateable) logic from visits to piecewise tree's
-        std::unordered_map<std::string, std::vector<std::string>> piecewise_declared_vars;
+        std::unordered_map<std::string, ColumnMapping *> piecewise_col_maps; // Store for MDLColumnMappingAstGenerator visits later
         for (ColumnMapping *col_map : col_maps) {
             // Create entry for this column id
             std::string col_id = col_map->getColumnIdRef();
             std::vector<std::pair<std::string, std::string>> data_to_name;
             variables.emplace(col_id, data_to_name);
 
-            // Get the mapping itself
-            if (col_map->getMappedSymbol()) {
-                // Column maps single symbol (w/o associated data symbol)
-                Symbol *symbol = col_map->getMappedSymbol();
-                data_to_name.push_back(std::make_pair("", symbol->getName()));
-            } else if (col_map->getMappedMacro()) {
-                // Column maps single macro (w/o associated data symbol)
-                PKMacro *macro = col_map->getMappedMacro();
-                data_to_name.push_back(std::make_pair("", macro->getName()));
-            } else if (col_map->getTargetMapping()) {
-                // Column maps multiple symbols/macros (w/ associated data symbols)
-                TargetMapping *target_map = col_map->getTargetMapping();
-                std::vector<MapType> maps = target_map->getMaps();
-                for (MapType map : maps) {
-                    if (map.symbol) {
-                        data_to_name.push_back(std::make_pair(map.dataSymbol, map.symbol->getName()));
-                    } else if (map.macro) {
-                        data_to_name.push_back(std::make_pair(map.dataSymbol, map.macro->getName()));
+            // Handle piecewise mapping columns separately and later via MDLColumnMappingAstGenerator
+            if (col_map->getPiecewise()) {
+                piecewise_col_maps[col_id] = col_map;
+            } else {
+                // Get the mapping itself
+                if (col_map->getMappedSymbol()) {
+                    // Column maps single symbol (w/o associated data symbol)
+                    Symbol *symbol = col_map->getMappedSymbol();
+                    data_to_name.push_back(std::make_pair("", symbol->getName()));
+                } else if (col_map->getMappedMacro()) {
+                    // Column maps single macro (w/o associated data symbol)
+                    PKMacro *macro = col_map->getMappedMacro();
+                    data_to_name.push_back(std::make_pair("", macro->getName()));
+                } else if (col_map->getTargetMapping()) {
+                    // Column maps multiple symbols/macros (w/ associated data symbols)
+                    TargetMapping *target_map = col_map->getTargetMapping();
+                    std::vector<MapType> maps = target_map->getMaps();
+                    for (MapType map : maps) {
+                        if (map.symbol) {
+                            data_to_name.push_back(std::make_pair(map.dataSymbol, map.symbol->getName()));
+                        } else if (map.macro) {
+                            data_to_name.push_back(std::make_pair(map.dataSymbol, map.macro->getName()));
+                        }
                     }
                 }
-            }
-
-            // Store the fetched mapping
-            variables[col_id] = data_to_name;
-
-            // Get and visit piecewise tree's (special conversion style from MDL to map data codes to columns)
-            if (col_map->getPiecewise()) {
-                col_map->getPiecewise()->accept(this->col_map_ast_gen.get());
-                if (col_map_ast_gen->isPiecewiseMapped()) {
-                    piecewise_expressions[col_id] = col_map_ast_gen->getColumnMappingExpression();
-                    piecewise_comments[col_id] = col_map_ast_gen->getColumnMappingComment();
-                    piecewise_declared_vars[col_id] = col_map_ast_gen->getDeclaredVariables();
-                }
+                // Store the fetched mapping
+                variables[col_id] = data_to_name;
             }
         }
 
@@ -214,9 +206,13 @@ namespace pharmmlcpp
                 std::string col_id = col_def->getId();
                 std::string col_type = col_def->getType();
 
-                // Check if Piecewise MDL style of mapping has been detected and visited
-                auto got = piecewise_expressions.find(col_id);
-                bool has_piecewise_mapping = (got != piecewise_expressions.end());
+                // Visit piecewise tree's (special conversion style from MDL to map data codes to columns)
+                ColumnMapping *col_map_obj = piecewise_col_maps[col_id];
+                if (col_map_obj) {
+                    col_map_ast_gen->setColumnId(col_id);
+                    col_map_ast_gen->setColumnType(col_type);
+                    col_map_obj->getPiecewise()->accept(this->col_map_ast_gen.get());
+                }
 
                 // Get the mapping entry for this column id (and the lone var name if present)
                 std::vector<std::pair<std::string, std::string>> col_maps = variables[col_id];
@@ -247,15 +243,19 @@ namespace pharmmlcpp
                     form.add("use is " + col_type);
                 }
 
-                if (has_piecewise_mapping) {
-                    // Override other mapping logic with visited Piecewise tree
-                    form.add(piecewise_expressions[col_id]);
-                    form.closeVector();
-                    if (piecewise_comments[col_id] != "") {
-                        form.append(" " + piecewise_comments[col_id]);
+                if (this->col_map_ast_gen->isPiecewiseMapped(col_id) && col_type != "idv") {
+                    // Override other mapping logic (unless 'idv' since it only creates data derived variables) with visited Piecewise tree
+                    std::string attr = this->col_map_ast_gen->getColumnMappingAttribute(col_id);
+                    std::string comment = this->col_map_ast_gen->getColumnMappingComment(col_id);
+                    if (attr != "") {
+                        form.add(attr);
                     }
-                    for (std::string declared_var : piecewise_declared_vars[col_id]) {
-                        declared_vars.push_back(declared_var + suffix);
+                    form.closeVector();
+                    if (comment != "") {
+                        form.append(" " + comment);
+                    }
+                    for (std::string declared_var : this->col_map_ast_gen->getDeclaredVariables(col_id)) {
+                        declared_vars.insert(declared_var);
                     }
                 } else {
                     // Add variable/define attribute for mapped model symbols/macros
@@ -264,7 +264,7 @@ namespace pharmmlcpp
                         if (!(col_type == "id" && lone_mapped_var == "ID") && !(col_type == "idv" && lone_mapped_var == "T") && !(col_type == "covariate" && lone_mapped_var == col_id)) {
                             form.add("variable = " + lone_mapped_var);
                             // Model symbol is declared elsewhere, let caller output DECLARED_VARIABLES block
-                            declared_vars.push_back(lone_mapped_var + suffix);
+                            declared_vars.insert(lone_mapped_var + suffix);
                         }
                     } else if (!col_maps.empty()) {
                         // Add define attribute for (multiple-variable) data symbol -> model symbol/macro
@@ -299,7 +299,7 @@ namespace pharmmlcpp
                         for (std::pair<std::string, std::string> map: col_maps) {
                             form.add(map.first + " in " + data_symbol_column + " as " + map.second);
                              // Model symbol/macro is declared elsewhere, let caller output DECLARED_VARIABLES block
-                            declared_vars.push_back(map.second + suffix);
+                            declared_vars.insert(map.second + suffix);
                         }
                         form.closeVector();
                     }
@@ -310,6 +310,35 @@ namespace pharmmlcpp
             return form.createString();
         } else {
             // Yes, what else?
+            return "";
+        }
+    }
+
+    std::string MDLGenerator::genDataDerivedVariablesBlock(std::vector<ColumnMapping *> col_maps) {
+        TextFormatter form;
+
+        std::vector<std::string> col_ids;
+        for (ColumnMapping *col_map : col_maps) {
+            std::string col_id = col_map->getColumnIdRef();
+            if (std::find(col_ids.begin(), col_ids.end(), col_id) == col_ids.end()) {
+                col_ids.push_back(col_id);
+            }
+        }
+
+        form.openVector("DATA_DERIVED_VARIABLES {}", 1, "");
+        bool has_derived_vars = false;
+        for (std::string col_id : col_ids) {
+            std::vector<std::string> derived_vars = col_map_ast_gen->getDataDerivedVariables(col_id);
+            if (!derived_vars.empty()) {
+                form.addMany(derived_vars);
+                has_derived_vars = true;
+            }
+        }
+        form.closeVector();
+
+        if (has_derived_vars) {
+            return form.createString();
+        } else {
             return "";
         }
     }
@@ -1482,39 +1511,33 @@ namespace pharmmlcpp
         }
 
         // Generate array of mapping targets (to be trimmed before output)
-        // std::vector<std::string, std::vector<std::pair<std::string, Symbol *>>> mappings; // vector<col_id, vector<pair<data_symbol, symbol/macro>>>
         std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
-        // for (ColumnMapping *col_map : col_maps) {
-        //     std::string id = col_map->getColumnIdRef();
-        //     std::vector<std::pair<std::string, Symbol *>> data_to_symbols;
-        //     if (col_map->getMappedSymbol()) {
-        //         Symbol *symbol = col_map->getMappedSymbol();
-        //
-        //     } else if (col_map->getMappedMacro()) {
-        //         Symbol *symbol = col_map->getMappedMacro();
-        //     }
-        //     stringpair pair = {id, name};
-        //     mappings.insert(pair);
-        // }
 
         Dataset *dataset = node->getDataset();
         if (dataset->isExternal()) {
             // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
-            std::vector<std::string> declared_vars;
+            std::unordered_set<std::string> declared_vars;
             std::string data_input_vars = this->genDataInputVariablesBlock(dataset, col_maps, declared_vars);
             if (!declared_vars.empty()) {
-                // Output pruned and formatted map from genDataInputVariablesBlock
-                form.openVector("DECLARED_VARIABLES {}", 0, " ");
-                form.addMany(declared_vars);
+                // Output collected declared variables during generation of DATA_INPUT_VARIABLES
+                form.openVector("DECLARED_VARIABLES {}", 1, " ");
+                form.addMany(std::vector<std::string>(declared_vars.begin(), declared_vars.end()));
                 form.closeVector();
-                form.add("");
+                form.emptyLine();
             }
 
             // Output DATA_INPUT_VARIABLES
             form.openVector("DATA_INPUT_VARIABLES {}", 1, "");
             form.addMany(data_input_vars);
             form.closeVector();
-            form.add("");
+            form.emptyLine();
+
+            // Output DATA_DERIVED_VARIABLES (MDLColumnMappingAstGenerator visits Piecewise's during DATA_INPUT_VARIABLES generation)
+            std::string derived_vars = this->genDataDerivedVariablesBlock(col_maps);
+            if (!derived_vars.empty()) {
+                form.addMany(derived_vars);
+                form.emptyLine();
+            }
 
             // Generate SOURCE
             form.openVector("SOURCE {}", 1, "");

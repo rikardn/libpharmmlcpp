@@ -221,7 +221,6 @@ namespace pharmmlcpp
                     lone_mapped_var = (col_maps[0].first == "") ? col_maps[0].second : "";
                 }
 
-                // Open vector with column id as header
                 form.openVector(col_id + " : {}", 0, ", ");
 
                 // Set type as MDL expects (not same keywords used as in PharmML), and set suffix
@@ -1051,8 +1050,7 @@ namespace pharmmlcpp
         }
 
         TextFormatter form;
-
-        form.indentAdd("designObj {");
+        form.openIndent();
 
         auto design_parameters = td->getDesignParameters();
         if (design_parameters.size() > 0) {
@@ -1085,7 +1083,27 @@ namespace pharmmlcpp
 
         form.outdentAdd("}");
 
-        return form.createString();
+        std::string declared = genDesignDeclaredVariables();
+
+        std::string ret = "designObj {\n" + declared + form.createString();
+
+        return ret;
+    }
+
+    std::string MDLGenerator::genDesignDeclaredVariables() {
+        if (!this->designDeclaredVariables.empty()) {
+            TextFormatter form;
+            form.openIndent();  // To follow parent indentation level
+            form.indentAdd("DECLARED_VARIABLES {");
+            for (auto &row : this->designDeclaredVariables) {
+                form.add(row);
+            }
+            form.outdentAdd("}");
+            form.emptyLine();
+            return form.createString();
+        } else {
+            return "";
+        }
     }
 
     void MDLGenerator::genStudyDesign(TextFormatter &form, Arms *arms) {
@@ -1167,6 +1185,7 @@ namespace pharmmlcpp
                     target = maps[0].macro->getName();
                 }
             }
+            this->designDeclaredVariables.push_back(target + "::dosingTarget");
             std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
             std::vector<std::string> dose_times;
             for (auto &time_point : administration->getTimesAsVector()) {
@@ -1228,7 +1247,9 @@ namespace pharmmlcpp
             if (continuous.size() == 0) {
                 this->logger->error("No continuous outcomes in observation");
             }
-            sampling += continuous[0]->getSymbIdRef() + ", ";
+            std::string outcome = continuous[0]->getSymbIdRef();
+            sampling += outcome + ", ";
+            this->designDeclaredVariables.push_back(outcome + "::observation");
 
             if (observation->getNumberTimes()) {    // Either we have numberTimes or sampleTime
                 sampling += "numberTimes=" + this->accept(observation->getNumberTimes().get());

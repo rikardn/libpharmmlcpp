@@ -37,6 +37,18 @@ namespace pharmmlcpp
         this->ast_gen = std::move(ast_gen);
     }
 
+    /// Add a single dosing target name so output can add "::dosingTarget" to such variables
+    void MDLSymbols::addDosingTarget(std::string name) {
+        this->dosing_targets.insert(name);
+    }
+
+    /// Add multiple dosing target names so output can add "::dosingTarget" to such variables
+    void MDLSymbols::addDosingTargets(std::vector<std::string> names) {
+        for (std::string name : names) {
+            this->addDosingTarget(name);
+        }
+    }
+
     void MDLSymbols::visit(ObservationModel *node) {
         this->setValue(node->getName());
     }
@@ -68,7 +80,10 @@ namespace pharmmlcpp
         if (node->getAssignment()) {
             this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
         } else {
-            this->setValue(node->getName());
+            std::string name = node->getName();
+            auto got = this->dosing_targets.find(name);
+            name = (got == this->dosing_targets.end()) ? name : name + "::dosingVar";
+            this->setValue(name);
         }
     }
 

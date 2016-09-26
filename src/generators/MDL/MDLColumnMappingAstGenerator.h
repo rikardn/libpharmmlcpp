@@ -46,6 +46,7 @@ namespace pharmmlcpp
             std::string getColumnMappingComment(std::string id);
             std::vector<std::string> getDataDerivedVariables(std::string id);
             std::vector<std::string> getDeclaredVariables(std::string id);
+            std::vector<std::string> getDeclaredDosingTargets(std::string id);
 
             void visit(SymbRef *node); ///< overrides MDLAstGenerator::visit(SymbRef *node)
             void visit(LogicBinopEq *node); ///< overrides MDLAstGenerator::visit(LogicBinopEq *node)
@@ -92,6 +93,7 @@ namespace pharmmlcpp
                 std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> code_target_pairs; ///< all code-target pairs, mapped by code column
                 std::unordered_map<std::string, std::unordered_map<std::string, std::string>> extra_conditions; ///< additional conditions, mapped by code column and then code
                 std::vector<std::string> declared_variables;
+                std::vector<std::string> dosing_targets;
             };
             //@}
             std::unordered_map<std::string, MappedColumn> mapped_columns; ///< all columns parsed, mapped by column id

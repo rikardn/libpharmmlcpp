@@ -226,6 +226,7 @@ namespace pharmmlcpp
 
                 // Set type as MDL expects (not same keywords used as in PharmML), and set suffix
                 std::string suffix = "::UNKNOWN"; // Suffix for DECLARED_VARIABLES block
+                bool dosing_column = false;
                 if (col_type == "undefined") {
                     // Likely means that this column is to be ignored, but are we sure?
                     form.add("use is ignore");
@@ -236,6 +237,7 @@ namespace pharmmlcpp
                 } else if (col_type == "dose") {
                     form.add("use is amt");
                     suffix = "::dosingTarget";
+                    dosing_column = true;
                 } else if (col_type == "dv") {
                     form.add("use is dv");
                     suffix = "::observation";
@@ -249,14 +251,16 @@ namespace pharmmlcpp
                     std::string comment = this->col_map_ast_gen->getColumnMappingComment(col_id);
                     if (attr != "") {
                         form.add(attr);
-                        if (comment != "") {
-                            form.append(" " + comment);
-                        }
                         for (std::string declared_var : this->col_map_ast_gen->getDeclaredVariables(col_id)) {
                             declared_vars.insert(declared_var);
+                            auto dt = this->col_map_ast_gen->getDeclaredDosingTargets(col_id);
+                            this->symb_gen->addDosingTargets(dt);
                         }
                     }
                     form.closeVector();
+                    if (comment != "") {
+                        form.append(" " + comment);
+                    }
                 } else {
                     // Add variable/define attribute for mapped model symbols/macros
                     if (lone_mapped_var != "") {
@@ -265,6 +269,9 @@ namespace pharmmlcpp
                             form.add("variable = " + lone_mapped_var);
                             // Model symbol is declared elsewhere, let caller output DECLARED_VARIABLES block
                             declared_vars.insert(lone_mapped_var + suffix);
+                            if (dosing_column) {
+                                this->symb_gen->addDosingTarget(lone_mapped_var);
+                            }
                         }
                     } else if (!col_maps.empty()) {
                         // Add define attribute for (multiple-variable) data symbol -> model symbol/macro
@@ -300,6 +307,9 @@ namespace pharmmlcpp
                             form.add(map.first + " in " + data_symbol_column + " as " + map.second);
                              // Model symbol/macro is declared elsewhere, let caller output DECLARED_VARIABLES block
                             declared_vars.insert(map.second + suffix);
+                            if (dosing_column) {
+                                this->symb_gen->addDosingTarget(lone_mapped_var);
+                            }
                         }
                         form.closeVector();
                     }

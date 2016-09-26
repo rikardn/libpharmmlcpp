@@ -48,6 +48,8 @@ namespace pharmmlcpp
     {
         public:
             MDLSymbols(std::shared_ptr<Logger> logger);
+            void addDosingTarget(std::string name);
+            void addDosingTargets(std::vector<std::string> names);
 
             void visit(ObservationModel *node) override;
             void visit(Parameter *node) override;
@@ -63,10 +65,11 @@ namespace pharmmlcpp
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
-        
+
         private:
             std::shared_ptr<Logger> logger;
             std::unique_ptr<MDLAstGenerator> ast_gen;
+            std::unordered_set<std::string> dosing_targets;
     };
 }
 

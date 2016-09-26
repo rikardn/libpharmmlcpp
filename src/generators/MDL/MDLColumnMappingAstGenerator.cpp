@@ -71,6 +71,7 @@ namespace pharmmlcpp
                     for (auto code_target_pair : column.code_target_pairs[code_column]) {
                         form.add(code_target_pair.first + " in " + code_column + " as " + code_target_pair.second);
                         column.declared_variables.push_back(code_target_pair.second + "::dosingTarget");
+                        column.dosing_targets.push_back(code_target_pair.second);
                     }
                 }
                 form.noFinalNewline();
@@ -81,6 +82,7 @@ namespace pharmmlcpp
                     std::string var = (column.single_target == "") ? "UNDEF" : column.single_target;
                     full_attribute = "variable = " + var;
                     column.declared_variables.push_back(var + "::dosingTarget");
+                    column.dosing_targets.push_back(var);
                 }
             }
         }
@@ -153,6 +155,7 @@ namespace pharmmlcpp
                         dosing_var = dosing_var == "" ? "UNDEF" : dosing_var;
                         form.add("dosingVar = " + dosing_var);
                         idv_column.declared_variables.push_back(dosing_var + "::dosingTarget");
+                        idv_column.dosing_targets.push_back(dosing_var);
                         form.closeVector();
                         // form.append(" " + getColumnMappingComment(id));
 
@@ -173,6 +176,16 @@ namespace pharmmlcpp
             return std::vector<std::string>();
         } else {
             return got->second.declared_variables;
+        }
+    }
+
+    /// Get declared dosing targets for a column (e.g. <"GUT", "CENTRAL">)
+    std::vector<std::string> MDLColumnMappingAstGenerator::getDeclaredDosingTargets(std::string id) {
+        auto got = this->mapped_columns.find(id);
+        if (got == this->mapped_columns.end()) {
+            return std::vector<std::string>();
+        } else {
+            return got->second.dosing_targets;
         }
     }
 

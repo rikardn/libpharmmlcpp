@@ -4,6 +4,7 @@
 TESTFILES_DIR="testfiles"
 DDMORE_CONVERTER="converter-toolbox-distribution/converter-toolbox/convert.sh"
 PHARMML2MDL="../../mdl"
+CACHE_DIR="cache"
 
 # Define colours:
 RED=$(tput setaf 1)
@@ -24,6 +25,24 @@ cd "$TESTFILES_DIR"
 TESTFILES=(`find -type f -name "*.mdl" | sed "s|^\./||" | sort -V`)
 cd "$WD"
 
+# Check if cache directory (of MDL->PharmML conversions) exist and load cache
+declare -a CACHE_FILES
+declare -a CACHE_HASHES
+if [ -d "$CACHE_DIR" ]; then
+    # Get all (MDL) hashes (32 char MD5) and cached (PharmML) files
+    cd "$CACHE_DIR"
+    cache_commit=$(cat "last_commit")
+    CACHE_FILES=($(find `pwd` -type f -regextype sed -regex ".*/[a-f0-9]\{32\}\.xml"))
+    if (( ${#CACHE_FILES[@]} > 0 )); then
+        echo "${YEL}${#CACHE_FILES[@]}${NOR} MDL->PharmML conversions cached (last commit: ${PUR}$cache_commit${NOR})"
+        CACHE_HASHES=("${CACHE_FILES[@]##*/}") # Strip path
+        CACHE_HASHES=("${CACHE_HASHES[@]%.*}") # Strip file extension
+    fi
+else
+    mkdir "$CACHE_DIR"
+fi
+cd "$WD"
+
 # Check converter availability
 if [ ! -x "$DDMORE_CONVERTER" ]; then
   echo "${RED}DDMoRe converter ${PUR}${DDMORE_CONVERTER}${RED} does not exist or is not executable${NOR}"
@@ -40,9 +59,29 @@ TIME="$(git log -1 --date=format:"%y%m%d-%H%M" --format=%ad)"
 LONG_TIME="$(git log -1 --date=local --format=%ad)"
 WD="${TIME}.${HASH}"
 
+# Save commit information to cache directory
+echo "${TIME}.${HASH}" > "$CACHE_DIR/last_commit"
+
 # Output some information
 echo "Last Git commit: ${PUR}$HASH${NOR} ($LONG_TIME)"
 echo "Conversion results will be saved in ${PUR}$WD${NOR} folder"
+
+# Declare cache lookup function (true and echoes path if cache exists)
+function get_cached_file() {
+    local file="$1"
+    local file_hash=$(md5sum "$file" | awk '{ print $1 }')
+    for cached_hash in "${CACHE_HASHES[@]}"; do
+        if [[ "$cached_hash" == "$file_hash" ]]; then
+            for path in "${CACHE_FILES[@]}"; do
+                if [[ "${path##*/}" == "${cached_hash%.*}.xml" ]]; then
+                    echo "$path"
+                    return 0;
+                fi
+            done
+        fi
+    done
+    return 1
+}
 
 ####################################################
 # Initialize pass 1 (successful conversion) arrays #
@@ -57,6 +96,7 @@ for i in "${!TESTFILES[@]}"; do
     file="${TESTFILES[$i]}"
     filenum=$(($i+1))
     num_files=${#TESTFILES[@]}
+
     # Get file paths
     in_file="$TESTFILES_DIR/$file"
     out_file="$WD/pass1/${file%.mdl}.xml"
@@ -64,16 +104,35 @@ for i in "${!TESTFILES[@]}"; do
     log_file="${out_file}.log"
     mkdir -p "$out_file_dir"
     echo -n "Converting ${BLU}$file${NOR} [${YEL}$filenum/$num_files${NOR}] "
-    
-    # Convert file and output logfile
-    $DDMORE_CONVERTER "$in_file" "$out_file_dir" "MDL" "8" "PharmML" "0.8.1" 1>"${log_file}" 2>&1
+
+    cache_path=$(get_cached_file "$in_file")
+    success=1
+    if [ -z "$cache_path" ]; then
+        # Convert file and output logfile
+        $DDMORE_CONVERTER "$in_file" "$out_file_dir" "MDL" "8" "PharmML" "0.8.1" 1>"${log_file}" 2>&1
+        success=$?
+    else
+        # Skip conversion if cached (copy that file instead)
+        echo -n "(CACHED) "
+        cp "$cache_path" "$out_file"
+        if [ -s "$out_file" ]; then
+            success=0
+        fi
+    fi
 
     # Output success/failure status
-    if [[ $? == 0 ]] && [[ -f "$out_file" ]]; then
+    checksum=$(md5sum "$in_file" | awk '{ print $1 }')
+    if [[ $success == 0 ]] && [[ -f "$out_file" ]]; then
         echo "(${GRE}SUCCESS${NOR})"
         PASS1_PHARMML+=("$out_file")
+
+        # Cache for next execution
+        cp "$out_file" "$CACHE_DIR/$checksum.xml"
     else
         echo "(${RED}FAIL${NOR})"
+
+        # Cache empty file (representing failed conversion) for next execution
+        touch "$CACHE_DIR/$checksum.xml"
     fi
 done
 
@@ -84,13 +143,14 @@ for i in "${!PASS1_PHARMML[@]}"; do
     file="${PASS1_PHARMML[$i]}"
     filenum=$(($i+1))
     num_files=${#PASS1_PHARMML[@]}
+
     # Get file paths
     in_file="$file"
     out_file="${file%.xml}.mdl"
     out_file_dir="${file%/*}"
     log_file="${out_file}.log"
     echo -n "Converting ${BLU}$file${NOR} [${YEL}$filenum/$num_files${NOR}] "
-    
+
     # Convert file
     warnings=$((
     (
@@ -105,7 +165,7 @@ for i in "${!PASS1_PHARMML[@]}"; do
     else
         echo "(${RED}FAIL${NOR})"
     fi
-    
+
     # Output logfile
     echo "$warnings" > $log_file
 done
@@ -123,6 +183,7 @@ for i in "${!PASS1_MDL[@]}"; do
     file="${PASS1_MDL[$i]}"
     filenum=$(($i+1))
     num_files=${#PASS1_MDL[@]}
+
     # Get file paths
     in_file="$file"
     out_file=$(echo $in_file | sed "s|pass1|pass2|")
@@ -131,16 +192,35 @@ for i in "${!PASS1_MDL[@]}"; do
     log_file="${out_file}.log"
     mkdir -p "$out_file_dir"
     echo -n "Converting ${BLU}$file${NOR} [${YEL}$filenum/$num_files${NOR}] "
-    
-    # Convert file and output logfile
-    $DDMORE_CONVERTER "$in_file" "$out_file_dir" "MDL" "8" "PharmML" "0.8.1" 1>"${log_file}" 2>&1
+
+    cache_path=$(get_cached_file "$in_file")
+    success=1
+    if [ -z "$cache_path" ]; then
+        # Convert file and output logfile
+        $DDMORE_CONVERTER "$in_file" "$out_file_dir" "MDL" "8" "PharmML" "0.8.1" 1>"${log_file}" 2>&1
+        success=$?
+    else
+        # Skip conversion if cached (copy that file instead)
+        echo -n "(CACHED) "
+        cp "$cache_path" "$out_file"
+        if [ -s "$out_file" ]; then
+            success=0
+        fi
+    fi
 
     # Output success/failure status
-    if [[ $? == 0 ]] && [[ -f "$out_file" ]]; then
+    checksum=$(md5sum "$in_file" | awk '{ print $1 }')
+    if [[ $success == 0 ]] && [[ -f "$out_file" ]]; then
         echo "(${GRE}SUCCESS${NOR})"
         PASS2_PHARMML+=("$out_file")
+
+        # Cache for next execution
+        cp "$out_file" "$CACHE_DIR/$checksum.xml"
     else
         echo "(${RED}FAIL${NOR})"
+
+        # Cache empty file (representing failed conversion) for next execution
+        touch "$CACHE_DIR/$checksum.xml"
     fi
 done
 
@@ -151,13 +231,14 @@ for i in "${!PASS2_PHARMML[@]}"; do
     file="${PASS2_PHARMML[$i]}"
     filenum=$(($i+1))
     num_files=${#PASS2_PHARMML[@]}
+
     # Get file paths
     in_file="$file"
     out_file="${file%.xml}.mdl"
     out_file_dir="${file%/*}"
     log_file="${out_file}.log"
     echo -n "Converting ${BLU}$file${NOR} [${YEL}$filenum/$num_files${NOR}] "
-    
+
     # Convert file
     warnings=$((
     (
@@ -172,7 +253,7 @@ for i in "${!PASS2_PHARMML[@]}"; do
     else
         echo "(${RED}FAIL${NOR})"
     fi
-    
+
     # Output logfile
     echo "$warnings" > $log_file
 done
@@ -192,7 +273,7 @@ for file in "${PASS2_PHARMML[@]}"; do
     pass1_pharmml=$(echo $pass2_pharmml | sed "s|pass2|pass1|")
     basename=${file##*pass2/}
     echo -n "Analyzing ${BLU}$basename${NOR} "
-    
+
     # Check diff of PharmML files
     diff=$(sdiff -B -b -s -d "$pass1_pharmml" "$pass2_pharmml")
 
@@ -224,7 +305,7 @@ for file in "${PASS2_MDL[@]}"; do
     pass1_mdl=$(echo $pass2_mdl | sed "s|pass2|pass1|")
     basename=${file##*pass2/}
     echo -n "Analyzing ${BLU}$basename${NOR} "
-    
+
     # Check diff of MDL files
     diff=$(sdiff -B -b -s -d "$pass1_mdl" "$pass2_mdl")
 

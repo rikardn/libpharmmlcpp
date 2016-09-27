@@ -37,6 +37,11 @@ namespace pharmmlcpp
         this->ast_gen = std::move(ast_gen);
     }
 
+    /// Add a single declared symbol name so a Variable without an assignment sharing the same name won't be output
+    void MDLSymbols::addDeclaredSymbol(std::string name) {
+        this->declared_symbols.insert(name);
+    }
+
     /// Add a single dosing target name so output can add "::dosingTarget" to such variables
     void MDLSymbols::addDosingTarget(std::string name) {
         this->dosing_targets.insert(name);
@@ -81,9 +86,15 @@ namespace pharmmlcpp
             this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
         } else {
             std::string name = node->getName();
-            auto got = this->dosing_targets.find(name);
-            name = (got == this->dosing_targets.end()) ? name : name + "::dosingVar";
-            this->setValue(name);
+            auto got = this->declared_symbols.find(name);
+            // This protects against e.g. duplicate PK macro/variable without assignment definition in UCs: 4_1, 5, 6, 6_1, 7, 9, etc..
+            if (got == this->declared_symbols.end()) {
+                auto got = this->dosing_targets.find(name);
+                name = (got == this->dosing_targets.end()) ? name : name + "::dosingVar";
+                this->setValue(name);
+            } else {
+                this->logger->warning("Variable without assignment '" + name + "' ignored due to being a duplicate of already declared symbol");
+            }
         }
     }
 

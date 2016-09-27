@@ -743,6 +743,7 @@ namespace pharmmlcpp
         for (pharmmlcpp::PKMacro *macro : adm_macros) {
             // Construct enclosure
             std::string name = macro->getName();
+            this->symb_gen->addDeclaredSymbol(name); // Declare symbol so assignment-less symbol won't be output (and cause collision)
             std::string pad = std::string(max_length - name.length(), ' ');
             std::string prefix = name + pad;
             form.openVector(prefix + " : {}", 0, ", ");
@@ -808,6 +809,7 @@ namespace pharmmlcpp
             if (macro->isCompartment()) { // Treat all compartments similarly
                 // Construct enclosure
                 std::string name = macro->getName();
+                this->symb_gen->addDeclaredSymbol(name); // Declare symbol so assignment-less symbol won't be output (and cause collision)
                 std::string pad = std::string(max_length - name.length(), ' ');
                 std::string prefix = name + pad;
                 form.openVector(prefix + " : {}", 0, ", ");

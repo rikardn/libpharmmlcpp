@@ -48,6 +48,7 @@ namespace pharmmlcpp
     {
         public:
             MDLSymbols(std::shared_ptr<Logger> logger);
+            void addDeclaredSymbol(std::string name);
             void addDosingTarget(std::string name);
             void addDosingTargets(std::vector<std::string> names);
 
@@ -69,6 +70,7 @@ namespace pharmmlcpp
         private:
             std::shared_ptr<Logger> logger;
             std::unique_ptr<MDLAstGenerator> ast_gen;
+            std::unordered_set<std::string> declared_symbols;
             std::unordered_set<std::string> dosing_targets;
     };
 }

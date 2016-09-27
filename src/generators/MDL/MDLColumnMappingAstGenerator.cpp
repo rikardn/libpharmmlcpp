@@ -22,6 +22,7 @@ namespace pharmmlcpp
 {
     /// Construct a visitor to parse Piecewise object syntax found in ColumnMapping for MDL translation. Extends MDLAstGenerator visitor.
     MDLColumnMappingAstGenerator::MDLColumnMappingAstGenerator(std::shared_ptr<Logger> logger) : MDLAstGenerator(logger) {
+        this->logger = logger;
         this->reset();
     }
 
@@ -98,7 +99,9 @@ namespace pharmmlcpp
 
         std::string comment;
         MappedColumn column = this->mapped_columns[id];
-        if (!column.extra_conditions.empty()) {
+        if (column.single_extra_condition != "") {
+            comment = "# " + column.single_extra_condition;
+        } else if (!column.extra_conditions.empty()) {
             if (!column.code_columns.empty()) {
                 bool has_extra_conditions = false;
                 TextFormatter form;
@@ -115,9 +118,6 @@ namespace pharmmlcpp
                 }
                 form.noFinalNewline();
                 comment = has_extra_conditions ? "# " + form.createString() : "";
-            } else {
-                std::string cond = column.single_extra_condition;
-                comment = cond == "" ? "" : "# " + column.single_extra_condition;
             }
         }
         return comment;
@@ -138,8 +138,25 @@ namespace pharmmlcpp
         MappedColumn *dose_column = getMappedColumnOfType("dose");
         if (idv_column.type == "idv") {
             // Data derived variables only defined for idv columns
-            if (!idv_column.codes.empty() && dose_column) {
-                // Requires codes as well as a dose column (which is being implicitly refered)
+            if (idv_column.single_target != "" && dose_column) {
+                // Only one dose variable name available for idv to map
+                TextFormatter form;
+                form.noFinalNewline();
+
+                form.openVector(idv_column.single_target + " : {}", 0, ", ");
+                form.add("use is doseTime");
+                form.add("idvColumn = " + id);
+                std::string dosing_var = dose_column->single_target;
+                dosing_var = dosing_var == "" ? "UNDEF" : dosing_var;
+                form.add("dosingVar = " + dose_column->single_target);
+                idv_column.declared_variables.push_back(dosing_var + "::dosingTarget");
+                idv_column.dosing_targets.push_back(dosing_var);
+                form.closeVector();
+                form.append(" " + getColumnMappingComment(id));
+
+                derived_vars.push_back(form.createString());
+            } else if (!idv_column.codes.empty() && dose_column) {
+                // Resolve coding in dose column with coding in idv to target dose variable names
                 for (std::string code_column : idv_column.code_columns) {
                     for (auto code_target_pair : idv_column.code_target_pairs[code_column]) {
                         // Create a data derived variable statement for each code-target pair of idv column mapping
@@ -162,8 +179,9 @@ namespace pharmmlcpp
                         derived_vars.push_back(form.createString());
                     }
                 }
-            } else {
-                this->logger->error("Derived variable '" + idv_column.single_target + "' in Piecewise ColumnMapping 'idv' column, but no mapping resolved");
+            }
+            if (derived_vars.empty()) {
+                this->logger->error("Derived variable in Piecewise ColumnMapping 'idv' column, but no unambiguous mapping could be resolved");
             }
         }
         return derived_vars;

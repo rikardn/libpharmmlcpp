@@ -230,9 +230,9 @@ namespace pharmmlcpp
                     // Likely means that this column is to be ignored, but are we sure?
                     form.add("use is ignore");
                 } else if (col_type == "reg") {
-                    // 'reg' stands for regressor which MDL uses 'covariate' for
-                    form.add("use is covariate");
-                    suffix = "::covariate"; // Unsure about this suffix
+                    // 'reg' stands for regressor which MDL uses 'variable' for
+                    form.add("use is variable");
+                    suffix = "::variable"; // Unsure about this suffix
                 } else if (col_type == "dose") {
                     form.add("use is amt");
                     suffix = "::dosingTarget";

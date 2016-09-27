@@ -34,9 +34,14 @@ if [ -d "$CACHE_DIR" ]; then
     cache_commit=$(cat "last_commit")
     CACHE_FILES=($(find `pwd` -type f -regextype sed -regex ".*/[a-f0-9]\{32\}\.xml"))
     if (( ${#CACHE_FILES[@]} > 0 )); then
-        echo "${YEL}${#CACHE_FILES[@]}${NOR} MDL->PharmML conversions cached (last commit: ${PUR}$cache_commit${NOR})"
-        CACHE_HASHES=("${CACHE_FILES[@]##*/}") # Strip path
-        CACHE_HASHES=("${CACHE_HASHES[@]%.*}") # Strip file extension
+        echo "${YEL}${#CACHE_FILES[@]}${NOR} MDL->PharmML conversions cached in ${PUR}${CACHE_DIR}${NOR} (last written by ${PUR}$cache_commit${NOR})"
+        read -p "Use this cache (${GRE}Y${NOR}/${RED}N${NOR})? " -n 1 -r; echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            CACHE_HASHES=("${CACHE_FILES[@]##*/}") # Strip path
+            CACHE_HASHES=("${CACHE_HASHES[@]%.*}") # Strip file extension
+        else
+            CACHE_FILES=()
+        fi
     fi
 else
     mkdir "$CACHE_DIR"
@@ -57,10 +62,15 @@ fi
 HASH="$(git rev-parse --short HEAD)"
 TIME="$(git log -1 --date=format:"%y%m%d-%H%M" --format=%ad)"
 LONG_TIME="$(git log -1 --date=local --format=%ad)"
-WD="${TIME}.${HASH}"
+if git diff-index --quiet HEAD --; then
+    WD="${TIME}.${HASH}"
+else
+    CURRENT_TIME="modified-$(date +%y%m%d-%H%M)"
+    WD="${TIME}.${HASH}.${CURRENT_TIME}"
+fi
 
 # Save commit information to cache directory
-echo "${TIME}.${HASH}" > "$CACHE_DIR/last_commit"
+echo "$WD" > "$CACHE_DIR/last_commit"
 
 # Output some information
 echo "Last Git commit: ${PUR}$HASH${NOR} ($LONG_TIME)"
@@ -288,9 +298,15 @@ for file in "${PASS2_PHARMML[@]}"; do
             PHARMML_EQ+=("$basename")
         else
             sort_diff_lines=$(echo "$sort_diff" | wc -l)
-            echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
-            if [[ $sort_diff_lines < 11 ]]; then
-                echo "$sort_diff"
+            if [[ $sort_diff_lines == 1 ]] && echo "$sort_diff" | grep -q "<ct:Name>"; then
+                # Only name tag in PharmML differs
+                echo "(${GRE}ONLY ${YEL}<ct:Name>...</ct:Name>${GRE} LINES DIFFER${NOR})"
+                PHARMML_EQ+=("$basename")
+            else
+                echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
+                if [[ $sort_diff_lines < 11 ]]; then
+                    echo "$sort_diff"
+                fi
             fi
         fi
     fi

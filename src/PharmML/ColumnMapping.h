@@ -42,8 +42,8 @@ namespace pharmmlcpp
         std::string admNumber;
 
         // Filled in by setupTargetMapping
-        Symbol *symbol;
-        PKMacro *macro;
+        Symbol *symbol = nullptr;
+        PKMacro *macro = nullptr;
     };
 
     // TODO: Move elsewhere (Dataset.h?)

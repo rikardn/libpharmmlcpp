@@ -240,6 +240,8 @@ namespace pharmmlcpp
                 } else if (col_type == "dv") {
                     form.add("use is dv");
                     suffix = "::observation";
+                } else if (col_type == "adm") {
+                    form.add("use is cmt");
                 } else {
                     form.add("use is " + col_type);
                 }
@@ -281,7 +283,7 @@ namespace pharmmlcpp
                         if (col_type == "dose") {
                             // 'dose' columns seems to expect this to be of type 'adm' (often called 'CMT')
                             auto got = columns_of_type.find("adm");
-                            if (got != columns_of_type.end()) {
+                            if (got == columns_of_type.end()) {
                                 this->logger->error("Dose column '" + col_id + "' maps multiple symbols but no 'adm' type column found (containing data symbols)", ds);
                             } else if (got->second.size() > 1) {
                                 this->logger->error("Dose column '" + col_id + "' maps multiple symbols but multiple 'adm' type columns found (containing data symbols)", ds);
@@ -291,8 +293,8 @@ namespace pharmmlcpp
                         } else if (col_type == "dv") {
                             // 'dv' columns seems to expect this to be of type 'dvid' (often called 'DVID')
                             // FIXME: MultipleDVMapping is often (always?) used instead of TargetMapping in the ColumnMapping itself!
-                            auto got = columns_of_type.find("DVID");
-                            if (got != columns_of_type.end()) {
+                            auto got = columns_of_type.find("dvid");
+                            if (got == columns_of_type.end()) {
                                 this->logger->error("Observation column '" + col_id + "' maps multiple symbols but no 'dvid' type column found (containing data symbols)", ds);
                             } else if (got->second.size() > 1) {
                                 this->logger->error("Observation column '" + col_id + "' maps multiple symbols but multiple 'dvid' type columns found (containing data symbols)", ds);
@@ -303,7 +305,8 @@ namespace pharmmlcpp
 
                         // Add all the mappings to the define vector
                         for (std::pair<std::string, std::string> map: col_maps) {
-                            form.add(map.first + " in " + data_symbol_column + " as " + map.second);
+                            std::string target = map.second == "" ? "UNDEF" : map.second;
+                            form.add(map.first + " in " + data_symbol_column + " as " + target);
                              // Model symbol/macro is declared elsewhere, let caller output DECLARED_VARIABLES block
                             declared_vars.insert(map.second + suffix);
                             if (dosing_column) {

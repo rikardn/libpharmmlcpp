@@ -70,6 +70,20 @@ namespace pharmmlcpp
             std::vector<MapType> maps;
     };
 
+    // TODO: Move elsewhere (Dataset.h?)
+    class CategoryMapping : public PharmMLSection
+    {
+        public:
+            CategoryMapping(PharmMLReader &reader, xml::Node node);
+            void parse(PharmMLReader &reader, xml::Node node);
+
+            std::vector<std::string> getCategories();
+            std::unordered_map<std::string, std::string> getMap();
+
+        private:
+            std::vector<MapType> maps;
+    };
+
     class ColumnMapping : public Referer
     {
         public:
@@ -77,6 +91,8 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             xml::Node xml();
 
+            bool isCategorical() { return this->category_map != nullptr; };
+            CategoryMapping *getCategoryMapping() { return this->category_map; };
             std::shared_ptr<AstNode> getAssignment();
             std::shared_ptr<AstNode> getPiecewise();
             std::string getColumnIdRef();
@@ -96,6 +112,7 @@ namespace pharmmlcpp
             SymbRef *symbRef = nullptr;
             Symbol *mappedSymbol = nullptr;
             TargetMapping *target_map = nullptr;
+            CategoryMapping *category_map = nullptr;
     };
 }
 

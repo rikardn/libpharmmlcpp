@@ -73,6 +73,43 @@ namespace pharmmlcpp
         return set;
     }
 
+    // TODO: Move elsewhere (Dataset.h?)
+    CategoryMapping::CategoryMapping(PharmMLReader &reader, xml::Node node) {
+        this->setXMLNode(node);
+        this->parse(reader, node);
+    }
+
+    void CategoryMapping::parse(PharmMLReader &reader, xml::Node node) {
+        // Get maps (uses ds:Map just like TargetMapping, but has different meaning)
+        std::vector<xml::Node> map_nodes = reader.getElements(node, "./ds:Map");
+        for (xml::Node map_node : map_nodes) {
+            MapType map;
+
+            map.dataSymbol = map_node.getAttribute("dataSymbol").getValue();
+            map.modelSymbol = map_node.getAttribute("modelSymbol").getValue();
+
+            this->maps.push_back(map);
+        }
+    }
+
+    /// Get a vector of all the categories (e.g. <'female', 'male'>) defined
+    std::vector<std::string> CategoryMapping::getCategories() {
+        std::vector<std::string> categories;
+        for (MapType map : this->maps) {
+            categories.push_back(map.modelSymbol);
+        }
+        return categories;
+    }
+
+    /// Get a map from category (e.g. 'female') to symbol (e.g. '1')
+    std::unordered_map<std::string, std::string> CategoryMapping::getMap() {
+        std::unordered_map<std::string, std::string> cat_to_code;
+        for (MapType map : this->maps) {
+            cat_to_code[map.modelSymbol] = map.dataSymbol;
+        }
+        return cat_to_code;
+    }
+
     // Get a (resolved) complete map from data symbol strings to the Symbol objects
     std::unordered_map<std::string, Symbol *> TargetMapping::getDataSymbolMap() {
         // Create associative array
@@ -139,7 +176,6 @@ namespace pharmmlcpp
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         xml::Node symbref_node = reader.getSingleElement(node, "./ct:SymbRef");
         xml::Node piecewise_node = reader.getSingleElement(node, "./math:Piecewise");
-        // TODO: Support CategoryMapping (for categorical covariates)
 
         // Store mapping expression (should only contain one symbol reference)
         if (symbref_node.exists()) {
@@ -158,6 +194,14 @@ namespace pharmmlcpp
         if (target_node.exists()) {
             TargetMapping *map = new TargetMapping(reader, target_node);
             this->target_map = map;
+        }
+
+        // Get category mapping
+        // FIXME: Assume just one category mapping until we know definitely what unlimited maps means
+        xml::Node cat_map = reader.getSingleElement(node, "./ds:CategoryMapping");
+        if (cat_map.exists()) {
+            CategoryMapping *map = new CategoryMapping(reader, cat_map);
+            this->category_map = map;
         }
     }
 

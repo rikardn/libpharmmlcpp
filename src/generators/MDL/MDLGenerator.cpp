@@ -151,6 +151,12 @@ namespace pharmmlcpp
             std::vector<std::pair<std::string, std::string>> data_to_name;
             variables.emplace(col_id, data_to_name);
 
+            // Get categorical covariate maps
+            if (col_map->isCategorical()) {
+                this->categorical_covariates.emplace(col_id, std::unordered_map<std::string, std::string>());
+                this->categorical_covariates[col_id] = col_map->getCategoryMapping()->getMap();
+            }
+
             // Handle piecewise mapping columns separately and later via MDLColumnMappingAstGenerator
             if (col_map->getPiecewise()) {
                 piecewise_col_maps[col_id] = col_map;
@@ -205,6 +211,8 @@ namespace pharmmlcpp
                 ColumnDefinition *col_def = ds->getDefinition()->getColumnDefinition(num);
                 std::string col_id = col_def->getId();
                 std::string col_type = col_def->getType();
+                auto got = this->categorical_covariates.find(col_id);
+                bool cat_cov = got != this->categorical_covariates.end();
 
                 // Visit piecewise tree's (special conversion style from MDL to map data codes to columns)
                 ColumnMapping *col_map_obj = piecewise_col_maps[col_id];
@@ -229,6 +237,15 @@ namespace pharmmlcpp
                 if (col_type == "undefined") {
                     // Likely means that this column is to be ignored, but are we sure?
                     form.add("use is ignore");
+                } else if (col_type == "covariate" && cat_cov) {
+                    TextFormatter cat_form;
+                    cat_form.noFinalNewline();
+                    cat_form.openVector("{}", 0, ", ");
+                    for (auto map : this->categorical_covariates[col_id]) {
+                        cat_form.add(map.first + " when " + map.second);
+                    }
+                    cat_form.closeVector();
+                    form.add("use is catCov withCategories " + cat_form.createString());
                 } else if (col_type == "reg") {
                     // 'reg' stands for regressor which MDL uses 'variable' for
                     form.add("use is variable");
@@ -512,11 +529,32 @@ namespace pharmmlcpp
         std::vector<CPharmML::Covariate *> covs = model->getConsolidator()->getCovariates();
         for (CPharmML::Covariate *cov : covs) {
             std::string name = cov->getName();
+            std::string definition = name;
+            std::string assign_expr;
             AstNode *assign = cov->getDefinition().get();
-            form.add(name);
             if (assign) {
-                form.append(" = " + this->accept(assign));
+                assign_expr = " = " + this->accept(assign);
             }
+
+            // Check if this name has been flagged as a categorical covariate
+            auto cat_got = this->categorical_covariates.find(name);
+            if (cat_got == this->categorical_covariates.end()) {
+                definition += assign_expr;
+            } else {
+                definition += " withCategories ";
+                TextFormatter cat_form;
+                cat_form.noFinalNewline();
+                cat_form.openVector("{}", 0, ", ");
+                for (auto map : cat_got->second) {
+                    cat_form.add(map.first);
+                }
+                cat_form.closeVector();
+                if (assign_expr != "") {
+                    cat_form.append(" # " + assign_expr);
+                }
+                definition += cat_form.createString();
+            }
+            form.add(definition);
         }
         form.closeVector();
         form.emptyLine();
@@ -665,7 +703,7 @@ namespace pharmmlcpp
         form.openVector("INDIVIDUAL_VARIABLES {}", 1, "");
         for (pharmmlcpp::IndividualParameter *ind_par : individualParameters) {
             this->visit(ind_par);
-            form.add(this->getValue());
+            form.addMany(this->getValue());
         }
         form.closeVector();
 
@@ -1387,25 +1425,48 @@ namespace pharmmlcpp
                 std::vector<std::string> fix_effs;
                 for (SymbRef *covariate : node->getCovariates()) {
                     std::vector<std::string> coeffs;
+                    bool categorical = false;
+                    std::vector<std::string> cov_refs;
                     for (FixedEffect *fix_eff : node->getFixedEffects(covariate)) {
-                        std::string coeff;
+                        std::string coeff, cov_ref;
                         if (fix_eff->getReference()) {
                             coeff = this->accept(fix_eff->getReference());
                         } else {
                             coeff = this->accept(fix_eff->getScalar().get());
                         }
                         coeffs.push_back(coeff);
+
+                        if (fix_eff->getCategory() == "") {
+                            cov_ref = this->accept(covariate);
+                        } else {
+                            cov_ref = this->accept(covariate) + "." + fix_eff->getCategory();
+                            categorical = true;
+                        }
+                        cov_refs.push_back(cov_ref);
                     }
+                    std::string fix_eff;
                     if (coeffs.size() == 1) {
-                        fix_effs.push_back("{coeff=" + coeffs[0] + ",cov=" + this->accept(covariate) + "}");
+                        if (categorical) {
+                            fix_eff = "{coeff=" + coeffs[0] + ",catCov=" + cov_refs[0] + "}";
+                        } else {
+                            fix_eff = "{coeff=" + coeffs[0] + ",cov=" + cov_refs[0] + "}";
+                        }
                     } else if (coeffs.size() > 1) {
-                        fix_effs.push_back("{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",") + ",cov=" + this->accept(covariate) + "}");
+                        fix_eff = "{coeff=" + TextFormatter::createInlineVector(coeffs, "[]", ",");
+                        if (categorical) {
+                            fix_eff += ",catCov=" + TextFormatter::createInlineVector(cov_refs, "[]", ",")+ "}";
+                        } else {
+                            fix_eff += ",cov=" + TextFormatter::createInlineVector(cov_refs, "[]", ",")+ "}";
+                        }
                     }
+                    fix_effs.push_back(fix_eff);
                 }
                 if (fix_effs.size() == 1) {
                     form.add("fixEff = " + fix_effs[0]);
                 } else if (fix_effs.size() > 1) {
-                    form.add("fixEff = " + TextFormatter::createInlineVector(fix_effs, "[]", ", "));
+                    form.openVector("fixEff = []", 1, ",");
+                    form.addMany(fix_effs);
+                    form.closeVector();
                 }
             }
 

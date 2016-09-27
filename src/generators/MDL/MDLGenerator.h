@@ -165,6 +165,7 @@ namespace pharmmlcpp
             std::vector<std::string> variability_parameters;
             std::string selected_data_object;
             std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
+            std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
 
             std::string value;
             void setValue(std::string str);

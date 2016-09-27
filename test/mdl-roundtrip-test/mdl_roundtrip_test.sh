@@ -271,46 +271,8 @@ done
 ###################
 # Validation pass #
 ###################
-PHARMML_EQ=()
 MDL_EQ=()
-
-# Compare PharmML's from 1A and 2A (via sdiff)
-echo
-echo "Comparing PharmML generated in pass 1A and 2A"
-for file in "${PASS2_PHARMML[@]}"; do
-    # Get file paths
-    pass2_pharmml="$file"
-    pass1_pharmml=$(echo $pass2_pharmml | sed "s|pass2|pass1|")
-    basename=${file##*pass2/}
-    echo -n "Analyzing ${BLU}$basename${NOR} "
-
-    # Check diff of PharmML files
-    diff=$(sdiff -B -b -s -d "$pass1_pharmml" "$pass2_pharmml")
-
-    # Output success/failure status
-    if [[ $diff =~ ^\ *$ ]] ; then
-        echo "(${GRE}100 % EQUIVALENT${NOR})"
-        PHARMML_EQ+=("$basename")
-    else
-        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_pharmml") <(sort "$pass2_pharmml"))
-        if [[ $sort_diff =~ ^\ *$ ]] ; then
-            echo "(${YEL}100 % SORTED EQUIVALENT${NOR})"
-            PHARMML_EQ+=("$basename")
-        else
-            sort_diff_lines=$(echo "$sort_diff" | wc -l)
-            if [[ $sort_diff_lines == 1 ]] && echo "$sort_diff" | grep -q "<ct:Name>"; then
-                # Only name tag in PharmML differs
-                echo "(${GRE}ONLY ${YEL}<ct:Name>...</ct:Name>${GRE} LINES DIFFER${NOR})"
-                PHARMML_EQ+=("$basename")
-            else
-                echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
-                if [[ $sort_diff_lines < 11 ]]; then
-                    echo "$sort_diff"
-                fi
-            fi
-        fi
-    fi
-done
+PHARMML_EQ=()
 
 # Compare MDL's from 1B and 2B (via sdiff)
 echo
@@ -330,7 +292,7 @@ for file in "${PASS2_MDL[@]}"; do
         echo "(${GRE}100 % EQUIVALENT${NOR})"
         MDL_EQ+=("$basename")
     else
-        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_mdl") <(sort "$pass2_mdl"))
+        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_mdl" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_mdl" | sed -e 's/^[[:space:]]*//'))
         if [[ $sort_diff =~ ^\ *$ ]] ; then
             echo "(${YEL}100 % SORTED EQUIVALENT${NOR})"
             MDL_EQ+=("$basename")
@@ -342,6 +304,44 @@ for file in "${PASS2_MDL[@]}"; do
     fi
 done
 
+# Compare PharmML's from 1A and 2A (via sdiff)
+echo
+echo "Comparing PharmML generated in pass 1A and 2A"
+for file in "${PASS2_PHARMML[@]}"; do
+    # Get file paths
+    pass2_pharmml="$file"
+    pass1_pharmml=$(echo $pass2_pharmml | sed "s|pass2|pass1|")
+    basename=${file##*pass2/}
+    echo -n "Analyzing ${BLU}$basename${NOR} "
+
+    # Check diff of PharmML files
+    diff=$(sdiff -B -b -s -d "$pass1_pharmml" "$pass2_pharmml")
+
+    # Output success/failure status
+    if [[ $diff =~ ^\ *$ ]] ; then
+        echo "(${GRE}100 % EQUIVALENT${NOR})"
+        PHARMML_EQ+=("$basename")
+    else
+        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_pharmml" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_pharmml" | sed -e 's/^[[:space:]]*//'))
+        if [[ $sort_diff =~ ^\ *$ ]] ; then
+            echo "(${YEL}100 % SORTED EQUIVALENT${NOR})"
+            PHARMML_EQ+=("$basename")
+        else
+            sort_diff_lines=$(echo "$sort_diff" | wc -l)
+            if (( $sort_diff_lines == 1 )) && echo "$sort_diff" | grep -q "<ct:Name>"; then
+                # Only name tag in PharmML differs
+                echo "(${GRE}ONLY ${YEL}<ct:Name>...</ct:Name>${GRE} LINES DIFFER${NOR})"
+                PHARMML_EQ+=("$basename")
+            else
+                echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
+                if (( $sort_diff_lines < 11 )); then
+                    echo "$sort_diff"
+                fi
+            fi
+        fi
+    fi
+done
+
 #####################
 # Summarize results #
 #####################
@@ -349,9 +349,9 @@ done
 # Output number of files through the sieve
 echo
 echo "Number of files sieved in passes and passing equivalence validation:"
-   passes=(""               "[1A]"               "[1B]"           "[2A]"               "[2B]"           "[1A & 2A]"       "[1B & 2B]")
-   labels=("MDL"            "MDL->PharmML"       "PharmML->MDL"   "MDL->PharmML"       "PharmML->MDL"   "100 % PharmML"   "100 % MDL")
-num_files=(${#TESTFILES[@]} ${#PASS1_PHARMML[@]} ${#PASS1_MDL[@]} ${#PASS2_PHARMML[@]} ${#PASS2_MDL[@]} ${#PHARMML_EQ[@]} ${#MDL_EQ[@]})
+   passes=(""               "[1A]"               "[1B]"           "[2A]"               "[2B]"           "[1B & 2B]"   "[1A & 2A]")
+   labels=("MDL"            "MDL->PharmML"       "PharmML->MDL"   "MDL->PharmML"       "PharmML->MDL"   "100 % MDL"   "100 % PharmML")
+num_files=(${#TESTFILES[@]} ${#PASS1_PHARMML[@]} ${#PASS1_MDL[@]} ${#PASS2_PHARMML[@]} ${#PASS2_MDL[@]} ${#MDL_EQ[@]} ${#PHARMML_EQ[@]})
 for((i=0;i<7;i++)); do
     printf "%10s %18s %s\n" "${passes[$i]}" "${labels[$i]} " "${num_files[$i]}"
 done
@@ -368,7 +368,7 @@ fileIn () {
     echo "" && return 1
 }
 format='"%s","%s","%s","%s","%s","%s","%s"'"\n"
-printf "$format" "Testfile name" "[1A] MDL->PharmML" "[1B] PharmML->MDL" "[2A] MDL->PharmML" "[2B] PharmML->MDL" "[1A & 2A] 100 % PharmML" "[1B & 2B] 100 % MDL" > "$resfile"
+printf "$format" "Testfile name" "[1A] MDL->PharmML" "[1B] PharmML->MDL" "[2A] MDL->PharmML" "[2B] PharmML->MDL" "[1B & 2B] 100 % MDL" "[1A & 2A] 100 % PharmML" > "$resfile"
 for file in "${TESTFILES[@]}"; do
     printf "$format" \
         "$file" \
@@ -376,7 +376,7 @@ for file in "${TESTFILES[@]}"; do
         "$(fileIn "$file" "${PASS1_MDL[@]}")" \
         "$(fileIn "$file" "${PASS2_PHARMML[@]}")" \
         "$(fileIn "$file" "${PASS2_MDL[@]}")" \
-        "$(fileIn "$file" "${PHARMML_EQ[@]}")" \
         "$(fileIn "$file" "${MDL_EQ[@]}")" \
+        "$(fileIn "$file" "${PHARMML_EQ[@]}")" \
         >> "$resfile"
 done

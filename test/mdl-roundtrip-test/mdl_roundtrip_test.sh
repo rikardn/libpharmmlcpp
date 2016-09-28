@@ -292,9 +292,9 @@ for file in "${PASS2_MDL[@]}"; do
         echo "(${GRE}100 % EQUIVALENT${NOR})"
         MDL_EQ+=("$basename")
     else
-        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_mdl" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_mdl" | sed -e 's/^[[:space:]]*//'))
+        sort_diff=$(sdiff -B -b -s -d -w 160 <(sort "$pass1_mdl" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_mdl" | sed -e 's/^[[:space:]]*//'))
         if [[ $sort_diff =~ ^\ *$ ]] ; then
-            echo "(${YEL}100 % SORTED EQUIVALENT${NOR})"
+            echo "(${GRE}100 % (SORTED) EQUIVALENT${NOR})"
             MDL_EQ+=("$basename")
         else
             sort_diff_lines=$(echo "$sort_diff" | wc -l)
@@ -322,9 +322,9 @@ for file in "${PASS2_PHARMML[@]}"; do
         echo "(${GRE}100 % EQUIVALENT${NOR})"
         PHARMML_EQ+=("$basename")
     else
-        sort_diff=$(sdiff -B -b -s -d <(sort "$pass1_pharmml" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_pharmml" | sed -e 's/^[[:space:]]*//'))
+        sort_diff=$(sdiff -B -b -s -d -w 160 <(sort "$pass1_pharmml" | sed -e 's/^[[:space:]]*//') <(sort "$pass2_pharmml" | sed -e 's/^[[:space:]]*//'))
         if [[ $sort_diff =~ ^\ *$ ]] ; then
-            echo "(${YEL}100 % SORTED EQUIVALENT${NOR})"
+            echo "(${GRE}100 % (SORTED) EQUIVALENT${NOR})"
             PHARMML_EQ+=("$basename")
         else
             sort_diff_lines=$(echo "$sort_diff" | wc -l)
@@ -333,9 +333,14 @@ for file in "${PASS2_PHARMML[@]}"; do
                 echo "(${GRE}ONLY ${YEL}<ct:Name>...</ct:Name>${GRE} LINES DIFFER${NOR})"
                 PHARMML_EQ+=("$basename")
             else
-                echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
-                if (( $sort_diff_lines < 11 )); then
+                if (( $sort_diff_lines == 1 )); then
+                    echo "(${YEL}ONLY 1 (SORTED) LINES DIFFER (LIKELY NOT IMPORTANT)${NOR})"
                     echo "$sort_diff"
+                else
+                    echo "(${RED}$sort_diff_lines (SORTED) LINES DIFFER${NOR})"
+                    if (( $sort_diff_lines < 11 )); then
+                        echo "$sort_diff"
+                    fi
                 fi
             fi
         fi

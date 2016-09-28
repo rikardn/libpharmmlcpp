@@ -261,6 +261,8 @@ namespace pharmmlcpp
                     suffix = "::observation";
                 } else if (col_type == "adm") {
                     form.add("use is cmt");
+                } else if (col_type == "occasion") {
+                    form.add("use is varLevel");
                 } else {
                     form.add("use is " + col_type);
                 }
@@ -285,7 +287,7 @@ namespace pharmmlcpp
                     // Add variable/define attribute for mapped model symbols/macros
                     if (lone_mapped_var != "") {
                         // Add single-variable variable attribute (unless implicit rules)
-                        if (!(col_type == "id" && lone_mapped_var == "ID") && !(col_type == "idv" && lone_mapped_var == "T") && !((col_type == "covariate" || col_type == "reg") && lone_mapped_var == col_id)) {
+                        if (col_type != "id" && col_type != "idv" && col_type != "occasion" && !((col_type == "covariate" || col_type == "reg") && lone_mapped_var == col_id)) {
                             form.add("variable = " + lone_mapped_var);
                             // Model symbol is declared elsewhere, let caller output DECLARED_VARIABLES block
                             declared_vars.insert(lone_mapped_var + suffix);

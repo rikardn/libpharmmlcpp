@@ -911,7 +911,46 @@ namespace pharmmlcpp
                 if (ke0) {
                     form.add("ke0=" + this->accept(ke0));
                 }
-                // TODO: How should kij and k_i_j of Peripheral be treated? What are even i and j here?
+
+                // Get transfer constants for peripheral compartments (TODO: Refactor this!)
+                if (type == "Peripheral") {
+                    std::string kin_name, kout_name;
+                    std::shared_ptr<AstNode> kin, kout;
+                    int num_nums = mdl_cmt.size();
+                    for (int i = 1; i <= num_nums; i++) {
+                        for (int j = 1; j <= num_nums; j++) {
+                            std::string k_param_name = "k_" + std::to_string(i) + "_" + std::to_string(j);
+                            std::shared_ptr<AstNode> k_param = macro->getAssignment(k_param_name);
+                            if (k_param) {
+                                if (i == mdl_cmt[macro]) {
+                                    kout = k_param;
+                                    kout_name = pk_macros->getCompartment(j)->getName();
+                                } else if (j == mdl_cmt[macro]) {
+                                    kin = k_param;
+                                    kin_name = pk_macros->getCompartment(i)->getName();
+                                } else {
+                                    this->logger->error("Peripheral compartment appears to be number " + std::to_string(mdl_cmt[macro]) + " but has transfer argument '" + k_param_name + "', which is weird; Ignored", macro);
+                                }
+                            }
+                        }
+                    }
+                    if (kout_name == kin_name && kout_name != "") {
+                        form.add("from=" + kout_name);
+                    } else {
+                        if (kin_name != "") {
+                            form.add("from=" + kin_name);
+                        }
+                        if (kout_name != "") {
+                            form.add("to=" + kout_name);
+                        }
+                    }
+                    if (kin) {
+                        form.add("kin=" + this->accept(kin.get()));
+                    }
+                    if (kout) {
+                        form.add("kout=" + this->accept(kout.get()));
+                    }
+                }
 
                 form.closeVector();
             } else if (macro->isMassTransfer()) {

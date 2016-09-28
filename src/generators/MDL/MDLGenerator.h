@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <regex>
 #include <unordered_set>
 #include <unordered_map>
 typedef std::pair<std::string, std::string> stringpair;
@@ -159,7 +160,10 @@ namespace pharmmlcpp
             std::shared_ptr<Logger> logger;
             MDLSymbolNamer symbol_namer;
 
+            std::string getMogID(const std::string &model_name);
+
             // Global state variables (to link model together)
+            std::string description;
             std::unordered_set<std::string> data_object_names;
             std::vector<std::string> structural_parameters;
             std::vector<std::string> variability_parameters;

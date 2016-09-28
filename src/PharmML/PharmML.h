@@ -40,6 +40,10 @@ namespace pharmmlcpp
             PharmML(const char *filename);
             ~PharmML();
             void write(std::string filename);
+
+            std::string getName() { return this->name; };
+            std::string getDescription() { return this->description; };
+
             IndependentVariable *getIndependentVariable();
             std::vector<pharmmlcpp::FunctionDefinition *> getFunctionDefinitions();
             FunctionDefinition *resolveFunctionCall(FunctionCall *functionCall);
@@ -52,6 +56,10 @@ namespace pharmmlcpp
         private:
             PharmMLReader reader;
             PharmMLContext *context;
+
+            std::string name;
+            std::string description;
+
             pharmmlcpp::IndependentVariable *independentVariable = nullptr;
             std::vector<FunctionDefinition *> functionDefinitions;
             ModelDefinition *modelDefinition;

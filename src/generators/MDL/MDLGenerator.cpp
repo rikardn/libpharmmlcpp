@@ -113,18 +113,20 @@ namespace pharmmlcpp
         objects.task.push_back(object);
 
         // Generate the MDL design object(s)
-        object.name = "design_obj";
+        object.name = "design_object";
         object.code = this->genDesignObj(model);
         if (!object.code.empty()) {
             objects.design.push_back(object);
         }
 
         // Generate the MDL mog object(s)
-        object.name = "mog_obj";
+        object.name = this->getMogID(model->getName());
+        object.name = object.name == "" ? "mog_object" : object.name;
         object.code = this->genMogObj(objects);
         objects.mog.push_back(object);
 
         // Output collection of MDL object(s)
+        this->description = model->getDescription();
         return this->genCompleteMDL(objects);
     }
 
@@ -1350,6 +1352,16 @@ namespace pharmmlcpp
     std::string MDLGenerator::genCompleteMDL(MDLObjects &objects) {
         TextFormatter form;
 
+        // Output comment lines with description if available
+        if (this->description != "") {
+            std::stringstream ss(description);
+            std::string line;
+            while (std::getline(ss, line, '\n')) {
+                form.add("# " + line);
+            }
+            form.emptyLine();
+        }
+
         // Output all objects
         std::vector<std::pair<std::string, std::vector<MDLObject>>> typed_objects({
             {"dataObj", objects.data},
@@ -1369,6 +1381,19 @@ namespace pharmmlcpp
         }
 
         return form.createString();
+    }
+
+    std::string MDLGenerator::getMogID(const std::string &model_name) {
+        std::string mogid;
+
+        // Match (case-insensitively) "mog" and "id", interspaced with {non-alnum}, and get first word (not starting in number)
+        std::regex mogid_regex("(mog[^[:alnum:]]*id)" ".+?([_[:alpha:]][[:w:]]*)", std::regex_constants::icase);
+        std::smatch mogid_match;
+        if (std::regex_search(model_name, mogid_match, mogid_regex)) {
+            mogid = mogid_match[2];
+        }
+
+        return mogid;
     }
 
     // MDL visitors

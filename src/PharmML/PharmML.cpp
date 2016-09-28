@@ -28,6 +28,14 @@ namespace pharmmlcpp
     }
 
     void PharmML::parse(PharmMLReader &reader, xml::Node node) {
+        this->name = reader.getSingleElement(node, "/x:PharmML/ct:Name").getText();
+        xml::Node desc_node = reader.getSingleElement(node, "/x:PharmML/ct:Description");
+        if (desc_node.exists()) {
+            this->description = desc_node.getText();
+        }
+
+        this->name = reader.getSingleElement(node, "/x:PharmML/ct:Name").getText();
+
         xml::Node iv = reader.getSingleElement(node, "/x:PharmML/x:IndependentVariable");
         if (iv.exists()) {
             this->independentVariable = new IndependentVariable(reader, iv);

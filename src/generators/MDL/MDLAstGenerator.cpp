@@ -39,6 +39,15 @@ namespace pharmmlcpp
         this->value = str;
     }
 
+    /// Set category flag after visit to CatRef object (MDL syntax is: "SYMBREF = SYMBREF.CATREF")
+    void MDLAstGenerator::setCategoryFlag() {
+        this->category = true;
+    }
+
+    void MDLAstGenerator::clearCategoryFlag() {
+        this->category = false;
+    }
+
     std::string MDLAstGenerator::acceptLeft(Binop *binop) {
         binop->getLeft()->accept(this);
         return this->getValue();
@@ -50,12 +59,15 @@ namespace pharmmlcpp
     }
 
     std::string MDLAstGenerator::infix(Binop *binop, std::string op) {
-        std::string result;
         binop->getLeft()->accept(this);
-        result = "(" + this->getValue() + op;
+        std::string lnode = this->getValue();
         binop->getRight()->accept(this);
-        result += this->getValue() + ")";
-        return result;
+        std::string rnode = this->getValue();
+        if (binop->hasParentheses()) {
+            return "(" + lnode + op + rnode + ")";
+        } else {
+            return lnode + op + rnode;
+        }
     }
 
     std::string MDLAstGenerator::acceptChild(Uniop *uniop) {
@@ -74,10 +86,17 @@ namespace pharmmlcpp
     // public
     MDLAstGenerator::MDLAstGenerator(std::shared_ptr<Logger> logger) {
         this->logger = logger;
+        // MDL requires conditions to always be parenthesized
+        this->parenthesizer.forceParenthesizedConditions();
     }
 
     std::string MDLAstGenerator::getValue() {
         return this->value;
+    }
+
+    /// Get category flag after visit to CatRef object (MDL syntax is: "SYMBREF = SYMBREF.CATREF")
+    bool MDLAstGenerator::getCategoryFlag() {
+        return this->category;
     }
 
     std::string MDLAstGenerator::accept(AstNode *node) {
@@ -104,6 +123,12 @@ namespace pharmmlcpp
 
     void MDLAstGenerator::visit(ColumnRef *node) {
         this->setValue(node->toString());
+    }
+
+    void MDLAstGenerator::visit(CatRef *node) {
+        // FIXME: Implement Category object and reference system (Category in Categorical in Covariate)
+        this->setCategoryFlag();
+        this->setValue(node->getCatRef());
     }
 
     void MDLAstGenerator::visit(UniopLog *node) {
@@ -289,15 +314,11 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(ScalarBool *node) {
-        if (node->toBool() == true) {
-            this->setValue("(" + this->getLogicLiteral(true) + ")");
-        } else {
-            this->setValue("(" + this->getLogicLiteral(false) + ")");
-        }
+        this->setParenthesizedValue(node, this->getLogicLiteral(node->toBool()));
     }
 
     void MDLAstGenerator::visit(ScalarString *node) {
-        this->setValue(node->toString());
+        this->setParenthesizedValue(node, node->toString());
     }
 
     void MDLAstGenerator::visit(BinopPlus *node) {
@@ -369,7 +390,22 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(LogicBinopEq *node) {
-        this->setValue(this->infix(node, " == "));
+        // Special since one node might be a CatRef, i.e. a Category reference (e.g. "female")
+        this->clearCategoryFlag();
+        std::string lnode = this->acceptLeft(node);
+        bool lnode_is_cat = this->getCategoryFlag();
+
+        this->clearCategoryFlag();
+        std::string rnode = this->acceptRight(node);
+        bool rnode_is_cat = this->getCategoryFlag();
+
+        if (lnode_is_cat && !rnode_is_cat) {
+            this->setParenthesizedValue(node, rnode + "." + lnode + " == " + rnode);
+        } else if (!lnode_is_cat && rnode_is_cat) {
+            this->setParenthesizedValue(node, lnode + " == " + lnode + "." + rnode);
+        } else {
+            this->setParenthesizedValue(node, lnode + " == " + rnode);
+        }
     }
 
     void MDLAstGenerator::visit(LogicBinopNeq *node) {

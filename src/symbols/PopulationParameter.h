@@ -32,9 +32,15 @@ namespace pharmmlcpp
             PopulationParameter(std::string symbId);
             PopulationParameter(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
-            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override {};
+
+            bool hasAssignment() { return this->assignment != nullptr; };
+            std::shared_ptr<AstNode> getAssignment() { return this->assignment; };
+
+            void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
+        private:
+            std::shared_ptr<AstNode> assignment = nullptr;
     };
 
     // FIXME: Inheritance should be other way around

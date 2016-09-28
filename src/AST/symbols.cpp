@@ -39,7 +39,7 @@ namespace pharmmlcpp
         xml::Node symbref("SymbRef", xml::Namespace::ct);
         symbref.setAttribute("symbIdRef", this->symbIdRef);
         symbref.setAttribute("blkIdRef", this->blkIdRef);
-        return symbref; 
+        return symbref;
     }
 
     void SymbRef::accept(AstNodeVisitor *visitor) {
@@ -99,7 +99,7 @@ namespace pharmmlcpp
     void SymbRef::setSymbIdRef(std::string symbId) {
         this->symbIdRef = symbId;
     }
-    
+
     /**
      *  Set the blkIdRef
      *  Note that this will not automatically change the symbol
@@ -127,7 +127,7 @@ namespace pharmmlcpp
     xml::Node ColumnRef::xml(PharmMLWriter &writer) {
         xml::Node colref("SymbRef", xml::Namespace::ct);
         colref.setAttribute("columnIdRef", this->columnIdRef);
-        return colref; 
+        return colref;
     }
 
     void ColumnRef::accept(AstNodeVisitor *visitor) {
@@ -141,5 +141,97 @@ namespace pharmmlcpp
 
     std::string ColumnRef::toString() {
         return this->columnIdRef;
+    }
+
+    /// Create a category reference object from string
+    CatRef::CatRef(std::string ref) {
+        this->catRef = ref;
+    }
+
+    /**
+     *  Creates a new CatRef from the xml PharmML code
+     */
+    CatRef::CatRef(PharmMLReader &reader, xml::Node node) {
+        this->blkIdRef = node.getAttribute("blkIdRef").getValue();
+        this->catRef = node.getAttribute("catIdRef").getValue();
+    }
+
+    /**
+     *  Get the category Id to which this CatRef refers
+     */
+    std::string CatRef::getCatRef() {
+        return this->catRef;
+    }
+
+    /**
+     *  Get the block Id for the category to which this CatRef refers
+     */
+    std::string CatRef::getBlkIdRef() {
+        return this->blkIdRef;
+    }
+
+    /**
+     *  Get the block Id for the category to which this CatRef refers
+     *  and return defaultBlkId if none exists.
+     */
+    std::string CatRef::getBlkIdRef(std::string defaultBlkId) {
+        if (this->blkIdRef.empty()) {
+            return defaultBlkId;
+        } else {
+            return this->blkIdRef;
+        }
+    }
+
+    // FIXME: Implement Category object and reference system (Category in Categorical in Covariate)
+    // #<{(|*
+    //  *  Set the category to which this CatRef refers
+    //  *  This is done by the setup methods and should
+    //  *  not be called separately.
+    //  |)}>#
+    // void CatRef::setCategory(Category *category) {
+    //     this->category = category;
+    // }
+
+    /**
+     *  Set the catIdRef
+     *  Note that this will not automatically change the category
+     */
+    void CatRef::setCatRef(std::string ref) {
+        this->catRef = ref;
+    }
+
+    /**
+     *  Set the blkIdRef
+     *  Note that this will not automatically change the category
+     */
+    void CatRef::setBlkIdRef(std::string blkId) {
+        this->blkIdRef = blkId;
+    }
+
+    // FIXME: Implement Category class and referencing system
+    // #<{(|*
+    //  *  Get a pointer to the category to which this CatRef refers
+    //  |)}>#
+    // Category *CatRef::getCategory() {
+    //     return this->category;
+    // }
+
+    xml::Node CatRef::xml(PharmMLWriter &writer) {
+        xml::Node catref("CatRef", xml::Namespace::ct);
+        catref.setAttribute("catIdRef", this->catRef);
+        return catref;
+    }
+
+    void CatRef::accept(AstNodeVisitor *visitor) {
+        visitor->visit(this);
+    }
+
+    std::unique_ptr<AstNode> CatRef::clone() {
+        std::unique_ptr<CatRef> cl;
+        return std::move(cl);
+    }
+
+    std::string CatRef::toString() {
+        return this->catRef;
     }
 }

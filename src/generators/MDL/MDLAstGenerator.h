@@ -46,6 +46,7 @@ namespace pharmmlcpp
         public:
             MDLAstGenerator(std::shared_ptr<Logger> logger);
             std::string getValue();
+            bool getCategoryFlag();
             std::string accept(AstNode *node);
             std::string acceptRoot(AstNode *node);
             void setParenthesizedValue(AstNode *node, std::string str);
@@ -53,6 +54,7 @@ namespace pharmmlcpp
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;
             void visit(ColumnRef *node) override;
+            void visit(CatRef *node) override;
 
             void visit(UniopLog *node) override;
             void visit(UniopLog2 *node) override;
@@ -144,6 +146,11 @@ namespace pharmmlcpp
         protected:
             std::string value;
             void setValue(std::string str);
+
+            bool category;
+            void setCategoryFlag();
+            void clearCategoryFlag();
+
             std::string acceptLeft(Binop *binop);
             std::string acceptRight(Binop *binop);
             std::string infix(Binop *binop, std::string op);

@@ -385,6 +385,11 @@ namespace pharmmlcpp
         std::vector<PopulationParameter *> structural_params;
         std::vector<PopulationParameter *> variability_params;
         for (PopulationParameter *pop_param : pop_params) {
+            // Don't consider those with assignment (considered group variables in MDL)
+            if (pop_param->hasAssignment()) {
+                continue;
+            }
+
             std::vector<RandomVariable *> ref_rand_vars = par_model->getRandomVariables(pop_param);
             std::vector<IndividualParameter *> ref_ind_params = par_model->getIndividualParameters(pop_param);
             std::vector<Correlation *> ref_corrs = par_model->getCorrelations(pop_param);
@@ -636,6 +641,19 @@ namespace pharmmlcpp
             form.emptyLine();
         }
 
+        // Generate GROUP_VARIABLES block
+        std::vector<PopulationParameter *> pop_params = model->getModelDefinition()->getParameterModel()->getPopulationParameters();
+        std::vector<PopulationParameter *> group_pop_params;
+        for (PopulationParameter *pop_param : pop_params) {
+            if (pop_param->hasAssignment()) {
+                group_pop_params.push_back(pop_param);
+            }
+        }
+        if (!group_pop_params.empty()) {
+            form.addMany(this->genGroupVariablesBlock(group_pop_params));
+        }
+        form.emptyLine();
+
         // Generate INDIVIDUAL_VARIABLES block
         std::vector<pharmmlcpp::IndividualParameter *> indiv_params = model->getModelDefinition()->getParameterModel()->getIndividualParameters();
         form.addMany(this->genIndividualVariablesBlock(indiv_params));
@@ -696,6 +714,19 @@ namespace pharmmlcpp
         }
 
         form.closeVector();
+        return form.createString();
+    }
+
+    std::string MDLGenerator::genGroupVariablesBlock(std::vector<PopulationParameter *> group_pop_params) {
+        TextFormatter form;
+
+        form.openVector("GROUP_VARIABLES {}", 1, "");
+        for (PopulationParameter *group_var : group_pop_params) {
+            group_var->accept(this->symb_gen.get());
+            form.addMany(symb_gen->getValue());
+        }
+        form.closeVector();
+
         return form.createString();
     }
 

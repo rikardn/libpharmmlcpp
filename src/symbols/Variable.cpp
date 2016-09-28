@@ -21,6 +21,7 @@
 namespace pharmmlcpp
 {
     CommonVariable::CommonVariable(PharmMLReader &reader, xml::Node node) {
+        this->setXMLNode(node);
         this->CommonVariable::parse(reader, node);
     }
 

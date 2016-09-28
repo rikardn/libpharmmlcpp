@@ -206,6 +206,9 @@ namespace pharmmlcpp
         } else if (name == "ColumnRef") {
             std::string symbol = node.getAttribute("columnIdRef").getValue();
             instance = std::make_unique<ColumnRef>(symbol);
+        } else if (name == "CatRef") {
+            std::unique_ptr<CatRef> catref = std::make_unique<CatRef>(reader, node);
+            instance = std::move(catref);
         } else if (name == "Int") {
             instance = std::make_unique<ScalarInt>(reader, node);
         } else if (name == "Real") {
@@ -291,7 +294,7 @@ namespace pharmmlcpp
             }
             instance = std::unique_ptr<AstNode>(piecewise);
         } else if (name == "FunctionCall") {
-            instance = std::make_unique<FunctionCall>(reader, node); 
+            instance = std::make_unique<FunctionCall>(reader, node);
         } else if (name == "Interval") {
             instance = std::make_unique<Interval>(reader, node);
         }

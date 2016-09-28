@@ -32,6 +32,7 @@ namespace pharmmlcpp
             virtual void accept(AstNodeVisitor *visitor) = 0;
             bool hasParentheses() { return this->parenthesized; };
             void elideParentheses() { this->parenthesized = false; };
+            void parenthesize() { this->parenthesized = true; };
             virtual std::unique_ptr<AstNode> clone() = 0;
             virtual xml::Node xml(PharmMLWriter &writer) = 0;
 

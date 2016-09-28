@@ -138,6 +138,11 @@ namespace pharmmlcpp
     // (with regards to operator priority, associativity, commutativity and parent node parentheses)
     AstParenthesizer::AstParenthesizer() { }
 
+    /// Force parentheziment of conditional nodes (in Piece's)
+    void AstParenthesizer::forceParenthesizedConditions() {
+        this->force_parenthesize_conditions = true;
+    }
+
     void AstParenthesizer::acceptUniop(Uniop *node, AstOperator node_type) {
         this->parents.setProperties(this->node_properties[node_type]);
         this->parents.setNodeType(node_type);
@@ -218,6 +223,10 @@ namespace pharmmlcpp
     void AstParenthesizer::visit(SteadyStateParameter *node) { }
 
     void AstParenthesizer::visit(ColumnRef *node) { }
+
+    void AstParenthesizer::visit(CatRef *node) {
+        this->acceptEndNode(node, AstOperator::CatRef);
+    }
 
     void AstParenthesizer::visit(UniopLog *node) {
         this->acceptUniop(node, AstOperator::UniopLog);
@@ -533,7 +542,11 @@ namespace pharmmlcpp
         this->parents.setNodeType(AstOperator::Piece);
         if (!this->requiresParentheses()) node->elideParentheses();
         if (!node->isOtherwise()) {
+            void forceParenthesizedConditions();
             node->getCondition()->accept(this);
+            if (this->force_parenthesize_conditions) {
+                node->getCondition()->parenthesize();
+            }
         }
         node->getExpression()->accept(this);
     }

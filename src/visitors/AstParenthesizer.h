@@ -76,6 +76,7 @@ namespace pharmmlcpp
         SymbRef,
         SteadyStateParameter,
         ColumnRef,
+        CatRef,
 
         UniopLog,
         UniopLog2,
@@ -206,10 +207,12 @@ namespace pharmmlcpp
     {
         public:
             AstParenthesizer();
+            void forceParenthesizedConditions();
 
             void visit(SymbRef *node) override;
             void visit(SteadyStateParameter *node) override;
             void visit(ColumnRef *node) override;
+            void visit(CatRef *node) override;
 
             void visit(UniopLog *node) override;
             void visit(UniopLog2 *node) override;
@@ -311,6 +314,7 @@ namespace pharmmlcpp
             std::unordered_map<AstOperator, NodeProperties, EnumClassHash> node_properties = {
                 // end nodes (highest default priority)
                 {AstOperator::SymbRef, {11, NodeAssociativity::None, OperatorPosition::None, false}},
+                {AstOperator::CatRef, {11, NodeAssociativity::None, OperatorPosition::None, false}},
                 {AstOperator::ScalarInt, {11, NodeAssociativity::None, OperatorPosition::None, false}},
                 {AstOperator::ScalarReal, {11, NodeAssociativity::None, OperatorPosition::None, false}},
                 {AstOperator::ScalarBool, {11, NodeAssociativity::None, OperatorPosition::None, false}},
@@ -414,6 +418,7 @@ namespace pharmmlcpp
                 {AstOperator::Interval, {0, NodeAssociativity::Both, OperatorPosition::Infix, false}},
             };
             bool pretty_minus = true; // e.g. "-a - (-b)", never "-a - -b"
+            bool force_parenthesize_conditions = false;
 
             NodePropertiesStack parents{this};
 

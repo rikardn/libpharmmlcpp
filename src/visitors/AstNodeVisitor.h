@@ -104,6 +104,7 @@ namespace pharmmlcpp
     class SymbRef;
     class SteadyStateParameter;
     class ColumnRef;
+    class CatRef;
 
     class Pi;
     class Exponentiale;
@@ -205,6 +206,7 @@ namespace pharmmlcpp
             virtual void visit(SymbRef *node) {};
             virtual void visit(SteadyStateParameter *node) {};
             virtual void visit(ColumnRef *node) {};
+            virtual void visit(CatRef *node) {};
 
             virtual void visit(Pi *node) {};
             virtual void visit(Exponentiale *node) {};

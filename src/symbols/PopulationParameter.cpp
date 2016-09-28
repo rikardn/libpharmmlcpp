@@ -31,6 +31,18 @@ namespace pharmmlcpp
 
     void PopulationParameter::parse(PharmMLReader &reader, xml::Node node) {
         this->Symbol::parse(node);
+
+        // Population parameters may have assignments ("group variables" in MDL)
+        xml::Node assign = reader.getSingleElement(node, "ct:Assign");
+        if (assign.exists()) {
+            this->assignment = reader.factory.create(reader, assign.getChild());
+        }
+    }
+
+    void PopulationParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
+        if (this->hasAssignment()) {
+            this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
+        }
     }
 
     void PopulationParameter::accept(PharmMLVisitor *visitor) {

@@ -65,6 +65,35 @@ namespace pharmmlcpp
         private:
             std::string columnIdRef;
     };
+
+    class CatRef : public AstNode
+    {
+        public:
+            CatRef(std::string ref);
+            CatRef(PharmMLReader &reader, xml::Node node);
+
+            std::string getCatRef();
+            void setCatRef(std::string symbId);
+
+            std::string getBlkIdRef();
+            void setBlkIdRef(std::string blkId);
+            std::string getBlkIdRef(std::string defaultBlkId);
+
+            std::string toString();
+
+            // FIXME: Implement Category class and referencing system
+            // void setCategory(Category *category);
+            // Category *getCategory();
+
+            void accept(AstNodeVisitor *visitor) override;
+            std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
+
+        private:
+            std::string blkIdRef;
+            std::string catRef;
+            // Category *category = nullptr; // FIXME: Implement Category object and reference system (Category in Categorical in Covariate)
+    };
 }
 
 #endif

@@ -62,7 +62,11 @@ namespace pharmmlcpp
     }
 
     void MDLSymbols::visit(PopulationParameter *node) {
-        this->setValue(node->getName());
+        if (!node->hasAssignment()) {
+            this->setValue(node->getName());
+            return;
+        }
+        this->setValue(node->getName() + " = " + this->ast_gen->acceptRoot(node->getAssignment().get()));
     }
 
     void MDLSymbols::visit(IndividualParameter *node) {
@@ -93,7 +97,8 @@ namespace pharmmlcpp
                 name = (got == this->dosing_targets.end()) ? name : name + "::dosingVar";
                 this->setValue(name);
             } else {
-                this->logger->warning("Variable without assignment '" + name + "' ignored due to being a duplicate of already declared symbol");
+                this->logger->warning("Variable without assignment '" + name + "' ignored due to being presumed duplicate of already declared symbol (with same name)", node);
+                this->setValue("");
             }
         }
     }

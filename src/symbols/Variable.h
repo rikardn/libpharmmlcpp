@@ -23,7 +23,7 @@
 
 namespace pharmmlcpp
 {
-    class CommonVariable : public Symbol
+    class CommonVariable : public Symbol, public PharmMLSection
     {
          public:
             CommonVariable(PharmMLReader &reader, xml::Node node);

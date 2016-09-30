@@ -139,6 +139,10 @@ namespace pharmmlcpp
         return std::move(cl);
     }
 
+    std::string ColumnRef::getColumnIdRef() {
+        return this->columnIdRef;
+    }
+
     std::string ColumnRef::toString() {
         return this->columnIdRef;
     }

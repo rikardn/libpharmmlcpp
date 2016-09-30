@@ -20,6 +20,7 @@
 
 #include "PharmMLContext.h"
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/MultipleDVMapping.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
 #include <symbols/SymbolGathering.h>
@@ -40,6 +41,7 @@ namespace pharmmlcpp
             void parse(PharmMLReader &reader, xml::Node node);
             std::string getOid();
             std::vector<pharmmlcpp::ColumnMapping *> getColumnMappings();
+            MultipleDVMapping *getMultipleDVMapping(std::string col_id);
             Dataset *getDataset();
             std::string getToolName();
             void setupRefererSymbRefs(SymbolGathering &gathering);
@@ -49,11 +51,12 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
 
             // POST PARSE/CONSOLIDATION
-            
+
 
         private:
             std::string oid;
-            std::vector<pharmmlcpp::ColumnMapping *> col_maps;
+            std::vector<ColumnMapping *> col_maps;
+            std::vector<std::unique_ptr<MultipleDVMapping>> multi_dv_maps;
             Dataset *dataset = nullptr;
             // Why don't we even have an accept for this?
             std::string toolName;

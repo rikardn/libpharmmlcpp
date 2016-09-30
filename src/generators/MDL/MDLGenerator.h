@@ -83,7 +83,7 @@ namespace pharmmlcpp
             std::string generateModel(PharmML *model);
 
             std::string genDataObj(ExternalDataset *ext_ds);
-            std::string genDataInputVariablesBlock(Dataset *node, std::vector<ColumnMapping *> col_maps, std::unordered_set<std::string> &declared_vars);
+            std::string genDataInputVariablesBlock(ExternalDataset *ext_ds, std::unordered_set<std::string> &declared_vars);
             std::string genDataDerivedVariablesBlock(std::vector<ColumnMapping *> col_maps);
 
             std::string genParObj(ParameterModel *par_model, ModellingSteps *msteps);
@@ -123,6 +123,7 @@ namespace pharmmlcpp
             void visit(ObservationModel *node) override;
             void visit(Distribution *node) override;
             void visit(ColumnMapping *node) override;
+            void visit(MultipleDVMapping *node) override {};
 
             void visit(ExternalFile *node) override;
             void visit(DataColumn *node) override;

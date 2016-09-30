@@ -35,6 +35,7 @@ namespace pharmmlcpp
     class ObservationModel;
     class Distribution;
     class ColumnMapping;
+    class MultipleDVMapping;
 
     class ExternalFile;
     class DataColumn;
@@ -83,6 +84,7 @@ namespace pharmmlcpp
             virtual void visit(ObservationModel *node) = 0;
             virtual void visit(Distribution *node) = 0;
             virtual void visit(ColumnMapping *node) = 0;
+            virtual void visit(MultipleDVMapping *node) = 0;
 
             virtual void visit(ExternalFile *node) = 0;
             virtual void visit(DataColumn *node) = 0;

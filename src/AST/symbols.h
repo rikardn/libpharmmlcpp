@@ -58,6 +58,7 @@ namespace pharmmlcpp
             ColumnRef(std::string ref);
             ColumnRef(PharmMLReader &reader, xml::Node node);
             std::string toString();
+            std::string getColumnIdRef();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
             xml::Node xml(PharmMLWriter &writer) override;

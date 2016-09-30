@@ -143,11 +143,11 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genDataInputVariablesBlock(Dataset *ds, std::vector<ColumnMapping *> col_maps, std::unordered_set<std::string> &declared_vars) {
+    std::string MDLGenerator::genDataInputVariablesBlock(ExternalDataset *ext_ds, std::unordered_set<std::string> &declared_vars) {
         // Fetch mappings from column id's to name of (model) symbols/macros (with data symbol codes if present) in string map
         std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> variables; // vec<col_id, vec<data_symbol, symbol/macro_name>>
         std::unordered_map<std::string, ColumnMapping *> piecewise_col_maps; // Store for MDLColumnMappingAstGenerator visits later
-        for (ColumnMapping *col_map : col_maps) {
+        for (ColumnMapping *col_map : ext_ds->getColumnMappings()) {
             // Create entry for this column id
             std::string col_id = col_map->getColumnIdRef();
             std::vector<std::pair<std::string, std::string>> data_to_name;
@@ -190,6 +190,7 @@ namespace pharmmlcpp
         }
 
         // Parse mappings and create the DATA_INPUT_VARIABLES block for external datasets
+        Dataset* ds = ext_ds->getDataset();
         if (ds->isExternal()) {
             int num_cols = ds->getDefinition()->getNumColumns();
             // Create associative array of column types to column names (used to find column id containing dataSymbols refered by other column)
@@ -230,6 +231,7 @@ namespace pharmmlcpp
                 if (col_maps.size() == 1) {
                     lone_mapped_var = (col_maps[0].first == "") ? col_maps[0].second : "";
                 }
+                MultipleDVMapping *multi_dv_map = nullptr;
 
                 form.openVector(col_id + " : {}", 0, ", ");
 
@@ -258,6 +260,7 @@ namespace pharmmlcpp
                     dosing_column = true;
                 } else if (col_type == "dv") {
                     form.add("use is dv");
+                    multi_dv_map = ext_ds->getMultipleDVMapping(col_id);
                     suffix = "::observation";
                 } else if (col_type == "adm") {
                     form.add("use is cmt");
@@ -285,7 +288,7 @@ namespace pharmmlcpp
                     }
                 } else {
                     // Add variable/define attribute for mapped model symbols/macros
-                    if (lone_mapped_var != "") {
+                    if (lone_mapped_var != "" && !multi_dv_map) {
                         // Add single-variable variable attribute (unless implicit rules)
                         if (col_type != "id" && col_type != "idv" && col_type != "occasion" && !((col_type == "covariate" || col_type == "reg") && lone_mapped_var == col_id)) {
                             form.add("variable = " + lone_mapped_var);
@@ -295,7 +298,7 @@ namespace pharmmlcpp
                                 this->symb_gen->addDosingTarget(lone_mapped_var);
                             }
                         }
-                    } else if (!col_maps.empty()) {
+                    } else if (!col_maps.empty() && !multi_dv_map) {
                         // Add define attribute for (multiple-variable) data symbol -> model symbol/macro
                         form.openVector("define = {}", 0, ", ");
 
@@ -325,7 +328,7 @@ namespace pharmmlcpp
                         }
 
                         // Add all the mappings to the define vector
-                        for (std::pair<std::string, std::string> map: col_maps) {
+                        for (std::pair<std::string, std::string> map : col_maps) {
                             std::string target = map.second == "" ? "UNDEF" : map.second;
                             form.add(map.first + " in " + data_symbol_column + " as " + target);
                              // Model symbol/macro is declared elsewhere, let caller output DECLARED_VARIABLES block
@@ -335,6 +338,24 @@ namespace pharmmlcpp
                             }
                         }
                         form.closeVector();
+                    } else if (multi_dv_map) {
+                        std::vector<SymbRef *> om_symbrefs = multi_dv_map->getAllObservationSymbRefs();
+                        if (om_symbrefs.size() == 1) {
+                            form.add(this->accept(om_symbrefs[0]));
+                        } else if (om_symbrefs.size() > 1) {
+                            form.openVector("define = {}", 0, ", ");
+
+                            std::unordered_set<std::string> columns = multi_dv_map->getAllMappingColumns();
+                            for (std::string column : columns) {
+                                std::vector<int> codes = multi_dv_map->getCodesInColumn(column);
+                                for (int code : codes) {
+                                    SymbRef *om_symbref = multi_dv_map->getObservationSymbRef(code, column);
+                                    form.add(std::to_string(code) + " in " + column + " as " + this->accept(om_symbref));
+                                }
+                            }
+
+                            form.closeVector();
+                        }
                     }
                     form.closeVector();
                 }
@@ -1704,14 +1725,11 @@ namespace pharmmlcpp
             this->logger->warning("ExternalDataset refers tool '" + tool + "' instead of NONMEM: Heuristics may be wrong", node);
         }
 
-        // Generate array of mapping targets (to be trimmed before output)
-        std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
-
         Dataset *dataset = node->getDataset();
         if (dataset->isExternal()) {
             // Generate DATA_INPUT_VARIABLES and output DECLARED_VARIABLES
             std::unordered_set<std::string> declared_vars;
-            std::string data_input_vars = this->genDataInputVariablesBlock(dataset, col_maps, declared_vars);
+            std::string data_input_vars = this->genDataInputVariablesBlock(node, declared_vars);
             if (!declared_vars.empty()) {
                 // Output collected declared variables during generation of DATA_INPUT_VARIABLES
                 form.openVector("DECLARED_VARIABLES {}", 1, " ");
@@ -1727,6 +1745,7 @@ namespace pharmmlcpp
             form.emptyLine();
 
             // Output DATA_DERIVED_VARIABLES (MDLColumnMappingAstGenerator visits Piecewise's during DATA_INPUT_VARIABLES generation)
+            std::vector<ColumnMapping *> col_maps = node->getColumnMappings();
             std::string derived_vars = this->genDataDerivedVariablesBlock(col_maps);
             if (!derived_vars.empty()) {
                 form.addMany(derived_vars);

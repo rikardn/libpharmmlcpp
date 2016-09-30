@@ -35,6 +35,7 @@ libpharmmlcpp_a_SOURCES = \
 	src/PharmML/Interventions.cpp \
 	src/PharmML/ModelDefinition.cpp \
 	src/PharmML/ModellingSteps.cpp \
+	src/PharmML/MultipleDVMapping.cpp \
 	src/PharmML/Observations.cpp \
 	src/PharmML/ParameterModel.cpp \
 	src/PharmML/PharmMLContext.cpp \

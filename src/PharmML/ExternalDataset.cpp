@@ -32,7 +32,13 @@ namespace pharmmlcpp
             this->col_maps.push_back(col);
         }
         // TODO: Support ColumnTransformation
-        // TODO: Support MultipleDVMapping
+
+        std::vector<xml::Node> mdm_nodes = reader.getElements(node, "./design:MultipleDVMapping");
+        for (xml::Node mdm_node : mdm_nodes) {
+            std::unique_ptr<MultipleDVMapping> mdm = std::make_unique<MultipleDVMapping>(reader, mdm_node);
+            this->multi_dv_maps.push_back(std::move(mdm));
+        }
+
         xml::Node ds_node = reader.getSingleElement(node, "./ds:DataSet");
         if (ds_node.exists()) {
             this->dataset = new Dataset(reader, ds_node);
@@ -50,6 +56,16 @@ namespace pharmmlcpp
         return this->col_maps;
     }
 
+    /// Get MultipleDVMapping for specific col_id, if there is one
+    MultipleDVMapping *ExternalDataset::getMultipleDVMapping(std::string col_id) {
+        for (auto const &multi_dv_map : this->multi_dv_maps) {
+            if (multi_dv_map->getMappedColumn() == col_id) {
+                return multi_dv_map.get();
+            }
+        }
+        return nullptr;
+    }
+
     Dataset *ExternalDataset::getDataset() {
         return this->dataset;
     }
@@ -61,6 +77,9 @@ namespace pharmmlcpp
     void ExternalDataset::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (ColumnMapping *col_map : this->col_maps) {
             col_map->setupSymbRefs(gathering, "");
+        }
+        for (auto const &multi_dv_map : this->multi_dv_maps) {
+            multi_dv_map->setupSymbRefs(gathering, "");
         }
     }
 
@@ -87,5 +106,5 @@ namespace pharmmlcpp
     }
 
     // POST PARSE/CONSOLIDATION
-    
+
 }

@@ -570,6 +570,16 @@ namespace pharmmlcpp
         return this->operations;
     }
 
+    ParameterEstimation *OptimalDesignStep::getParameterEstimation(Symbol *symbol) {
+        for (ParameterEstimation *par_est : this->parameterEstimations) {
+            bool depends_on_symbol = par_est->referencedSymbols.hasSymbol(symbol);
+            if (depends_on_symbol) {
+                return par_est;
+            }
+        }
+        return nullptr;
+    }
+
     ModellingSteps::ModellingSteps(PharmMLReader &reader, xml::Node node) {
         this->setXMLNode(node);
         this->xml_node = node;

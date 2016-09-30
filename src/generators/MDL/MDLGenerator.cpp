@@ -426,43 +426,45 @@ namespace pharmmlcpp
         }
 
         // Get an EstimationStep to use (by matching to a data object generated)
-        EstimationStep *selected_est_step = nullptr;
         if (msteps) {
             std::vector<EstimationStep *> est_steps = msteps->getEstimationSteps();
+            std::vector<OptimalDesignStep *> opt_steps = msteps->getOptimalDesignSteps();
             if (!est_steps.empty()) {
                 for (EstimationStep *est_step : est_steps) {
                     std::string data_object_reference = est_step->getExternalDatasetRef(); // FIXME: As pointed out in data object name fetch, this should be handled by SymbolNamer to avoid collisions and illegals
                     auto got = this->data_object_names.find(data_object_reference);
                     if (data_object_reference != "" && got != this->data_object_names.end()) {
-                        if (selected_est_step == nullptr) {
-                            selected_est_step = est_step;
+                        if (this->selected_est_step == nullptr) {
+                            this->selected_est_step = est_step;
                             this->selected_data_object = data_object_reference;
                         } else {
-                            this->logger->warning("Another EstimationStep refers to a valid ExternalDataSet in model; First match selected (%a --> '" + this->selected_data_object + "')", selected_est_step);
+                            this->logger->warning("Another EstimationStep refers to a valid ExternalDataSet in model; First match selected (%a --> '" + this->selected_data_object + "')", this->selected_est_step);
                         }
                     }
                 }
-                if (selected_est_step == nullptr) {
+                if (this->selected_est_step == nullptr) {
                     this->logger->warning("ModellingSteps contains EstimationStep(s) but none refers to an ExternalDataSet in model; No initial values or bounds available", msteps);
                 }
+            } else if (!opt_steps.empty()) {
+                this->selected_opt_step = opt_steps[0];
             } else {
-                this->logger->error("ModellingSteps contains no EstimationStep; No initial values or bounds available", msteps);
+                this->logger->error("ModellingSteps contains no EstimationStep or OptimalDesignStep; No initial values or bounds available", msteps);
             }
         } else {
             this->logger->error("No ModellingSteps found; No initial values or bounds available");
         }
 
         // Generate STRUCTURAL and VARIABILITY block
-        form.addMany(this->genStructuralBlock(structural_params, selected_est_step));
+        form.addMany(this->genStructuralBlock(structural_params));
         form.emptyLine();
-        form.addMany(this->genVariabilityBlock(variability_params, selected_est_step));
+        form.addMany(this->genVariabilityBlock(variability_params));
 
         form.outdentAdd("}");
 
         return form.createString();
     }
 
-    std::string MDLGenerator::genStructuralBlock(std::vector<PopulationParameter *> structural_params, EstimationStep *est_step) {
+    std::string MDLGenerator::genStructuralBlock(std::vector<PopulationParameter *> structural_params) {
         // Generate MDL STRUCTURAL block
         TextFormatter form;
         form.indentAdd("STRUCTURAL {");
@@ -474,15 +476,16 @@ namespace pharmmlcpp
 
             // Add the init attributes (if available)
             form.openVector(name + " : {}", 0, ", ");
-            if (est_step) {
-                ParameterEstimation *par_est = est_step->getParameterEstimation(param);
-                if (par_est) {
-                    par_est->accept(this);
-                    std::vector<std::string> init_attr = this->getValues();
-                    form.addMany(init_attr);
-                } else {
-                    this->logger->error("No ParameterEstimation for structural parameter '" + name + "' found in EstimationStep; No initial values or bounds available", est_step);
-                }
+            ParameterEstimation *par_est;
+            if (this->selected_est_step) {
+                par_est = this->selected_est_step->getParameterEstimation(param);
+            } else {
+                par_est = this->selected_opt_step->getParameterEstimation(param);
+            }
+            if (par_est) {
+                par_est->accept(this);
+                std::vector<std::string> init_attr = this->getValues();
+                form.addMany(init_attr);
             }
 
             form.closeVector();
@@ -492,7 +495,7 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genVariabilityBlock(std::vector<PopulationParameter *> variability_params, EstimationStep *est_step) {
+    std::string MDLGenerator::genVariabilityBlock(std::vector<PopulationParameter *> variability_params) {
         // Generate MDL VARIABILITY block
         TextFormatter form;
         form.indentAdd("VARIABILITY {");
@@ -504,15 +507,16 @@ namespace pharmmlcpp
 
             // Add the init attributes (if available)
             form.openVector(name + " : {}", 0, ", ");
-            if (est_step) {
-                ParameterEstimation *par_est = est_step->getParameterEstimation(param);
-                if (par_est) {
-                    par_est->accept(this);
-                    std::vector<std::string> init_attr = this->getValues();
-                    form.addMany(init_attr);
-                } else {
-                    this->logger->error("No ParameterEstimation for variability parameter '" + name + "' found in EstimationStep; No initial values or bounds available", est_step);
-                }
+            ParameterEstimation *par_est;
+            if (this->selected_est_step) {
+                par_est = this->selected_est_step->getParameterEstimation(param);
+            } else {
+                par_est = this->selected_opt_step->getParameterEstimation(param);
+            }
+            if (par_est) {
+                par_est->accept(this);
+                std::vector<std::string> init_attr = this->getValues();
+                form.addMany(init_attr);
             }
 
             form.closeVector();

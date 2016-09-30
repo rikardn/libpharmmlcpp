@@ -109,7 +109,7 @@ namespace pharmmlcpp
 
         // Generate the MDL task object(s)
         object.name = "task_object";
-        object.code = this->genTaskObj();
+        object.code = this->genTaskObj(model);
         objects.task.push_back(object);
 
         // Generate the MDL design object(s)
@@ -1140,18 +1140,46 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    std::string MDLGenerator::genTaskObj() {
+    std::string MDLGenerator::genTaskObj(PharmML *model) {
         TextFormatter form;
 
-        form.indentAdd("taskObj {");
-
-        form.openVector("ESTIMATE {}", 1, "");
-        form.add("set algo is saem");
-        form.closeVector();
-
-        form.outdentAdd("}");
+        ModellingSteps *mstep = model->getModellingSteps();
+        if (mstep) {
+            form.indentAdd("taskObj {");
+            auto est_steps = mstep->getEstimationSteps();
+            auto opt_steps = mstep->getOptimalDesignSteps();
+            if (est_steps.size() > 0) {
+                form.openVector("ESTIMATE {}", 1, "");
+                form.add("set algo is saem");
+                form.closeVector();
+            } else if (opt_steps.size() > 0) {
+                auto operations = opt_steps[0]->getOperations();
+                if (operations.size() > 0) {
+                    std::string type = operations[0]->getType();
+                    if (type == "evaluation") {
+                        form.openVector("EVALUATE {}", 1, "");
+                        auto algo = operations[0]->getAlgorithm();
+                        if (algo) {
+                            form.openVector("TARGET_SETTINGS(target=\"" + algo->getDefinition() + "\") {}", 1, "");
+                            this->addProperties(form, algo);
+                            form.closeVector();
+                        }
+                        form.closeVector();
+                    }
+                }
+            }
+            form.outdentAdd("}");
+        }
 
         return form.createString();
+    }
+
+    void MDLGenerator::addProperties(TextFormatter &form, Algorithm *algo) {
+        for (auto prop : algo->getProperties()) {
+            std::string name = prop->getName();
+            std::string value = this->accept(prop->getAssignment().get());
+            form.add(name + " = " + value);
+        }
     }
 
     std::string MDLGenerator::genDesignObj(PharmML *model) {

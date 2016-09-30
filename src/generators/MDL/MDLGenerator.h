@@ -96,8 +96,8 @@ namespace pharmmlcpp
             std::string genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros);
             std::string genObservationBlock(pharmmlcpp::PharmML *model);
 
-            std::string genMdlObj(pharmmlcpp::PharmML *model);
-            std::string genTaskObj();
+            std::string genMdlObj(PharmML *model);
+            std::string genTaskObj(PharmML *model);
             std::string genDesignObj(PharmML *model);
             void genDesignParameters(TextFormatter &form, std::vector<DesignParameter *> designParameters);
             void genDesignIntervention(TextFormatter &form, Interventions *interventions);
@@ -107,6 +107,7 @@ namespace pharmmlcpp
             std::string genDesignDeclaredVariables();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
+            void addProperties(TextFormatter &form, Algorithm *algo);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;

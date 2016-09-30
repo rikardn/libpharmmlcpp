@@ -45,9 +45,10 @@ namespace pharmmlcpp
         if (param_node.exists()) {
             this->parameterModel = new ParameterModel(reader, param_node);
         }
-        xml::Node obs_node = reader.getSingleElement(node, "./mdef:ObservationModel");
-        if (obs_node.exists()) {
-            this->observationModel = new ObservationModel(reader, obs_node);
+        std::vector<xml::Node> obs_nodes = reader.getElements(node, "./mdef:ObservationModel");
+        for (xml::Node obs_node : obs_nodes) {
+            std::shared_ptr<ObservationModel> obs_model = std::make_shared<ObservationModel>(reader, obs_node);
+            this->observation_models.push_back(obs_model);
         }
     }
 
@@ -78,7 +79,13 @@ namespace pharmmlcpp
         return this->structuralModel;
     }
 
+    // FIXME: Depreceated! Remove! Not only one observation model anymore!
     ObservationModel *ModelDefinition::getObservationModel() {
-        return this->observationModel;
+        return this->observation_models[0].get();
     }
+
+    std::vector<std::shared_ptr<ObservationModel>> ModelDefinition::getObservationModels() {
+        return this->observation_models;
+    }
+
 }

@@ -1054,107 +1054,109 @@ namespace pharmmlcpp
     }
 
     std::string MDLGenerator::genObservationBlock(pharmmlcpp::PharmML *model) {
-        pharmmlcpp::ObservationModel *om = model->getModelDefinition()->getObservationModel();
+        std::vector<std::shared_ptr<ObservationModel>> om_models = model->getModelDefinition()->getObservationModels();
         std::vector<pharmmlcpp::FunctionDefinition *> funcs = model->getFunctionDefinitions();
         TextFormatter form;
         form.openVector("OBSERVATION {}", 1, "");
 
-        std::string obs_name = om->getName();
-        if (om->hasStandardErrorModel()) {
-            // Determine if error model is a pure function call
-            AstNode *error_model = om->getErrorModel().get();
-            this->ast_analyzer.reset();
-            error_model->accept(&this->ast_analyzer);
-            FunctionCall *function_call = this->ast_analyzer.getPureFunctionCall();
-            if (function_call) {
-                // Resolve the call
-                FunctionDefinition *function_def = model->resolveFunctionCall(function_call);
+        for (auto const &om : om_models) {
+            std::string obs_name = om->getName();
+            if (om->hasStandardErrorModel()) {
+                // Determine if error model is a pure function call
+                AstNode *error_model = om->getErrorModel().get();
+                this->ast_analyzer.reset();
+                error_model->accept(&this->ast_analyzer);
+                FunctionCall *function_call = this->ast_analyzer.getPureFunctionCall();
+                if (function_call) {
+                    // Resolve the call
+                    FunctionDefinition *function_def = model->resolveFunctionCall(function_call);
 
-                // Get the caller arguments
-                auto &call_args = function_call->getFunctionArguments();
-                std::unordered_map<std::string, FunctionArgument *> call_arg_map;
-                for (const std::unique_ptr<FunctionArgument> &call_arg : call_args) {
-                    call_arg_map[call_arg->getSymbId()] = call_arg.get(); // Note that SymbolNamer is NOT used since FA is not a Symbol (TODO: Use SymbolNamer?)
-                }
-
-                // Determine if function is known to MDL (tricky stuff)
-                if (function_def->isStandardFunction()) {
-                    form.openVector(obs_name + " : {}", 0, ", ");
-                    switch (function_def->getStandardFunction()) {
-                        case StandardFunction::additiveError     : form.add("type is additiveError");
-                                                                   break;
-                        case StandardFunction::proportionalError : form.add("type is proportionalError");
-                                                                   break;
-                        case StandardFunction::combinedError1    : form.add("type is combinedError1");
-                                                                   break;
-                        case StandardFunction::NA                : break;
+                    // Get the caller arguments
+                    auto &call_args = function_call->getFunctionArguments();
+                    std::unordered_map<std::string, FunctionArgument *> call_arg_map;
+                    for (const std::unique_ptr<FunctionArgument> &call_arg : call_args) {
+                        call_arg_map[call_arg->getSymbId()] = call_arg.get(); // Note that SymbolNamer is NOT used since FA is not a Symbol (TODO: Use SymbolNamer?)
                     }
 
-                    // Get transformation is available (don't know MDL syntax definitely)
-                    std::string trans = om->getTransformation();
-                    if (trans == "log") {
-                        form.add("trans is ln");
-                    } else if (trans != "") {
-                        form.add("trans is " + trans);
-                    }
-
-                    // Get structural model output and make a list of arguments referencing it
-                    // FIXME: See below
-                    //~ SymbRef *output = om->getOutput();
-                    //~ std::vector<std::string> output_arg_names;
-
-                    // Output the mapped arguments
-                    auto def_arg_map = function_def->getStandardFunctionArgumentMap();
-                    for (auto def_arg : def_arg_map) {
-                        std::string standard_arg_name;
-                        switch (def_arg.first) {
-                            case StandardFunctionArgument::additive     : standard_arg_name = "additive";
-                                                                          break;
-                            case StandardFunctionArgument::proportional : standard_arg_name = "proportional";
-                                                                          break;
-                            case StandardFunctionArgument::prediction   : standard_arg_name = "prediction";
-                                                                          break;
+                    // Determine if function is known to MDL (tricky stuff)
+                    if (function_def->isStandardFunction()) {
+                        form.openVector(obs_name + " : {}", 0, ", ");
+                        switch (function_def->getStandardFunction()) {
+                            case StandardFunction::additiveError     : form.add("type is additiveError");
+                                                                       break;
+                            case StandardFunction::proportionalError : form.add("type is proportionalError");
+                                                                       break;
+                            case StandardFunction::combinedError1    : form.add("type is combinedError1");
+                                                                       break;
+                            case StandardFunction::NA                : break;
                         }
-                        std::string actual_arg_name = def_arg.second->getName();
 
-                        // Check if it's a prediction argument and output the argument in standardized form
-                        FunctionArgument *call_arg = call_arg_map[actual_arg_name];
-                        // FIXME: Figure out how to resolve this now when FunctionArgument has been demoted from Referer-status
-                        //~ if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
-                            //~ output_arg_names.push_back(actual_arg_name);
+                        // Get transformation is available (don't know MDL syntax definitely)
+                        std::string trans = om->getTransformation();
+                        if (trans == "log") {
+                            form.add("trans is ln");
+                        } else if (trans != "") {
+                            form.add("trans is " + trans);
+                        }
+
+                        // Get structural model output and make a list of arguments referencing it
+                        // FIXME: See below
+                        //~ SymbRef *output = om->getOutput();
+                        //~ std::vector<std::string> output_arg_names;
+
+                        // Output the mapped arguments
+                        auto def_arg_map = function_def->getStandardFunctionArgumentMap();
+                        for (auto def_arg : def_arg_map) {
+                            std::string standard_arg_name;
+                            switch (def_arg.first) {
+                                case StandardFunctionArgument::additive     : standard_arg_name = "additive";
+                                                                              break;
+                                case StandardFunctionArgument::proportional : standard_arg_name = "proportional";
+                                                                              break;
+                                case StandardFunctionArgument::prediction   : standard_arg_name = "prediction";
+                                                                              break;
+                            }
+                            std::string actual_arg_name = def_arg.second->getName();
+
+                            // Check if it's a prediction argument and output the argument in standardized form
+                            FunctionArgument *call_arg = call_arg_map[actual_arg_name];
+                            // FIXME: Figure out how to resolve this now when FunctionArgument has been demoted from Referer-status
+                            //~ if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
+                                //~ output_arg_names.push_back(actual_arg_name);
+                            //~ }
+                            form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
+                        }
+
+                        // Add the residual error
+                        form.add("eps = " + this->accept(om->getResidualError()));
+                        form.closeVector();
+
+                        // Warn if unexpected structure with regards to the output symbol
+                        // FIXME: Same as above outcommented block
+                        //~ if (output_arg_names.empty()) {
+                            //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", om);
+                        //~ } else if (output_arg_names.size() > 1) {
+                            //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
+                                //~ + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", om);
                         //~ }
-                        form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
+                    } else {
+                        // TODO: Non-standard function call must be resolved
+                        form.openVector(obs_name + " : {}", 0, ", ");
+                        form.add("type is \"" + function_def->getName() + "\"");
+                        form.closeVector();
+                        form.append(" # Error function definition not recognized as MDL standard");
                     }
-
-                    // Add the residual error
-                    form.add("eps = " + this->accept(om->getResidualError()));
-                    form.closeVector();
-
-                    // Warn if unexpected structure with regards to the output symbol
-                    // FIXME: Same as above outcommented block
-                    //~ if (output_arg_names.empty()) {
-                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") not in error model function call", om);
-                    //~ } else if (output_arg_names.size() > 1) {
-                        //~ this->logger->warning("Output from structural model (" + this->accept(output) + ") in multiple arguments "
-                            //~ + TextFormatter::createInlineVector(output_arg_names, "()", ", ") + " of error model function call", om);
-                    //~ }
                 } else {
-                    // TODO: Non-standard function call must be resolved
-                    form.openVector(obs_name + " : {}", 0, ", ");
-                    form.add("type is \"" + function_def->getName() + "\"");
-                    form.closeVector();
-                    form.append(" # Error function definition not recognized as MDL standard");
+                    // Not a pure function call, so dump explicit assignment
+                    AstNode *res_err = om->getResidualError();
+                    form.add(obs_name + " = " + this->accept(error_model) + " + " + this->accept(res_err));
+                    form.append(" # Is this how you expect the residual error to associate?");
                 }
-            } else {
-                // Not a pure function call, so dump explicit assignment
-                AstNode *res_err = om->getResidualError();
-                form.add(obs_name + " = " + this->accept(error_model) + " + " + this->accept(res_err));
-                form.append(" # Is this how you expect the residual error to associate?");
+            } else if (om->hasGeneralErrorModel()) {
+                // General error model, so dump explicit assignment
+                AstNode *assignment = om->getAssignment().get();
+                form.add(obs_name + " = " + this->accept(assignment));
             }
-        } else if (om->hasGeneralErrorModel()) {
-            // General error model, so dump explicit assignment
-            AstNode *assignment = om->getAssignment().get();
-            form.add(obs_name + " = " + this->accept(assignment));
         }
 
         form.closeVector();

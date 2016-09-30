@@ -39,6 +39,7 @@ namespace pharmmlcpp
             ParameterModel *getParameterModel();
             StructuralModel *getStructuralModel();
             ObservationModel *getObservationModel();
+            std::vector<std::shared_ptr<ObservationModel>> getObservationModels();
             void parse(PharmMLReader &reader, xml::Node node);
             void setupRefererSymbRefs(SymbolGathering &gathering);
 
@@ -48,7 +49,7 @@ namespace pharmmlcpp
             CovariateModel *covariateModel = nullptr;
             ParameterModel *parameterModel = nullptr;
             StructuralModel *structuralModel = nullptr;
-            ObservationModel *observationModel = nullptr;
+            std::vector<std::shared_ptr<ObservationModel>> observation_models;
 
     };
 }

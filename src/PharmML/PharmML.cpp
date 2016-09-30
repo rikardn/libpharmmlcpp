@@ -151,7 +151,9 @@ namespace pharmmlcpp
         if (mdef->getCovariateModel()) {
             mdef->getCovariateModel()->gatherSymbols(gathering);
         }
-        mdef->getObservationModel()->gatherSymbols(gathering);
+        for (auto const &om_model : mdef->getObservationModels()) {
+            om_model->gatherSymbols(gathering);
+        }
         gathering.globalBlock();
         if (this->independentVariable) {
             gathering.addSymbol(this->independentVariable);

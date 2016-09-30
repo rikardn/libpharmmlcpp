@@ -1179,8 +1179,13 @@ namespace pharmmlcpp
     }
 
     void MDLGenerator::addProperties(TextFormatter &form, Algorithm *algo) {
+        bool first = true;
         for (auto prop : algo->getProperties()) {
             std::string name = prop->getName();
+            if (first) {
+                name = "set " + name;
+                first = false;
+            }
             std::string value = this->accept(prop->getAssignment().get());
             form.add(name + " = " + value);
         }

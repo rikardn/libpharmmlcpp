@@ -23,6 +23,7 @@
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/SymbolVisitor.h>
+#include <PharmML/Distribution.h>
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Block.h>
@@ -61,6 +62,11 @@ namespace pharmmlcpp
             // Distributional error model
             std::vector<VariabilityReference *> getVariabilityReferences();
 
+            // Count data accessors
+            std::string getCountVariableSymbId() { return this->count_variable; };
+            std::string getCountPMFLinkFunction() { return this->count_pmf_transform; };
+            Distribution *getCountPMFDistribution() { return this->count_pmf_distribution.get(); };
+
             // Convenience methods
             SymbolSet getNeededSymbols();
 
@@ -98,6 +104,11 @@ namespace pharmmlcpp
 
             // Distributional error model
             std::vector<VariabilityReference *> variabilityReferences;
+
+            // Count data
+            std::string count_variable;
+            std::string count_pmf_transform; // link functions: identity, log, logit, probit, loglog or comploglog
+            std::unique_ptr<Distribution> count_pmf_distribution;
     };
 }
 

@@ -174,6 +174,9 @@ namespace pharmmlcpp
             std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
             std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
 
+            std::vector<std::string> count_omodel_symbols; // FIXME: Ugly hack to counteract the lack of a direct reference from 'dv' column to count data observation models
+            std::vector<std::string> omodel_derived_rand_vars; // random variable statements defined by observation model (e.g. count poisson)
+
             EstimationStep *selected_est_step = nullptr;
             OptimalDesignStep *selected_opt_step = nullptr;
 

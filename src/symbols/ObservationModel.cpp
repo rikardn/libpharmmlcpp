@@ -134,7 +134,25 @@ namespace pharmmlcpp
                 // Count data model
                 this->countData = true;
 
-                // TODO: Support count data models
+                // Get the count variable
+                xml::Node count_var_node = reader.getSingleElement(cnt_node, "./mdef:CountVariable");
+                this->count_variable = count_var_node.getAttribute("symbId").getValue();
+
+                // Get the distribution
+                xml::Node pmf_node = reader.getSingleElement(cnt_node, "./mdef:PMF");
+                // TODO: Schema allows unbounded occurences of probability mass functions for count observations (but what that would mean?)
+                if (pmf_node.exists()) {
+                    xml::Attribute trans = pmf_node.getAttribute("transform");
+                    if (trans.exists()) {
+                        this->count_pmf_transform = trans.getValue();
+                    } else {
+                        this->count_pmf_transform = "identity"; // assumption
+                    }
+
+                    xml::Node dist_node = reader.getSingleElement(pmf_node, "./mdef:Distribution");
+                    std::unique_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
+                    this->count_pmf_distribution = std::move(dist);
+                }
             } else {
                 // Time-to-event data model
                 this->tteData = true;
@@ -204,6 +222,11 @@ namespace pharmmlcpp
 
     void ObservationModel::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         // FIXME: Fill this
+        if (this->isCount()) {
+            for (DistributionParameter *par : this->count_pmf_distribution->getDistributionParameters()) {
+                this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
+            }
+        }
         if (this->standardErrorModel) {
             this->addSymbRef(this->output, gathering, blkId);
             this->setupAstSymbRefs(this->errorModel.get(), gathering, blkId);

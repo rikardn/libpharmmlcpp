@@ -1066,6 +1066,7 @@ namespace pharmmlcpp
         for (auto const &om : om_models) {
             std::string obs_name = om->getName();
             if (om->hasStandardErrorModel()) {
+                SymbRef *output = om->getOutput();
                 // Determine if error model is a pure function call
                 AstNode *error_model = om->getErrorModel().get();
                 this->ast_analyzer.reset();
@@ -1109,6 +1110,7 @@ namespace pharmmlcpp
                         //~ std::vector<std::string> output_arg_names;
 
                         // Output the mapped arguments
+                        std::string output_value = this->accept(output);
                         auto def_arg_map = function_def->getStandardFunctionArgumentMap();
                         for (auto def_arg : def_arg_map) {
                             std::string standard_arg_name;
@@ -1128,8 +1130,15 @@ namespace pharmmlcpp
                             //~ if (call_arg->referencedSymbols.dependsOn(output->getSymbol())) {
                                 //~ output_arg_names.push_back(actual_arg_name);
                             //~ }
-                            form.add(standard_arg_name + " = " + this->accept(call_arg->getArgument()));
+
+                            std::string arg_value = this->accept(call_arg->getArgument());
+                            if (standard_arg_name != "prediction") {
+                                form.add(standard_arg_name + " = " + arg_value);
+                            } else if (arg_value != output_value) {
+                                this->logger->warning("ErrorModel function argument '" + actual_arg_name + "' (%a) resolves to different value than Output (%b) in ObservationModel", call_arg, output);
+                            }
                         }
+                        form.add("prediction = " + output_value);
 
                         // Add the residual error
                         form.add("eps = " + this->accept(om->getResidualError()));

@@ -101,6 +101,12 @@ namespace pharmmlcpp
         objects.parameter.push_back(object);
         //~ }
 
+        // Generate the MDL design object(s)
+        object.name = "design_object";
+        object.code = this->genDesignObj(model);
+        if (!object.code.empty()) {
+            objects.design.push_back(object);
+        }
 
         // Generate the MDL model object(s)
         object.name = "mdl_object";
@@ -111,13 +117,6 @@ namespace pharmmlcpp
         object.name = "task_object";
         object.code = this->genTaskObj(model);
         objects.task.push_back(object);
-
-        // Generate the MDL design object(s)
-        object.name = "design_object";
-        object.code = this->genDesignObj(model);
-        if (!object.code.empty()) {
-            objects.design.push_back(object);
-        }
 
         // Generate the MDL mog object(s)
         object.name = this->getMogID(model->getName());
@@ -596,8 +595,19 @@ namespace pharmmlcpp
         form.emptyLine();
 
         // Generate VARIABILITY_LEVELS block
-        form.openVector("VARIABILITY_LEVELS {}", 1, "");
+        std::string reference;
         std::vector<VariabilityModel *> var_models = mdef->getVariabilityModels();
+        for (VariabilityModel *var_model : var_models) {
+            VariabilityLevel *level = var_model->getReferenceLevel();
+            if (level) {
+                if (reference == "") {
+                    reference = "(reference=" + level->getSymbId() + ")";
+                } else {
+                    this->logger->error("Multiple VariabilityModels has a reference level; Only first used");
+                }
+            }
+        }
+        form.openVector("VARIABILITY_LEVELS" + reference + " {}", 1, "");
         // Split into parameter and residual error variability model (TODO: This + warnings might be better in the libpharmmlcpp class)
         int level_num = 0;
         std::vector<VariabilityLevel *> par_levels;
@@ -1374,6 +1384,7 @@ namespace pharmmlcpp
                 }
             }
             this->designDeclaredVariables.push_back(target + "::dosingTarget");
+            this->symb_gen->addDosingTarget(target);
             std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
             std::vector<std::string> dose_times;
             for (auto &time_point : administration->getTimesAsVector()) {

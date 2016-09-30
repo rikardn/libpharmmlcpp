@@ -211,6 +211,9 @@ namespace pharmmlcpp
         this->setValue(id + " -> " + name);
     }
 
+    void RPharmMLGenerator::visit(MultipleDVMapping *node) {
+    }
+
     // Class ExternalFile
     void RPharmMLGenerator::visit(ExternalFile *node) {
         std::string s = "READ_EXT_RESOURCE_" + node->getOid() + " <- function() {\n";

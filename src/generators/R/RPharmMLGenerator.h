@@ -69,6 +69,7 @@ namespace pharmmlcpp
             void visit(ObservationModel *node) override;
             void visit(Distribution *node) override;
             void visit(ColumnMapping *node) override;
+            void visit(MultipleDVMapping *node) override; 
 
             void visit(ExternalFile *node) override;
             void visit(DataColumn *node) override;

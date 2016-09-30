@@ -87,8 +87,8 @@ namespace pharmmlcpp
             std::string genDataDerivedVariablesBlock(std::vector<ColumnMapping *> col_maps);
 
             std::string genParObj(ParameterModel *par_model, ModellingSteps *msteps);
-            std::string genStructuralBlock(std::vector<PopulationParameter *> structural_params, EstimationStep *est_step);
-            std::string genVariabilityBlock(std::vector<PopulationParameter *> variability_params, EstimationStep *est_step);
+            std::string genStructuralBlock(std::vector<PopulationParameter *> structural_params);
+            std::string genVariabilityBlock(std::vector<PopulationParameter *> variability_params);
             std::string genRandomVariableDefinitionBlock(VariabilityLevel *level, std::vector<RandomVariable *> rand_vars, std::vector<Correlation *> corrs);
             std::string genGroupVariablesBlock(std::vector<PopulationParameter *> group_pop_params);
             std::string genIndividualVariablesBlock(std::vector<pharmmlcpp::IndividualParameter *> individualParameters);
@@ -96,8 +96,8 @@ namespace pharmmlcpp
             std::string genCompartmentBlock(pharmmlcpp::PKMacros *pk_macros);
             std::string genObservationBlock(pharmmlcpp::PharmML *model);
 
-            std::string genMdlObj(pharmmlcpp::PharmML *model);
-            std::string genTaskObj();
+            std::string genMdlObj(PharmML *model);
+            std::string genTaskObj(PharmML *model);
             std::string genDesignObj(PharmML *model);
             void genDesignParameters(TextFormatter &form, std::vector<DesignParameter *> designParameters);
             void genDesignIntervention(TextFormatter &form, Interventions *interventions);
@@ -107,6 +107,7 @@ namespace pharmmlcpp
             std::string genDesignDeclaredVariables();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
+            void addProperties(TextFormatter &form, Algorithm *algo);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
@@ -172,6 +173,9 @@ namespace pharmmlcpp
             std::string selected_data_object;
             std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
             std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
+
+            EstimationStep *selected_est_step = nullptr;
+            OptimalDesignStep *selected_opt_step = nullptr;
 
             std::string value;
             void setValue(std::string str);

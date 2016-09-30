@@ -229,6 +229,8 @@ namespace pharmmlcpp
             std::vector<ParameterEstimation *> getParameters();
             std::vector<Operation *> getOperations();
 
+            ParameterEstimation *getParameterEstimation(Symbol *symbol);
+
         private:
             std::string oid;
             OptimiseOn *optOn = nullptr;

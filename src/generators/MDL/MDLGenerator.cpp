@@ -350,7 +350,9 @@ namespace pharmmlcpp
                                 std::vector<int> codes = multi_dv_map->getCodesInColumn(column);
                                 for (int code : codes) {
                                     SymbRef *om_symbref = multi_dv_map->getObservationSymbRef(code, column);
-                                    form.add(std::to_string(code) + " in " + column + " as " + this->accept(om_symbref));
+                                    std::string target = this->accept(om_symbref);
+                                    form.add(std::to_string(code) + " in " + column + " as " + target);
+                                    declared_vars.insert(target + suffix);
                                 }
                             }
 

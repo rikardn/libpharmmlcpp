@@ -318,7 +318,7 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(ScalarString *node) {
-        this->setParenthesizedValue(node, node->toString());
+        this->setParenthesizedValue(node, "\"" + node->toString() + "\"");
     }
 
     void MDLAstGenerator::visit(BinopPlus *node) {

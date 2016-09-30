@@ -1164,7 +1164,7 @@ namespace pharmmlcpp
                         form.openVector("EVALUATE {}", 1, "");
                         auto algo = operations[0]->getAlgorithm();
                         if (algo) {
-                            form.openVector("TARGET_SETTINGS(target=\"" + algo->getDefinition() + "\") {}", 1, "");
+                            form.openVector("TARGET_SETTINGS(target=\"" + algo->getDefinition() + "\") {}", 1, ",");
                             this->addProperties(form, algo);
                             form.closeVector();
                         }

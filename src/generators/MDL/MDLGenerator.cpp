@@ -79,11 +79,16 @@ namespace pharmmlcpp
 
         std::string name;
 
-        // FIXME: Ugly hack to fix the lack of a direct column mapping reference to count data observation models!
+        // FIXME: Ugly hack to fix the lack of a direct column mapping reference to categorical/count data observation models
         std::vector<std::shared_ptr<ObservationModel>> obs_models = model->getModelDefinition()->getObservationModels();
         for (auto const &obs_model : obs_models) {
             if (obs_model->isCount()) {
                 this->count_omodel_symbols.push_back(obs_model->getCountVariableSymbId());
+            } else if (obs_model->isCategorical()) {
+                std::pair<std::string, std::vector<std::shared_ptr<Category>>> pair;
+                pair.first = obs_model->getCategoricalVariableSymbId();
+                pair.second = obs_model->getCategoricalCategories();
+                this->categorical_omodel_symbols.push_back(pair);
             }
         }
 
@@ -365,17 +370,41 @@ namespace pharmmlcpp
                             form.closeVector();
                         }
                     } else if (col_type == "dv") {
-                        // If DV lacks a mapping, this might be because there's a count observation model
+                        // If DV lacks a mapping, this might be because there's a categorical/count observation model
                         if (!this->count_omodel_symbols.empty()) {
+                            if (this->count_omodel_symbols.size() > 1) {
+                                this->logger->warning("No mapping from 'dv' column to observation and more than one count observation model; Assuming first");
+                            }
+
                             std::string target = count_omodel_symbols[0];
+                            this->count_omodel_symbols.erase(this->count_omodel_symbols.begin());
+
                             form.add("variable = " + target);
                             declared_vars.insert(target + suffix);
-                            this->count_omodel_symbols.pop_back();
-                            if (this->count_omodel_symbols.size() > 1) {
-                                this->logger->warning("No mapping from 'dv' column to observation, and more than one count observation model; Assuming first");
+                        } else if (!this->categorical_omodel_symbols.empty()) {
+                            if (this->categorical_omodel_symbols.size() > 1) {
+                                this->logger->warning("No mapping from 'dv' column to observation and more than one categorical observation model; Assuming first");
                             }
+
+                            std::string target = categorical_omodel_symbols[0].first;
+                            std::vector<std::shared_ptr<Category>> categories = categorical_omodel_symbols[0].second;
+                            this->categorical_omodel_symbols.erase(this->categorical_omodel_symbols.begin());
+
+                            TextFormatter cat_form;
+                            cat_form.noFinalNewline();
+                            cat_form.openVector("withCategories {}", 0, ", ");
+                            form.openVector("define = {}", 0, ", ");
+                            int num = 0;
+                            for (auto const &category : categories) {
+                                // TODO: Is this really how PharmML is meant to be understood? Is it implicit from the dataset type? Concerns count data mapping above as well.
+                                form.add(target + "." + category->getName() + " when " + std::to_string(num++));
+                                cat_form.add(category->getName());
+                            }
+                            cat_form.closeVector();
+                            form.closeVector();
+                            declared_vars.insert(target + " " + cat_form.createString());
                         } else {
-                            this->logger->error("No mapping from 'dv' column to observation, but no count observation models available");
+                            this->logger->error("No mapping from 'dv' column to observation, but no categorical/count observation models available");
                         }
                     }
                     form.closeVector();
@@ -1212,21 +1241,54 @@ namespace pharmmlcpp
                     form.add(obs_name + " = " + this->accept(assignment));
                 }
             } else if (om->isCount()) {
-                std::string count_var = om->getCountVariableSymbId();
+                std::string var = om->getCountVariableSymbId();
                 std::string link_func = om->getCountPMFLinkFunction();
-                Distribution *count_dist = om->getCountPMFDistribution();
+                Distribution *dist = om->getCountPMFDistribution();
 
                 form.openVector(":: {}", 0, ", ");
                 form.add("type is count");
                 if (link_func != "identity") {
                     form.add("linkFunction = " + link_func);
                 }
-                form.add("variable = " + count_var);
+                form.add("variable = " + var);
 
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
-                rand_var_form.openVector(count_var + " ~ " + count_dist->getName() + "()", 0, ", ");
-                for (DistributionParameter *dist_param : count_dist->getDistributionParameters()) {
+                rand_var_form.openVector(var + " ~ " + dist->getName() + "()", 0, ", ");
+                for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
+                    std::string name = dist_param->getName();
+                    std::string expr = this->accept(dist_param->getAssignment().get());
+                    rand_var_form.add(name + " = " + expr);
+                }
+                rand_var_form.closeVector();
+                rand_var_form.noFinalNewline();
+                this->omodel_derived_rand_vars.push_back(rand_var_form.createString());
+
+                form.closeVector();
+            } else if (om->isCategorical()) {
+                std::string var = om->getCategoricalVariableSymbId();
+                std::string link_func = om->getCategoricalPMFLinkFunction();
+                Distribution *dist = om->getCategoricalPMFDistribution();
+
+                form.openVector(":: {}", 0, ", ");
+                form.add("type is discrete");
+                if (link_func != "identity") {
+                    form.add("linkFunction = " + link_func);
+                }
+                form.add("variable = " + var);
+
+                // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
+                TextFormatter cat_form;
+                cat_form.noFinalNewline();
+                cat_form.openVector("withCategories {}", 0, ", ");
+                for (auto const &category : om->getCategoricalCategories()) {
+                    cat_form.add(category->getName());
+                }
+                cat_form.closeVector();
+
+                TextFormatter rand_var_form;
+                rand_var_form.openVector(var + " " + cat_form.createString() + " ~ " + dist->getName() + "()", 0, ", ");
+                for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
                     rand_var_form.add(name + " = " + expr);

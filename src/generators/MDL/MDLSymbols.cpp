@@ -25,6 +25,7 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <symbols/Covariate.h>
+#include <symbols/Category.h>
 #include <symbols/FunctionDefinition.h>
 
 #include <generators/MDL/MDLAstGenerator.h>
@@ -123,6 +124,10 @@ namespace pharmmlcpp
 
     void MDLSymbols::visit(Covariate *node) {
         this->setValue(node->getName());
+    }
+
+    void MDLSymbols::visit(Category *node) {
+        this->setValue("." + node->getName());
     }
 
     void MDLSymbols::visit(FunctionDefinition *node) {

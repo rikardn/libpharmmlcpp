@@ -33,6 +33,7 @@ namespace pharmmlcpp
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
+    class Category;
 
     class FunctionDefinition;
     class FunctionArgumentDefinition;
@@ -47,6 +48,7 @@ namespace pharmmlcpp
             SymbolSet getCovariates();
             SymbolSet getIndividualParameters();
             SymbolSet getDesignParameters();
+            SymbolSet getCategories();
 
             void visit(ObservationModel *node) override;
             void visit(Parameter *node) override;
@@ -59,6 +61,7 @@ namespace pharmmlcpp
             void visit(DesignParameter *node) override;
             void visit(DerivativeVariable *node) override;
             void visit(Covariate *node) override;
+            void visit(Category *node) override;
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
 
@@ -70,6 +73,7 @@ namespace pharmmlcpp
             SymbolSet covariates;
             SymbolSet individualParameters;
             SymbolSet designParameters;
+            SymbolSet categories;
     };
 }
 

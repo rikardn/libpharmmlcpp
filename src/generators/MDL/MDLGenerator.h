@@ -121,6 +121,7 @@ namespace pharmmlcpp
             void visit(IndependentVariable *node) override;
             void visit(Variable *node) override;
             void visit(DerivativeVariable *node) override;
+            void visit(Category *node) override {};
             void visit(ObservationModel *node) override;
             void visit(Distribution *node) override;
             void visit(ColumnMapping *node) override;
@@ -174,8 +175,10 @@ namespace pharmmlcpp
             std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
             std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
 
-            std::vector<std::string> count_omodel_symbols; // FIXME: Ugly hack to counteract the lack of a direct reference from 'dv' column to count data observation models
-            std::vector<std::string> omodel_derived_rand_vars; // random variable statements defined by observation model (e.g. count poisson)
+            // FIXME: Ugly hack to counteract the lack of a direct reference from 'dv' column to categorical/count data observation models
+            std::vector<std::pair<std::string, std::vector<std::shared_ptr<Category>>>> categorical_omodel_symbols;
+            std::vector<std::string> count_omodel_symbols;
+            std::vector<std::string> omodel_derived_rand_vars; // random variable statements defined by observation model (e.g. categorical/count)
 
             EstimationStep *selected_est_step = nullptr;
             OptimalDesignStep *selected_opt_step = nullptr;

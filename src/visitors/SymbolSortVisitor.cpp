@@ -57,7 +57,7 @@ namespace pharmmlcpp {
         return this->designParameters;
     }
 
-    void SymbolSortVisitor::visit(ObservationModel *node) { 
+    void SymbolSortVisitor::visit(ObservationModel *node) {
     }
 
     void SymbolSortVisitor::visit(Parameter *node) {
@@ -95,6 +95,10 @@ namespace pharmmlcpp {
 
     void SymbolSortVisitor::visit(Covariate *node) {
         this->covariates.addSymbol(node);
+    }
+
+    void SymbolSortVisitor::visit(Category *node) {
+        this->categories.addSymbol(node);
     }
 
     void SymbolSortVisitor::visit(FunctionDefinition *node) {

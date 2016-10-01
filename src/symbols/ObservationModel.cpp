@@ -130,6 +130,42 @@ namespace pharmmlcpp
                 this->categoricalData = true;
 
                 // TODO: Support categorical data models
+                // Ordered categories or not?
+                xml::Attribute ordered_attr = cat_node.getAttribute("ordered");
+                if (ordered_attr.exists()) {
+                    this->categorical_ordered = ordered_attr.getValue() == "yes" ? true : false;
+                } else {
+                    // FIXME: Enable logging here. It seems reasonable that lack of the attribute would mean that categories are NOT ordered, but it should be reported.
+                    // this->logger.warning("Categorical observation model does not contain attribute 'ordered'; Categories assumed to NOT be ordered", cat_node);
+                    this->categorical_ordered = false;
+                }
+
+                // Get all categories
+                xml::Node list_of_cats_node = reader.getSingleElement(cat_node, "./mdef:ListOfCategories");
+                for (xml::Node category_node : list_of_cats_node.getChildren()) {
+                    std::shared_ptr<Category> category = std::make_shared<Category>(reader, category_node);
+                    this->categorical_categories.push_back(category);
+                }
+
+                // Get the category variable
+                xml::Node categorical_var_node = reader.getSingleElement(cat_node, "./mdef:CategoryVariable");
+                this->categorical_variable = categorical_var_node.getAttribute("symbId").getValue();
+
+                // Get the distribution
+                xml::Node pmf_node = reader.getSingleElement(cat_node, "./mdef:PMF");
+                // TODO: Schema allows unbounded occurences of probability mass functions for count observations (but what that would mean?)
+                if (pmf_node.exists()) {
+                    xml::Attribute trans = pmf_node.getAttribute("transform");
+                    if (trans.exists()) {
+                        this->categorical_pmf_transform = trans.getValue();
+                    } else {
+                        this->categorical_pmf_transform = "identity"; // assumption
+                    }
+
+                    xml::Node dist_node = reader.getSingleElement(pmf_node, "./mdef:Distribution");
+                    std::unique_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
+                    this->categorical_pmf_distribution = std::move(dist);
+                }
             } else if (cnt_node.exists()) {
                 // Count data model
                 this->countData = true;
@@ -149,6 +185,7 @@ namespace pharmmlcpp
                         this->count_pmf_transform = "identity"; // assumption
                     }
 
+                    // FIXME: PMF for count data can be e.g. assignment instead of distribution!
                     xml::Node dist_node = reader.getSingleElement(pmf_node, "./mdef:Distribution");
                     std::unique_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
                     this->count_pmf_distribution = std::move(dist);
@@ -226,8 +263,11 @@ namespace pharmmlcpp
             for (DistributionParameter *par : this->count_pmf_distribution->getDistributionParameters()) {
                 this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
             }
-        }
-        if (this->standardErrorModel) {
+        } else if (this->isCategorical()) {
+            for (DistributionParameter *par : this->categorical_pmf_distribution->getDistributionParameters()) {
+                this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
+            }
+        } else if (this->standardErrorModel) {
             this->addSymbRef(this->output, gathering, blkId);
             this->setupAstSymbRefs(this->errorModel.get(), gathering, blkId);
             this->setupAstSymbRefs(this->residualError, gathering, blkId);

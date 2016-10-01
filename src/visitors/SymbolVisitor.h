@@ -31,6 +31,7 @@ namespace pharmmlcpp
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
+    class Category;
 
     class FunctionDefinition;
     class FunctionArgumentDefinition;
@@ -49,6 +50,7 @@ namespace pharmmlcpp
             virtual void visit(DesignParameter *node) = 0;
             virtual void visit(DerivativeVariable *node) = 0;
             virtual void visit(Covariate *node) = 0;
+            virtual void visit(Category *node) = 0;
 
             virtual void visit(FunctionDefinition *node) = 0;
             virtual void visit(FunctionArgumentDefinition *node) = 0;

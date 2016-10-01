@@ -47,6 +47,7 @@ libpharmmlcpp_a_SOURCES = \
 	src/PharmML/StructuralModel.cpp \
 	src/PharmML/TrialDesign.cpp \
 	src/PharmML/VariabilityModel.cpp \
+	src/symbols/Category.cpp \
 	src/symbols/Covariate.cpp \
 	src/symbols/DerivativeVariable.cpp \
 	src/symbols/FunctionDefinition.cpp \

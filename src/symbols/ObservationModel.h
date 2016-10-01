@@ -25,6 +25,7 @@
 #include <visitors/SymbolVisitor.h>
 #include <PharmML/Distribution.h>
 #include <symbols/VariabilityLevel.h>
+#include <symbols/Category.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Block.h>
 
@@ -66,6 +67,13 @@ namespace pharmmlcpp
             std::string getCountVariableSymbId() { return this->count_variable; };
             std::string getCountPMFLinkFunction() { return this->count_pmf_transform; };
             Distribution *getCountPMFDistribution() { return this->count_pmf_distribution.get(); };
+
+            // Categorical data accessors
+            bool isOrderedCategorical() { return this->categorical_ordered; };
+            std::vector<std::shared_ptr<Category>> getCategoricalCategories() { return this->categorical_categories; };
+            std::string getCategoricalVariableSymbId() { return this->categorical_variable; };
+            std::string getCategoricalPMFLinkFunction() { return this->categorical_pmf_transform; };
+            Distribution *getCategoricalPMFDistribution() { return this->categorical_pmf_distribution.get(); };
 
             // Convenience methods
             SymbolSet getNeededSymbols();
@@ -109,6 +117,13 @@ namespace pharmmlcpp
             std::string count_variable;
             std::string count_pmf_transform; // link functions: identity, log, logit, probit, loglog or comploglog
             std::unique_ptr<Distribution> count_pmf_distribution;
+
+            // Categorical data
+            bool categorical_ordered;
+            std::vector<std::shared_ptr<Category>> categorical_categories;
+            std::string categorical_variable;
+            std::string categorical_pmf_transform; // link functions: identity, log, logit, probit, loglog or comploglog
+            std::unique_ptr<Distribution> categorical_pmf_distribution;
     };
 }
 

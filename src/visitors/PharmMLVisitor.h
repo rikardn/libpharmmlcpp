@@ -30,6 +30,7 @@ namespace pharmmlcpp
     class Correlation;
     class Variable;
     class DerivativeVariable;
+    class Category;
     class IndependentVariable;
     class Covariate;
     class ObservationModel;
@@ -81,6 +82,7 @@ namespace pharmmlcpp
             virtual void visit(IndependentVariable *node) = 0;
             virtual void visit(Variable *node) = 0;
             virtual void visit(DerivativeVariable *node) = 0;
+            virtual void visit(Category *node) = 0;
             virtual void visit(ObservationModel *node) = 0;
             virtual void visit(Distribution *node) = 0;
             virtual void visit(ColumnMapping *node) = 0;

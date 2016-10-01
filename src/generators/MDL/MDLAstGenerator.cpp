@@ -107,7 +107,7 @@ namespace pharmmlcpp
     void MDLAstGenerator::visit(SymbRef *node) {
         Symbol *symbol = node->getSymbol();
         if (symbol != nullptr) {
-            this->setValue(symbol->getSymbId());
+            this->setValue(symbol->getName());
         } else {
             this->setValue("UNDEF");
         }

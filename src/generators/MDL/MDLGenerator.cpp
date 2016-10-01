@@ -854,7 +854,7 @@ namespace pharmmlcpp
         std::vector<CommonVariable *> vars = structuralModel->getVariables();
         SymbolSet var_set(std::unordered_set<Symbol *>(vars.begin(), vars.end()));
         for (Symbol *var : var_set.getOrdered()) {
-            // FIXME: Think about MDLSymbols... Is it needed? It appears to ONLY be used here. Why?
+            // FIXME: Think about MDLSymbols... Is it needed?
             var->accept(this->symb_gen.get());
             form.addMany(symb_gen->getValue());
         }
@@ -1266,6 +1266,11 @@ namespace pharmmlcpp
 
                 form.closeVector();
             } else if (om->isCategorical()) {
+                if (om->isOrderedCategorical()) {
+                    // TODO: Support ordered categorical observation models
+                    this->logger->error("Ordered categorical observation models are unsupported currently", om.get());
+                }
+
                 std::string var = om->getCategoricalVariableSymbId();
                 std::string link_func = om->getCategoricalPMFLinkFunction();
                 Distribution *dist = om->getCategoricalPMFDistribution();
@@ -1732,7 +1737,7 @@ namespace pharmmlcpp
             }
 
             if (node->isLinear()) {
-                 // Get population value (how is 'grp' with 'general' in MDL translated to PharmML?)
+                // Get population value
                 std::string pop = this->accept(node->getPopulationValue().get());
                 form.add("pop = " + pop);
 
@@ -1783,6 +1788,10 @@ namespace pharmmlcpp
                     form.addMany(fix_effs);
                     form.closeVector();
                 }
+            } else if (node->isGeneral()) {
+                // Get "group" value
+                std::string group = this->accept(node->getAssignment().get());
+                form.add("grp = " + group);
             }
 
             // Get random effects

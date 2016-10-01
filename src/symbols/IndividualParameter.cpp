@@ -131,12 +131,8 @@ namespace pharmmlcpp
                 // General covariate model -- type 2
                 this->is_general_cov = true;
 
-                // Get population value
-                xml::Node assign = reader.getSingleElement(gen, "./mdef:PopulationValue/ct:Assign");
-                this->populationValue = reader.factory.create(reader, assign.getChild());
-
                 // Get general covariate definition (should not contain any random variable references)
-                assign = reader.getSingleElement(gen, "./ct:Assign");
+                xml::Node assign = reader.getSingleElement(gen, "./ct:Assign");
                 this->generalAssignment = reader.factory.create(reader, assign);
             }
 
@@ -259,7 +255,7 @@ namespace pharmmlcpp
 
                 auto exp_node = std::make_unique<UniopExp>();
                 exp_node->setChild(std::unique<AstNode>(AstBuilder::addMany(addition_nodes)));
-                result = exp_node.get(); 
+                result = exp_node.get();
             }*/
         }
 

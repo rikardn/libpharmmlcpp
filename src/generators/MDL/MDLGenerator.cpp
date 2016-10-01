@@ -323,7 +323,6 @@ namespace pharmmlcpp
                             }
                         } else if (col_type == "dv") {
                             // 'dv' columns seems to expect this to be of type 'dvid' (often called 'DVID')
-                            // FIXME: MultipleDVMapping is often (always?) used instead of TargetMapping in the ColumnMapping itself!
                             auto got = columns_of_type.find("dvid");
                             if (got == columns_of_type.end()) {
                                 this->logger->error("Observation column '" + col_id + "' maps multiple symbols but no 'dvid' type column found (containing data symbols)", ds);
@@ -357,7 +356,7 @@ namespace pharmmlcpp
                                 std::vector<int> codes = multi_dv_map->getCodesInColumn(column);
                                 for (int code : codes) {
                                     SymbRef *om_symbref = multi_dv_map->getObservationSymbRef(code, column);
-                                    std::string target = this->accept(om_symbref);
+                                    std::string target = om_symbref->getSymbol()->getName();
                                     form.add(std::to_string(code) + " in " + column + " as " + target);
                                     declared_vars.insert(target + suffix);
                                 }

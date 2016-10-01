@@ -1244,7 +1244,18 @@ namespace pharmmlcpp
             auto opt_steps = mstep->getOptimalDesignSteps();
             if (est_steps.size() > 0) {
                 form.openVector("ESTIMATE {}", 1, "");
-                form.add("set algo is saem");
+                auto operations = est_steps[0]->getOperations();
+                if (operations.size() > 0 && operations[0]->getType() == "generic") {
+                    if (operations[0]->getType() != "generic") {
+                        // non-generic targets require settings within another block, TARGET_SETTINGS(target="target")
+                        form.openVector("TARGET_SETTINGS(target=\"" + operations[0]->getType() + "\") {}", 1, ",");
+                    }
+                    this->addProperties(form, operations[0]->getProperties());
+                    form.closeVector();
+                } else {
+                    // estimation step but no settings, default to saem at least
+                    form.add("set algo is saem");
+                }
                 form.closeVector();
             } else if (opt_steps.size() > 0) {
                 auto operations = opt_steps[0]->getOperations();
@@ -1252,10 +1263,11 @@ namespace pharmmlcpp
                     std::string type = operations[0]->getType();
                     if (type == "evaluation") {
                         form.openVector("EVALUATE {}", 1, "");
+                        // note that optimal design properties are wrapped within an algorithm determining target (as opposed to the type directly as for estimations)
                         auto algo = operations[0]->getAlgorithm();
                         if (algo) {
                             form.openVector("TARGET_SETTINGS(target=\"" + algo->getDefinition() + "\") {}", 1, ",");
-                            this->addProperties(form, algo);
+                            this->addProperties(form, algo->getProperties());
                             form.closeVector();
                         }
                         form.closeVector();
@@ -1268,16 +1280,23 @@ namespace pharmmlcpp
         return form.createString();
     }
 
-    void MDLGenerator::addProperties(TextFormatter &form, Algorithm *algo) {
+    void MDLGenerator::addProperties(TextFormatter &form, const std::vector<OperationProperty *> &props) {
         bool first = true;
-        for (auto prop : algo->getProperties()) {
+        for (auto prop : props) {
             std::string name = prop->getName();
             if (first) {
                 name = "set " + name;
                 first = false;
             }
             std::string value = this->accept(prop->getAssignment().get());
-            form.add(name + " = " + value);
+            if (name == "set algo") {
+                // no quotes for algorithm name
+                if (*(value.begin()) == '"' && *(value.rbegin()) == '"')
+                    value = value.substr(1, value.length() - 2);
+                form.add(name + " is " + value);
+            } else {
+                form.add(name + " = " + value);
+            }
         }
     }
 

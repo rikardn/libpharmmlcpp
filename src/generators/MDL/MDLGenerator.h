@@ -107,7 +107,7 @@ namespace pharmmlcpp
             std::string genDesignDeclaredVariables();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
-            void addProperties(TextFormatter &form, Algorithm *algo);
+            void addProperties(TextFormatter &form, const std::vector<OperationProperty *> &props);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;

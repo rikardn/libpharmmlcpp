@@ -66,8 +66,7 @@ namespace pharmmlcpp
 
     // Get VariabilityLevel's in dependency order (parents first, children last)
     // TODO: Consider if cross-reference between VariabilityModel's could be a problem?
-    // TODO: Consider what it means to have ->isReferenceLevel() == true for a VariabilityLevel?
-    std::vector<pharmmlcpp::VariabilityLevel *> VariabilityModel::getVariabilityLevelHierarchy() {
+    std::vector<VariabilityLevel *> VariabilityModel::getVariabilityLevelHierarchy() {
         // Build associative set of level->parent_level_symbol
         std::unordered_map<pharmmlcpp::VariabilityLevel *, pharmmlcpp::Symbol *> parent;
         for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
@@ -78,11 +77,11 @@ namespace pharmmlcpp
         }
 
         // Build dependency chain via adding and depleting list of levels
-        std::vector<pharmmlcpp::VariabilityLevel *> chain;
+        std::vector<VariabilityLevel *> chain;
         std::unordered_map<pharmmlcpp::Symbol *, bool> added;
         size_t last_num_added = added.size();
         do {
-            for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
+            for (VariabilityLevel *level : this->variabilityLevels) {
                 // Don't add duplicates
                 if (!added[level]) {
                     // If level has no parent, it is top-level and should be added first
@@ -99,7 +98,7 @@ namespace pharmmlcpp
             }
             // Check if depletion has stagnated -> non-resolvable dependencies
             if (added.size() == last_num_added) {
-                for (pharmmlcpp::VariabilityLevel *level : this->variabilityLevels) {
+                for (VariabilityLevel *level : this->variabilityLevels) {
                     if (!added[level]) {
                         // FIXME: How access to a logger?
                         // this->logger("VariabilityLevel could not be included in hiearchy due to parent not existing", level);
@@ -112,6 +111,15 @@ namespace pharmmlcpp
             }
         } while (chain.size() < this->variabilityLevels.size());
         return chain;
+    }
+
+    VariabilityLevel *VariabilityModel::getReferenceLevel() {
+        for (VariabilityLevel *level : this->variabilityLevels) {
+             if (level->isReferenceLevel()) {
+                 return level;
+             }
+        }
+        return nullptr;
     }
 
     void VariabilityModel::gatherSymbols(SymbolGathering &gathering) {

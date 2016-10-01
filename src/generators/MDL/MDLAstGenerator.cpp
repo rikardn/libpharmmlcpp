@@ -160,11 +160,11 @@ namespace pharmmlcpp
     }
 
     void MDLAstGenerator::visit(UniopLogistic *node) {
-        this->setValue("(1/(1 + exp(-" + this->acceptChild(node) + ")))");
+        this->setValue("invLogit(" + this->acceptChild(node) + ")");
     }
 
     void MDLAstGenerator::visit(UniopLogit *node) {
-        this->setValue("ln((" + this->acceptChild(node) + ")/(1 - " + this->acceptChild(node) + "))");
+        this->setValue("logit(" + this->acceptChild(node) + ")");
     }
 
     void MDLAstGenerator::visit(UniopProbit *node) {

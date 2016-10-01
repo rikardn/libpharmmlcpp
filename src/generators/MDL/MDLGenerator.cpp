@@ -1266,6 +1266,40 @@ namespace pharmmlcpp
 
                 form.closeVector();
             } else if (om->isCategorical()) {
+                std::string var = om->getCategoricalVariableSymbId();
+                std::string link_func = om->getCategoricalPMFLinkFunction();
+                Distribution *dist = om->getCategoricalPMFDistribution();
+
+                form.openVector(":: {}", 0, ", ");
+                form.add("type is discrete");
+                if (link_func != "identity") {
+                    form.add("linkFunction = " + link_func);
+                }
+                form.add("variable = " + var);
+
+                // FIXME: withCategories is present in many places, should probably be a method
+                TextFormatter cat_form;
+                cat_form.noFinalNewline();
+                cat_form.openVector("withCategories {}", 0, ", ");
+                for (auto const &category : om->getCategoricalCategories()) {
+                    cat_form.add(category->getName());
+                }
+                cat_form.closeVector();
+
+                // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
+                TextFormatter rand_var_form;
+                rand_var_form.openVector(var + " ~ " + dist->getName() + "()", 0, ", ");
+                for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
+                    std::string name = dist_param->getName();
+                    std::string expr = this->accept(dist_param->getAssignment().get());
+                    rand_var_form.add(name + " = " + expr);
+                }
+                rand_var_form.closeVector();
+                rand_var_form.noFinalNewline();
+                this->omodel_derived_rand_vars.push_back(rand_var_form.createString());
+
+                form.closeVector();
+            } else if (om->isCategorical()) {
                 if (om->isOrderedCategorical()) {
                     // TODO: Support ordered categorical observation models
                     this->logger->error("Ordered categorical observation models are unsupported currently", om.get());
@@ -1282,7 +1316,7 @@ namespace pharmmlcpp
                 }
                 form.add("variable = " + var);
 
-                // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
+                // FIXME: withCategories is present in many places, should probably be a method
                 TextFormatter cat_form;
                 cat_form.noFinalNewline();
                 cat_form.openVector("withCategories {}", 0, ", ");
@@ -1291,6 +1325,7 @@ namespace pharmmlcpp
                 }
                 cat_form.closeVector();
 
+                // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
                 rand_var_form.openVector(var + " " + cat_form.createString() + " ~ " + dist->getName() + "()", 0, ", ");
                 for (DistributionParameter *dist_param : dist->getDistributionParameters()) {

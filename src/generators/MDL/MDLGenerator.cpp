@@ -892,11 +892,11 @@ namespace pharmmlcpp
         std::vector<pharmmlcpp::PKMacro *> cmt_trans_macros; // To contain both of the above in good order
         for (pharmmlcpp::PKMacro *cmt_macro : cmt_macros) {
             mdl_cmt[cmt_macro] = mdl_cmt_iterator++;
+            cmt_trans_macros.push_back(cmt_macro);
 
             // Find transfers FROM this compartment
             int cmt_num = cmt_macro->getCmtNum();
             for (pharmmlcpp::PKMacro *trans_macro : trans_macros) {
-                cmt_trans_macros.push_back(cmt_macro);
                 if (cmt_num == trans_macro->getSourceNum()) {
                     cmt_trans_macros.push_back(trans_macro);
                 }
@@ -917,9 +917,10 @@ namespace pharmmlcpp
             std::string target_name = pk_macros->getCompartment(target_num)->getName();
 
             // Add differently if depot-ish administration or direct (IV)
+            std::string model_cmt_string; // depreceated in MDL but output as comment
             if (macro->getSubType() != MacroType::IV) {
                 form.add("type is depot");
-                form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
+                model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[macro]);
 
                 // Output compartment target
                 form.add("to=" + target_name);
@@ -966,9 +967,11 @@ namespace pharmmlcpp
                 }
             }
             form.closeVector();
+            form.append(" # " + model_cmt_string);
         }
 
         // Output compartments and mass transfers (in a order of transfers directly following associated compartment)
+        std::string model_cmt_string; // depreceated in MDL but output as comment
         for (pharmmlcpp::PKMacro *macro : cmt_trans_macros) {
             if (macro->isCompartment()) { // Treat all compartments similarly
                 // Construct enclosure
@@ -987,7 +990,7 @@ namespace pharmmlcpp
                 } else if (type ==  "Effect") {
                     form.add("type is effect");
                 }
-                form.add("modelCmt=" + std::to_string(mdl_cmt[macro]));
+                model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[macro]);
 
                 // Get parameterization
                 AstNode *vol = macro->getAssignment("volume").get();
@@ -1044,6 +1047,7 @@ namespace pharmmlcpp
                 }
 
                 form.closeVector();
+                form.append(" # " + model_cmt_string);
             } else if (macro->isMassTransfer()) {
                 // Construct enclosure (mass transfers only have a colon as "name" in MDL)
                 std::string pad = std::string(max_length - 1, ' ');
@@ -1060,7 +1064,7 @@ namespace pharmmlcpp
                 // In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from
                 int source_num = macro->getSourceNum();
                 pharmmlcpp::PKMacro *from_macro = pk_macros->getCompartment(source_num);
-                form.add("modelCmt=" + std::to_string(mdl_cmt[from_macro]));
+                model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[from_macro]);
 
                 // Output source compartment
                 std::string from_name = pk_macros->getCompartment(source_num)->getName();
@@ -1102,20 +1106,13 @@ namespace pharmmlcpp
                 }
 
                 // Get transfer parameterization
-                AstNode *from = macro->getAssignment("from").get();
-                AstNode *to = macro->getAssignment("to").get();
                 AstNode *kt = macro->getAssignment("kt").get();
-                if (from) {
-                    form.add("from=" + this->accept(from));
-                }
-                if (to) {
-                    form.add("to=" + this->accept(to));
-                }
                 if (kt) {
                     form.add("kt=" + this->accept(kt));
                 }
 
                 form.closeVector();
+                form.append(" # " + model_cmt_string);
             }
         }
 

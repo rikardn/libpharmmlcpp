@@ -66,10 +66,12 @@ namespace pharmmlcpp
             void visit(IndependentVariable *node) override;
             void visit(Variable *node) override;
             void visit(DerivativeVariable *node) override;
+            void visit(Category *node) override {};
+            void visit(DiscreteVariable *node) override {};
             void visit(ObservationModel *node) override;
             void visit(Distribution *node) override;
             void visit(ColumnMapping *node) override;
-            void visit(MultipleDVMapping *node) override; 
+            void visit(MultipleDVMapping *node) override;
 
             void visit(ExternalFile *node) override;
             void visit(DataColumn *node) override;

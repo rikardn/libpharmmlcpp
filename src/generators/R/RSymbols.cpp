@@ -23,6 +23,7 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <symbols/Covariate.h>
+#include <symbols/Category.h>
 #include <symbols/FunctionDefinition.h>
 #include <generators/R/RSymbols.h>
 #include <iostream>
@@ -97,6 +98,14 @@ namespace pharmmlcpp
         } else {
             this->setValue("");
         }
+    }
+
+    void RSymbols::visit(Category *node) {
+        this->setValue(node->getName());
+    }
+
+    void RSymbols::visit(DiscreteVariable *node) {
+        this->setValue(node->getName());
     }
 
     void RSymbols::visit(FunctionDefinition *node) {

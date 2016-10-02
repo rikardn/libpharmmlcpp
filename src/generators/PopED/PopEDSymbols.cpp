@@ -24,6 +24,7 @@
 #include <symbols/Variable.h>
 #include <symbols/DerivativeVariable.h>
 #include <symbols/Covariate.h>
+#include <symbols/Category.h>
 #include <symbols/FunctionDefinition.h>
 
 namespace pharmmlcpp
@@ -74,6 +75,14 @@ namespace pharmmlcpp
     }
 
     void PopEDSymbols::visit(Covariate *node) {
+        this->setValue(node->getName());
+    }
+
+    void PopEDSymbols::visit(Category *node) {
+        this->setValue(node->getName());
+    }
+
+    void PopEDSymbols::visit(DiscreteVariable *node) {
         this->setValue(node->getName());
     }
 

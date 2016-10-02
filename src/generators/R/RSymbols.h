@@ -37,6 +37,8 @@ namespace pharmmlcpp
     class DerivativeVariable;
     class IndependentVariable;
     class Covariate;
+    class Category;
+    class DiscreteVariable;
 
     class FunctionDefinition;
     class FunctionArgumentDefinition;
@@ -58,10 +60,12 @@ namespace pharmmlcpp
             void visit(DesignParameter *node) override;
             void visit(DerivativeVariable *node) override;
             void visit(Covariate *node) override;
+            void visit(Category *node) override;
+            void visit(DiscreteVariable *node) override;
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;
-    
+
         private:
             RAstGenerator *astgen;
     };

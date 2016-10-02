@@ -82,7 +82,7 @@ namespace pharmmlcpp
 
             std::string toString();
 
-            // FIXME: Implement Category class and referencing system
+            // FIXME: Use implemented Category class in new reference system
             // void setCategory(Category *category);
             // Category *getCategory();
 
@@ -93,7 +93,7 @@ namespace pharmmlcpp
         private:
             std::string blkIdRef;
             std::string catRef;
-            // Category *category = nullptr; // FIXME: Implement Category object and reference system (Category in Categorical in Covariate)
+            // Category *category = nullptr; // FIXME: Use implemented Category class in new reference system
     };
 }
 

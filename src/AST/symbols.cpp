@@ -186,7 +186,7 @@ namespace pharmmlcpp
         }
     }
 
-    // FIXME: Implement Category object and reference system (Category in Categorical in Covariate)
+    // FIXME: Use implemented Category class in new reference system
     // #<{(|*
     //  *  Set the category to which this CatRef refers
     //  *  This is done by the setup methods and should
@@ -212,7 +212,7 @@ namespace pharmmlcpp
         this->blkIdRef = blkId;
     }
 
-    // FIXME: Implement Category class and referencing system
+    // FIXME: Use implemented Category class in new reference system
     // #<{(|*
     //  *  Get a pointer to the category to which this CatRef refers
     //  |)}>#

@@ -108,6 +108,7 @@ namespace pharmmlcpp
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
             void addProperties(TextFormatter &form, const std::vector<OperationProperty *> &props);
+            std::string genWithCategoriesVector(const std::vector<std::shared_ptr<Category>> &categories);
 
             void visit(FunctionDefinition *node) override;
             void visit(FunctionArgumentDefinition *node) override;

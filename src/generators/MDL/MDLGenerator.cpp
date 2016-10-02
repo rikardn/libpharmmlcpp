@@ -391,19 +391,14 @@ namespace pharmmlcpp
                             std::vector<std::shared_ptr<Category>> categories = categorical_omodel_symbols[0].second;
                             this->categorical_omodel_symbols.erase(this->categorical_omodel_symbols.begin());
 
-                            TextFormatter cat_form;
-                            cat_form.noFinalNewline();
-                            cat_form.openVector("withCategories {}", 0, ", ");
                             form.openVector("define = {}", 0, ", ");
                             int num = 0;
                             for (auto const &category : categories) {
                                 // TODO: Is this really how PharmML is meant to be understood? Is it implicit from the dataset type? Concerns count data mapping above as well.
                                 form.add(target + "." + category->getName() + " when " + std::to_string(num++));
-                                cat_form.add(category->getName());
                             }
-                            cat_form.closeVector();
                             form.closeVector();
-                            declared_vars.insert(target + " " + cat_form.createString());
+                            declared_vars.insert(target + " " + genWithCategoriesVector(categories));
                         } else {
                             this->logger->error("No mapping from 'dv' column to observation, but no categorical/count observation models available");
                         }
@@ -626,6 +621,7 @@ namespace pharmmlcpp
             if (cat_got == this->categorical_covariates.end()) {
                 definition += assign_expr;
             } else {
+                // TODO: Use Category class in Covariate (now only used in cat observation model), resolve CategoryMapping in ColumnMapping and CatRef's to Category objects (e.g. UC5)
                 definition += " withCategories ";
                 TextFormatter cat_form;
                 cat_form.noFinalNewline();
@@ -1283,18 +1279,9 @@ namespace pharmmlcpp
                 }
                 form.add("variable = " + var->getName());
 
-                // FIXME: withCategories is present in many places, should probably be a method
-                TextFormatter cat_form;
-                cat_form.noFinalNewline();
-                cat_form.openVector("withCategories {}", 0, ", ");
-                for (auto const &category : om->getCategoricalCategories()) {
-                    cat_form.add(category->getName());
-                }
-                cat_form.closeVector();
-
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
-                rand_var_form.openVector(var->getName() + " " + cat_form.createString() + " ~ " + dist->getName() + "()", 0, ", ");
+                rand_var_form.openVector(var->getName() + " " + genWithCategoriesVector(om->getCategoricalCategories()) + " ~ " + dist->getName() + "()", 0, ", ");
                 for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
@@ -1388,6 +1375,18 @@ namespace pharmmlcpp
                 form.add(name + " = " + value);
             }
         }
+    }
+
+    /// Generate the string of form "withCategories {male, female}" utilized in several places
+    std::string MDLGenerator::genWithCategoriesVector(const std::vector<std::shared_ptr<Category>> &categories) {
+        TextFormatter cat_form;
+        cat_form.noFinalNewline();
+        cat_form.openVector("withCategories {}", 0, ", ");
+        for (auto const &category : categories) {
+            cat_form.add(category->getName());
+        }
+        cat_form.closeVector();
+        return cat_form.createString();
     }
 
     std::string MDLGenerator::genDesignObj(PharmML *model) {
@@ -1770,6 +1769,7 @@ namespace pharmmlcpp
                         }
                         coeffs.push_back(coeff);
 
+                        // FIXME: Use implemented Category class in Covariate class instead of direct string
                         if (fix_eff->getCategory() == "") {
                             cov_ref = this->accept(covariate);
                         } else {

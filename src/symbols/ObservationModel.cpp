@@ -124,7 +124,7 @@ namespace pharmmlcpp
 
             xml::Node cat_node = reader.getSingleElement(disc_node, "./mdef:CategoricalData");
             xml::Node cnt_node = reader.getSingleElement(disc_node, "./mdef:CountData");
-            //TODO: xml::Node tte_node = this->context->getSingleElement(disc_node, "./mdef:TimeToEventData");
+            xml::Node tte_node = reader.getSingleElement(disc_node, "./mdef:TimeToEventData");
             if (cat_node.exists()) {
                 // Categorical data model
                 this->categoricalData = true;
@@ -185,16 +185,41 @@ namespace pharmmlcpp
                         this->count_pmf_transform = "identity"; // assumption
                     }
 
-                    // FIXME: PMF for count data can be e.g. assignment instead of distribution!
+                    // FIXME: PMF for count data can be e.g. assignment instead of distribution (just like hazard/survival function for TTE)!
                     xml::Node dist_node = reader.getSingleElement(pmf_node, "./mdef:Distribution");
                     std::unique_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
                     this->count_pmf_distribution = std::move(dist);
                 }
-            } else {
+            } else if (tte_node.exists()) {
                 // Time-to-event data model
                 this->tteData = true;
 
-                // TODO: Support TTE data models
+                // Get the event variable
+                xml::Node tte_var_node = reader.getSingleElement(tte_node, "./mdef:EventVariable");
+                this->tte_variable = std::make_shared<DiscreteVariable>(reader, tte_var_node);
+
+                // TODO: With continuous data the entire observation model acts as one symbol. With count, categorical and tte
+                //       the situation is more convoluted. The symbId is carried by the DiscreteVariable object above which is
+                //       its own Symbol derived class now. Until further notice, the following re-parse hack resolves the issue:
+                this->Symbol::parse(tte_var_node);
+
+                // Get the hazard function
+                xml::Node haz_node = reader.getSingleElement(tte_node, "./mdef:HazardFunction");
+                // TODO: Schema allows unbounded occurences of hazard functions for tte observations (but what that would mean?)
+                if (haz_node.exists()) {
+                    // Hazard (or survival) function acts like a symbol but doesn't seem to be generally refered
+                    // TODO: Create Symbol-derived class if a referal is seen in some model
+                    this->tte_haz_symbid = haz_node.getAttribute("symbId").getValue();
+
+                    xml::Node dist_node = reader.getSingleElement(haz_node, "./mdef:Distribution");
+                    xml::Node assign_node = reader.getSingleElement(haz_node, "./ct:Assign");
+                    if (dist_node.exists()) {
+                        std::shared_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
+                        this->tte_haz_distribution = std::move(dist);
+                    } else {
+                        this->tte_haz_assignment = reader.factory.create(reader, assign_node.getChild());
+                    }
+                }
             }
         }
     }
@@ -266,6 +291,14 @@ namespace pharmmlcpp
         } else if (this->isCategorical()) {
             for (DistributionParameter *par : this->categorical_pmf_distribution->getDistributionParameters()) {
                 this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
+            }
+        } else if (this->isTTE()) {
+            if (this->tte_haz_assignment) {
+                this->setupAstSymbRefs(this->tte_haz_assignment.get(), gathering, blkId);
+            } else if (this->tte_haz_distribution) {
+                for (DistributionParameter *par : this->tte_haz_distribution->getDistributionParameters()) {
+                    this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
+                }
             }
         } else if (this->standardErrorModel) {
             this->addSymbRef(this->output, gathering, blkId);

@@ -130,6 +130,10 @@ namespace pharmmlcpp
         this->setValue("." + node->getName());
     }
 
+    void MDLSymbols::visit(DiscreteVariable *node) {
+        this->setValue(node->getName());
+    }
+
     void MDLSymbols::visit(FunctionDefinition *node) {
         this->setValue(node->getName());
     }

@@ -90,6 +90,7 @@ namespace pharmmlcpp
                 pair.second = obs_model->getCategoricalCategories();
                 this->categorical_omodel_symbols.push_back(pair);
             }
+            // TODO: Why is TTE's DiscreteVariable refered to directly when categorical/count's DiscreteVariable isn't?
         }
 
         // Generate the MDL data object(s)
@@ -1303,6 +1304,18 @@ namespace pharmmlcpp
                 rand_var_form.noFinalNewline();
                 this->omodel_derived_rand_vars.push_back(rand_var_form.createString());
 
+                form.closeVector();
+            } else if (om->isTTE()) {
+                std::shared_ptr<DiscreteVariable> var = om->getTTEVariable();
+                form.openVector(var->getName() + " : {}", 0, ", ");
+                form.add("type is tte");
+                if (om->hasTTEHazardFunction()) {
+                    // std::string haz_func_symbid = om->getTTEHazardFunctionSymbId(); // is this good for anything?
+                    if (om->getTTEHazardFunctionAssignment()) {
+                        std::shared_ptr<AstNode> haz_func = om->getTTEHazardFunctionAssignment();
+                        form.add("hazard = " + this->accept(haz_func.get()));
+                    }
+                }
                 form.closeVector();
             }
         }

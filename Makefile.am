@@ -50,6 +50,7 @@ libpharmmlcpp_a_SOURCES = \
 	src/symbols/Category.cpp \
 	src/symbols/Covariate.cpp \
 	src/symbols/DerivativeVariable.cpp \
+	src/symbols/DiscreteVariable.cpp \
 	src/symbols/FunctionDefinition.cpp \
 	src/symbols/IndependentVariable.cpp \
 	src/symbols/IndividualParameter.cpp \

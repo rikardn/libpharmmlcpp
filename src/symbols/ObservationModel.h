@@ -26,6 +26,7 @@
 #include <PharmML/Distribution.h>
 #include <symbols/VariabilityLevel.h>
 #include <symbols/Category.h>
+#include <symbols/DiscreteVariable.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Block.h>
 
@@ -74,6 +75,13 @@ namespace pharmmlcpp
             std::string getCategoricalVariableSymbId() { return this->categorical_variable; };
             std::string getCategoricalPMFLinkFunction() { return this->categorical_pmf_transform; };
             Distribution *getCategoricalPMFDistribution() { return this->categorical_pmf_distribution.get(); };
+
+            // TTE data accessors
+            std::shared_ptr<DiscreteVariable> getTTEVariable() { return this->tte_variable; };
+            bool hasTTEHazardFunction() { return this->tte_haz_symbid != ""; }; // otherwise likely survival function parameterization
+            std::string getTTEHazardFunctionSymbId() { return this->tte_haz_symbid; };
+            std::shared_ptr<Distribution> getTTEHazardFunctionDistribution() { return this->tte_haz_distribution; };
+            std::shared_ptr<AstNode> getTTEHazardFunctionAssignment() { return this->tte_haz_assignment; };
 
             // Convenience methods
             SymbolSet getNeededSymbols();
@@ -124,6 +132,12 @@ namespace pharmmlcpp
             std::string categorical_variable;
             std::string categorical_pmf_transform; // link functions: identity, log, logit, probit, loglog or comploglog
             std::unique_ptr<Distribution> categorical_pmf_distribution;
+
+            // TTE data
+            std::shared_ptr<DiscreteVariable> tte_variable;
+            std::string tte_haz_symbid;
+            std::shared_ptr<Distribution> tte_haz_distribution;
+            std::shared_ptr<AstNode> tte_haz_assignment;
     };
 }
 

@@ -101,6 +101,9 @@ namespace pharmmlcpp {
         this->categories.addSymbol(node);
     }
 
+    void SymbolSortVisitor::visit(DiscreteVariable *node) {
+    }
+
     void SymbolSortVisitor::visit(FunctionDefinition *node) {
     }
 

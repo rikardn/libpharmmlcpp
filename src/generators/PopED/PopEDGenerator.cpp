@@ -627,7 +627,7 @@ namespace pharmmlcpp
         RandomVariable *random = static_cast<RandomVariable*>(rand_var);
         AstAnalyzer analyzer;
         bool scalar = false;
-        for (DistributionParameter *dist_par : random->getDistribution()->getDistributionParameters()) {
+        for (auto const &dist_par : random->getDistribution()->getDistributionParameters()) {
             if (dist_par->getName() == "var") {
                 dist_par->getAssignment()->accept(&analyzer);
                 if (analyzer.getPureScalar()) {
@@ -670,7 +670,7 @@ namespace pharmmlcpp
 
                     if (found) {
                         AstNode *value;
-                        for (DistributionParameter *dist_par : rand_var->getDistribution()->getDistributionParameters()) {
+                        for (auto const &dist_par : rand_var->getDistribution()->getDistributionParameters()) {
                             if (dist_par->getName() == "var") {
                                 value = pop_param->getParameterEstimation()->getInitValue().get();
                             } else if (dist_par->getName() == "stdev") {

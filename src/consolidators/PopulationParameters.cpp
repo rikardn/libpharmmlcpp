@@ -164,11 +164,11 @@ namespace CPharmML
                         cpop_param->addRandomVariable(random_var);
 
                         // Get distribution for variable
-                        pharmmlcpp::Distribution *dist = random_var->getDistribution();
+                        std::shared_ptr<pharmmlcpp::Distribution> dist = random_var->getDistribution();
                         cpop_param->addDistributionName(dist->getName());
 
                         // Find DistributionParameter's referencing this PopulationParameter
-                        for (pharmmlcpp::DistributionParameter *dist_param: dist->getDistributionParameters()) {
+                        for (auto const &dist_param: dist->getAllDistributionParameters()) {
                             bool depends_on_pop = dist_param->refersIndirectlyTo(pop_param); // Try out the new Referer system
                             if (depends_on_pop) {
                                 cpop_param->addDistributionParameterType(dist_param->getName());

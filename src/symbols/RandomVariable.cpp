@@ -33,8 +33,8 @@ namespace pharmmlcpp
         }
         xml::Node dist_node = reader.getSingleElement(node, "./mdef:Distribution");
         if (dist_node.exists()) {
-            Distribution *distribution = new Distribution(reader, dist_node.getChild());
-            this->distribution = distribution;
+            std::shared_ptr<Distribution> dist = std::make_shared<Distribution>(reader, dist_node.getChild());
+            this->distribution = dist;
         }
     }
 
@@ -42,14 +42,17 @@ namespace pharmmlcpp
         return this->variabilityReferences;
     }
 
-    pharmmlcpp::Distribution *RandomVariable::getDistribution() {
+    std::shared_ptr<Distribution> RandomVariable::getDistribution() {
         return this->distribution;
     }
 
-
     void RandomVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
-        for (DistributionParameter *par : this->distribution->getDistributionParameters()) {
-            this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
+        if (this->distribution) {
+            // Get all (possibly nested) parameters in the distribution and setup symbrefs
+            std::vector<std::shared_ptr<DistributionParameter>> all_params = this->distribution->getAllDistributionParameters();
+            for (auto & param : all_params) {
+                this->setupAstSymbRefs(param->getAssignment().get(), gathering, blkId);
+            }
         }
         for (VariabilityReference *var_ref : this->getVariabilityReferences()) {
             var_ref->setupSymbRefs(gathering, blkId);
@@ -68,7 +71,7 @@ namespace pharmmlcpp
     // FIXME: Check which distribution
     // FIXME: Ownership, copy and smart pointers
     AstNode *RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
-        for (DistributionParameter *param : this->distribution->getDistributionParameters()) {
+        for (auto const &param : this->distribution->getDistributionParameters()) {
             if (param->getName() == "stdev") {
                 AstAnalyzer analyzer;
                 param->getAssignment()->accept(&analyzer);

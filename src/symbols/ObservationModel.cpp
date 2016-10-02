@@ -287,18 +287,18 @@ namespace pharmmlcpp
     void ObservationModel::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         // FIXME: Fill this
         if (this->isCount()) {
-            for (DistributionParameter *par : this->count_pmf_distribution->getDistributionParameters()) {
+            for (auto &par : this->count_pmf_distribution->getAllDistributionParameters()) {
                 this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
             }
         } else if (this->isCategorical()) {
-            for (DistributionParameter *par : this->categorical_pmf_distribution->getDistributionParameters()) {
+            for (auto &par : this->categorical_pmf_distribution->getAllDistributionParameters()) {
                 this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
             }
         } else if (this->isTTE()) {
             if (this->tte_haz_assignment) {
                 this->setupAstSymbRefs(this->tte_haz_assignment.get(), gathering, blkId);
             } else if (this->tte_haz_distribution) {
-                for (DistributionParameter *par : this->tte_haz_distribution->getDistributionParameters()) {
+                for (auto &par : this->tte_haz_distribution->getAllDistributionParameters()) {
                     this->setupAstSymbRefs(par->getAssignment().get(), gathering, blkId);
                 }
             }

@@ -25,21 +25,30 @@ namespace pharmmlcpp
     }
 
     void Distribution::parse(PharmMLReader &reader, xml::Node node) {
-        if (node.getName() == "ProbOnto") {
+        std::string name = node.getName();
+        if (name == "ProbOnto" || name == "MixtureComponent") {
             this->name = node.getAttribute("name").getValue();
-            std::vector<xml::Node> params = reader.getElements(node, ".//po:Parameter");
+
+            std::vector<xml::Node> params = reader.getElements(node, "./po:Parameter");
             for (xml::Node n : params) {
-                DistributionParameter *dist_param = new DistributionParameter(reader, n);
+                std::shared_ptr<DistributionParameter> dist_param = std::make_shared<DistributionParameter>(reader, n);
                 this->parameters.push_back(dist_param);
+            }
+
+            // Get mixture components (dist: MixtureDistribution) which just are nested Distribution objects
+            std::vector<xml::Node> mix_dists = reader.getElements(node, "./po:MixtureComponent");
+            for (xml::Node mix_dist : mix_dists) {
+                std::shared_ptr<Distribution> dist = std::make_shared<Distribution>(reader, mix_dist);
+                this->mixture_components.push_back(dist);
             }
         } else {
             // UncertML. Support only normal distribution and make lots of assumptions and hope that UncertML will go away.
             this->name = "Normal2";
-            auto mean_param = new DistributionParameter(reader);
+            auto mean_param = std::make_shared<DistributionParameter>(reader);
             mean_param->setAssignment(std::make_shared<ScalarReal>(node.getChild().getChild().getChild().getText()));
             mean_param->setName("mean");
             this->parameters.push_back(mean_param);
-            auto stdev_param = new DistributionParameter(reader);
+            auto stdev_param = std::make_shared<DistributionParameter>(reader);
             stdev_param->setAssignment(std::make_shared<SymbRef>(node.getChild().getLastChild().getChild().getAttribute("varId").getValue()));
             stdev_param->setName("var");
             this->parameters.push_back(stdev_param);
@@ -50,8 +59,29 @@ namespace pharmmlcpp
         return this->name;
     }
 
-    std::vector<DistributionParameter *> Distribution::getDistributionParameters() {
+    std::vector<std::shared_ptr<DistributionParameter>> Distribution::getDistributionParameters() {
         return this->parameters;
+    }
+
+    bool Distribution::hasMixtureComponents() {
+        return !this->mixture_components.empty();
+    }
+
+    std::vector<std::shared_ptr<Distribution>> Distribution::getMixtureComponents() {
+        return this->mixture_components;
+    }
+
+    /**
+     *  Get all nested distribution parameters (e.g. also within mixture components and their distributions).
+     *  Used for better setupSymbRef functionality in e.g. RandomVariable.
+     */
+    std::vector<std::shared_ptr<DistributionParameter>> Distribution::getAllDistributionParameters() {
+        std::vector<std::shared_ptr<DistributionParameter>> all_params = this->parameters;
+        for (auto const &mix_dist : this->mixture_components) {
+            std::vector<std::shared_ptr<DistributionParameter>> mix_params = mix_dist->getAllDistributionParameters();
+            all_params.insert(all_params.end(), mix_params.begin(), mix_params.end());
+        }
+        return all_params;
     }
 
     void Distribution::accept(PharmMLVisitor *visitor) {

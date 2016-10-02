@@ -33,16 +33,16 @@ namespace pharmmlcpp
             RandomVariable(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::vector<VariabilityReference *> getVariabilityReferences();
-            Distribution *getDistribution();
+            std::shared_ptr<Distribution> getDistribution();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
             AstNode *initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
-        
+
         private:
             std::vector<VariabilityReference *> variabilityReferences;
-            Distribution *distribution;
+            std::shared_ptr<Distribution> distribution;
     };
 }
 

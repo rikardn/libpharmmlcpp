@@ -1252,7 +1252,7 @@ namespace pharmmlcpp
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
                 rand_var_form.openVector(var->getName() + " ~ " + dist->getName() + "()", 0, ", ");
-                for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
+                for (auto const &dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
                     rand_var_form.add(name + " = " + expr);
@@ -1282,7 +1282,7 @@ namespace pharmmlcpp
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
                 rand_var_form.openVector(var->getName() + " " + genWithCategoriesVector(om->getCategoricalCategories()) + " ~ " + dist->getName() + "()", 0, ", ");
-                for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
+                for (auto const &dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
                     rand_var_form.add(name + " = " + expr);
@@ -1828,41 +1828,12 @@ namespace pharmmlcpp
     }
 
     void MDLGenerator::visit(RandomVariable *node) {
-        TextFormatter form;
-
         // Get name of random variable and associated distribution
         std::string name = node->getName();
-        pharmmlcpp::Distribution *dist = node->getDistribution();
+        auto const &dist = node->getDistribution();
 
-        // Try to handle Normal1/2 (stdev/var) of ProbOnto and warn if model steps outside
-        std::string dist_name = dist->getName();
-        std::vector<pharmmlcpp::DistributionParameter *> dist_params = dist->getDistributionParameters();
-        if (dist_name == "Normal1" || dist_name == "Normal2") {
-            form.openVector(name + " ~ Normal()", 0, ", ");
-            std::vector<std::string> unknown_param_types;
-            for (pharmmlcpp::DistributionParameter *dist_param : dist_params) {
-                std::string name = dist_param->getName();
-                std::string assign = this->accept(dist_param->getAssignment().get());
-                if (name == "mean") {
-                    form.add("mean = " + assign);
-                } else if (name == "stdev") {
-                    form.add("sd = " + assign);
-                } else if (name == "var") {
-                    form.add("var = " + assign);
-                } else {
-                    unknown_param_types.push_back(name);
-                }
-            }
-            form.closeVector();
-            if (!unknown_param_types.empty()) {
-                form.append(" # Unknown ProbOnto " + dist_name + " parameter type (" + form.createInlineVector(unknown_param_types, "", ", ") + ")!");
-            }
-        } else {
-            form.add(name + " # Unknown ProbOnto distribution (" + dist_name + ")!");
-        }
-
-        form.noFinalNewline();
-        this->setValue(form.createString());
+        dist->accept(this);
+        this->setValue(name + " ~ " + this->getValue());
     }
 
     void MDLGenerator::visit(VariabilityLevel *node) {
@@ -1909,7 +1880,45 @@ namespace pharmmlcpp
 
     void MDLGenerator::visit(ObservationModel *node) { }
 
-    void MDLGenerator::visit(Distribution *node) { }
+    void MDLGenerator::visit(Distribution *node) {
+        TextFormatter form;
+        form.noFinalNewline();
+
+        // Output distribution and parameters verbatim with the except of dist 'Normal1/2' and param 'stdev'
+        std::string dist_name = node->getName();
+        std::vector<std::shared_ptr<DistributionParameter>> dist_params = node->getDistributionParameters();
+        if (dist_name == "Normal1" || dist_name == "Normal2") {
+            dist_name = "Normal";
+        }
+        form.openVector(dist_name + "()", 0, ", ");
+        for (auto const &dist_param : dist_params) {
+            std::string name = dist_param->getName();
+            std::string assign = this->accept(dist_param->getAssignment().get());
+            if (name == "stdev") {
+                form.add("sd = " + assign);
+            } else {
+                form.add(name + " = " + assign);
+            }
+        }
+
+        // Add nested distributions if distribution (such as MixtureDistribution) has mixture components
+        if (node->hasMixtureComponents()) {
+            TextFormatter mix_form;
+            mix_form.noFinalNewline();
+
+            mix_form.openVector("distributions = []", 0, ", ");
+            for (auto const &dist : node->getMixtureComponents()) {
+                dist->accept(this);
+                mix_form.add(this->getValue());
+            }
+            mix_form.closeVector();
+
+            form.add(mix_form.createString());
+        }
+
+        form.closeVector();
+        this->setValue(form.createString());
+    }
 
     void MDLGenerator::visit(ColumnMapping *node) {
         std::string id = node->getColumnIdRef();

@@ -48,13 +48,19 @@ for each distribution.
         public:
             Distribution(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+
             std::string getName();
-            std::vector<DistributionParameter *> getDistributionParameters();
+            std::vector<std::shared_ptr<DistributionParameter>> getDistributionParameters();
+            bool hasMixtureComponents();
+            std::vector<std::shared_ptr<Distribution>> getMixtureComponents();
+
+            std::vector<std::shared_ptr<DistributionParameter>> getAllDistributionParameters();
             void accept(PharmMLVisitor *visitor);
 
         private:
             std::string name;
-            std::vector<DistributionParameter *> parameters;
+            std::vector<std::shared_ptr<DistributionParameter>> parameters;
+            std::vector<std::shared_ptr<Distribution>> mixture_components;
     };
 }
 

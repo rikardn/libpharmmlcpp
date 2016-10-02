@@ -196,7 +196,7 @@ namespace pharmmlcpp
 
     void RPharmMLGenerator::visit(Distribution *node) {
         std::string result = "distribution=\"" + node->getName() + "\"";
-        for (DistributionParameter *p : node->getDistributionParameters()) {
+        for (auto const &p : node->getDistributionParameters()) {
             result += ", " + p->getName() + "=" + this->accept(p->getAssignment().get());
         }
         this->setValue(result);

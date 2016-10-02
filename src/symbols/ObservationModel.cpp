@@ -149,7 +149,8 @@ namespace pharmmlcpp
 
                 // Get the category variable
                 xml::Node categorical_var_node = reader.getSingleElement(cat_node, "./mdef:CategoryVariable");
-                this->categorical_variable = categorical_var_node.getAttribute("symbId").getValue();
+                this->categorical_variable = std::make_shared<DiscreteVariable>(reader, categorical_var_node);
+                this->Symbol::parse(categorical_var_node); // see comment in tte block below
 
                 // Get the distribution
                 xml::Node pmf_node = reader.getSingleElement(cat_node, "./mdef:PMF");
@@ -172,7 +173,8 @@ namespace pharmmlcpp
 
                 // Get the count variable
                 xml::Node count_var_node = reader.getSingleElement(cnt_node, "./mdef:CountVariable");
-                this->count_variable = count_var_node.getAttribute("symbId").getValue();
+                this->count_variable = std::make_shared<DiscreteVariable>(reader, count_var_node);
+                this->Symbol::parse(count_var_node); // see comment in tte block below
 
                 // Get the distribution
                 xml::Node pmf_node = reader.getSingleElement(cnt_node, "./mdef:PMF");

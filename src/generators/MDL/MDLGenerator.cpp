@@ -83,10 +83,10 @@ namespace pharmmlcpp
         std::vector<std::shared_ptr<ObservationModel>> obs_models = model->getModelDefinition()->getObservationModels();
         for (auto const &obs_model : obs_models) {
             if (obs_model->isCount()) {
-                this->count_omodel_symbols.push_back(obs_model->getCountVariableSymbId());
+                this->count_omodel_symbols.push_back(obs_model->getCountVariable());
             } else if (obs_model->isCategorical()) {
-                std::pair<std::string, std::vector<std::shared_ptr<Category>>> pair;
-                pair.first = obs_model->getCategoricalVariableSymbId();
+                std::pair<std::shared_ptr<DiscreteVariable>, std::vector<std::shared_ptr<Category>>> pair;
+                pair.first = obs_model->getCategoricalVariable();
                 pair.second = obs_model->getCategoricalCategories();
                 this->categorical_omodel_symbols.push_back(pair);
             }
@@ -377,7 +377,7 @@ namespace pharmmlcpp
                                 this->logger->warning("No mapping from 'dv' column to observation and more than one count observation model; Assuming first");
                             }
 
-                            std::string target = count_omodel_symbols[0];
+                            std::string target = count_omodel_symbols[0]->getName();
                             this->count_omodel_symbols.erase(this->count_omodel_symbols.begin());
 
                             form.add("variable = " + target);
@@ -387,7 +387,7 @@ namespace pharmmlcpp
                                 this->logger->warning("No mapping from 'dv' column to observation and more than one categorical observation model; Assuming first");
                             }
 
-                            std::string target = categorical_omodel_symbols[0].first;
+                            std::string target = categorical_omodel_symbols[0].first->getName();
                             std::vector<std::shared_ptr<Category>> categories = categorical_omodel_symbols[0].second;
                             this->categorical_omodel_symbols.erase(this->categorical_omodel_symbols.begin());
 
@@ -1242,7 +1242,7 @@ namespace pharmmlcpp
                     form.add(obs_name + " = " + this->accept(assignment));
                 }
             } else if (om->isCount()) {
-                std::string var = om->getCountVariableSymbId();
+                std::shared_ptr<DiscreteVariable> var = om->getCountVariable();
                 std::string link_func = om->getCountPMFLinkFunction();
                 Distribution *dist = om->getCountPMFDistribution();
 
@@ -1251,11 +1251,11 @@ namespace pharmmlcpp
                 if (link_func != "identity") {
                     form.add("linkFunction = " + link_func);
                 }
-                form.add("variable = " + var);
+                form.add("variable = " + var->getName());
 
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
-                rand_var_form.openVector(var + " ~ " + dist->getName() + "()", 0, ", ");
+                rand_var_form.openVector(var->getName() + " ~ " + dist->getName() + "()", 0, ", ");
                 for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
@@ -1272,7 +1272,7 @@ namespace pharmmlcpp
                     this->logger->error("Ordered categorical observation models are unsupported currently", om.get());
                 }
 
-                std::string var = om->getCategoricalVariableSymbId();
+                std::shared_ptr<DiscreteVariable> var = om->getCategoricalVariable();
                 std::string link_func = om->getCategoricalPMFLinkFunction();
                 Distribution *dist = om->getCategoricalPMFDistribution();
 
@@ -1281,7 +1281,7 @@ namespace pharmmlcpp
                 if (link_func != "identity") {
                     form.add("linkFunction = " + link_func);
                 }
-                form.add("variable = " + var);
+                form.add("variable = " + var->getName());
 
                 // FIXME: withCategories is present in many places, should probably be a method
                 TextFormatter cat_form;
@@ -1294,7 +1294,7 @@ namespace pharmmlcpp
 
                 // MDL keeps distributions within RANDOM_VARIABLE_DEFINITION block so just create the statement here
                 TextFormatter rand_var_form;
-                rand_var_form.openVector(var + " " + cat_form.createString() + " ~ " + dist->getName() + "()", 0, ", ");
+                rand_var_form.openVector(var->getName() + " " + cat_form.createString() + " ~ " + dist->getName() + "()", 0, ", ");
                 for (DistributionParameter *dist_param : dist->getDistributionParameters()) {
                     std::string name = dist_param->getName();
                     std::string expr = this->accept(dist_param->getAssignment().get());
@@ -1306,8 +1306,8 @@ namespace pharmmlcpp
 
                 form.closeVector();
             } else if (om->isTTE()) {
-                std::shared_ptr<DiscreteVariable> var = om->getTTEVariable();
-                form.openVector(var->getName() + " : {}", 0, ", ");
+                // std::shared_ptr<DiscreteVariable> var = om->getTTEVariable();
+                form.openVector(obs_name + " : {}", 0, ", ");
                 form.add("type is tte");
                 if (om->hasTTEHazardFunction()) {
                     // std::string haz_func_symbid = om->getTTEHazardFunctionSymbId(); // is this good for anything?

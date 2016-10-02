@@ -177,8 +177,8 @@ namespace pharmmlcpp
             std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
 
             // FIXME: Ugly hack to counteract the lack of a direct reference from 'dv' column to categorical/count data observation models
-            std::vector<std::pair<std::string, std::vector<std::shared_ptr<Category>>>> categorical_omodel_symbols;
-            std::vector<std::string> count_omodel_symbols;
+            std::vector<std::pair<std::shared_ptr<DiscreteVariable>, std::vector<std::shared_ptr<Category>>>> categorical_omodel_symbols;
+            std::vector<std::shared_ptr<DiscreteVariable>> count_omodel_symbols;
             std::vector<std::string> omodel_derived_rand_vars; // random variable statements defined by observation model (e.g. categorical/count)
 
             EstimationStep *selected_est_step = nullptr;

@@ -1371,6 +1371,16 @@ namespace pharmmlcpp
                             form.closeVector();
                         }
                         form.closeVector();
+                    } else if (type == "optimization") {
+                        form.openVector("OPTIMISE {}", 1, "");
+                        form.add("set optAlgo is fw");      // Hardcoded. How can this be read from PharmML?
+                        auto algo = operations[0]->getAlgorithm();
+                        if (algo) {
+                            form.openVector("TARGET_SETTINGS(target=\"" + algo->getDefinition() + "\") {}", 1, ",");
+                            this->addProperties(form, algo->getProperties());
+                            form.closeVector();
+                        }
+                        form.closeVector();
                     }
                 }
             }
@@ -1515,9 +1525,19 @@ namespace pharmmlcpp
     void MDLGenerator::genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces) {
         form.indentAdd("DESIGN_SPACES {");
 
-        for (auto &design_space : design_spaces->getDesignSpaces()) {
+        for (auto design_space : design_spaces->getDesignSpaces()) {
             std::string name = symbol_namer.getNameString("ds");    // DesignSpaces have no names in PharmML 0.8.1
-            form.add(name + " : {}");
+            std::string objRef = "objRef=[" + design_space->getObservationRefs()[0]->getOidRef() + "]";  // FIXME: More flexibility here, but what is really legal?
+            std::string element = "element is ";
+            std::string discrete = "discrete=";
+            if (design_space->getObservationTimes()) {
+                element += "sampleTime";
+                discrete += this->accept(design_space->getObservationTimes().get());
+            } else if (design_space->getNumberTimes()) {
+                element += "numberTimes";
+                discrete += this->accept(design_space->getNumberTimes().get());
+            }
+            form.add(name + " : { " + objRef + ", " + element + ", " + discrete + " }");
         }
 
         form.outdentAdd("}");

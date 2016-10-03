@@ -40,6 +40,14 @@ namespace pharmmlcpp
         for (xml::Node ref : refs) {
             this->armRefs.push_back(new ObjectRef(ref));
         }
+        xml::Node observation_times = reader.getSingleElement(node, "./design:ObservationTimes");
+        if (observation_times.exists()) {
+            this->observationTimes = reader.factory.create(reader, observation_times.getChild().getChild());
+        }
+        xml::Node number_times = reader.getSingleElement(node, "./design:NumberTimes");
+        if (number_times.exists()) {
+            this->numberTimes = reader.factory.create(reader, number_times.getChild().getChild());
+        }
         xml::Node dosing_times = reader.getSingleElement(node, "./design:DosingTimes");
         if (dosing_times.exists()) {
             this->dosingTimes = reader.factory.create(reader, dosing_times.getChild().getChild());
@@ -93,6 +101,14 @@ namespace pharmmlcpp
 
     std::shared_ptr<AstNode> DesignSpace::getDosingTimes() {
         return this->dosingTimes;
+    }
+
+    std::shared_ptr<AstNode> DesignSpace::getObservationTimes() {
+        return this->observationTimes;
+    }
+
+    std::shared_ptr<AstNode> DesignSpace::getNumberTimes() {
+        return this->numberTimes;
     }
 
     std::shared_ptr<AstNode> DesignSpace::getAssignment() {

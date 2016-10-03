@@ -39,6 +39,8 @@ namespace pharmmlcpp
             std::vector<SymbRef *> getSymbRefs();
             std::shared_ptr<AstNode> getAssignment();
             std::shared_ptr<AstNode> getDosingTimes();
+            std::shared_ptr<AstNode> getObservationTimes();
+            std::shared_ptr<AstNode> getNumberTimes();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId);
             void accept(PharmMLVisitor *visitor);
 
@@ -49,6 +51,8 @@ namespace pharmmlcpp
             std::vector<ObjectRef *> armRefs;
             std::vector<SymbRef *> symbRefs;
             std::shared_ptr<AstNode> dosingTimes;
+            std::shared_ptr<AstNode> observationTimes;
+            std::shared_ptr<AstNode> numberTimes;
             std::shared_ptr<AstNode> assignment;
     };
 

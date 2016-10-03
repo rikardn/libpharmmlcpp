@@ -429,7 +429,7 @@ namespace pharmmlcpp
         std::vector<std::shared_ptr<AstNode>> elements = node->getElements();
         std::vector<std::string> str_elements;
         for (std::shared_ptr<AstNode> element : elements) {
-            str_elements.push_back(this->accept(element.get()));
+            str_elements.push_back(this->acceptRoot(element.get()));
         }
 
         this->setValue(TextFormatter::createInlineVector(str_elements, "[]", ", "));

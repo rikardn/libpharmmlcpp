@@ -99,8 +99,16 @@ namespace pharmmlcpp
 
         // Get integer attributes
         int from_int, to_int, target_int, cmt_int, adm_int;
+        std::unique_ptr<SymbRef> from_symbref, to_symbref, target_symbref;
         pharmmlcpp::AstAnalyzer ast_analyzer;
         for (MacroValue value : this->values) {
+            // some values may either be a pure int (for compartment number) or a symbref (e.g. a derivative variable)
+            auto get_symbref = [&](AstNode *x) -> std::unique_ptr<SymbRef> {
+                ast_analyzer.reset();
+                x->accept(&ast_analyzer);
+                std::unique_ptr<SymbRef> symbref(ast_analyzer.getPureSymbRef());
+                return symbref;
+            };
             auto get_int = [&](AstNode *x) -> int {
                 ast_analyzer.reset();
                 x->accept(&ast_analyzer);
@@ -108,19 +116,28 @@ namespace pharmmlcpp
                 return scalar_int->toInt();
             };
             if (value.first == "from") {
-                from_int = get_int( this->getAssignment(value.first).get() );
+                from_symbref = get_symbref( this->getAssignment(value.first).get() );
+                if (!target_symbref) {
+                    from_int = get_int( this->getAssignment(value.first).get() );
+                }
             } else if (value.first == "to") {
-                to_int = get_int( this->getAssignment(value.first).get() );
+                to_symbref = get_symbref( this->getAssignment(value.first).get() );
+                if (!target_symbref) {
+                    to_int = get_int( this->getAssignment(value.first).get() );
+                }
             } else if (value.first == "target") {
-                target_int = get_int( this->getAssignment(value.first).get() );
+                target_symbref = get_symbref( this->getAssignment(value.first).get() );
+                if (!target_symbref) {
+                    target_int = get_int( this->getAssignment(value.first).get() );
+                }
             } else if (value.first == "cmt") {
                 cmt_int = get_int( this->getAssignment(value.first).get() );
             } else if (value.first == "adm" || value.first == "type") {
                 adm_int = get_int( this->getAssignment(value.first).get() );
-            } 
+            }
         }
 
-        // Split into types and store integer attributes more logically
+        // Split into types and store symbref/integer attributes more logically
         if (this->type == "Compartment") {
             this->is_comp = true;
             this->sub_type = MacroType::Compartment;
@@ -130,7 +147,8 @@ namespace pharmmlcpp
             this->is_comp = true;
             this->sub_type = MacroType::Peripheral;
 
-            // TODO: Parse kij and k_i_j to determine MacroType::Compartment linked
+            // TODO: Parse kij and k_i_j to determine MacroType::Compartment linked. This is
+            //       currently done in the MDL generator (which isn't very pretty at all)!
         } else if (this->type == "Effect") {
             this->is_comp = true;
             this->sub_type = MacroType::Effect;
@@ -141,7 +159,11 @@ namespace pharmmlcpp
             this->sub_type = MacroType::Depot;
 
             this->adm_num = adm_int;
-            this->target_cmt_num = target_int;
+            if (target_symbref) {
+                this->target_symbref = std::move(target_symbref);
+            } else {
+                this->target_cmt_num = target_int;
+            }
         } else if (this->type == "IV") {
             this->is_abs = true;
             this->sub_type = MacroType::IV;
@@ -170,7 +192,16 @@ namespace pharmmlcpp
             this->sub_type = MacroType::Transfer;
 
             this->source_cmt_num = from_int;
-            this->target_cmt_num = to_int;
+            if (from_symbref) {
+                this->source_symbref = std::move(from_symbref);
+            } else {
+                this->source_cmt_num = from_int;
+            }
+            if (to_symbref) {
+                this->target_symbref = std::move(to_symbref);
+            } else {
+                this->target_cmt_num = to_int;
+            }
         }
     }
 
@@ -178,28 +209,32 @@ namespace pharmmlcpp
     std::string PKMacro::generateName() {
         pharmmlcpp::AstAnalyzer ast_analyzer;
         if (this->sub_type == MacroType::Absorption || this->sub_type == MacroType::Depot) {
-            // Try to name in order: ka, Tlag, p
-            std::vector<AstNode *> nodes;
-            nodes.push_back( this->getAssignment("ka").get() );
-            nodes.push_back( this->getAssignment("Tlag").get() );
-            nodes.push_back( this->getAssignment("p").get() );
-            for (AstNode *node : nodes) {
-                if (node) {
-                    ast_analyzer.reset();
-                    node->accept(&ast_analyzer);
-                    SymbRef *ref = ast_analyzer.getPureSymbRef();
-                    if (ref) {
-                        Symbol *symbol = ref->getSymbol();
-                        if (symbol) { // FIXME: Shouldn't be necessary
-                            return("INPUT_" + symbol->getSymbId());
-                        }
-                    }
-                }
+            // Try to get name from ka param
+            AstNode *ka_node = this->getAssignment("ka").get();
+            std::string ka_name;
+            if (ka_node) {
+                ast_analyzer.reset();
+                ka_node->accept(&ast_analyzer);
+                SymbRef *ref = ast_analyzer.getPureSymbRef();
+                ka_name = ref ? ref->getSymbol()->getSymbId() : "";
+            }
+
+            // Try to get name from target param
+            std::string target_name;
+            if (this->target_symbref) {
+                target_name = this->target_symbref->getSymbol()->getSymbId();
+            } else if (this->target_cmt_num != 0) {
+                target_name = "CMT" + std::to_string(this->target_cmt_num);
+            }
+
+            if (ka_name != "" || target_name != "") {
+                std::string name = (ka_name == "") ? "INPUT_" + target_name : "INPUT_" + ka_name + "_" + target_name;
+                return name;
             }
         } else if (this->sub_type == MacroType::Oral) {
-            return("INPUT_ORAL");
+            return("ORAL_INPUT");
         } else if (this->sub_type == MacroType::IV) {
-            return("INPUT_IV");
+            return("IV_INPUT");
         } else if (this->sub_type == MacroType::Compartment || this->sub_type == MacroType::Peripheral) {
             // Try to name in order: amount, cmt
             std::vector<AstNode *> nodes;
@@ -213,9 +248,7 @@ namespace pharmmlcpp
                     ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
                         Symbol *symbol = ref->getSymbol();
-                        if (symbol) { // FIXME: Shouldn't be necessary
-                            return(symbol->getSymbId());
-                        }
+                        return(symbol->getSymbId());
                     } else if (sint) {
                         return("CMT" + sint->toString());
                     }
@@ -234,16 +267,14 @@ namespace pharmmlcpp
                     ScalarInt *sint = ast_analyzer.getPureScalarInt();
                     if (ref) {
                         Symbol *symbol = ref->getSymbol();
-                        if (symbol) { // FIXME: Shouldn't be necessary
-                            return("FROM_" + symbol->getSymbId());
-                        }
+                        return("FROM_" + symbol->getSymbId());
                     } else if (sint) {
                         return("FROM_CMT" + sint->toString());
                     }
                 }
             }
         } else if (this->sub_type == MacroType::Effect) {
-            // Try to name in order: cmt
+            // Try to name from cmt param
             std::shared_ptr<AstNode> cmt = this->getAssignment("cmt");
             if (cmt) {
                 ast_analyzer.reset();
@@ -252,11 +283,9 @@ namespace pharmmlcpp
                 ScalarInt *sint = ast_analyzer.getPureScalarInt();
                 if (ref) {
                     Symbol *symbol = ref->getSymbol();
-                    if (symbol) { // FIXME: Shouldn't be necessary
-                        return("EFF_" + symbol->getSymbId());
-                    }
+                    return("EFF_" + symbol->getSymbId());
                 } else if (sint) {
-                    return("CMT" + sint->toString() + "_EFF");
+                    return("EFF_CMT" + sint->toString());
                 }
             }
         }
@@ -299,14 +328,24 @@ namespace pharmmlcpp
         return this->adm_num;
     }
 
-    // For mass transfers: Get integer number reference (source)
+    // For mass transfers: Get integer number reference (source), 0 -> use getSourceSymbRef() instead
     int PKMacro::getSourceNum() {
         return this->source_cmt_num;
     }
 
-    // For mass transfers/administrations: Get integer number reference (target)
+    // For mass transfers: Get SymbRef (source), nullptr -> use getSourceNum() instead
+    SymbRef *PKMacro::getSourceSymbRef() {
+        return this->source_symbref.get();
+    }
+
+    // For mass transfers/administrations: Get integer number reference (target); 0 -> use getSourceSymbRef() instead
     int PKMacro::getTargetNum() {
         return this->target_cmt_num;
+    }
+
+    // For mass transfers/administrations: Get SymbRef (target), nullptr -> use getTargetNum() instead
+    SymbRef *PKMacro::getTargetSymbRef() {
+        return this->target_symbref.get();
     }
 
     // Wrapping layer holding all macros and convenience functions

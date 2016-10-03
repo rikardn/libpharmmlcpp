@@ -897,8 +897,10 @@ namespace pharmmlcpp
             // Find transfers FROM this compartment
             int cmt_num = cmt_macro->getCmtNum();
             for (pharmmlcpp::PKMacro *trans_macro : trans_macros) {
-                if (cmt_num == trans_macro->getSourceNum()) {
-                    cmt_trans_macros.push_back(trans_macro);
+                if (!trans_macro->getSourceSymbRef()) { // if no symbref, source must be compartment
+                    if (cmt_num == trans_macro->getSourceNum()) {
+                        cmt_trans_macros.push_back(trans_macro);
+                    }
                 }
             }
         }
@@ -913,17 +915,18 @@ namespace pharmmlcpp
             form.openVector(prefix + " : {}", 0, ", ");
 
             // Get target of administration (MDL uses the names when refering)
-            int target_num = macro->getTargetNum();
-            std::string target_name = pk_macros->getCompartment(target_num)->getName();
+            std::string target_name;
+            if (!macro->getTargetSymbRef()) { // if no symbref, target must be compartment
+                int target_num = macro->getTargetNum();
+                target_name = pk_macros->getCompartment(target_num)->getName();
+            } else {
+                target_name = macro->getTargetSymbRef()->getSymbol()->getName();
+            }
 
             // Add differently if depot-ish administration or direct (IV)
             std::string model_cmt_string; // depreceated in MDL but output as comment
             if (macro->getSubType() != MacroType::IV) {
-                form.add("type is depot");
                 model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[macro]);
-
-                // Output compartment target
-                form.add("to=" + target_name);
 
                 // Get parameterization (and assume validation makes sure no strange combinations are present)
                 AstNode *tlag = macro->getAssignment("Tlag").get();
@@ -932,6 +935,18 @@ namespace pharmmlcpp
                 AstNode *ka = macro->getAssignment("ka").get();
                 AstNode *ktr = macro->getAssignment("Ktr").get();
                 AstNode *mtt = macro->getAssignment("Mtt").get();
+
+                // if any rate constant it must be a depot, otherwise it's direct
+                if (tk0 || ka || ktr || mtt) {
+                    form.add("type is depot");
+                } else {
+                    form.add("type is direct");
+                }
+
+                // Output compartment target
+                form.add("to=" + target_name);
+
+                // output remaining parameterization
                 if (tlag) {
                     form.add("tlag=" + this->accept(tlag));
                 }
@@ -1062,18 +1077,29 @@ namespace pharmmlcpp
                 }
 
                 // In MDL with mass transfers, 'modelCmt' now refers to what compartment we're transfering from
-                int source_num = macro->getSourceNum();
-                pharmmlcpp::PKMacro *from_macro = pk_macros->getCompartment(source_num);
-                model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[from_macro]);
+                std::string from_name;
+                if (!macro->getSourceSymbRef()) { // if no symbref, source must be compartment
+                    int source_num = macro->getSourceNum();
+                    pharmmlcpp::PKMacro *from_macro = pk_macros->getCompartment(source_num);
+                    model_cmt_string = "modelCmt=" + std::to_string(mdl_cmt[from_macro]);
+                    from_name = from_macro->getName();
+                } else {
+                    from_name = macro->getSourceSymbRef()->getSymbol()->getName();
+                    model_cmt_string = "modelCmt=" + from_name;
+                }
 
                 // Output source compartment
-                std::string from_name = pk_macros->getCompartment(source_num)->getName();
                 form.add("from=" + from_name);
 
                 // Output target compartment (for transfers only)
                 if ( macro->hasAttribute("to") ) {
-                    int target_num = macro->getTargetNum();
-                    std::string target_name = pk_macros->getCompartment(target_num)->getName();
+                    std::string target_name;
+                    if (!macro->getTargetSymbRef()) { // if no symbref, target must be compartment
+                        int target_num = macro->getTargetNum();
+                        target_name = pk_macros->getCompartment(target_num)->getName();
+                    } else {
+                        target_name = macro->getTargetSymbRef()->getSymbol()->getName();
+                    }
                     form.add("to=" + target_name);
                 }
 
@@ -1539,7 +1565,7 @@ namespace pharmmlcpp
             std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
             std::string rate;
             if (administration->getRate()) {
-                rate = ", rate=" + this->accept(administration->getRate().get());  
+                rate = ", rate=" + this->accept(administration->getRate().get());
             }
             std::vector<std::string> dose_times;
             for (auto &time_point : administration->getTimesAsVector()) {

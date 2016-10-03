@@ -53,10 +53,15 @@ namespace pharmmlcpp
             bool isAdministration();
             bool isMassTransfer();
             MacroType getSubType();
+
             int getCmtNum();
             int getAdmNum();
+
             int getSourceNum();
+            SymbRef *getSourceSymbRef();
+
             int getTargetNum();
+            SymbRef *getTargetSymbRef();
 
         private:
             void parse(PharmMLReader &reader, xml::Node node);
@@ -71,10 +76,15 @@ namespace pharmmlcpp
             bool is_abs = false;
             bool is_trans = false;
             MacroType sub_type;
-            int cmt_num;
-            int adm_num;
-            int source_cmt_num;
-            int target_cmt_num;
+
+            int cmt_num = 0;
+            int adm_num = 0;
+
+            int source_cmt_num = 0;
+            std::unique_ptr<SymbRef> source_symbref;
+
+            int target_cmt_num = 0;
+            std::unique_ptr<SymbRef> target_symbref;
     };
 
     class PKMacros : public PharmMLSection
@@ -96,9 +106,9 @@ namespace pharmmlcpp
 
         private:
             std::vector<PKMacro *> macros;
-            
+
             void parse(PharmMLReader &reader, xml::Node node);
-            
+
             // POST PARSE/CONSOLIDATION
             //~ void postParse(); // FIXME: See comment in Model.cpp!!!
             void validate();

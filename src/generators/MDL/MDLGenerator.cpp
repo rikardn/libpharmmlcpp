@@ -1514,7 +1514,7 @@ namespace pharmmlcpp
         // Administration
         for (Administration *administration : interventions->getAdministrations()) {
             std::string name = administration->getOid();
-            std::string type = administration->getType();           // FIXME: Currently only supports bolus
+            std::string type = administration->getType();
             std::transform(type.begin(), type.end(), type.begin(), ::tolower);
             SymbRef *target_symbref = administration->getTargetSymbRef();
             std::string target = "UNDEF";
@@ -1537,13 +1537,17 @@ namespace pharmmlcpp
             this->designDeclaredVariables.push_back(target + "::dosingTarget");
             this->symb_gen->addDosingTarget(target);
             std::string amount = this->accept(administration->getAmount().get());   // FIXME: Only support one amount
+            std::string rate;
+            if (administration->getRate()) {
+                rate = ", rate=" + this->accept(administration->getRate().get());  
+            }
             std::vector<std::string> dose_times;
             for (auto &time_point : administration->getTimesAsVector()) {
                 dose_times.push_back(this->accept(time_point.get()));
             }
             std::string doseTime = TextFormatter::createInlineVector(dose_times, "[]");
 
-            form.add(name + " : { type is " + type + ", input=" + target + ", amount=" + amount + ", doseTime=" + doseTime + " }");
+            form.add(name + " : { type is " + type + ", input=" + target + rate + ", amount=" + amount + ", doseTime=" + doseTime + " }");
         }
 
         // Interventions combinations

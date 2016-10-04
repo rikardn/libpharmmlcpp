@@ -27,19 +27,15 @@ namespace pharmmlcpp
     }
 
     void ObservationModel::parse(PharmMLReader &reader, xml::Node node) {
-        // Get common data (to all observation model types)
-        xml::Node name_node = reader.getSingleElement(node, ".//ct:Name");
-        if (name_node.exists()) {
-            this->name = name_node.getText();
-        }
-        // TODO: Get other mdef:CommonObservationModelType stuff (don't know what most is for..)
-
         // Continuous or discrete model?
         xml::Node cont_node = reader.getSingleElement(node, "./mdef:ContinuousData");
         xml::Node disc_node = reader.getSingleElement(node, "./mdef:Discrete");
         if (cont_node.exists()) {
             // Continuous data model
             this->continuousData = true;
+
+            // Parse common elements (to all observation model types)
+            this->parseCommonElements(reader, cont_node);
 
             // Get built in error models
             xml::Node stand_node = reader.getSingleElement(cont_node, "./mdef:Standard");
@@ -129,6 +125,9 @@ namespace pharmmlcpp
                 // Categorical data model
                 this->categoricalData = true;
 
+                // Parse common elements (to all observation model types)
+                this->parseCommonElements(reader, cat_node);
+
                 // TODO: Support categorical data models
                 // Ordered categories or not?
                 xml::Attribute ordered_attr = cat_node.getAttribute("ordered");
@@ -171,6 +170,9 @@ namespace pharmmlcpp
                 // Count data model
                 this->countData = true;
 
+                // Parse common elements (to all observation model types)
+                this->parseCommonElements(reader, cnt_node);
+
                 // Get the count variable
                 xml::Node count_var_node = reader.getSingleElement(cnt_node, "./mdef:CountVariable");
                 this->count_variable = std::make_shared<DiscreteVariable>(reader, count_var_node);
@@ -195,6 +197,9 @@ namespace pharmmlcpp
             } else if (tte_node.exists()) {
                 // Time-to-event data model
                 this->tteData = true;
+
+                // Parse common elements (to all observation model types)
+                this->parseCommonElements(reader, tte_node);
 
                 // Get the event variable
                 xml::Node tte_var_node = reader.getSingleElement(tte_node, "./mdef:EventVariable");
@@ -224,6 +229,25 @@ namespace pharmmlcpp
                 }
             }
         }
+    }
+
+    /// Parse elements common to mdef:CommonObservationModelType (both continuous data and categorical data)
+    void ObservationModel::parseCommonElements(PharmMLReader &reader, xml::Node cont_or_cat_node) {
+        xml::Node &node = cont_or_cat_node;
+
+        xml::Node name_node = reader.getSingleElement(node, "./ct:Name");
+        if (name_node.exists()) {
+            this->name = name_node.getText();
+        }
+
+        // variables are used to in-situ define components of the observation model (e.g. weight in general error model)
+        std::vector<xml::Node> var_nodes = reader.getElements(node, "./ct:Variable");
+        for (xml::Node var_node : var_nodes) {
+            std::shared_ptr<Variable> var = std::make_shared<Variable>(reader, var_node);
+            this->variables.push_back(var);
+        }
+
+        // TODO: Get other mdef:CommonObservationModelType stuff (don't know what most is for..)
     }
 
     bool ObservationModel::isContinuous() {
@@ -306,12 +330,17 @@ namespace pharmmlcpp
             this->addSymbRef(this->output, gathering, blkId);
             this->setupAstSymbRefs(this->errorModel.get(), gathering, blkId);
             this->setupAstSymbRefs(this->residualError, gathering, blkId);
+        } else if (this->generalErrorModel) {
+            this->setupAstSymbRefs(this->generalAssignment.get(), gathering, blkId);
         }
     }
 
     void ObservationModel::gatherSymbols(SymbolGathering &gathering) {
         gathering.newBlock(this);
         gathering.addSymbol(this);
+        for (auto &var : this->variables) {
+            gathering.addSymbol(var.get());
+        }
     }
 
     void ObservationModel::accept(SymbolVisitor *visitor) {

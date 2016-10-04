@@ -1154,6 +1154,13 @@ namespace pharmmlcpp
 
         for (auto const &om : om_models) {
             std::string obs_name = om->getName();
+
+            // output variables that might be in-situ defined in the observation model (e.g. 'W' in a general error model)
+            auto output_vars = om->getVariables();
+            for (auto &var : output_vars) {
+                var->accept(this->symb_gen.get());
+                form.add(this->symb_gen->getValue());
+            }
             if (om->isContinuous()) {
                 if (om->hasStandardErrorModel()) {
                     SymbRef *output = om->getOutput();
@@ -1256,9 +1263,59 @@ namespace pharmmlcpp
                         form.append(" # Is this how you expect the residual error to associate?");
                     }
                 } else if (om->hasGeneralErrorModel()) {
-                    // General error model, so dump explicit assignment
+                    // General error model, so dump explicit assignment (NOO!)
+                    form.openVector(obs_name + " : {}");
+
+                    form.add("type is userDefined");
                     AstNode *assignment = om->getAssignment().get();
-                    form.add(obs_name + " = " + this->accept(assignment));
+                    form.add("value = " + this->accept(assignment));
+
+                    // TODO: Create better way to disambiguate weight and predicition symbols from assignment (why does MDL require these separated?)
+                    // which dependencies to assignment are random variables (neither prediction nor weight) and output variables (potential weights)
+                    std::unordered_set<Symbol *> output_var_set;
+                    for (auto const &output_var : output_vars) {
+                        output_var_set.insert(output_var.get());
+                    }
+                    std::vector<RandomVariable *> rand_vars = model->getModelDefinition()->getParameterModel()->getRandomVariables();
+                    std::unordered_set<Symbol *> rand_var_set(rand_vars.begin(), rand_vars.end());
+                    SymbRefFinder finder;
+                    assignment->accept(&finder);
+                    Symbol *prediction = nullptr;
+                    Symbol *weight = nullptr;
+                    for (SymbRef *symbref : finder.getSymbRefs()) {
+                        Symbol *symbol = symbref->getSymbol();
+                        auto got_rand_var = rand_var_set.find(symbol);
+                        auto got_output_var = output_var_set.find(symbol);
+                        if (got_rand_var == rand_var_set.end()) {
+                            // potential weight or prediction
+                            if (got_output_var == output_var_set.end()) {
+                                // potential prediction (or just another component -- how should we know?)
+                                if (!prediction) {
+                                    prediction = symbref->getSymbol();
+                                } else {
+                                    this->logger->warning("Multiple prediction candidates in general error model; Assuming first found", symbref);
+                                }
+                            } else {
+                                // potential weight (or just another variable defined within the observation model -- how should we know?)
+                                if (weight) {
+                                    this->logger->warning("Multiple weight candidates in general error model; Assuming this", symbref);
+                                }
+                                weight = symbref->getSymbol();
+                            }
+                        }
+                    }
+                    if (weight) {
+                        form.add("weight = " + weight->getName());
+                    } else {
+                        this->logger->warning("No weight candidate found in general error model", assignment);
+                    }
+                    if (prediction) {
+                        form.add("prediction = " + prediction->getName());
+                    } else {
+                        this->logger->warning("No prediciction candidate found in general error model", assignment);
+                    }
+
+                    form.closeVector();
                 }
             } else if (om->isCount()) {
                 std::shared_ptr<DiscreteVariable> var = om->getCountVariable();

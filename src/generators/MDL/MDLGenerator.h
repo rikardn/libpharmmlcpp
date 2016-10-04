@@ -29,6 +29,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 
 #include <visitors/AstNodeVisitor.h>
 #include <visitors/AstAnalyzer.h>
+#include <visitors/SymbRefFinder.h>
 #include <symbols/FunctionDefinition.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>

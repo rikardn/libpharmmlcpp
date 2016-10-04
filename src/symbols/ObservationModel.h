@@ -26,6 +26,7 @@
 #include <PharmML/Distribution.h>
 #include <symbols/VariabilityLevel.h>
 #include <symbols/Category.h>
+#include <symbols/Variable.h>
 #include <symbols/DiscreteVariable.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/Block.h>
@@ -48,6 +49,9 @@ namespace pharmmlcpp
             bool hasStandardErrorModel(); // u(y) = u(f) + g * eps
             bool hasGeneralErrorModel(); // h(y) = H(f, xi, eps)
             bool hasDistributionalErrorModel(); // u(y) ~ distribution(parameter1, parameter2, ...)
+
+            // Get common objects (to all observation model types)
+            std::vector<std::shared_ptr<Variable>> getVariables() { return this->variables; };
 
             // Transformations (LHS or LHS & RHS)
             std::string getTransformation();
@@ -94,6 +98,8 @@ namespace pharmmlcpp
         private:
             // Common to all observation models
             std::string name;
+            std::vector<std::shared_ptr<Variable>> variables;
+            void parseCommonElements(PharmMLReader &reader, xml::Node cont_or_cat_node);
 
             // Type of observation data
             bool continuousData = false;

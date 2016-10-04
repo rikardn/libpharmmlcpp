@@ -121,7 +121,7 @@ namespace pharmmlcpp
      */
     FunctionArgument::FunctionArgument(PharmMLReader &reader, xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
-        this->argument = AstNodeFactory::create(reader, node.getChild());
+        this->argument = AstNode::create(reader, node.getChild());
     }
     
     xml::Node FunctionArgument::xml(PharmMLWriter &writer) {

@@ -56,7 +56,7 @@ namespace pharmmlcpp
         xml::Node assign = reader.getSingleElement(node, "./ct:Definition/ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->definition = reader.factory.create(reader, tree);
+            this->definition = AstNode::create(reader, tree);
         }
 
         // Get (non-mandatory) function argument definitions (symbols with a type)

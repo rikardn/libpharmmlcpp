@@ -60,7 +60,7 @@ namespace pharmmlcpp
                     // Get transformation parameters (if available)
                     std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                     for (xml::Node trans_param : trans_params) {
-                        std::shared_ptr<AstNode> param = reader.factory.create(reader, trans_param.getChild());
+                        std::shared_ptr<AstNode> param = AstNode::create(reader, trans_param.getChild());
                         this->transformationParameters.push_back(param);
                     }
                 }
@@ -71,7 +71,7 @@ namespace pharmmlcpp
 
                 // Get error model (g)
                 xml::Node error_assign = reader.getSingleElement(stand_node, "./mdef:ErrorModel/ct:Assign");
-                this->errorModel = reader.factory.create(reader, error_assign.getChild());
+                this->errorModel = AstNode::create(reader, error_assign.getChild());
 
                 // Get residual error (eps)
                 xml::Node res_node = reader.getSingleElement(stand_node, "./mdef:ResidualError");
@@ -89,7 +89,7 @@ namespace pharmmlcpp
                     this->generalErrorModel = true;
 
                     // Get the general assignment (right hand side)
-                    this->generalAssignment = reader.factory.create(reader, assign_node.getChild());
+                    this->generalAssignment = AstNode::create(reader, assign_node.getChild());
 
                     // Get LHS transformation
                     xml::Node trans_node = reader.getSingleElement(general_node, "./mdef:LHSTransformation");
@@ -100,7 +100,7 @@ namespace pharmmlcpp
                         // Get transformation parameters (if available)
                         std::vector<xml::Node> trans_params = reader.getElements(trans_node, "./ct:Parameter");
                         for (xml::Node trans_param : trans_params) {
-                            std::shared_ptr<AstNode> param = reader.factory.create(reader, trans_param.getChild());
+                            std::shared_ptr<AstNode> param = AstNode::create(reader, trans_param.getChild());
                             this->transformationParameters.push_back(param);
                         }
                     }
@@ -219,7 +219,7 @@ namespace pharmmlcpp
                         std::shared_ptr<Distribution> dist = std::make_unique<Distribution>(reader, dist_node.getChild());
                         this->tte_haz_distribution = std::move(dist);
                     } else {
-                        this->tte_haz_assignment = reader.factory.create(reader, assign_node.getChild());
+                        this->tte_haz_assignment = AstNode::create(reader, assign_node.getChild());
                     }
                 }
             }

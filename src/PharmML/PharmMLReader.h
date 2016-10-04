@@ -20,7 +20,6 @@
 
 #include <unordered_map>
 #include <xml/xml.h>
-#include <AST/AstNodeFactory.h>
 #include <AST/symbols.h>
 #include <helpers/Logger.h>
 #include <memory>
@@ -35,7 +34,6 @@ namespace pharmmlcpp
             xml::Node getRoot();
             std::shared_ptr<xml::Document> doc;
             Logger logger;
-            AstNodeFactory factory;
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);
 

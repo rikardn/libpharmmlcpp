@@ -22,7 +22,6 @@
 #include <unordered_set>
 #include "AstNode.h"
 #include "symbols/Symbol.h"
-#include <AST/AstNodeFactory.h>
 
 namespace pharmmlcpp
 {

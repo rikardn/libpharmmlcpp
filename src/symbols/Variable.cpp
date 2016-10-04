@@ -30,7 +30,7 @@ namespace pharmmlcpp
         xml::Node assign = reader.getSingleElement(node, ".//ct:Assign");
         if (assign.exists()) {
             xml::Node tree = assign.getChild();
-            this->assignment = reader.factory.create(reader, tree);
+            this->assignment = AstNode::create(reader, tree);
         }
     }
 

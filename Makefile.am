@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I./src $(LIBXML2_CFLAGS) -std=c++14		# Need proper check of C++14
 noinst_LIBRARIES = libpharmmlcpp.a
 libpharmmlcpp_a_SOURCES = \
    	src/AST/AstBuilder.cpp \
-   	src/AST/AstNodeFactory.cpp \
+   	src/AST/AstNode.cpp \
 	src/AST/AstTransformation.cpp \
    	src/AST/Binop.cpp src/AST/Constant.cpp \
    	src/AST/FunctionCall.cpp src/AST/Interval.cpp \

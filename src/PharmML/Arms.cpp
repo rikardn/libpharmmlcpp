@@ -28,11 +28,11 @@ namespace pharmmlcpp
     void OccasionType::parse(PharmMLReader &reader, xml::Node node) {
         // Get start
         xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
-        this->start = reader.factory.create(reader, assign.getChild());
+        this->start = AstNode::create(reader, assign.getChild());
 
         // Get end
         assign = reader.getSingleElement(node, "./design:End/ct:Assign");
-        this->end = reader.factory.create(reader, assign.getChild());
+        this->end = AstNode::create(reader, assign.getChild());
     }
 
     std::shared_ptr<AstNode> OccasionType::getStart() {
@@ -59,7 +59,7 @@ namespace pharmmlcpp
         // Get start value
         xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
         if (assign.exists()) {
-            this->start = reader.factory.create(reader, assign.getChild());
+            this->start = AstNode::create(reader, assign.getChild());
         }
     }
 
@@ -102,7 +102,7 @@ namespace pharmmlcpp
         // Get start value
         xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
         if (assign.exists()) {
-            this->start = reader.factory.create(reader, assign.getChild());
+            this->start = AstNode::create(reader, assign.getChild());
         }
     }
 
@@ -178,25 +178,25 @@ namespace pharmmlcpp
         // Get arm size
         xml::Node assign = reader.getSingleElement(node, "./design:ArmSize/ct:Assign");
         if (assign.exists()) {
-            this->armSize = reader.factory.create(reader, assign.getChild());
+            this->armSize = AstNode::create(reader, assign.getChild());
         }
 
         // Get number of samples
         assign = reader.getSingleElement(node, "./design:NumberSamples/ct:Assign");
         if (assign.exists()) {
-            this->numSamples = reader.factory.create(reader, assign.getChild());
+            this->numSamples = AstNode::create(reader, assign.getChild());
         }
 
         // Get number of times
         assign = reader.getSingleElement(node, "./design:NumberTimes/ct:Assign");
         if (assign.exists()) {
-            this->numTimes = reader.factory.create(reader, assign.getChild());
+            this->numTimes = AstNode::create(reader, assign.getChild());
         }
 
         // Get same times
         assign = reader.getSingleElement(node, "./design:SameTimes/ct:Assign");
         if (assign.exists()) {
-            this->sameTimes = reader.factory.create(reader, assign.getChild());
+            this->sameTimes = AstNode::create(reader, assign.getChild());
         }
 
         // Get intervention sequences
@@ -299,49 +299,49 @@ namespace pharmmlcpp
         // Get arm size
         xml::Node assign = reader.getSingleElement(node, "./design:ArmSize/ct:Assign");
         if (assign.exists()) {
-            this->armSize = reader.factory.create(reader, assign.getChild());
+            this->armSize = AstNode::create(reader, assign.getChild());
         }
 
         // Get cost function
         assign = reader.getSingleElement(node, "./design:CostFunction/ct:Assign");
         if (assign.exists()) {
-            this->costFunction = reader.factory.create(reader, assign.getChild());
+            this->costFunction = AstNode::create(reader, assign.getChild());
         }
 
         // Get number of arms
         assign = reader.getSingleElement(node, "./design:NumberArms/ct:Assign");
         if (assign.exists()) {
-            this->numArms = reader.factory.create(reader, assign.getChild());
+            this->numArms = AstNode::create(reader, assign.getChild());
         }
 
         // Get number of samples
         assign = reader.getSingleElement(node, "./design:NumberSamples/ct:Assign");
         if (assign.exists()) {
-            this->numSamples = reader.factory.create(reader, assign.getChild());
+            this->numSamples = AstNode::create(reader, assign.getChild());
         }
 
         // Get number of times
         assign = reader.getSingleElement(node, "./design:NumberTimes/ct:Assign");
         if (assign.exists()) {
-            this->numTimes = reader.factory.create(reader, assign.getChild());
+            this->numTimes = AstNode::create(reader, assign.getChild());
         }
 
         // Get same times
         assign = reader.getSingleElement(node, "./design:SameTimes/ct:Assign");
         if (assign.exists()) {
-            this->sameTimes = reader.factory.create(reader, assign.getChild());
+            this->sameTimes = AstNode::create(reader, assign.getChild());
         }
 
         // Get total cost
         assign = reader.getSingleElement(node, "./design:TotalCost/ct:Assign");
         if (assign.exists()) {
-            this->totalCost = reader.factory.create(reader, assign.getChild());
+            this->totalCost = AstNode::create(reader, assign.getChild());
         }
 
         // Get total size
         assign = reader.getSingleElement(node, "./design:TotalSize/ct:Assign");
         if (assign.exists()) {
-            this->totalSize = reader.factory.create(reader, assign.getChild());
+            this->totalSize = AstNode::create(reader, assign.getChild());
         }
 
         // Get the arm definitions themselves

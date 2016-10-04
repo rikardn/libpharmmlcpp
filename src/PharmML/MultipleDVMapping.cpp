@@ -30,7 +30,7 @@ namespace pharmmlcpp
         xml::Node piecewise_node = reader.getSingleElement(node, "design:Piecewise");
 
         // Store and parse the piecewise to gather the mapping scheme
-        this->piecewise = reader.factory.create(reader, piecewise_node);
+        this->piecewise = AstNode::create(reader, piecewise_node);
         this->parsePiecewiseNode(reader, piecewise_node);
     }
 
@@ -46,7 +46,7 @@ namespace pharmmlcpp
 
                 // Get the logic operator
                 xml::Node logic_node = cond_node.getChild();
-                std::unique_ptr<AstNode> logic_ast_node = reader.factory.create(reader, logic_node); // for logging
+                std::unique_ptr<AstNode> logic_ast_node = AstNode::create(reader, logic_node); // for logging
                 std::string logic_node_type = logic_node.getName();
                 std::string op_type;
                 if (logic_node_type == "LogicUniop" || logic_node_type == "LogicBinop") {

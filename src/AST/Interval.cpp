@@ -25,11 +25,11 @@ namespace pharmmlcpp
     Interval::Interval(PharmMLReader &reader, xml::Node node) {
         xml::Node left_endpoint = node.getChild();
         xml::Node right_endpoint = node.getLastChild();
-        this->setLeftEndpoint(AstNodeFactory::create(reader, left_endpoint.getChild().getChild()));
+        this->setLeftEndpoint(AstNode::create(reader, left_endpoint.getChild().getChild()));
         if (left_endpoint.getAttribute("type").getValue() == "open") {
             this->setLeftEndpointOpenClosed(true);
         }
-        this->setRightEndpoint(AstNodeFactory::create(reader, right_endpoint.getChild().getChild()));
+        this->setRightEndpoint(AstNode::create(reader, right_endpoint.getChild().getChild()));
         if (right_endpoint.getAttribute("type").getValue() == "open") {
             this->setRightEndpointOpenClosed(true);
         }

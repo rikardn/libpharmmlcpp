@@ -42,15 +42,15 @@ namespace pharmmlcpp
         }
         xml::Node observation_times = reader.getSingleElement(node, "./design:ObservationTimes");
         if (observation_times.exists()) {
-            this->observationTimes = reader.factory.create(reader, observation_times.getChild().getChild());
+            this->observationTimes = AstNode::create(reader, observation_times.getChild().getChild());
         }
         xml::Node number_times = reader.getSingleElement(node, "./design:NumberTimes");
         if (number_times.exists()) {
-            this->numberTimes = reader.factory.create(reader, number_times.getChild().getChild());
+            this->numberTimes = AstNode::create(reader, number_times.getChild().getChild());
         }
         xml::Node dosing_times = reader.getSingleElement(node, "./design:DosingTimes");
         if (dosing_times.exists()) {
-            this->dosingTimes = reader.factory.create(reader, dosing_times.getChild().getChild());
+            this->dosingTimes = AstNode::create(reader, dosing_times.getChild().getChild());
         }
         std::vector<xml::Node> symbref_nodes = reader.getElements(node, "./ct:SymbRef");
         for (xml::Node symbref_node : symbref_nodes) {
@@ -58,7 +58,7 @@ namespace pharmmlcpp
         }
         xml::Node assign_node = reader.getSingleElement(node, "./ct:Assign");
         if (assign_node.exists()) {
-            this->assignment = reader.factory.create(reader, assign_node.getChild());
+            this->assignment = AstNode::create(reader, assign_node.getChild());
         }
     }
 

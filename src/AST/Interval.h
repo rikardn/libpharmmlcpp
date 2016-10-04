@@ -18,7 +18,6 @@
 #ifndef PHARMMLCPP_INTERVAL_H_
 #define PHARMMLCPP_INTERVAL_H_
 
-#include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
 #include <xml/xml.h>
 

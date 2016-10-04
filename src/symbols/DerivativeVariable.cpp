@@ -23,15 +23,15 @@ namespace pharmmlcpp
     void DerivativeVariable::parse(PharmMLReader &reader, xml::Node node) {
         xml::Node iv = reader.getSingleElement(node, ".//ct:IndependentVariable");
         if (iv.exists()) {
-            this->independent_variable = reader.factory.create(reader, iv.getChild());
+            this->independent_variable = AstNode::create(reader, iv.getChild());
         }
         xml::Node ival = reader.getSingleElement(node, ".//ct:InitialCondition/ct:InitialValue");
         if (ival.exists()) {
-            this->initial_value = reader.factory.create(reader, ival.getChild().getChild());
+            this->initial_value = AstNode::create(reader, ival.getChild().getChild());
         }
         xml::Node itime = reader.getSingleElement(node, ".//ct:InitialCondition/ct:InitialTime");
         if (itime.exists()) {
-            this->initial_time = reader.factory.create(reader, itime.getChild().getChild());
+            this->initial_time = AstNode::create(reader, itime.getChild().getChild());
         }
     }
 

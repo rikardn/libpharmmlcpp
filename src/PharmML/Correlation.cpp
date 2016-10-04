@@ -18,7 +18,6 @@
 #include <iostream>
 #include <PharmML/Correlation.h>
 #include <PharmML/PharmMLContext.h>
-#include <AST/AstNodeFactory.h>
 #include <AST/AstNode.h>
 
 namespace pharmmlcpp
@@ -60,7 +59,7 @@ namespace pharmmlcpp
             } else {
                 this->pure_symbref_assignment = false;
             }
-            this->pairwiseAssignment = reader.factory.create(reader, tree);
+            this->pairwiseAssignment = AstNode::create(reader, tree);
         } else if (matrix_node.exists()) {
             // TODO: Implement MatrixType support
             xml::Attribute dev_matrix_type = node.getAttribute("deviationMatrixType");

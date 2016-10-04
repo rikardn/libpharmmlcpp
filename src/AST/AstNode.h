@@ -20,12 +20,15 @@
 
 #include <memory>
 #include <string>
+#include <xml/xml.h>
 #include <visitors/AstNodeVisitor.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
+    class PharmMLReader;
+
     class AstNode : public PharmMLSection
     {
         public:
@@ -35,6 +38,7 @@ namespace pharmmlcpp
             void parenthesize() { this->parenthesized = true; };
             virtual std::unique_ptr<AstNode> clone() = 0;
             virtual xml::Node xml(PharmMLWriter &writer) = 0;
+            static std::unique_ptr<AstNode> create(PharmMLReader &reader, xml::Node node);
 
         private:
             bool parenthesized = true;

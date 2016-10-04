@@ -35,7 +35,7 @@ namespace pharmmlcpp
             this->symbRef = symbRef;
         } else {
             xml::Node scalar_node = reader.getSingleElement(node, "./ct:Scalar");
-            this->scalar = reader.factory.create(reader, scalar_node);
+            this->scalar = AstNode::create(reader, scalar_node);
         }
 
         // Get category (for categorical covariates)
@@ -85,7 +85,7 @@ namespace pharmmlcpp
                 // Get transformation parameters (if available)
                 std::vector<xml::Node> trans_params = reader.getElements(trans, "./ct:Parameter");
                 for (xml::Node trans_param : trans_params) {
-                    std::shared_ptr<AstNode> param = reader.factory.create(reader, trans_param.getChild());
+                    std::shared_ptr<AstNode> param = AstNode::create(reader, trans_param.getChild());
                     this->transformationParameters.push_back(param);
                 }
             }
@@ -100,14 +100,14 @@ namespace pharmmlcpp
 
                 // Get population value
                 xml::Node assign = reader.getSingleElement(pop, "./ct:Assign");
-                this->populationValue = reader.factory.create(reader, assign.getChild());
+                this->populationValue = AstNode::create(reader, assign.getChild());
             } else if (lin.exists()) {
                 // Linear covariate model -- type 3
                 this->is_linear_cov = true;
 
                 // Get population value
                 xml::Node assign = reader.getSingleElement(lin, "./mdef:PopulationValue/ct:Assign");
-                this->populationValue = reader.factory.create(reader, assign.getChild());
+                this->populationValue = AstNode::create(reader, assign.getChild());
 
                 // Get covariate terms
                 std::vector<xml::Node> cov_nodes = reader.getElements(lin, "./mdef:Covariate");
@@ -133,7 +133,7 @@ namespace pharmmlcpp
 
                 // Get general covariate definition (should not contain any random variable references)
                 xml::Node assign = reader.getSingleElement(gen, "./ct:Assign");
-                this->generalAssignment = reader.factory.create(reader, assign);
+                this->generalAssignment = AstNode::create(reader, assign);
             }
 
             // Finally, get the random effects
@@ -154,7 +154,7 @@ namespace pharmmlcpp
                 this->is_explicit_cov = true;
 
                 // Get explicit assignment (can contain references to random variables)
-                this->explicitAssignment = reader.factory.create(reader, assign_node.getChild());
+                this->explicitAssignment = AstNode::create(reader, assign_node.getChild());
             } else {
                 // Generic distributional ("eta-free") covariate model -- type 4
                 this->is_generic_cov = true;

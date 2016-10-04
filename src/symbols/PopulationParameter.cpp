@@ -35,7 +35,7 @@ namespace pharmmlcpp
         // Population parameters may have assignments ("group variables" in MDL)
         xml::Node assign = reader.getSingleElement(node, "ct:Assign");
         if (assign.exists()) {
-            this->assignment = reader.factory.create(reader, assign.getChild());
+            this->assignment = AstNode::create(reader, assign.getChild());
         }
     }
 

@@ -20,7 +20,6 @@
 
 #include <unordered_map>
 #include <xml/xml.h>
-#include <AST/AstNodeFactory.h>
 #include <AST/symbols.h>
 #include <helpers/Logger.h>
 #include <PharmML/PharmMLReader.h>
@@ -33,7 +32,6 @@ namespace pharmmlcpp
         public:
             xml::Document doc;
             Logger logger;
-            AstNodeFactory factory;
             void validateDocument();
             xml::Node getSingleElement(xml::Node, const char *xpath);
             std::vector<xml::Node> getElements(xml::Node node, const char *xpath);

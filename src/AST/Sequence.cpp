@@ -22,20 +22,24 @@ namespace pharmmlcpp
     /**
      *  Creates a new interval from the xml PharmML code
      */
-    Sequence::Sequence(xml::Node node) {
-        xml::Node begin = node.getChild();
-        xml::Node second
-
-        xml::Node left_endpoint = node.getChild();
-        xml::Node right_endpoint = node.getLastChild();
-        this->setLeftEndpoint(AstNode::create(left_endpoint.getChild().getChild()));
-        if (left_endpoint.getAttribute("type").getValue() == "open") {
-            this->setLeftEndpointOpenClosed(true);
+    Sequence::Sequence(PharmMLReader &reader, xml::Node node) {
+        xml::Node begin_node = reader.getSingleElement(node, "./ct:Begin");
+        if (begin_node.exists()) {
+            this->begin = AstNode::create(reader, begin_node);
         }
-        this->setRightEndpoint(AstNode::create(right_endpoint.getChild().getChild()));
-        if (right_endpoint.getAttribute("type").getValue() == "open") {
-            this->setRightEndpointOpenClosed(true);
+        xml::Node stepSize_node = reader.getSingleElement(node, "./ct:StepSize");
+        if (stepSize_node.exists()) {
+            this->stepSize = AstNode::create(reader, stepSize_node);
         }
+        xml::Node stepNumber_node = reader.getSingleElement(node, "./ct:StepNumber");
+        if (stepNumber_node.exists()) {
+            this->stepNumber = AstNode::create(reader, stepNumber_node);
+        }
+        xml::Node end_node = reader.getSingleElement(node, "./ct:End");
+        if (end_node.exists()) {
+            this->end = AstNode::create(reader, end_node);
+        }
+        // FIXME: check invariance. Chain constructors?
     }
 
     /**
@@ -55,6 +59,15 @@ namespace pharmmlcpp
         this->stepSize = std::move(stepSize);
         this->stepNumber = std::move(stepNumber);
         this->end = std::move(end);
+        if (stepSize) {
+            this->originalStepSize = true;
+        }
+        if (stepNumber) {
+            this->originalStepNumber = true;
+        }
+        if (end) {
+            this->originalEnd = true;
+        }
     }
 
     /**
@@ -62,13 +75,13 @@ namespace pharmmlcpp
      */
     Sequence::Sequence(const Sequence& from) {
         this->begin = from.begin->clone();
-        if (this->stepSize) {
+        if (this->originalStepSize) {
             from.stepSize->clone();
         }
-        if (this->stepNumber) {
+        if (this->originalStepNumber) {
             from.stepNumber->clone();
         }
-        if (this->end) {
+        if (this->originalEnd) {
             from.end->clone();
         }
     }
@@ -81,13 +94,13 @@ namespace pharmmlcpp
         std::unique_ptr<AstNode> stepSize_clone;
         std::unique_ptr<AstNode> stepNumber_clone;
         std::unique_ptr<AstNode> end_clone;
-        if (this->stepSize) {
+        if (this->originalStepSize) {
             stepSize_clone = this->stepSize->clone();
         }
-        if (this->stepNumber) {
+        if (this->originalStepNumber) {
             stepNumber_clone = this->stepNumber->clone();
         }
-        if (this->end) {
+        if (this->originalEnd) {
             end_clone = this->end->clone();
         }
         std::unique_ptr<Sequence> cl =
@@ -100,22 +113,134 @@ namespace pharmmlcpp
         xml::Node begin("Begin", xml::Namespace::ct);
         begin.addChild(this->begin->xml(writer));
         sequence.addChild(begin);
-        if (this->stepSize) {
+        if (this->originalStepSize) {
             xml::Node stepSize("StepSize", xml::Namespace::ct);
             stepSize.addChild(this->stepSize->xml(writer));
             sequence.addChild(stepSize);
         }
-        if (this->stepNumber) {
+        if (this->originalStepNumber) {
             xml::Node stepNumber("StepNumber", xml::Namespace::ct);
             stepNumber.addChild(this->stepNumber->xml(writer));
             sequence.addChild(stepNumber);
         }
-        if (this->end) {
+        if (this->originalEnd) {
             xml::Node end("End", xml::Namespace::ct);
             end.addChild(this->end->xml(writer));
             sequence.addChild(end);
         }
         return sequence;
+    }
+
+    AstNode *Sequence::getBegin() {
+        return this->begin.get();
+    }
+
+    AstNode *Sequence::getStepSize() {
+        if (!this->stepSize) {
+            // StepSize = (End - Begin) / StepNumber
+            std::unique_ptr<BinopMinus> minus = std::make_unique<BinopMinus>(this->end->clone(), this->begin->clone());
+            std::unique_ptr<BinopDivide> div = std::make_unique<BinopDivide>(std::move(minus), this->stepNumber->clone());
+            this->stepSize = std::move(div);
+        }
+        return this->stepSize.get();
+    }
+
+    AstNode *Sequence::getStepNumber() {
+        if (!this->stepNumber) {
+            // StepNumber = (End - Begin) / StepSize
+            std::unique_ptr<BinopMinus> minus = std::make_unique<BinopMinus>(this->end->clone(), this->begin->clone());
+            std::unique_ptr<BinopDivide> div = std::make_unique<BinopDivide>(std::move(minus), this->stepSize->clone());
+            this->stepNumber = std::move(div);
+        }
+        return this->stepNumber.get();
+    }
+
+    AstNode *Sequence::getEnd() {
+        if (!this->end) {
+            // End = Begin + StepNumber * StepSize
+            std::unique_ptr<BinopTimes> times = std::make_unique<BinopTimes>(this->stepNumber->clone(), this->stepSize->clone());
+            std::unique_ptr<BinopPlus> plus = std::make_unique<BinopPlus>(this->begin->clone(), std::move(times));
+            this->end = std::move(plus);
+        }
+        return this->end.get();
+    }
+
+    void Sequence::setBegin(std::unique_ptr<AstNode> begin) {
+        this->begin = std::move(begin);
+        this->invalidateCache();
+    }
+
+    void Sequence::setStepSize(std::unique_ptr<AstNode> stepSize) {
+        if (this->originalStepSize) {
+            this->stepSize = std::move(stepSize);
+            this->invalidateCache();
+        } else {
+            throw std::invalid_argument("Already have Begin, StepNumber and End in Sequence, cannot set StepSize");
+        }
+    }
+
+    void Sequence::setStepNumber(std::unique_ptr<AstNode> stepNumber) {
+        if (this->originalStepNumber) {
+            this->stepNumber = std::move(stepNumber);
+            this->invalidateCache();
+        } else {
+            throw std::invalid_argument("Already have Begin, StepSize and End in Sequence, cannot set StepNumber");
+        }
+    }
+
+    void Sequence::setEnd(std::unique_ptr<AstNode> end) {
+        if (this->originalEnd) {
+            this->end = std::move(end);
+            this->invalidateCache();
+        } else {
+            throw std::invalid_argument("Already have Begin, StepSize and StepNumber in Sequence, cannot set End");
+        }
+    }
+
+    void Sequence::invalidateCache() {
+        if (!this->originalStepSize) {
+            this->stepSize = nullptr;
+        } else if (!this->originalStepNumber) {
+            this->stepNumber = nullptr;
+        } else if (!this->originalEnd) {
+            this->end = nullptr;
+        }
+    }
+
+    void Sequence::changeFormToBeginStepSizeEnd() {
+        this->originalStepSize = true;
+        this->originalEnd = true;
+        this->originalStepNumber = false;
+        if (!this->stepSize) {
+            this->getStepSize();
+        }
+        if (!this->end) {
+            this->getEnd();
+        }
+    }
+
+    void Sequence::changeFromToBeginStepSizeStepNumber() {
+        this->originalStepSize = true;
+        this->originalStepNumber = true;
+        this->originalEnd = false;
+        if (!this->stepSize) {
+            this->getStepSize();
+        }
+        if (!this->end) {
+            this->getEnd();
+        }
+    }
+
+    void Sequence::changeFromToBeginStepNumberEnd() {
+        this->originalStepSize = false;
+        this->originalStepNumber = true;
+        this->originalEnd = true;
+        if (!this->stepNumber) {
+            this->getStepNumber();
+        }
+        if (!this->end) {
+            this->getEnd();
+        }
     }
 
     void Sequence::accept(AstNodeVisitor *visitor) {

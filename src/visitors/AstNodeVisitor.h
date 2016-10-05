@@ -118,6 +118,7 @@ namespace pharmmlcpp
     class FunctionCall;
     class FunctionArgument;
     class Interval;
+    class Sequence;
 
     class AstNodeVisitor
     {
@@ -220,6 +221,7 @@ namespace pharmmlcpp
             virtual void visit(FunctionCall *node) {};
             virtual void visit(FunctionArgument *node) {};
             virtual void visit(Interval *node) {};
+            virtual void visit(Sequence *node) {};
     };
 }
 

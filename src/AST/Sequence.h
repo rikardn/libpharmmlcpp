@@ -18,8 +18,10 @@
 #ifndef PHARMMLCPP_SEQUENCE_H_
 #define PHARMMLCPP_SEQUENCE_H_
 
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <xml/xml.h>
+#include <AST/Binop.h>
 
 namespace pharmmlcpp
 {
@@ -33,23 +35,34 @@ namespace pharmmlcpp
     class Sequence : public AstNode
     {
         public:
-            Sequence(xml::Node node);
-            Interval(std::unique_ptr<AstNode> leftEndpoint, std::unique_ptr<AstNode> rightEndpoint);
+            Sequence(PharmMLReader &reader, xml::Node node);
+            Sequence(std::unique_ptr<AstNode> begin, std::unique_ptr<AstNode> stepSize,
+                    std::unique_ptr<AstNode> stepNumber, std::unique_ptr<AstNode> end);
             Sequence(const Sequence& from);
             AstNode *getBegin();
             AstNode *getStepSize();
             AstNode *getStepNumber();
             AstNode *getEnd();
             void setBegin(std::unique_ptr<AstNode> begin);
+            void setStepSize(std::unique_ptr<AstNode> stepSize);
+            void setStepNumber(std::unique_ptr<AstNode> stepNumber);
+            void setEnd(std::unique_ptr<AstNode> setEnd);
+            void changeFormToBeginStepSizeEnd();
+            void changeFromToBeginStepSizeStepNumber();
+            void changeFromToBeginStepNumberEnd();
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
             xml::Node xml(PharmMLWriter &writer) override;
 
         private:
+            void invalidateCache();
+            bool originalStepSize;
+            bool originalStepNumber;
+            bool originalEnd;
             std::unique_ptr<AstNode> begin;
             std::unique_ptr<AstNode> stepSize;
             std::unique_ptr<AstNode> stepNumber;
-            std::unique_ptr<AstNode> stepEnd;
+            std::unique_ptr<AstNode> end;
     };
 }
 

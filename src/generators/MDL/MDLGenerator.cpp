@@ -1706,6 +1706,13 @@ namespace pharmmlcpp
             form.add(sampling);
         }
 
+        for (ObservationCombination *comb : observations->getObservationCombinations()) {
+            std::string name = comb->getOid();
+            std::string combination = TextFormatter::createInlineVector(comb->getOidRefs(), "combination=[]");
+            std::string comb_str = name + " : { type is combi, " + combination + " }";
+            form.add(comb_str);
+        }
+
         form.outdentAdd("}");
     }
 

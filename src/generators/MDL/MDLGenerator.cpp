@@ -1552,8 +1552,11 @@ namespace pharmmlcpp
                 ref_names.push_back(ref->getOidRef());
             }
             std::string ref_vector = TextFormatter::createInlineVector(ref_names, "[]");
-            std::shared_ptr<AstNode> start_AST = AstTransformation::toVector(seq->getStart())[0];
-            std::string start = this->accept(start_AST.get());
+
+            std::string start;
+            if (seq->getStart()) {
+                start = "start=" + this->accept(seq->getStart().get());
+            }
 
             ObservationSequence *obs = arm->getObservationSequences()[0];       // FIXME: as above
             std::vector<std::string> obs_names;
@@ -1561,10 +1564,15 @@ namespace pharmmlcpp
                 obs_names.push_back(ref->getOidRef());
             }
             std::string obs_vector = TextFormatter::createInlineVector(obs_names, "[]");
-            std::shared_ptr<AstNode> obs_start_AST = AstTransformation::toVector(obs->getStart())[0];   // FIXME: Is it really ok with more than one? validation of PharmML
-            std::string obs_start = this->accept(obs_start_AST.get());
 
-            form.add(name + " : { " +  size + "interventionSequence={ admin=" + ref_vector + ", start=" + start + " } " + ", samplingSequence={ sample=" + obs_vector + ", start=" + obs_start + " } " + " }");
+            std::string obs_start;
+            if (obs->getStart()) {
+                obs_start = "start=" + this->accept(obs->getStart().get());
+            }
+            //std::shared_ptr<AstNode> obs_start_AST = AstTransformation::toVector(obs->getStart())[0];   // FIXME: Is it really ok with more than one? validation of PharmML
+            //std::string obs_start = this->accept(obs_start_AST.get());
+
+            form.add(name + " : { " +  size + "interventionSequence={ admin=" + ref_vector + ", " + start + " } " + ", samplingSequence={ sample=" + obs_vector + ", " + obs_start + " } " + " }");
         }
 
         form.outdentAdd("}");

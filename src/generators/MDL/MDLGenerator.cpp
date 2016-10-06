@@ -1569,8 +1569,6 @@ namespace pharmmlcpp
             if (obs->getStart()) {
                 obs_start = "start=" + this->accept(obs->getStart().get());
             }
-            //std::shared_ptr<AstNode> obs_start_AST = AstTransformation::toVector(obs->getStart())[0];   // FIXME: Is it really ok with more than one? validation of PharmML
-            //std::string obs_start = this->accept(obs_start_AST.get());
 
             form.add(name + " : { " +  size + "interventionSequence={ admin=" + ref_vector + ", " + start + " } " + ", samplingSequence={ sample=" + obs_vector + ", " + obs_start + " } " + " }");
         }

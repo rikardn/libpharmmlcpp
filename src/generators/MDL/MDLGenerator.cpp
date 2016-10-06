@@ -1535,9 +1535,16 @@ namespace pharmmlcpp
     void MDLGenerator::genStudyDesign(TextFormatter &form, Arms *arms) {
         form.indentAdd("STUDY_DESIGN {");
 
+        if (arms->getArmSize()) {
+            form.add("set armSize=" + this->accept(arms->getArmSize().get()));
+        }
+
         for (Arm *arm : arms->getArms()) {
             std::string name = arm->getOid();
-            std::string size = this->accept(arm->getArmSize().get());
+            std::string size;
+            if (arm->getArmSize()) {
+                size = "armSize=" + this->accept(arm->getArmSize().get()) + ", ";
+            }
 
             InterventionSequence *seq = arm->getInterventionSequences()[0];     // FIXME: Only the first one.
             std::vector<std::string> ref_names;
@@ -1557,7 +1564,7 @@ namespace pharmmlcpp
             std::shared_ptr<AstNode> obs_start_AST = AstTransformation::toVector(obs->getStart())[0];   // FIXME: Is it really ok with more than one? validation of PharmML
             std::string obs_start = this->accept(obs_start_AST.get());
 
-            form.add(name + " : { armSize=" + size + ", interventionSequence={ admin=" + ref_vector + ", start=" + start + " } " + ", samplingSequence={ sample=" + obs_vector + ", start=" + obs_start + " } " + " }");
+            form.add(name + " : { " +  size + "interventionSequence={ admin=" + ref_vector + ", start=" + start + " } " + ", samplingSequence={ sample=" + obs_vector + ", start=" + obs_start + " } " + " }");
         }
 
         form.outdentAdd("}");

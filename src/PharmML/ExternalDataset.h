@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_EXTERNALDATASET_H_
 #define PHARMMLCPP_EXTERNALDATASET_H_
 
-#include "PharmMLContext.h"
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/PharmMLSection.h>
 #include <PharmML/MultipleDVMapping.h>
 #include <PharmML/ColumnMapping.h>

@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_INDIVIDUALPARAMETER_H_
 #define PHARMMLCPP_INDIVIDUALPARAMETER_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>

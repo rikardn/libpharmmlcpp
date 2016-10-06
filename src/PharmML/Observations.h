@@ -19,7 +19,7 @@
 #define PHARMMLCPP_OBSERVATIONS_H_
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <symbols/Variable.h>
 #include <AST/symbols.h>

@@ -22,7 +22,7 @@
 #include <libxml/tree.h>
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/Block.h>
 

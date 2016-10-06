@@ -23,7 +23,7 @@
 #include <helpers/Logger.h>
 #include <xml/xml.h>
 #include <PharmML/PharmMLSection.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
 #include <visitors/AstAnalyzer.h>

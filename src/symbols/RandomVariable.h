@@ -19,7 +19,7 @@
 #define PHARMMLCPP_RANDOMVARIABLE_H_
 
 #include <unordered_set>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/Distribution.h>
 #include <visitors/PharmMLVisitor.h>
 #include "VariabilityLevel.h"

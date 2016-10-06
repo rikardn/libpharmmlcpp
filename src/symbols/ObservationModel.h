@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_OBSERVATIONMODEL_H_
 #define PHARMMLCPP_OBSERVATIONMODEL_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>

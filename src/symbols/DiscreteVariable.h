@@ -19,7 +19,7 @@
 #define PHARMMLCPP_DISCRETEVARIABLE_H_H
 
 #include <symbols/Symbol.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp

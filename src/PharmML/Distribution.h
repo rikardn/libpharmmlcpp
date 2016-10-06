@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_DISTRIBUTION_H_
 #define PHARMMLCPP_DISTRIBUTION_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/DistributionParameter.h>
 #include <AST/Scalar.h>
 #include <AST/symbols.h>

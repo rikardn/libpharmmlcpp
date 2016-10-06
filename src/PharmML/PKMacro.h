@@ -19,7 +19,7 @@
 #define PHARMMLCPP_PKMACRO_H_
 
 #include <vector>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/PharmMLSection.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/AstAnalyzer.h>

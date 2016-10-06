@@ -15,7 +15,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/ModellingSteps.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>

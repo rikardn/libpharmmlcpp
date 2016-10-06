@@ -19,14 +19,13 @@
 #define PHARMMLCPP_INTERVENTIONS_H_
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <AST/symbols.h>
 #include <visitors/PharmMLVisitor.h>
 #include <visitors/XMLAstVisitor.h>
 #include <PharmML/Dataset.h>
 #include <objects/Object.h>
-#include <PharmML/PharmMLSection.h>
 #include <visitors/ObjectVisitor.h>
 #include <PharmML/PharmMLSection.h>
 #include <symbols/Symbol.h>

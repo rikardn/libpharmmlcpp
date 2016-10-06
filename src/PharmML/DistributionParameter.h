@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_DISTRIBUTIONPARAMETER_H_
 #define PHARMMLCPP_DISTRIBUTIONPARAMETER_H_
 
-#include "PharmMLContext.h"
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h> // Why? Because it's a referer!
 

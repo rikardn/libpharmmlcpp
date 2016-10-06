@@ -19,7 +19,6 @@
 #define PHARMMLCPP_CORRELATION_H_
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/PharmMLSection.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>

@@ -19,7 +19,6 @@
 #include <visitors/SymbRefFinder.h>
 #include <iostream>
 #include <symbols/SymbolGathering.h>
-#include <PharmML/PharmMLContext.h>
 #include <PharmML/PharmML.h>
 
 namespace pharmmlcpp

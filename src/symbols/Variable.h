@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_VARIABLE_H_
 #define PHARMMLCPP_VARIABLE_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp

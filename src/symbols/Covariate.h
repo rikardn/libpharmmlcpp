@@ -19,7 +19,7 @@
 #define PHARMMLCPP_COVARIATE_H_
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <AST/AstNode.h>
 #include <symbols/Symbol.h>
 #include <visitors/PharmMLVisitor.h>

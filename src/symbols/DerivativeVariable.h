@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_DERIVATIVEVARIABLE_H_
 #define PHARMMLCPP_DERIVATIVEVARIABLE_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <symbols/Variable.h>
 #include <visitors/PharmMLVisitor.h>
 

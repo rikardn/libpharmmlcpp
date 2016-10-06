@@ -22,7 +22,6 @@
 #include <libxml/tree.h>
 
 #include <xml/xml.h>
-#include <PharmML/PharmMLContext.h>
 #include <symbols/Covariate.h>
 #include <PharmML/Block.h>
 #include <symbols/SymbolGathering.h>

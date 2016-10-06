@@ -21,7 +21,7 @@
 #include <vector>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/ExternalDataset.h>
 #include <PharmML/Interventions.h>
 #include "Observations.h"

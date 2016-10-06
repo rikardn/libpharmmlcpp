@@ -19,7 +19,7 @@
 #define PHARMMLCPP_POPULATIONPARAMETER_H_
 
 #include <AST/symbols.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/PharmMLSection.h>
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>

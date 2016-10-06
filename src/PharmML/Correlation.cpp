@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <PharmML/Correlation.h>
-#include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 
 namespace pharmmlcpp

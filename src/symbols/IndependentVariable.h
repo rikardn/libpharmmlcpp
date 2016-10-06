@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_INDEPENDENTVARIABLE_H_H
 #define PHARMMLCPP_INDEPENDENTVARIABLE_H_H
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp

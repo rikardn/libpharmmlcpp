@@ -20,7 +20,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <PharmML/ColumnMapping.h>
 #include <AST/symbols.h>
 #include <PharmML/Dataset.h>

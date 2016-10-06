@@ -18,7 +18,7 @@
 #ifndef PHARMMLCPP_VARIABILITYLEVEL_H_
 #define PHARMMLCPP_VARIABILITYLEVEL_H_
 
-#include <PharmML/PharmMLContext.h>
+#include <PharmML/PharmMLReader.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/Symbol.h>
 #include <AST/symbols.h>

@@ -1575,7 +1575,16 @@ namespace pharmmlcpp
 
         for (auto design_space : design_spaces->getDesignSpaces()) {
             std::string name = symbol_namer.getNameString("ds");    // DesignSpaces have no names in PharmML 0.8.1
-            std::string objRef = "objRef=[" + design_space->getObservationRefs()[0]->getOidRef() + "]";  // FIXME: More flexibility here, but what is really legal?
+
+            std::vector<std::string> refs;
+            for (const auto &ref : design_space->getObservationRefs()) {
+                refs.push_back(ref->getOidRef()); 
+            }
+            for (const auto &ref : design_space->getArmRefs()) {
+                refs.push_back(ref->getOidRef());
+            }
+            std::string objRef = TextFormatter::createInlineVector(refs, "objRef=[]");
+
             std::string element = "element is ";
             std::string discrete = "discrete=";
             if (design_space->getObservationTimes()) {

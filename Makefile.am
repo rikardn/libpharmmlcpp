@@ -99,7 +99,8 @@ mdl_SOURCES = \
 	src/generators/MDL/MDLAstGenerator.cpp \
 	src/generators/MDL/MDLColumnMappingAstGenerator.cpp \
 	src/generators/MDL/MDLGenerator.cpp \
-	src/generators/MDL/MDLSymbols.cpp
+	src/generators/MDL/MDLSymbols.cpp \
+	src/generators/MDL/MDLDeclaredVariables.cpp
 
 TESTS = unit
 check_PROGRAMS = unit

@@ -53,6 +53,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <consolidators/PopulationParameters.h>
 
 #include <generators/MDL/MDLSymbolNamer.h>
+#include <generators/MDL/MDLDeclaredVariables.h>
 
 #include <helpers/Logger.h>
 
@@ -105,7 +106,6 @@ namespace pharmmlcpp
             void genDesignSampling(TextFormatter &form, Observations *observations);
             void genDesignSpaces(TextFormatter &form, DesignSpaces *design_spaces);
             void genStudyDesign(TextFormatter &form, Arms *arms);
-            std::string genDesignDeclaredVariables();
             std::string genMogObj(MDLObjects &objects);
             std::string genCompleteMDL(MDLObjects &objects);
             void addProperties(TextFormatter &form, const std::vector<OperationProperty *> &props);
@@ -175,7 +175,7 @@ namespace pharmmlcpp
             std::vector<std::string> structural_parameters;
             std::vector<std::string> variability_parameters;
             std::string selected_data_object;
-            std::vector<std::string> designDeclaredVariables;       // List of all declared variables from the various design parts
+            MDLDeclaredVariables designDeclaredVariables;      // All declared variables from the various design parts
             std::unordered_map<std::string, std::unordered_map<std::string, std::string>> categorical_covariates; // Categorical maps for categorical covariates
 
             // FIXME: Ugly hack to counteract the lack of a direct reference from 'dv' column to categorical/count data observation models

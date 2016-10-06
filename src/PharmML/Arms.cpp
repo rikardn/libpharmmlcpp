@@ -28,11 +28,15 @@ namespace pharmmlcpp
     void OccasionType::parse(PharmMLReader &reader, xml::Node node) {
         // Get start
         xml::Node assign = reader.getSingleElement(node, "./design:Start/ct:Assign");
-        this->start = AstNode::create(reader, assign.getChild());
+        if (assign.exists()) {
+            this->start = AstNode::create(reader, assign.getChild());
+        }
 
         // Get end
         assign = reader.getSingleElement(node, "./design:End/ct:Assign");
-        this->end = AstNode::create(reader, assign.getChild());
+        if (assign.exists()) {
+            this->end = AstNode::create(reader, assign.getChild());
+        }
     }
 
     std::shared_ptr<AstNode> OccasionType::getStart() {

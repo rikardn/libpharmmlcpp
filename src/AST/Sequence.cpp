@@ -25,21 +25,21 @@ namespace pharmmlcpp
     Sequence::Sequence(PharmMLReader &reader, xml::Node node) {
         xml::Node begin_node = reader.getSingleElement(node, "./ct:Begin");
         if (begin_node.exists()) {
-            this->begin = AstNode::create(reader, begin_node);
+            this->begin = AstNode::create(reader, begin_node.getChild());
         }
         xml::Node stepSize_node = reader.getSingleElement(node, "./ct:StepSize");
         if (stepSize_node.exists()) {
-            this->stepSize = AstNode::create(reader, stepSize_node);
+            this->stepSize = AstNode::create(reader, stepSize_node.getChild());
         }
         xml::Node stepNumber_node = reader.getSingleElement(node, "./ct:StepNumber");
         if (stepNumber_node.exists()) {
-            this->stepNumber = AstNode::create(reader, stepNumber_node);
+            this->stepNumber = AstNode::create(reader, stepNumber_node.getChild());
         }
         xml::Node end_node = reader.getSingleElement(node, "./ct:End");
         if (end_node.exists()) {
             this->end = AstNode::create(reader, end_node);
         }
-        // FIXME: check invariance. Chain constructors?
+        this->checkInvariance();
     }
 
     /**
@@ -51,22 +51,26 @@ namespace pharmmlcpp
      */
     Sequence::Sequence(std::unique_ptr<AstNode> begin, std::unique_ptr<AstNode> stepSize,
             std::unique_ptr<AstNode> stepNumber, std::unique_ptr<AstNode> end) {
-        // Check for all valid combinations. Use deMorgan to unentangle
-        if (!begin || !((stepSize && !stepNumber && end) || (stepSize && stepNumber && !end) || (!stepSize && stepNumber && end))) {
-            throw std::invalid_argument("not supported combination in sequence");
-        }
         this->begin = std::move(begin);
         this->stepSize = std::move(stepSize);
         this->stepNumber = std::move(stepNumber);
         this->end = std::move(end);
-        if (stepSize) {
+        this->checkInvariance();
+        if (this->stepSize) {
             this->originalStepSize = true;
         }
-        if (stepNumber) {
+        if (this->stepNumber) {
             this->originalStepNumber = true;
         }
-        if (end) {
+        if (this->end) {
             this->originalEnd = true;
+        }
+    }
+
+    void Sequence::checkInvariance() {
+        // Check for all valid combinations. Use deMorgan to unentangle
+        if (!begin || !((stepSize && !stepNumber && end) || (stepSize && stepNumber && !end) || (!stepSize && stepNumber && end))) {
+            throw std::invalid_argument("not supported combination in sequence");
         }
     }
 
@@ -75,14 +79,17 @@ namespace pharmmlcpp
      */
     Sequence::Sequence(const Sequence& from) {
         this->begin = from.begin->clone();
-        if (this->originalStepSize) {
-            from.stepSize->clone();
+        if (from.originalStepSize) {
+            this->originalStepSize = true;
+            this->stepSize = from.stepSize->clone();
         }
-        if (this->originalStepNumber) {
-            from.stepNumber->clone();
+        if (from.originalStepNumber) {
+            this->originalStepNumber = true;
+            this->stepNumber = from.stepNumber->clone();
         }
-        if (this->originalEnd) {
-            from.end->clone();
+        if (from.originalEnd) {
+            this->originalEnd = true;
+            this->end = from.end->clone();
         }
     }
 
@@ -131,10 +138,17 @@ namespace pharmmlcpp
         return sequence;
     }
 
+    /**
+     *  Get the starting point of the sequence
+     */
     AstNode *Sequence::getBegin() {
         return this->begin.get();
     }
 
+    /**
+     *  Get the step size of the sequence
+     *  If the sequence did not have a defined step size from construction one will be calculated.
+     */
     AstNode *Sequence::getStepSize() {
         if (!this->stepSize) {
             // StepSize = (End - Begin) / StepNumber
@@ -145,6 +159,10 @@ namespace pharmmlcpp
         return this->stepSize.get();
     }
 
+    /**
+     *  Get the number of steps of the sequence
+     *  If the sequence did not have a defined number of steps from construction one will be calculated.
+     */
     AstNode *Sequence::getStepNumber() {
         if (!this->stepNumber) {
             // StepNumber = (End - Begin) / StepSize
@@ -155,6 +173,10 @@ namespace pharmmlcpp
         return this->stepNumber.get();
     }
 
+    /**
+     *  Get the end point of the sequence
+     *  If the sequence did not have a defined end point from construction one will be calculated.
+     */
     AstNode *Sequence::getEnd() {
         if (!this->end) {
             // End = Begin + StepNumber * StepSize
@@ -165,11 +187,20 @@ namespace pharmmlcpp
         return this->end.get();
     }
 
+    /**
+     *  Set a starting point for the sequence
+     */
     void Sequence::setBegin(std::unique_ptr<AstNode> begin) {
         this->begin = std::move(begin);
         this->invalidateCache();
     }
 
+    /**
+     *  Set a step size for the sequence.
+     *  Throws if the sequence was not constructed with a step size.
+     *  In that case the form of the sequence must be changed first
+     *  \sa changeFormToBeginStepSizeEnd(), changeFromToBeginStepSizeStepNumber() 
+     */
     void Sequence::setStepSize(std::unique_ptr<AstNode> stepSize) {
         if (this->originalStepSize) {
             this->stepSize = std::move(stepSize);
@@ -179,6 +210,12 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Set a number of steps for the sequence.
+     *  Throws if the sequence was not constructed with a number of steps.
+     *  In that case the form of the sequence must be changed first
+     *  \sa changeFromToBeginStepSizeStepNumber(), changeFromToBeginStepNumberEnd()
+     */
     void Sequence::setStepNumber(std::unique_ptr<AstNode> stepNumber) {
         if (this->originalStepNumber) {
             this->stepNumber = std::move(stepNumber);
@@ -188,6 +225,12 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Set an end point for the sequence.
+     *  Throws if the sequence was not constructed with an end point.
+     *  In that case the form of the sequence must be changed first
+     *  \sa changeFormToBeginStepSizeEnd(), changeFromToBeginStepNumberEnd()
+     */
     void Sequence::setEnd(std::unique_ptr<AstNode> end) {
         if (this->originalEnd) {
             this->end = std::move(end);
@@ -207,6 +250,9 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Change the form of the sequence to have a start point, a step size and an end point
+     */
     void Sequence::changeFormToBeginStepSizeEnd() {
         this->originalStepSize = true;
         this->originalEnd = true;
@@ -219,6 +265,9 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Change the form of the sequence to have a start point, a step size and a number of steps
+     */
     void Sequence::changeFromToBeginStepSizeStepNumber() {
         this->originalStepSize = true;
         this->originalStepNumber = true;
@@ -231,6 +280,9 @@ namespace pharmmlcpp
         }
     }
 
+    /**
+     *  Change the form of the sequence to have a start point, a number of steps and an end point
+     */
     void Sequence::changeFromToBeginStepNumberEnd() {
         this->originalStepSize = false;
         this->originalStepNumber = true;

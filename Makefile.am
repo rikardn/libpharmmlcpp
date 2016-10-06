@@ -111,6 +111,7 @@ unit_SOURCES = \
 	test/Uniop.cpp \
 	test/Binop.cpp \
 	test/Interval.cpp \
+	test/Sequence.cpp \
 	test/FunctionCall.cpp \
 	test/SymbolSet.cpp \
 	test/SymbolNamer.cpp

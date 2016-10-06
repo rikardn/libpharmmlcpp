@@ -56,9 +56,10 @@ namespace pharmmlcpp
 
         private:
             void invalidateCache();
-            bool originalStepSize;
-            bool originalStepNumber;
-            bool originalEnd;
+            void checkInvariance();
+            bool originalStepSize = false;
+            bool originalStepNumber = false;
+            bool originalEnd = false;
             std::unique_ptr<AstNode> begin;
             std::unique_ptr<AstNode> stepSize;
             std::unique_ptr<AstNode> stepNumber;

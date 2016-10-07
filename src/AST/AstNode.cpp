@@ -234,47 +234,7 @@ namespace pharmmlcpp
         } else if (name == "ALQ") {
             instance = std::make_unique<ScalarALQ>();
         } else if (name == "Vector") {
-            std::string length = node.getAttribute("length").getValue();
-            std::string defaultValue = node.getAttribute("default").getValue();
-            Vector *vector = new Vector(length, defaultValue);
-            // Get elements, cells and segments (any better way?)
-            std::vector<xml::Node> children = node.getChildren();
-            std::vector<xml::Node> vectorElements;
-            std::vector<xml::Node> vectorCells;
-            std::vector<xml::Node> vectorSegments;
-            for (xml::Node node : children) {
-                name = node.getName();
-                if (name == "VectorElements") {
-                    vectorElements.push_back(node);
-                } else if (name == "VectorCell") {
-                    vectorCells.push_back(node);
-                } else if (name == "VectorSegment") {
-                    vectorSegments.push_back(node);
-                }
-            }
-            if (!vectorElements.empty()) {
-                // Build vector object from elements
-                xml::Node elements_node = vectorElements[0];
-                std::vector<xml::Node> elements = elements_node.getChildren();
-                for (xml::Node element : elements) {
-                    vector->addElement(AstNode::create(reader, element));
-                }
-            } else if (!(vectorCells.empty() && vectorSegments.empty())) {
-                // Build vector from cells
-                for (xml::Node cell : vectorCells) {
-                    std::vector<xml::Node> children = cell.getChildren();
-                    int cellIndex = std::stoi(children[0].getText());
-                    std::shared_ptr<AstNode> cellContent = AstNode::create(reader, children[1]);
-
-                    VectorCell *vectorCell = new VectorCell(cellIndex, cellContent);
-                    vector->populateCell(vectorCell);
-                }
-                //for (xml::Node segment : vectorSegments) {
-                    // TODO: Bulid vector from segments
-                    //~ vector->populateSegment(segment);
-                //}
-            }
-            instance = std::unique_ptr<AstNode>(vector);
+            instance = std::make_unique<Vector>(reader, node);
         } else if (name == "Piecewise") {
             Piecewise *piecewise = new Piecewise();
             std::vector<xml::Node> children = node.getChildren();

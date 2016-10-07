@@ -27,19 +27,20 @@ namespace pharmmlcpp
     class VectorCell
     {
         public:
-            VectorCell(int index, std::shared_ptr<AstNode> content);
+            VectorCell(int index, std::unique_ptr<AstNode> content);
             int getIndex();
-            std::shared_ptr<AstNode> getContent();
+            AstNode* getContent();
         
         private:
             int index;
-            std::shared_ptr<AstNode> content;
+            std::unique_ptr<AstNode> content;
     };
 
     class Vector : public AstNode
     {
         public:
             Vector(std::string length, std::string defaultValue);
+            Vector(PharmMLReader &reader, xml::Node node);
             void addElement(std::shared_ptr<AstNode> element);
             void populateCell(VectorCell *cell);
             std::vector<std::shared_ptr<AstNode>> getElements();
@@ -49,7 +50,7 @@ namespace pharmmlcpp
 
         private:
             int length; // To infer length when implicitly built
-            ScalarReal *defaultContent; // To infer value of implicit elements
+            std::unique_ptr<ScalarReal> defaultContent; // To infer value of implicit elements
             std::vector<std::shared_ptr<AstNode>> elements;
     };
 }

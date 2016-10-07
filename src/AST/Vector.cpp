@@ -20,29 +20,70 @@
 
 namespace pharmmlcpp
 {
-    VectorCell::VectorCell(int index, std::shared_ptr<AstNode> content) {
+    VectorCell::VectorCell(int index, std::unique_ptr<AstNode> content) {
         this->index = index;
-        this->content = content;
+        this->content = std::move(content);
     }
 
     int VectorCell::getIndex() {
         return this->index;
     }
 
-    std::shared_ptr<AstNode> VectorCell::getContent() {
-        return this->content;
+    AstNode* VectorCell::getContent() {
+        return this->content.get();
     }
 
     Vector::Vector(std::string length, std::string defaultValue) {
-        this->defaultContent = new ScalarReal(0);
-        this->length = 0;
-        if (defaultValue != "") {
-            this->defaultContent = new ScalarReal(std::stod(defaultValue));
+    }
+
+    Vector::Vector(PharmMLReader &reader, xml::Node node) {
+        std::string length_string = node.getAttribute("length").getValue();
+        if (!length_string.empty()) {
+            this->length = std::stoi(length_string);
+        } else {
+            this->length = 0;
         }
-        if (length != "") {
-            this->length = std::stoi(length);
+        std::string defaultValue = node.getAttribute("default").getValue();
+        if (defaultValue.empty()) {
+            this->defaultContent = std::make_unique<ScalarReal>(0);
+        } else {
+            this->defaultContent = std::make_unique<ScalarReal>(defaultValue);
+        }
+
+        // Get elements, cells and segments
+        std::vector<xml::Node> children = node.getChildren();
+        xml::Node vectorElements;
+        std::vector<xml::Node> vectorCells;
+        std::vector<xml::Node> vectorSegments;
+        for (xml::Node node : children) {
+            std::string name = node.getName();
+            if (name == "VectorElements") {
+                vectorElements = node;
+            } else if (name == "VectorCell") {
+                vectorCells.push_back(node);
+            } else if (name == "VectorSegment") {
+                vectorSegments.push_back(node);
+            }
+        }
+        if (vectorElements.exists()) {
+            // Build vector object from elements
+            std::vector<xml::Node> elements = vectorElements.getChildren();
+            for (xml::Node element : elements) {
+                this->addElement(AstNode::create(reader, element));
+            }
+        } else if (!(vectorCells.empty() && vectorSegments.empty())) {
+            // Build vector from cells
+            for (xml::Node cell : vectorCells) {
+                std::vector<xml::Node> children = cell.getChildren();
+                int cellIndex = std::stoi(children[0].getText());
+                std::unique_ptr<AstNode> cellContent = AstNode::create(reader, children[1]);
+
+                VectorCell *vectorCell = new VectorCell(cellIndex, std::move(cellContent));
+                this->populateCell(vectorCell);
+            }
         }
     }
+
 
     xml::Node Vector::xml(PharmMLWriter &writer) {
         xml::Node vec("Vector", xml::Namespace::ct);
@@ -61,12 +102,12 @@ namespace pharmmlcpp
         int current_length = this->elements.size();
         if (current_length < req_length) {
             for (int i = 0; i < (req_length - current_length); i++) {
-                this->elements.push_back(std::shared_ptr<AstNode>(this->defaultContent));
+                this->elements.push_back(std::shared_ptr<AstNode>(this->defaultContent.get()));
             }
         }
         // Insert content
         //AstNode *content = cell->getContent();
-        this->elements[index-1] = cell->getContent();
+        this->elements[index-1] = std::shared_ptr<AstNode>(cell->getContent());
     }
 
     std::vector<std::shared_ptr<AstNode>> Vector::getElements() {

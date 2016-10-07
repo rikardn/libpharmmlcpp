@@ -52,6 +52,13 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node ModelDefinition::xml(PharmMLWriter &writer) {
+        xml::Node mdef("ModelDefinition");
+        mdef.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
+        // FIXME: Have namespace getter in PharmMLWriter
+
+        return mdef;
+    }
 
     void ModelDefinition::setupRefererSymbRefs(SymbolGathering &gathering) {
         //~ this->getVariabilityModels()->gatherSymbRefs(symbolMap);

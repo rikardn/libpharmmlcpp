@@ -101,6 +101,10 @@ namespace pharmmlcpp
             pharmml.addChild(f_node);
         }
 
+        if (this->modelDefinition) {
+            pharmml.addChild(this->modelDefinition->xml(writer));
+        }
+
         return pharmml;
     }
 

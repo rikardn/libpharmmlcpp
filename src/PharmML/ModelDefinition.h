@@ -27,6 +27,7 @@
 #include <symbols/ObservationModel.h>
 #include <PharmML/ModellingSteps.h>
 #include <symbols/Symbol.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -41,6 +42,7 @@ namespace pharmmlcpp
             ObservationModel *getObservationModel();
             std::vector<std::shared_ptr<ObservationModel>> getObservationModels();
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             void setupRefererSymbRefs(SymbolGathering &gathering);
 
         private:

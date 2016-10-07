@@ -21,8 +21,7 @@
 
 namespace CPharmML
 {
-    Consolidator::Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::PharmML *model) {
-        this->context = context;
+    Consolidator::Consolidator(pharmmlcpp::PharmML *model) {
         this->logger = std::make_shared<pharmmlcpp::Logger>("Post");
 
         // Consolidate the different aspects of the model

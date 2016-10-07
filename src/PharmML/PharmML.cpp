@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <PharmML/PharmML.h>
-#include <PharmML/PharmMLContext.h>
 #include <xml/xml.h>
 #include <PharmML/TrialDesign.h>
 
@@ -64,9 +63,8 @@ namespace pharmmlcpp
         // TODO: This an be moved into postParse when the consolidator call below is removed
         this->setupSymbols();
 
-        this->context = new PharmMLContext(reader);
         // Build consolidator object
-        this->consolidator = new CPharmML::Consolidator(this->context, this);
+        this->consolidator = new CPharmML::Consolidator(this);
 
         this->postParse();
     }
@@ -85,12 +83,8 @@ namespace pharmmlcpp
         }
     }
 
-    PharmML::~PharmML() {
-        delete context;
-    }
-
     void PharmML::write(std::string filename) {
-        this->context->doc.write(filename);
+        // FIXME: Use the PharmMLWriter class
     }
 
     pharmmlcpp::IndependentVariable *PharmML::getIndependentVariable() {
@@ -129,7 +123,7 @@ namespace pharmmlcpp
     // Check if oid already exists
     void PharmML::checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section) {
         if (allOids.count(object->getOid()) == 1) {
-            this->context->logger.error("Duplicate oid '" + object->getOid() + "'", section);
+            this->reader.logger.error("Duplicate oid '" + object->getOid() + "'", section);
         }
         allOids.insert(object->getOid());
         this->allObjects.insert(object);

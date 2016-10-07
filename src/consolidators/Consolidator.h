@@ -22,7 +22,6 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
-#include <PharmML/PharmMLContext.h>
 #include <AST/AstNode.h>
 #include <AST/symbols.h>
 #include <consolidators/PopulationParameters.h>
@@ -39,14 +38,13 @@ namespace CPharmML
     class Consolidator
     {
         public:
-            Consolidator(pharmmlcpp::PharmMLContext *context, pharmmlcpp::PharmML *model);
+            Consolidator(pharmmlcpp::PharmML *model);
             CPharmML::PopulationParameters *getPopulationParameters();
             std::vector<CPharmML::Covariate *> getCovariates();
             CPharmML::VariabilityModels *getVariabilityModels();
 
         private:
             std::shared_ptr<pharmmlcpp::Logger> logger;
-            pharmmlcpp::PharmMLContext *context;
 
             std::vector<CPharmML::PopulationParameters *> populationParameters; // Vector with one wrapper object per parameter model
             std::vector<CPharmML::Covariate *> covariates;

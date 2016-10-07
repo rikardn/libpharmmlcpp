@@ -18,10 +18,7 @@
 #ifndef PHARMMLCPP_MODEL_H_
 #define PHARMMLCPP_MODEL_H_
 
-#ifndef PHARMMLCPP_PHARMMLCONTEXT_H_
-#include <PharmML/PharmMLContext.h>
-#endif
-
+#include <PharmML/PharmMLReader.h>
 #include <symbols/IndependentVariable.h>
 #include <symbols/FunctionDefinition.h>
 #include <PharmML/ModelDefinition.h>
@@ -38,7 +35,6 @@ namespace pharmmlcpp
     {
         public:
             PharmML(const char *filename);
-            ~PharmML();
             void write(std::string filename);
 
             std::string getName() { return this->name; };
@@ -55,7 +51,6 @@ namespace pharmmlcpp
 
         private:
             PharmMLReader reader;
-            PharmMLContext *context;
 
             std::string name;
             std::string description;

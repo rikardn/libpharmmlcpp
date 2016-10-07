@@ -29,6 +29,7 @@
 #include <AST/symbols.h>
 #include <PharmML/Block.h>
 #include <helpers/SymbolNamer.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -57,6 +58,7 @@ namespace pharmmlcpp
             std::string getSymbId();
             std::string getName();
             void setSymbolNamer(SymbolNamer *namer);
+            void xml(PharmMLWriter &writer, xml::Node node);
             virtual void accept(SymbolVisitor *visitor) = 0;
 
         protected:

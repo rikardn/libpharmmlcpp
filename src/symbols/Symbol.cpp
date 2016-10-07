@@ -84,4 +84,8 @@ namespace pharmmlcpp
     void Symbol::parse(xml::Node node) {
         this->symbId = node.getAttribute("symbId").getValue();
     }
+
+    void Symbol::xml(PharmMLWriter &writer, xml::Node node) {
+        node.setAttribute("symbId", this->getSymbId());
+    }
 }

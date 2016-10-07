@@ -27,6 +27,12 @@ namespace pharmmlcpp
         this->Symbol::parse(node);
     }
 
+    xml::Node IndependentVariable::xml(PharmMLWriter &writer) {
+        xml::Node iv("IndependentVariable");
+        this->Symbol::xml(writer, iv);
+        return iv;
+    }
+
     void IndependentVariable::accept(PharmMLVisitor *visitor) {
         visitor->visit(this);
     }

@@ -19,6 +19,7 @@
 #define PHARMMLCPP_INDEPENDENTVARIABLE_H_H
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp
@@ -28,6 +29,7 @@ namespace pharmmlcpp
         public:
             IndependentVariable(PharmMLReader &reader, xml::Node node);
             void parse(xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) {};
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

@@ -67,6 +67,12 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node FunctionDefinition::xml(PharmMLWriter &writer) {
+        xml::Node fdef("FunctionDefinition");
+
+        return fdef;
+    }
+
     std::string FunctionDefinition::getType() {
         return this->symbolType;
     }

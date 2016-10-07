@@ -23,6 +23,7 @@
 #include <visitors/SymbolVisitor.h>
 #include <visitors/AstAnalyzer.h>
 #include <helpers/StringTools.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -69,6 +70,7 @@ namespace pharmmlcpp
             bool isStandardFunction();
             StandardFunction getStandardFunction();
             std::unordered_map<StandardFunctionArgument, pharmmlcpp::FunctionArgumentDefinition *, EnumClassHash> getStandardFunctionArgumentMap();
+            xml::Node xml(PharmMLWriter &writer);
 
         private:
             std::shared_ptr<AstNode> definition;

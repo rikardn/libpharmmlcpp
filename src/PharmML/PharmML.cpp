@@ -72,6 +72,16 @@ namespace pharmmlcpp
     xml::Node PharmML::xml(PharmMLWriter &writer) {
         xml::Node pharmml("PharmML");
 
+        if (independentVariable) {
+            xml::Node iv = independentVariable->xml(writer);
+            pharmml.addChild(iv);
+        }
+
+        for (const auto &fdef : this->functionDefinitions) {
+            xml::Node f_node = fdef->xml(writer);
+            pharmml.addChild(f_node);
+        }
+
         return pharmml;
     }
 

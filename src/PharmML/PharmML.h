@@ -19,6 +19,7 @@
 #define PHARMMLCPP_MODEL_H_
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <symbols/IndependentVariable.h>
 #include <symbols/FunctionDefinition.h>
 #include <PharmML/ModelDefinition.h>
@@ -41,13 +42,14 @@ namespace pharmmlcpp
             std::string getDescription() { return this->description; };
 
             IndependentVariable *getIndependentVariable();
-            std::vector<pharmmlcpp::FunctionDefinition *> getFunctionDefinitions();
+            std::vector<FunctionDefinition *> getFunctionDefinitions();
             FunctionDefinition *resolveFunctionCall(FunctionCall *functionCall);
             ModelDefinition *getModelDefinition();
             TrialDesign *getTrialDesign();
             ModellingSteps *getModellingSteps();
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
+            xml::Node xml(PharmMLWriter &writer);
 
         private:
             PharmMLReader reader;
@@ -55,14 +57,14 @@ namespace pharmmlcpp
             std::string name;
             std::string description;
 
-            pharmmlcpp::IndependentVariable *independentVariable = nullptr;
+            IndependentVariable *independentVariable = nullptr;
             std::vector<FunctionDefinition *> functionDefinitions;
             ModelDefinition *modelDefinition;
             TrialDesign *trialDesign = nullptr;
             ModellingSteps *modellingSteps = nullptr;
             CPharmML::Consolidator *consolidator;
             SymbolSet allSymbols;
-            std::unordered_set<pharmmlcpp::Object *> allObjects;
+            std::unordered_set<Object *> allObjects;
             void parse(PharmMLReader &reader, xml::Node node);
             void postParse();
             void setupSymbols();

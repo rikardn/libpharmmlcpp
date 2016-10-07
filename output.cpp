@@ -15,35 +15,31 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+// gcc -std=c++14 output.cpp -ooutput -Isrc -L. -lstdc++ -lpharmmlcpp $(xml2-config --cflags --libs)
+
 #include <iostream>
 #include <exception>
-#include "Model.h"
-#include "Scalar.h"
-#include "Variable.h"
-#include "PopulationParameter.h"
+#include <PharmML/PharmML.h>
 
-using namespace PharmML;
+using namespace pharmmlcpp;
 
 int main(int argc, char **argv)
 {
     const char *filename;
     if (argc < 2) {
         filename = "Executable_Simeoni_2004_oncology_TGI.xml";
-        // filename = "Executable_Simeoni_2004_oncology_TGI_trialdesign.xml";
     } else {
         filename = argv[1];
     }
 
-    Model *model;
+    PharmML *model;
     try {
-        model = new Model(filename);
+        model = new PharmML(filename);
     } 
     catch (std::exception& e) {
         std::cout << e.what() << std::endl;
         return 5;
     }
-
-    model->getTrialDesign()->update();
 
     model->write("output.xml");
 

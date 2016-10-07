@@ -58,6 +58,8 @@ namespace xml
 
     class Node
     {
+        friend class Document;
+
         public:
             Node();
             Node(xmlNode *node);

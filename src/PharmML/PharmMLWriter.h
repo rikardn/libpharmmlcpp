@@ -26,11 +26,15 @@
 
 namespace pharmmlcpp
 {
+    class PharmML;
+
     class PharmMLWriter
     {
         public:
             PharmMLWriter(std::string filename) : filename(filename), version(0, 8, 1) {}
             PharmMLWriter(std::string filename, std::string version) : filename(filename), version(version) {}
+
+            void write(PharmML *pharmml);
 
         private:
             std::string filename;

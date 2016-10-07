@@ -69,6 +69,12 @@ namespace pharmmlcpp
         this->postParse();
     }
 
+    xml::Node PharmML::xml(PharmMLWriter &writer) {
+        xml::Node pharmml("PharmML");
+
+        return pharmml;
+    }
+
     void PharmML::postParse() {
         this->setupObjects();
 
@@ -84,18 +90,19 @@ namespace pharmmlcpp
     }
 
     void PharmML::write(std::string filename) {
-        // FIXME: Use the PharmMLWriter class
+        PharmMLWriter writer(filename);
+        writer.write(this);
     }
 
-    pharmmlcpp::IndependentVariable *PharmML::getIndependentVariable() {
+    IndependentVariable *PharmML::getIndependentVariable() {
         return this->independentVariable;
     }
 
-    std::vector<pharmmlcpp::FunctionDefinition *> PharmML::getFunctionDefinitions() {
+    std::vector<FunctionDefinition *> PharmML::getFunctionDefinitions() {
         return this->functionDefinitions;
     }
 
-    pharmmlcpp::FunctionDefinition *PharmML::resolveFunctionCall(pharmmlcpp::FunctionCall *functionCall) {
+    FunctionDefinition *PharmML::resolveFunctionCall(FunctionCall *functionCall) {
         for (FunctionDefinition *FunctionDefinition : this->functionDefinitions) {
             if (functionCall->getFunction()->getSymbol() == FunctionDefinition) {
                 return FunctionDefinition;
@@ -132,7 +139,7 @@ namespace pharmmlcpp
     // Gater all Symbols and setup SymbolRefs and referencedSymbols
     void PharmML::setupSymbols() {
         SymbolGathering gathering;
-        pharmmlcpp::ModelDefinition *mdef = this->getModelDefinition();
+        ModelDefinition *mdef = this->getModelDefinition();
 
         // Gather all symbols
         if (mdef->getParameterModel()) {
@@ -177,7 +184,7 @@ namespace pharmmlcpp
     void PharmML::setupObjects() {
         std::unordered_set<std::string> allOids;
 
-        pharmmlcpp::TrialDesign *td = this->getTrialDesign();
+        TrialDesign *td = this->getTrialDesign();
 
         if (td) {
             Arms *arms = td->getArms();
@@ -207,7 +214,7 @@ namespace pharmmlcpp
         }
 
         // Obtain a map from all oids to Objects. Will be used to populate ObjectRefs
-        std::unordered_map<std::string, pharmmlcpp::Object *> oidMap;
+        std::unordered_map<std::string, Object *> oidMap;
         for (Object *object : this->allObjects) {
             oidMap[object->getOid()] = object;
         }
@@ -231,7 +238,7 @@ namespace pharmmlcpp
     void PharmML::setupPKMacros() {
         // Gather all macros
         MacroGathering gathering;
-        pharmmlcpp::StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
+        StructuralModel *sm = this->getModelDefinition()->getStructuralModel();
         if (sm) {
             sm->gatherMacros(gathering);
         }

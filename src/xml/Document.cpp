@@ -24,6 +24,7 @@ namespace xml {
     }
 
     Document::Document() {
+        this->doc = xmlNewDoc(BAD_CAST "1.0");
     }
 
     Document::Document(std::string filename) {
@@ -60,6 +61,10 @@ namespace xml {
         xmlNode *root = xmlDocGetRootElement(this->doc);
         xml::Node node(root);
         return node;
+    }
+
+    void Document::setRoot(xml::Node root) {
+        xmlDocSetRootElement(this->doc, root.node);
     }
 
     void Document::write(std::string filename) {

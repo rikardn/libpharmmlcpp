@@ -17,7 +17,14 @@
 
 #include <PharmML/PharmMLWriter.h>
 #include <PharmML/PharmML.h>
+#include <xml/Document.h>
 
 namespace pharmmlcpp
 {
+    void PharmMLWriter::write(PharmML *pharmml) {
+        xml::Document document{};
+        xml::Node root = pharmml->xml(*this);
+        document.setRoot(root);
+        document.write(this->filename);
+    }
 }

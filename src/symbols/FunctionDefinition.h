@@ -31,7 +31,7 @@ namespace pharmmlcpp
     {
         public:
             FunctionArgumentDefinition(PharmMLReader &reader, xml::Node node);
-
+            xml::Node xml(PharmMLWriter &writer);
             std::string getType();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) {};

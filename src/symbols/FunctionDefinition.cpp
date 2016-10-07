@@ -30,6 +30,13 @@ namespace pharmmlcpp
         this->symbolType = node.getAttribute("symbolType").getValue();
     }
 
+    xml::Node FunctionArgumentDefinition::xml(PharmMLWriter &writer) {
+        xml::Node fa("ct:FunctionArgument");
+        fa.setAttribute("symbolType", this->symbolType);
+        this->Symbol::xml(writer, fa);
+        return fa;
+    }
+
     std::string FunctionArgumentDefinition::getType() {
         return this->symbolType;
     }
@@ -68,7 +75,19 @@ namespace pharmmlcpp
     }
 
     xml::Node FunctionDefinition::xml(PharmMLWriter &writer) {
-        xml::Node fdef("FunctionDefinition");
+        xml::Node fdef("ct:FunctionDefinition");
+        fdef.setAttribute("symbolType", this->symbolType);
+        this->Symbol::xml(writer, fdef);
+
+        for (const auto &arg : this->arguments) {
+            fdef.addChild(arg->xml(writer));
+        }
+
+        xml::Node def("ct:Definition");
+        fdef.addChild(def);
+        xml::Node fdef_assign("ct:Assign");
+        def.addChild(fdef_assign);
+        fdef_assign.addChild(this->definition->xml(writer));
 
         return fdef;
     }

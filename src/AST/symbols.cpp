@@ -38,7 +38,9 @@ namespace pharmmlcpp
     xml::Node SymbRef::xml(PharmMLWriter &writer) {
         xml::Node symbref("SymbRef", xml::Namespace::ct);
         symbref.setAttribute("symbIdRef", this->symbIdRef);
-        symbref.setAttribute("blkIdRef", this->blkIdRef);
+        if (!this->blkIdRef.empty()) {
+            symbref.setAttribute("blkIdRef", this->blkIdRef);
+        }
         return symbref;
     }
 

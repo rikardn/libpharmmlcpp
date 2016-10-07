@@ -71,6 +71,25 @@ namespace pharmmlcpp
 
     xml::Node PharmML::xml(PharmMLWriter &writer) {
         xml::Node pharmml("PharmML");
+        pharmml.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        pharmml.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/PharmML");
+        pharmml.setAttribute("xsi:schemaLocation", "http://www.pharmml.org/pharmml/0.8/PharmML http://www.pharmml.org/pharmml/0.8/PharmML");
+        pharmml.setAttribute("xmlns:math", "http://www.pharmml.org/pharmml/0.8/Maths");
+        pharmml.setAttribute("xmlns:ct", "http://www.pharmml.org/pharmml/0.8/CommonTypes");
+        pharmml.setAttribute("xmlns:ds", "http://www.pharmml.org/pharmml/0.8/Dataset");
+        pharmml.setAttribute("xmlns:mdef", "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
+        pharmml.setAttribute("xmlns:mstep", "http://www.pharmml.org/pharmml/0.8/ModellingSteps");
+        pharmml.setAttribute("xmlns:design", "http://www.pharmml.org/pharmml/0.8/TrialDesign");
+        pharmml.setAttribute("writtenVersion", "0.8.1");
+
+        if (!this->name.empty()) {
+            xml::Node name("ct:Name", this->name);
+            pharmml.addChild(name);
+        }
+        if (!this->description.empty()) {
+            xml::Node description("ct:Description", this->description);
+            pharmml.addChild(description);
+        }
 
         if (independentVariable) {
             xml::Node iv = independentVariable->xml(writer);

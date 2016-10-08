@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <PharmML/PharmMLSection.h>
+#include <PharmML/PharmMLWriter.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/SymbolSet.h>
 #include <symbols/Symbol.h>
@@ -35,6 +36,7 @@ namespace pharmmlcpp
         public:
             StructuralModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             std::vector<CommonVariable *> getVariables();
             bool hasDerivatives();
             std::vector<CommonVariable *> getDerivatives();

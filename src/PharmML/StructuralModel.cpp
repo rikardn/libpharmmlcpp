@@ -46,6 +46,17 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node StructuralModel::xml(PharmMLWriter &writer) {
+        xml::Node str("StructuralModel");
+        this->Block::xml(writer, str);
+
+        for (const auto &var : this->variables) {
+            str.addChild(var->xml(writer));
+        }
+
+        return str;
+    }
+
     std::vector<CommonVariable *> StructuralModel::getVariables() {
         return this->variables;
     }

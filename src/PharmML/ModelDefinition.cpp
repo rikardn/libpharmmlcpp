@@ -57,6 +57,10 @@ namespace pharmmlcpp
         mdef.setAttribute("xmlns", "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
         // FIXME: Have namespace getter in PharmMLWriter
 
+        if (this->structuralModel) {
+            mdef.addChild(this->structuralModel->xml(writer));
+        }
+
         return mdef;
     }
 

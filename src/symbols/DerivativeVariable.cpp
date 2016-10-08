@@ -35,6 +35,12 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node DerivativeVariable::xml(PharmMLWriter &writer) {
+        xml::Node var("ct:DerivativeVariable");
+
+        return var;
+    }
+
     std::shared_ptr<AstNode> DerivativeVariable::getIndependentVariable() {
         return this->independent_variable;
     }

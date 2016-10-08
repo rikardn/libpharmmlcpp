@@ -19,6 +19,7 @@
 #define PHARMMLCPP_VARIABLE_H_
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <visitors/PharmMLVisitor.h>
 
 namespace pharmmlcpp
@@ -28,6 +29,7 @@ namespace pharmmlcpp
          public:
             CommonVariable(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            virtual xml::Node xml(PharmMLWriter &writer) = 0;
             std::shared_ptr<AstNode> getAssignment();
             bool isDerivative();
             virtual void setupSymbRefs(SymbolGathering &gathering, std::string blkId) = 0;
@@ -43,6 +45,7 @@ namespace pharmmlcpp
     {
         public:
             Variable(PharmMLReader &reader, xml::Node node) : CommonVariable(reader, node) { is_derivative = false; };
+            xml::Node xml(PharmMLWriter &writer) override;
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor) override;
             void accept(SymbolVisitor *visitor) override;
@@ -52,6 +55,7 @@ namespace pharmmlcpp
     {
         public:
             DesignParameter(PharmMLReader &reader, xml::Node node) : Variable(reader, node) {};
+            xml::Node xml(PharmMLWriter &writer) override;
     };
 }
 

@@ -43,6 +43,17 @@ namespace pharmmlcpp
     }
 
 
+    xml::Node Variable::xml(PharmMLWriter &writer) {
+        xml::Node var("ct:Variable");
+        this->Symbol::xml(writer, var);
+
+        xml::Node assign("ct:Assign");
+        var.addChild(assign);
+        assign.addChild(this->assignment->xml(writer));
+
+        return var;
+    }
+
     void Variable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
        if (this->assignment) {
             this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);
@@ -55,5 +66,12 @@ namespace pharmmlcpp
 
     void Variable::accept(SymbolVisitor *visitor) {
         visitor->visit(this);
+    }
+
+
+    xml::Node DesignParameter::xml(PharmMLWriter &writer) {
+        xml::Node var("ct:DesignParameter");
+
+        return var;
     }
 }

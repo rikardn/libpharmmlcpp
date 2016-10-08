@@ -26,4 +26,8 @@ namespace pharmmlcpp
     void Block::parse(xml::Node node) {
         this->blkId = node.getAttribute("blkId").getValue();
     }
+
+    void Block::xml(PharmMLWriter &writer, xml::Node node) {
+        node.setAttribute("blkId", this->blkId);
+    }
 }

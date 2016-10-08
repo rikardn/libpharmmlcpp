@@ -19,6 +19,7 @@
 #define PHARMMLCPP_DERIVATIVEVARIABLE_H_
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <symbols/Variable.h>
 #include <visitors/PharmMLVisitor.h>
 
@@ -32,6 +33,7 @@ namespace pharmmlcpp
             std::shared_ptr<AstNode> getInitialValue();
             std::shared_ptr<AstNode> getInitialTime();
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer) override;
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);

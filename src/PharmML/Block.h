@@ -20,6 +20,7 @@
 
 #include <string>
 #include <xml/xml.h>
+#include <PharmML/PharmMLWriter.h>
 
 namespace pharmmlcpp
 {
@@ -30,6 +31,7 @@ namespace pharmmlcpp
         public:
             std::string getBlkId();
             void parse(xml::Node node);
+            void xml(PharmMLWriter &writer, xml::Node node);
             virtual void gatherSymbols(SymbolGathering &gathering) = 0;
 
         private:

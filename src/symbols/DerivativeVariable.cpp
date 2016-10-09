@@ -37,6 +37,29 @@ namespace pharmmlcpp
 
     xml::Node DerivativeVariable::xml(PharmMLWriter &writer) {
         xml::Node var("ct:DerivativeVariable");
+        this->Symbol::xml(writer, var);
+        var.setAttribute("symbolType", this->type);
+
+        xml::Node assign("ct:Assign");
+        var.addChild(assign);
+        assign.addChild(this->assignment->xml(writer));
+
+        xml::Node iv("ct:IndependentVariable");
+        var.addChild(iv);
+        iv.addChild(this->independent_variable->xml(writer));
+
+        xml::Node icond("ct:InitialCondition");
+        var.addChild(icond);
+        xml::Node ival("ct:InitialValue");
+        icond.addChild(ival);
+        xml::Node ival_assign("ct:Assign");
+        ival.addChild(ival_assign);
+        ival_assign.addChild(this->initial_value->xml(writer));
+        xml::Node itime("ct:InitialTime");
+        icond.addChild(itime);
+        xml::Node itime_assign("ct:Assign");       
+        itime.addChild(itime_assign);
+        itime_assign.addChild(this->initial_time->xml(writer));
 
         return var;
     }

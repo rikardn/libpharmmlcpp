@@ -37,6 +37,7 @@ namespace pharmmlcpp
             virtual void accept(SymbolVisitor *visitor) = 0;
 
          protected:
+            std::string type;
             std::shared_ptr<AstNode> assignment;
             bool is_derivative;
     };

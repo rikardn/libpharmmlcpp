@@ -32,6 +32,7 @@ namespace pharmmlcpp
             xml::Node tree = assign.getChild();
             this->assignment = AstNode::create(reader, tree);
         }
+        this->type = node.getAttribute("symbolType").getValue();
     }
 
     std::shared_ptr<AstNode> CommonVariable::getAssignment() {
@@ -42,10 +43,10 @@ namespace pharmmlcpp
         return this->is_derivative;
     }
 
-
     xml::Node Variable::xml(PharmMLWriter &writer) {
         xml::Node var("ct:Variable");
         this->Symbol::xml(writer, var);
+        var.setAttribute("symbolType", this->type);
 
         xml::Node assign("ct:Assign");
         var.addChild(assign);

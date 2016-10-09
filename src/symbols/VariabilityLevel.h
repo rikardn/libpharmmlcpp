@@ -19,6 +19,7 @@
 #define PHARMMLCPP_VARIABILITYLEVEL_H_
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/Symbol.h>
 #include <AST/symbols.h>
@@ -30,6 +31,7 @@ namespace pharmmlcpp
         public:
             VariabilityLevel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             std::string getName();
             bool isReferenceLevel();
             SymbRef *getParentReference();

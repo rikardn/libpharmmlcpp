@@ -41,6 +41,17 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node VariabilityLevel::xml(PharmMLWriter &writer) {
+        xml::Node level("Level");
+        this->Symbol::xml(writer, level);
+        std::string refLevel = "false";
+        if (this->referenceLevel) {
+            refLevel = "true";
+        }
+        level.setAttribute("referenceLevel", refLevel);
+        return level;
+    }
+
     std::string VariabilityLevel::getName() {
         return this->name;
     }

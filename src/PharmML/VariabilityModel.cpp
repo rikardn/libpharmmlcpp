@@ -48,6 +48,18 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node VariabilityModel::xml(PharmMLWriter &writer) {
+        xml::Node vmod("VariabilityModel");
+        this->Block::xml(writer, vmod);
+        vmod.setAttribute("type", this->type);
+
+        for (const auto &level : this->variabilityLevels) {
+            vmod.addChild(level->xml(writer));
+        }
+
+        return vmod;
+    }
+
     std::string VariabilityModel::getName() {
         return this->name;
     }

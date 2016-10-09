@@ -23,6 +23,7 @@
 
 #include <xml/xml.h>
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <symbols/VariabilityLevel.h>
 #include <PharmML/Block.h>
 
@@ -33,6 +34,7 @@ namespace pharmmlcpp
         public:
             VariabilityModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             std::string getName();
             bool onResidualError();
             bool onParameter();
@@ -45,7 +47,7 @@ namespace pharmmlcpp
         private:
             std::string name;
             std::string type;
-            std::vector<pharmmlcpp::VariabilityLevel *> variabilityLevels;
+            std::vector<VariabilityLevel *> variabilityLevels;
     };
 }
 

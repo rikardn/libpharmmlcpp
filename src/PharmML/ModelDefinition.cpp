@@ -61,6 +61,10 @@ namespace pharmmlcpp
             mdef.addChild(vmod->xml(writer));
         }
 
+        if (this->parameterModel) {
+            mdef.addChild(this->parameterModel->xml(writer));
+        }
+
         if (this->structuralModel) {
             mdef.addChild(this->structuralModel->xml(writer));
         }

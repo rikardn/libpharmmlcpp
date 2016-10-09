@@ -18,6 +18,8 @@
 #ifndef PHARMMLCPP_PARAMETERMODEL_H_
 #define PHARMMLCPP_PARAMETERMODEL_H_
 
+#include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
 #include <symbols/RandomVariable.h>
@@ -40,6 +42,7 @@ namespace pharmmlcpp
             std::vector<Correlation *> getCorrelations();
             ParameterModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gatherer) override;
 

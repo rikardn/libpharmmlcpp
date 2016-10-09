@@ -59,6 +59,17 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node ParameterModel::xml(PharmMLWriter &writer) {
+        xml::Node pmod("ParameterModel");
+        this->Block::xml(writer, pmod);
+
+        for (const auto &popparam : this->populationParameters) {
+            pmod.addChild(popparam->xml(writer));
+        }
+
+        return pmod;
+    }
+
     void ParameterModel::setupRefererSymbRefs(SymbolGathering &gathering) {
         // Only Correlation in ParameterModel are Referer's (and not Symbol's)
         for (pharmmlcpp::Correlation *corr : this->getCorrelations()) {

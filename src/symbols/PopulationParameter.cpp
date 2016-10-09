@@ -39,6 +39,13 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node PopulationParameter::xml(PharmMLWriter &writer) {
+        xml::Node popparam("PopulationParameter");
+        this->Symbol::xml(writer, popparam);
+
+        return popparam;
+    }
+
     void PopulationParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->hasAssignment()) {
             this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);

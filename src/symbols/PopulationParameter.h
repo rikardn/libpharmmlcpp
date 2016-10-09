@@ -20,6 +20,7 @@
 
 #include <AST/symbols.h>
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <PharmML/PharmMLSection.h>
 #include <xml/xml.h>
 #include <visitors/PharmMLVisitor.h>
@@ -32,6 +33,7 @@ namespace pharmmlcpp
             PopulationParameter(std::string symbId);
             PopulationParameter(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
 
             bool hasAssignment() { return this->assignment != nullptr; };
             std::shared_ptr<AstNode> getAssignment() { return this->assignment; };

@@ -164,6 +164,19 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node IndividualParameter::xml(PharmMLWriter &writer) {
+        xml::Node ipar("IndividualParameter");
+        this->Symbol::xml(writer, ipar);
+
+        if (this->isExplicit()) {
+            xml::Node assign("ct:Assign");
+            ipar.addChild(assign);
+            assign.addChild(explicitAssignment->xml(writer));
+        }
+
+        return ipar; 
+    }
+
     bool IndividualParameter::isStructured() {
         return this->is_structured;
     }

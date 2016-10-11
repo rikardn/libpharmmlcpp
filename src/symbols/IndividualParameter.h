@@ -19,6 +19,7 @@
 #define PHARMMLCPP_INDIVIDUALPARAMETER_H_
 
 #include <PharmML/PharmMLReader.h>
+#include <PharmML/PharmMLWriter.h>
 #include <xml/xml.h>
 #include <AST/AstNode.h>
 #include <visitors/PharmMLVisitor.h>
@@ -52,6 +53,7 @@ namespace pharmmlcpp
         public:
             IndividualParameter(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
 
             bool isStructured(); // Type 2/3 (linear/generic)
             bool isLinear(); // Type 2

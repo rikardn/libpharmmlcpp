@@ -27,7 +27,9 @@ namespace pharmmlcpp
         piece.addChild(this->expression->xml(writer));
         xml::Node condition("Condition", xml::Namespace::math);
         piece.addChild(condition);
-        condition.addChild(this->condition->xml(writer));
+        if (this->condition) {
+            condition.addChild(this->condition->xml(writer));
+        }       // FIXME: Otherwise
         return piece;
     }
 

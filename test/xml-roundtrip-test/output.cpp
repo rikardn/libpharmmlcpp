@@ -17,6 +17,7 @@
 
 // gcc -std=c++14 output.cpp -ooutput -Isrc -L. -lstdc++ -lpharmmlcpp $(xml2-config --cflags --libs)
 
+#include <string>
 #include <iostream>
 #include <exception>
 #include <PharmML/PharmML.h>
@@ -41,7 +42,7 @@ int main(int argc, char **argv)
         return 5;
     }
 
-    model->write("output.xml");
+    model->write("results/" + std::string(filename));
 
     return 0;
 }

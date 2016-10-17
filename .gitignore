@@ -28,8 +28,8 @@ pharmmltool
 libpharmmlcpp.a
 test/test
 
-output
-output.xml
+test/xml-roundtrip-test/results
+test/xml-roundtrip-test/output
 html/*
 latex/*
 

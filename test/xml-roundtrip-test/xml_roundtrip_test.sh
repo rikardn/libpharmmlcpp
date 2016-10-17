@@ -31,15 +31,13 @@ for i in "${!TESTFILES[@]}"; do
     original_lines=$(wc -l $path)
     outfile_dir="results/$(dirname $file)"
 
+    echo -n $BLU $file $NOR
     mkdir -p $outfile_dir
     ./output "$TESTFILES_DIR/$file" >/dev/null 2>&1 |:
     if [[ -e output.xml ]]; then
         mv output.xml "results/$file"
-    fi
-    echo -n $BLU $file $NOR
-    if [[ $? == 0 ]]; then
-        echo "$RED (FAIL) $NOR" 
     else
-        echo "$GRE (PASS) $NOR"
+        echo "$RED (FAIL) $NOR"
     fi
+
 done

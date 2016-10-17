@@ -38,11 +38,11 @@ int main(int argc, char **argv)
         model = new PharmML(filename);
     } 
     catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
+        std::cout << "Error: " + std::string(e.what()) << std::endl;
         return 5;
     }
 
-    model->write("results/" + std::string(filename));
+    model->write("output.xml");
 
     return 0;
 }

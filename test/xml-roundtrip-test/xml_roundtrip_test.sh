@@ -35,9 +35,13 @@ for i in "${!TESTFILES[@]}"; do
     mkdir -p $outfile_dir
     ./output "$TESTFILES_DIR/$file" >/dev/null 2>&1 |:
     if [[ -e output.xml ]]; then
+        numdiff=$(xmldiff output.xml "$TESTFILES_DIR/$file" | wc -l)
+        if [ "$numdiff" -gt "0" ]; then
+            echo "$RED (FAIL) $numdiff lines $NOR"
+        fi
         mv output.xml "results/$file"
     else
-        echo "$RED (FAIL) $NOR"
+        echo "$RED (FAIL) no output $NOR"
     fi
 
 done

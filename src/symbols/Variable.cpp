@@ -48,9 +48,11 @@ namespace pharmmlcpp
         this->Symbol::xml(writer, var);
         var.setAttribute("symbolType", this->type);
 
-        xml::Node assign("ct:Assign");
-        var.addChild(assign);
-        assign.addChild(this->assignment->xml(writer));
+        if (this->assignment) {
+            xml::Node assign("ct:Assign");
+            var.addChild(assign);
+            assign.addChild(this->assignment->xml(writer));
+        }
 
         return var;
     }

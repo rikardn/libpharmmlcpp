@@ -25,6 +25,9 @@ cd "$TESTFILES_DIR"
 TESTFILES=(`find -type f -name "*.xml" | sed "s|^\./||" | sort -V`)
 cd "$WD"
 
+numtotalfails=0
+numtotaldiff=0
+
 for i in "${!TESTFILES[@]}"; do
     file="${TESTFILES[$i]}"
     path="$TESTFILES_DIR/$file"
@@ -37,11 +40,15 @@ for i in "${!TESTFILES[@]}"; do
     if [[ -e output.xml ]]; then
         numdiff=$(xmldiff output.xml "$TESTFILES_DIR/$file" | wc -l)
         if [ "$numdiff" -gt "0" ]; then
+            numtotaldiff=$((numtotaldiff + numdiff))
             echo "$RED (FAIL) $numdiff lines $NOR"
         fi
         mv output.xml "results/$file"
     else
+        numtotalfails=$((numtotalfails + 1))
         echo "$RED (FAIL) no output $NOR"
     fi
-
 done
+
+echo "Total number of crashed models: " $numtotalfails
+echo "Total number of difflines: " $numtotaldiff

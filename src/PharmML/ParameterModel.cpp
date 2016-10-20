@@ -118,7 +118,7 @@ namespace pharmmlcpp
     }
 
     // Return the the initial covariance between var1 and var2 given a vector of parameterEstimations
-    // FIXME: How to now which correlations are applicable? Can correlations from other ParameterModel apply?
+    // FIXME: How to know which correlations are applicable? Can correlations from other ParameterModel apply?
     AstNode *ParameterModel::initialCovariance(RandomVariable *var1, RandomVariable *var2, std::vector<ParameterEstimation *> parameterEstimations) {
         for (Correlation *correlation : this->correlations) {
             if (correlation->isPairwise()) {

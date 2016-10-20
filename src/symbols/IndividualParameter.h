@@ -72,7 +72,7 @@ namespace pharmmlcpp
 
             std::shared_ptr<AstNode> getAssignment();
 
-            AstNode *asExplicit();
+            std::unique_ptr<AstNode> asExplicit();
 
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;
             void accept(PharmMLVisitor *visitor);

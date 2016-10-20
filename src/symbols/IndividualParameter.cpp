@@ -238,41 +238,37 @@ namespace pharmmlcpp
 
     // Convert any structure of parameter into general form
     // FIXME: Currently support only explicit and structured and only log transform
-    AstNode *IndividualParameter::asExplicit() {
-        AstNode *result;
+    std::unique_ptr<AstNode> IndividualParameter::asExplicit() {
+        std::unique_ptr<AstNode> result;
         if (this->isExplicit()) {
-            result = this->getAssignment().get();
+            result = std::move(this->getAssignment()->clone());
         } else {
             // trans^-1(  trans(pop) + fixedeff1*fixedeff2*covariate + ... + randomeffect1 + randomeffect2)
-/* FIXME: This is a regression. Need copy methods to do this right!
               if (this->transformation == "log") {
-                // FIXME: Smart pointers. Need to copy nodes?
-                std::vector<AstNode *> addition_nodes;
+                std::vector<std::unique_ptr<AstNode>> addition_nodes;
 
-                UniopLog *log_node = new UniopLog();
-                log_node->setChild(this->getPopulationValue());
-                addition_nodes.push_back(log_node);
+                std::unique_ptr<AstNode> log_node = std::make_unique<UniopLog>(this->populationValue->clone());
+                addition_nodes.push_back(std::move(log_node));
 
-                for (SymbRef *covariate : this->getCovariates()) {
-                    std::vector<AstNode *> product_nodes;
+                for (SymbRef *covariate : this->covariates) {
+                    std::vector<std::unique_ptr<AstNode>> product_nodes;
                     for (FixedEffect *fe : this->getFixedEffects(covariate)) {
-                        product_nodes.push_back(fe->getReference());
+                        product_nodes.push_back(std::move(fe->getReference()->clone()));
                     }
-                    product_nodes.push_back(covariate);
-                    addition_nodes.push_back(AstBuilder::multiplyMany(product_nodes));
+                    product_nodes.push_back(std::move(covariate->clone()));
+                    addition_nodes.push_back(std::move(AstBuilder::multiplyMany_(product_nodes)));
                 }
 
-                for (SymbRef *random_effect : this->getRandomEffects()) {
-                    addition_nodes.push_back(random_effect);
+                for (SymbRef *random_effect : this->randomEffects) {
+                    addition_nodes.push_back(std::move(random_effect->clone()));
                 }
 
-                auto exp_node = std::make_unique<UniopExp>();
-                exp_node->setChild(std::unique<AstNode>(AstBuilder::addMany(addition_nodes)));
-                result = exp_node.get();
-            }*/
+                std::unique_ptr<AstNode> exp_node = std::make_unique<UniopExp>(std::move(AstBuilder::addMany(addition_nodes)));
+                result = std::move(exp_node);
+            }
         }
 
-        return result;
+        return std::move(result);
     }
 
     void IndividualParameter::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {

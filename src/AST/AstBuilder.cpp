@@ -32,14 +32,25 @@ namespace pharmmlcpp
         return prev; 
     }
 
-    // FIXME: Major duplication of code! Need way of creating same Binop Type 
-    AstNode *AstBuilder::addMany(std::vector<AstNode *> list) {
-        BinopPlus *prev = new BinopPlus(std::unique_ptr<AstNode>(list.end()[-2]), std::unique_ptr<AstNode>(list.end()[-1]));      // The ultimate and penultimate element
+    std::unique_ptr<AstNode> AstBuilder::multiplyMany_(std::vector<std::unique_ptr<AstNode>> &list) {
+        std::unique_ptr<AstNode> prev = std::make_unique<BinopTimes>(std::move(list.end()[-2]), std::move(list.end()[-1]));      // The ultimate and penultimate element
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
-            BinopPlus *next = new BinopPlus(std::unique_ptr<AstNode>(list[i]), std::unique_ptr<AstNode>(prev));
-            prev = next;
+            std::unique_ptr<AstNode> next = std::make_unique<BinopTimes>(std::move(list[i]), std::move(prev));
+            prev = std::move(next);
         }
 
-        return prev; 
+        return std::move(prev);
+    }
+
+
+    // FIXME: Major duplication of code! Need way of creating same Binop Type 
+    std::unique_ptr<AstNode> AstBuilder::addMany(std::vector<std::unique_ptr<AstNode>> &list) {
+        std::unique_ptr<AstNode> prev = std::make_unique<BinopPlus>(std::move(list.end()[-2]), std::move(list.end()[-1]));      // The ultimate and penultimate element
+        for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
+            std::unique_ptr<AstNode> next = std::make_unique<BinopPlus>(std::move(list[i]), std::move(prev));
+            prev = std::move(next);
+        }
+
+        return std::move(prev); 
     }
 }

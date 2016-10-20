@@ -56,7 +56,7 @@ namespace pharmmlcpp
     }
 
     void RSymbols::visit(IndividualParameter *node) {
-        this->astgen->acceptRoot(node->asExplicit());
+        this->astgen->acceptRoot(node->asExplicit().get());
         this->setValue(node->getSymbId() + " <- " + this->astgen->getValue());
     }
 

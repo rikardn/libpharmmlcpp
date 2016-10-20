@@ -25,8 +25,7 @@ namespace pharmmlcpp
 {
     namespace AstBuilder
     {
-        AstNode *multiplyMany(std::vector<AstNode *> list);
-        std::unique_ptr<AstNode> multiplyMany_(std::vector<std::unique_ptr<AstNode>> &list);     // Will replace the first one eventually
+        std::unique_ptr<AstNode> multiplyMany(std::vector<std::unique_ptr<AstNode>> &list);
         std::unique_ptr<AstNode> addMany(std::vector<std::unique_ptr<AstNode>> &list);
     }
 }

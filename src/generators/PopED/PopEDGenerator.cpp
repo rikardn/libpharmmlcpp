@@ -697,8 +697,8 @@ namespace pharmmlcpp
 
             for (std::vector<RandomVariable *>::size_type col = 0; col < this->etas.size(); col++) {
                 for (std::vector<RandomVariable *>::size_type row = col + 1; row < this->etas.size(); row++) {
-                    AstNode *cov = parameterModel->initialCovariance(this->etas[col], this->etas[row], parameterEstimations);
-                    covd_formatter.add(this->accept(cov));
+                    std::unique_ptr<AstNode> cov = parameterModel->initialCovariance(this->etas[col], this->etas[row], parameterEstimations);
+                    covd_formatter.add(this->accept(cov.get()));
                 }
             }
 

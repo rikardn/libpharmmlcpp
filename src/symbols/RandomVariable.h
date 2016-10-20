@@ -38,7 +38,7 @@ namespace pharmmlcpp
             void accept(PharmMLVisitor *visitor);
             void accept(SymbolVisitor *visitor);
 
-            AstNode *initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
+            std::unique_ptr<AstNode> initialStdev(std::vector<ParameterEstimation *> parameterEstimations);
 
         private:
             std::vector<VariabilityReference *> variabilityReferences;

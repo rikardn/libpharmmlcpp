@@ -69,43 +69,42 @@ namespace pharmmlcpp
 
     // get the initial value for the stdev.
     // FIXME: Check which distribution
-    // FIXME: Ownership, copy and smart pointers
-    AstNode *RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
+    std::unique_ptr<AstNode> RandomVariable::initialStdev(std::vector<ParameterEstimation *> parameterEstimations) {
         for (auto const &param : this->distribution->getDistributionParameters()) {
             if (param->getName() == "stdev") {
                 AstAnalyzer analyzer;
                 param->getAssignment()->accept(&analyzer);
                 if (analyzer.getPureScalar()) {
-                    return analyzer.getPureScalar();
+                    return std::move(analyzer.getPureScalar()->clone());
                 } else if (analyzer.getPureSymbRef()) {
                     Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
                     for (ParameterEstimation *pe : parameterEstimations) {
                         if (pe->getSymbRef()->getSymbol() == symbol) {
-                            return pe->getInitValue().get();
+                            return std::move(pe->getInitValue()->clone());
                         }
                     }
                 }
-                return new ScalarInt(0);
+                return std::make_unique<ScalarInt>(0);
             } else if (param->getName() == "var") {
                 AstAnalyzer analyzer;
                 param->getAssignment()->accept(&analyzer);
                 if (analyzer.getPureScalar()) {
-                    auto child = std::unique_ptr<AstNode>(analyzer.getPureScalar());
-                    UniopSqrt *stdev = new UniopSqrt(std::move(child));
-                    return stdev;
+                    std::unique_ptr<AstNode> child = std::move(analyzer.getPureScalar()->clone());
+                    std::unique_ptr<AstNode> stdev = std::make_unique<UniopSqrt>(std::move(child));
+                    return std::move(stdev);
                 } else if (analyzer.getPureSymbRef()) {
                     Symbol *symbol = analyzer.getPureSymbRef()->getSymbol();
                     for (ParameterEstimation *pe : parameterEstimations) {
                         if (pe->getSymbRef()->getSymbol() == symbol) {
-                            auto child = std::unique_ptr<AstNode>(pe->getInitValue().get());
-                            UniopSqrt *stdev = new UniopSqrt(std::move(child));
-                            return stdev;
+                            std::unique_ptr<AstNode> child = std::move(pe->getInitValue()->clone());
+                            std::unique_ptr<AstNode> stdev = std::make_unique<UniopSqrt>(std::move(child));
+                            return std::move(stdev);
                         }
                     }
                 }
-                return new ScalarInt(0);
+                return std::make_unique<ScalarInt>(0);
             }
         }
-        return new ScalarInt(0);
+        return std::make_unique<ScalarInt>(0);
     }
 }

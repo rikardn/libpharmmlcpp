@@ -21,18 +21,7 @@
 
 namespace pharmmlcpp
 {
-    // FIXME: This code became a mess after smart pointers. Can using copy be made much more general.
-    AstNode *AstBuilder::multiplyMany(std::vector<AstNode *> list) {
-        BinopTimes *prev = new BinopTimes(std::unique_ptr<AstNode>(list.end()[-2]), std::unique_ptr<AstNode>(list.end()[-1]));      // The ultimate and penultimate element
-        for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
-            BinopTimes *next = new BinopTimes(std::unique_ptr<AstNode>(list[i]), std::unique_ptr<AstNode>(prev));
-            prev = next;
-        }
-
-        return prev; 
-    }
-
-    std::unique_ptr<AstNode> AstBuilder::multiplyMany_(std::vector<std::unique_ptr<AstNode>> &list) {
+    std::unique_ptr<AstNode> AstBuilder::multiplyMany(std::vector<std::unique_ptr<AstNode>> &list) {
         std::unique_ptr<AstNode> prev = std::make_unique<BinopTimes>(std::move(list.end()[-2]), std::move(list.end()[-1]));      // The ultimate and penultimate element
         for (int i = (int) list.size() - 3; i >= 0; i--) {  // Loop backwards from the ante-penultimate element
             std::unique_ptr<AstNode> next = std::make_unique<BinopTimes>(std::move(list[i]), std::move(prev));

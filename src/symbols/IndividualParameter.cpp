@@ -256,7 +256,7 @@ namespace pharmmlcpp
                         product_nodes.push_back(std::move(fe->getReference()->clone()));
                     }
                     product_nodes.push_back(std::move(covariate->clone()));
-                    addition_nodes.push_back(std::move(AstBuilder::multiplyMany_(product_nodes)));
+                    addition_nodes.push_back(std::move(AstBuilder::multiplyMany(product_nodes)));
                 }
 
                 for (SymbRef *random_effect : this->randomEffects) {

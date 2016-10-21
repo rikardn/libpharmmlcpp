@@ -31,6 +31,8 @@
 
 namespace pharmmlcpp
 {
+    class PharmML;
+
     class StructuralModel : public Block
     {
         public:
@@ -44,6 +46,7 @@ namespace pharmmlcpp
             void setupRefererSymbRefs(SymbolGathering &gathering);
             void gatherSymbols(SymbolGathering &gathering) override;
             void gatherMacros(MacroGathering &gatherer);
+            void convertMacrosIntoDEs(PharmML *model);
 
         private:
             std::vector<CommonVariable *> variables;

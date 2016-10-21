@@ -77,6 +77,18 @@ namespace pharmmlcpp
     }
 
 
+    void DerivativeVariable::setIndependentVariable(std::shared_ptr<AstNode> iv) {
+        this->independent_variable = iv;
+    }
+
+    void DerivativeVariable::setInitialTime(std::shared_ptr<AstNode> time) {
+        this->initial_time = time;   
+    }
+
+    void DerivativeVariable::setInitialValue(std::shared_ptr<AstNode> value) {
+        this->initial_value = value;
+    }
+
     void DerivativeVariable::setupSymbRefs(SymbolGathering &gathering, std::string blkId) {
         if (this->assignment) {
             this->setupAstSymbRefs(this->assignment.get(), gathering, blkId);

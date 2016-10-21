@@ -28,9 +28,11 @@ namespace pharmmlcpp
     {
          public:
             CommonVariable(PharmMLReader &reader, xml::Node node);
+            CommonVariable() {};
             void parse(PharmMLReader &reader, xml::Node node);
             virtual xml::Node xml(PharmMLWriter &writer) = 0;
             std::shared_ptr<AstNode> getAssignment();
+            void setAssignment(std::shared_ptr<AstNode> assignment);
             bool isDerivative();
             virtual void setupSymbRefs(SymbolGathering &gathering, std::string blkId) = 0;
             virtual void accept(PharmMLVisitor *visitor) = 0;

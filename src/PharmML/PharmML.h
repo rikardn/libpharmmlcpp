@@ -50,6 +50,7 @@ namespace pharmmlcpp
             CPharmML::Consolidator *getConsolidator();
             void setSymbolNamer(SymbolNamer *namer);
             xml::Node xml(PharmMLWriter &writer);
+            void setupSymbols();    // Needed to be public for PKMacro conversion. 
 
         private:
             PharmMLReader reader;
@@ -67,7 +68,6 @@ namespace pharmmlcpp
             std::unordered_set<Object *> allObjects;
             void parse(PharmMLReader &reader, xml::Node node);
             void postParse();
-            void setupSymbols();
             void setupObjects();
             void setupPKMacros();
             void checkAndAddOid(std::unordered_set<std::string> &allOids, Object *object, PharmMLSection *section);

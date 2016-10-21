@@ -532,10 +532,10 @@ namespace pharmmlcpp
 
     // Find and return a compartment from compartment number
     PKMacro *PKMacros::getCompartment(int cmt_num) {
-        pharmmlcpp::AstAnalyzer ast_analyzer;
+        AstAnalyzer ast_analyzer;
         for (PKMacro *macro : this->getCompartments()) {
             // Find 'cmt' attribute
-            for (pharmmlcpp::MacroValue value : macro->getValues()) {
+            for (MacroValue value : macro->getValues()) {
                 if (value.first == "cmt") {
                     // Get 'cmt' code and resolve it
                     ast_analyzer.reset();
@@ -551,4 +551,45 @@ namespace pharmmlcpp
         }
         return nullptr;
     }
+
+    PKMacro *PKMacros::getElimination(int cmt_num) {
+        AstAnalyzer ast_analyzer;
+        for (PKMacro *macro : this->getTransfers()) {
+            if (macro->getSubType() == MacroType::Elimination) {
+                for (MacroValue value : macro->getValues()) {
+                    if (value.first == "cmt") {
+                        ast_analyzer.reset();
+                        std::shared_ptr<AstNode> assignment = value.second;
+                        assignment->accept(&ast_analyzer);
+                        ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                        if (scalar_int->toInt() == cmt_num) {
+                            return macro;
+                        }
+                    }
+                }
+            } 
+        }
+        return nullptr;
+    }
+
+    PKMacro *PKMacros::getAbsorption(int cmt_num) {
+        AstAnalyzer ast_analyzer;
+        for (PKMacro *macro : this->macros) {
+            if (macro->getSubType() == MacroType::Absorption) {
+                for (MacroValue value : macro->getValues()) {
+                    if (value.first == "cmt") {
+                        ast_analyzer.reset();
+                        std::shared_ptr<AstNode> assignment = value.second;
+                        assignment->accept(&ast_analyzer);
+                        ScalarInt *scalar_int = ast_analyzer.getPureScalarInt();
+                        if (scalar_int->toInt() == cmt_num) {
+                            return macro;
+                        }
+                    }
+                }
+            } 
+        }
+        return nullptr;
+    }
+
 }

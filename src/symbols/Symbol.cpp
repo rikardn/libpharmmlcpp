@@ -68,6 +68,10 @@ namespace pharmmlcpp
         return this->symbId;
     }
 
+    void Symbol::setSymbId(std::string symbId) {
+        this->symbId = symbId;
+    }
+
     // Get the name mangled through the global model symbolMangler
     std::string Symbol::getName() {
         if (this->namer) {

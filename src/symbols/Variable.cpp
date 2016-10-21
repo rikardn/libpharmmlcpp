@@ -39,6 +39,10 @@ namespace pharmmlcpp
         return this->assignment;
     }
 
+    void CommonVariable::setAssignment(std::shared_ptr<AstNode> assignment) {
+        this->assignment = assignment;
+    }
+
     bool CommonVariable::isDerivative() {
         return this->is_derivative;
     }

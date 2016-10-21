@@ -19,6 +19,7 @@
 #include <algorithm>
 #include "StructuralModel.h"
 #include <symbols/SymbolGathering.h>
+#include <PharmML/PharmML.h>
 
 namespace pharmmlcpp
 {
@@ -102,4 +103,101 @@ namespace pharmmlcpp
             }
         }
     }
+
+    // To convert PK macros into differential equations. Should probably be put in separate file on PharmML-level. Time pressure hackish for now
+    void StructuralModel::convertMacrosIntoDEs(PharmML *model) {
+        if (this->pk_macros) {
+            for (PKMacro *compartment : this->pk_macros->getCompartments()) {
+                int cmtNum = compartment->getCmtNum();
+
+                std::unique_ptr<AstNode> elimination_equation;
+                PKMacro *elimination = this->pk_macros->getElimination(cmtNum);
+                if (elimination) {
+                    std::shared_ptr<AstNode> volume;
+                    std::shared_ptr<AstNode> clearance;
+                    for (MacroValue value : elimination->getValues()) {
+                        if (value.first == "V") {
+                            volume = value.second;
+                        } else if (value.first == "CL") {
+                            clearance = value.second;
+                        }
+                    }
+                    // Case 2: linear elimination with CL
+                    if (volume && clearance) {
+                        std::unique_ptr<AstNode> div = std::make_unique<BinopDivide>(clearance->clone(), volume->clone());  // FIXME: Really clone? but we have shared_ptrs..
+                        std::unique_ptr<AstNode> amount;
+                        for (MacroValue value : compartment->getValues()) {
+                            if (value.first == "amount") {
+                                amount = value.second->clone();
+                            }
+                        }
+                        std::unique_ptr<AstNode> mul = std::make_unique<BinopTimes>(std::move(div), std::move(amount)); 
+                        elimination_equation = std::move(mul);
+                    }
+                }
+
+                std::unique_ptr<AstNode> depot_equation;
+                std::unique_ptr<AstNode> absorption_equation;
+                std::shared_ptr<AstNode> tlag;
+                PKMacro *absorption = this->pk_macros->getAbsorption(cmtNum);
+                if (absorption) {
+                    std::shared_ptr<AstNode> ka;
+                    for (MacroValue value : absorption->getValues()) {
+                        if (value.first == "ka") {
+                            ka = value.second;
+                        } else if (value.first == "Tlag") {
+                            tlag = value.second;
+                        }
+                    }
+
+                    std::unique_ptr<AstNode> symbref = std::make_unique<SymbRef>(absorption->getName());
+                    std::unique_ptr<AstNode> ka_mul = std::make_unique<BinopTimes>(ka->clone(), symbref->clone()); 
+                    if (elimination_equation) {
+                        std::unique_ptr<AstNode> minus = std::make_unique<BinopMinus>(std::move(ka_mul), std::move(elimination_equation));
+                        absorption_equation = std::move(minus);
+                    } else {
+                        absorption_equation = std::move(ka_mul);
+                    }
+
+                    //DEPOT
+                    DerivativeVariable *depot = new DerivativeVariable();
+                    depot->setSymbId(absorption->getName());
+                    std::shared_ptr<AstNode> iv_ref = std::make_shared<SymbRef>(model->getIndependentVariable()->getSymbId());
+                    depot->setIndependentVariable(iv_ref);
+                    std::shared_ptr<AstNode> init_time = std::make_shared<ScalarInt>(0);
+                    depot->setInitialTime(init_time);
+                    if (tlag) {
+                        depot->setInitialValue(tlag);
+                    } else {
+                        std::shared_ptr<AstNode> init_value = std::make_shared<ScalarInt>(0);
+                        depot->setInitialValue(init_value);
+                    }
+
+                    std::unique_ptr<AstNode> times = std::make_unique<BinopTimes>(ka->clone(), symbref->clone());
+                    std::unique_ptr<AstNode> minus = std::make_unique<UniopMinus>(std::move(times));
+                    depot->setAssignment(std::move(minus));
+                    this->variables.push_back(depot);
+                }
+
+                // CENTRAL
+                DerivativeVariable *deriv = new DerivativeVariable();
+                deriv->setSymbId(compartment->getName());
+                std::shared_ptr<AstNode> iv_ref = std::make_shared<SymbRef>(model->getIndependentVariable()->getSymbId());
+                deriv->setIndependentVariable(iv_ref);
+                std::shared_ptr<AstNode> init_time = std::make_shared<ScalarInt>(0);
+                deriv->setInitialTime(init_time);
+                std::shared_ptr<AstNode> init_value = std::make_shared<ScalarInt>(0);
+                deriv->setInitialValue(init_value);
+
+                std::shared_ptr<AstNode> assignment = std::move(absorption_equation);
+                deriv->setAssignment(assignment);
+
+                this->variables.push_back(deriv);
+            }
+            model->setupSymbols();
+
+            this->pk_macros = nullptr;      // FIXME smartpointers to help!
+        }
+    }
+
 }

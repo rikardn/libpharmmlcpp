@@ -57,6 +57,7 @@ namespace pharmmlcpp
         public:
             std::string getSymbId();
             std::string getName();
+            void setSymbId(std::string symbId);
             void setSymbolNamer(SymbolNamer *namer);
             void xml(PharmMLWriter &writer, xml::Node node);
             virtual void accept(SymbolVisitor *visitor) = 0;

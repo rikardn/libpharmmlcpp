@@ -103,6 +103,8 @@ namespace pharmmlcpp
             std::vector<PKMacro *> getTransfers();
             PKMacro *getAdministration(int adm_num);
             PKMacro *getCompartment(int cmt_num);
+            PKMacro *getElimination(int cmt_num);
+            PKMacro *getAbsorption(int cmt_num);
 
         private:
             std::vector<PKMacro *> macros;

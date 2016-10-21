@@ -46,6 +46,9 @@ namespace pharmmlcpp
         // Preamble
         form.add("library(PopED)");
         this->has_derivatives = this->model->getModelDefinition()->getObservationModel()->getNeededSymbols().hasDerivatives();
+        if (this->model->getModelDefinition()->getStructuralModel()->getPKMacros()) {       // PKMacros will be converted into derivatives later
+            this->has_derivatives = true;               // FIXME: do PKMacros conversion earlier
+        }
         if (this->has_derivatives) {
             form.add("library(deSolve)");
         }
@@ -268,6 +271,10 @@ namespace pharmmlcpp
     }
 
     std::string PopEDGenerator::genStructuralModel() {
+        if (model->getModelDefinition()->getStructuralModel()->getPKMacros()) {
+           model->getModelDefinition()->getStructuralModel()->convertMacrosIntoDEs(model); 
+        }
+
         // FIXME: Can probably be safely removed now
         // Visit all CommonVariable's to build consolidating objects
         for (CommonVariable *var : model->getModelDefinition()->getStructuralModel()->getVariables()) {

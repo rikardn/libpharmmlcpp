@@ -30,6 +30,7 @@
 #include <AST/FunctionCall.h>
 #include <AST/Interval.h>
 #include <AST/Sequence.h>
+#include <AST/MatrixSelector.h>
 
 namespace pharmmlcpp
 {
@@ -259,6 +260,8 @@ namespace pharmmlcpp
             instance = std::make_unique<Interval>(reader, node);
         } else if (name == "Sequence") {
             instance = std::make_unique<Sequence>(reader, node);
+        } else if (name == "MatrixSelector") {
+            instance = std::make_unique<MatrixSelector>(reader, node);
         }
 
         // The following might and might not be a good idea

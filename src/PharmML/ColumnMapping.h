@@ -57,11 +57,11 @@ namespace pharmmlcpp
 
             std::unordered_set<std::string> getSymbolStrings();
             std::unordered_set<int> getAdmNumbers();
-            std::unordered_map<std::string, pharmmlcpp::Symbol *> getDataSymbolMap();
-            std::unordered_map<std::string, pharmmlcpp::PKMacro *> getDataMacroMap();
+            std::unordered_map<std::string, Symbol *> getDataSymbolMap();
+            std::unordered_map<std::string, PKMacro *> getDataMacroMap();
 
-            void setupSymbolRefs(pharmmlcpp::SymbolGathering &gathering);
-            void setupMacroRefs(pharmmlcpp::MacroGathering &gathering);
+            void setupSymbolRefs(SymbolGathering &gathering);
+            void setupMacroRefs(MacroGathering &gathering);
             void accept(PharmMLVisitor *visitor);
 
         private:

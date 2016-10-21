@@ -266,6 +266,12 @@ namespace pharmmlcpp
             return this->ast_gen.getValue();
         } else {
             TargetMapping *target = adm->getTargetMapping();
+            // FIXME: This code should not be here. Resolving Macros should already have been done
+            std::string admNumber = target->getMaps()[0].admNumber;
+            if (!admNumber.empty()) {
+                PKMacro *macro = this->model->getModelDefinition()->getStructuralModel()->getPKMacros()->getAdministration(std::stoi(admNumber));
+                return macro->getName();
+            }
             return target->getMaps()[0].modelSymbol;  // FIXME: What should really be the constraints here?
         }
     }

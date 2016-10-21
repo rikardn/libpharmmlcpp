@@ -196,7 +196,9 @@ namespace pharmmlcpp
             }
             model->setupSymbols();
 
-            this->pk_macros = nullptr;      // FIXME smartpointers to help!
+            // Keep PKMacros in model for now. Need them to resolve TargetMappings. Solution would be to also convert them into symbolmappings 
+            // instead of mappings into PKMacro. 
+            // this->pk_macros = nullptr;      // FIXME smartpointers to help!
         }
     }
 

@@ -119,6 +119,8 @@ namespace pharmmlcpp
     class FunctionArgument;
     class Interval;
     class Sequence;
+    
+    class MatrixSelector;
 
     class AstNodeVisitor
     {
@@ -222,6 +224,8 @@ namespace pharmmlcpp
             virtual void visit(FunctionArgument *node) {};
             virtual void visit(Interval *node) {};
             virtual void visit(Sequence *node) {};
+
+            virtual void visit(MatrixSelector *node) {};
     };
 }
 

@@ -14,6 +14,7 @@ libpharmmlcpp_a_SOURCES = \
    	src/AST/Vector.cpp \
 	src/AST/Sequence.cpp \
 	src/AST/MatrixVectorIndex.cpp \
+	src/AST/MatrixSelector.cpp \
 	src/consolidators/Consolidator.cpp \
    	src/consolidators/Covariates.cpp \
    	src/consolidators/PopulationParameters.cpp \

@@ -20,6 +20,7 @@
 
 #include <AST/AstNode.h>
 #include <xml/xml.h>
+#include <AST/MatrixVectorIndex.h>
 
 namespace pharmmlcpp
 {
@@ -30,18 +31,33 @@ namespace pharmmlcpp
     {
         public:
             MatrixSelector(PharmMLReader &reader, xml::Node node);
-            MatrixSelector(std::unique_ptr<AstNode> matrix);
+            MatrixSelector(std::unique_ptr<SymbRef> matrix);
             MatrixSelector(const MatrixSelector& from);
-            AstNode *getLeftEndpoint();
-            AstNode *getRightEndpoint();
-            void setLeftEndpoint(std::unique_ptr<AstNode> node);
-            void setRightEndpoint(std::unique_ptr<AstNode> node);
+            bool isCell();
+            bool isBlock();
+            bool isRow();
+            bool isColumn();
+            AstNode *getCellRow();
+            AstNode *getCellColumn();
+            AstNode *getBlockStartRow();
+            AstNode *getBlockStartColumn();
+            AstNode *getRowsNumber();
+            AstNode *getColumnsNumber();
+            AstNode *getRow();
+            AstNode *getColumn();
+            void selectCell(std::unique_ptr<AstNode> cellRow, std::unique_ptr<AstNode> cellColumn);
+            void selectBlock(std::unique_ptr<AstNode> blockStartRow, std::unique_ptr<AstNode> blockStartColumn,
+                std::unique_ptr<AstNode> rowsNumber, std::unique_ptr<AstNode> columnsNumber);
+            void selectRow(std::unique_ptr<AstNode> row);
+            void selectColumn(std::unique_ptr<AstNode> column);
             void accept(AstNodeVisitor *visitor) override;
             std::unique_ptr<AstNode> clone() override;
             xml::Node xml(PharmMLWriter &writer) override;
 
         private:
             std::unique_ptr<SymbRef> matrix;
+
+            void clearAll();
 
             // a single cell
             std::unique_ptr<MatrixVectorIndex> cellRow;

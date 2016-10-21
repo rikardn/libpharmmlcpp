@@ -66,15 +66,19 @@ namespace pharmmlcpp
             cell.addChild(this->cellRow->xml(writer, "RowIndex"));
             cell.addChild(this->cellColumn->xml(writer, "ColumnIndex"));
         } else if (this->blockStartRow) {
-
+            xml::Node bs("Block", xml::Namespace::ct);
+            ms.addChild(bs);
+            bs.addChild(this->blockStartRow->xml(writer, "BlockStartRow"));
+            bs.addChild(this->blockStartColumn->xml(writer, "BlockStartColumn"));
+            bs.addChild(this->blockStartColumn->xml(writer, "RowsNumber"));
+            bs.addChild(this->blockStartColumn->xml(writer, "ColumnsNumber"));
         } else if (this->row) {
-
+            ms.addChild(this->row->xml(writer, "Row"));
         } else {
-
+            ms.addChild(this->row->xml(writer, "Column"));
         }
         return ms;
     }
-
 
     /**
      *  Creates a new MatrixSelector selecting the full matrix
@@ -90,82 +94,202 @@ namespace pharmmlcpp
      *  Copy constructor
      */
     MatrixSelector::MatrixSelector(const MatrixSelector& from) {
-        this->matrix = from.matrix->clone();
-    }
-
-    /**
-     *  Get the left endpoint of the interval
-     */
-    AstNode *MatrixSelector::getLeftEndpoint() {
-        return this->leftEndpoint.get();
-    }
-
-    /**
-     *  Get the right endpoint of the interval
-     */
-    AstNode *MatrixSelector::getRightEndpoint() {
-        return this->rightEndpoint.get();
-    }
-
-    /**
-     *  Set the left endpoint of the interval
-     */
-    void MatrixSelector::setLeftEndpoint(std::unique_ptr<AstNode> node) {
-        if (!node) {
-            throw std::invalid_argument("nullptr");
+        this->matrix = std::make_unique<SymbRef>(*from.matrix.get());
+        if (from.cellRow) {
+            this->cellRow = from.cellRow->clone();
+            this->cellColumn = from.cellColumn->clone();
+        } else if (from.blockStartRow) {
+            this->blockStartRow = from.blockStartRow->clone();
+            this->blockStartColumn = from.blockStartColumn->clone();
+            this->rowsNumber = from.rowsNumber->clone();
+            this->columnsNumber = from.columnsNumber->clone();
+        } else if (from.row) {
+            this->row = from.row->clone();
+        } else if (from.column) {
+            this->column = from.column->clone();
         }
-        this->leftEndpoint = std::move(node);
+
+
     }
 
     /**
-     *  Set the right endpoint of the interval
+     *  Does this MatrixSelector select a cell?
      */
-    void MatrixSelector::setRightEndpoint(std::unique_ptr<AstNode> node) {
-        if (!node) {
-            throw std::invalid_argument("nullptr");
+    bool MatrixSelector::isCell() {
+        if (this->cellRow) {
+            return true;
+        } else {
+            return false;
         }
-        this->rightEndpoint = std::move(node);
     }
 
     /**
-     *  Check if the left endpoint is open or closed.
-     *  True means open and false means closed
+     *  Does this MatrixSelector select a block?
      */
-    bool MatrixSelector::isLeftEndpointOpenClosed() {
-        return this->openLeftEndpoint;
+    bool MatrixSelector::isBlock() {
+        if (this->blockStartRow) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     *  Check if the right endpoint is open or closed.
-     *  True means open and false means closed
+     *  Does this MatrixSelector select a row?
      */
-    bool MatrixSelector::isRightEndpointOpenClosed() {
-        return this->openRightEndpoint;
+    bool MatrixSelector::isRow() {
+        if (this->row) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     *  Set the left endpoint open or closed.
-     *  True means open and false means closed
+     *  Does this MatrixSelector select a column?
      */
-    void MatrixSelector::setLeftEndpointOpenClosed(bool open) {
-        this->openLeftEndpoint = open;
+    bool MatrixSelector::isColumn() {
+        if (this->column) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     *  Set the right endpoint open or closed.
-     *  True means open and false means closed
+     *  Return the CellRowIndex if this MatrixSelector selects a cell and nullptr otherwise
      */
-    void MatrixSelector::setRightEndpointOpenClosed(bool open) {
-        this->openRightEndpoint = open;
+    AstNode *MatrixSelector::getCellRow() {
+        return this->cellRow->getIndex();
+    }
+
+    /**
+     *  Return the CellColumnIndex if this MatrixSelector selects a cell and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getCellColumn() {
+        return this->cellColumn->getIndex();
+    }
+
+    /**
+     *  Return the BlockStartRow if this MatrixSelector selects a block and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getBlockStartRow() {
+        return this->blockStartRow->getIndex();
     }
     
     /**
-     *  Make a clone (deep copy) of this interval.
+     *  Return the BlockStartColumn if this MatrixSelector selects a block and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getBlockStartColumn() {
+        return this->blockStartColumn->getIndex();
+    }
+
+    /**
+     *  Return the RowsNumber if this MatrixSelector selects a block and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getRowsNumber() {
+        return this->rowsNumber->getIndex();
+    }
+    
+    /**
+     *  Return the ColumnsNumber if this MatrixSelector selects a block and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getColumnsNumber() {
+        return this->columnsNumber->getIndex();
+    }
+ 
+    /**
+     *  Return the row if this MatrixSelector selects a row and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getRow() {
+        return this->row->getIndex();
+    }
+
+    /**
+     *  Return the column if this MatrixSelector selects a column and nullptr otherwise
+     */
+    AstNode *MatrixSelector::getColumn() {
+        return this->column->getIndex();
+    }
+
+    void MatrixSelector::clearAll() {
+        this->cellRow = nullptr;
+        this->cellColumn = nullptr;
+        this->blockStartRow = nullptr;
+        this->blockStartColumn = nullptr;
+        this->rowsNumber = nullptr;
+        this->columnsNumber = nullptr;
+        this->row = nullptr;
+        this->column = nullptr;
+    }
+
+    /**
+     *  Set the selector to select a cell of the matrix
+     */
+    void MatrixSelector::selectCell(std::unique_ptr<AstNode> cellRow, std::unique_ptr<AstNode> cellColumn) {
+        if (!cellRow or !cellColumn) {
+            throw std::invalid_argument("nullptr");
+        }
+        this->clearAll();
+        this->cellRow = std::make_unique<MatrixVectorIndex>(std::move(cellRow));
+        this->cellColumn = std::make_unique<MatrixVectorIndex>(std::move(cellColumn));
+    }
+
+    /**
+     *  Set the selector to select a block of the matrix
+     */
+    void MatrixSelector::selectBlock(std::unique_ptr<AstNode> blockStartRow, std::unique_ptr<AstNode> blockStartColumn,
+            std::unique_ptr<AstNode> rowsNumber, std::unique_ptr<AstNode> columnsNumber) {
+        if (!blockStartRow or !blockStartColumn or !rowsNumber or !columnsNumber) {
+            throw std::invalid_argument("nullptr");
+        }
+        this->clearAll();
+        this->blockStartRow = std::make_unique<MatrixVectorIndex>(std::move(blockStartRow));
+        this->blockStartColumn = std::make_unique<MatrixVectorIndex>(std::move(blockStartColumn));
+        this->rowsNumber = std::make_unique<MatrixVectorIndex>(std::move(rowsNumber));
+        this->columnsNumber = std::make_unique<MatrixVectorIndex>(std::move(columnsNumber));
+    }
+
+    /**
+     *  Set the selector to select a row of the matrix
+     */
+    void MatrixSelector::selectRow(std::unique_ptr<AstNode> row) {
+        if (!row) {
+            throw std::invalid_argument("nullptr");
+        }
+        this->clearAll();
+        this->row = std::make_unique<MatrixVectorIndex>(std::move(row));
+    }
+
+    /**
+     *  Set the selector to select a column of the matrix
+     */
+    void MatrixSelector::selectColumn(std::unique_ptr<AstNode> column) {
+        if (!column) {
+            throw std::invalid_argument("nullptr");
+        }
+        this->clearAll();
+        this->column = std::make_unique<MatrixVectorIndex>(std::move(column));
+    }
+
+    /**
+     *  Make a clone (deep copy) of this MatrixSelector.
      */
     std::unique_ptr<AstNode> MatrixSelector::clone() {
-        std::unique_ptr<Interval> cl = std::make_unique<Interval>(this->leftEndpoint->clone(), this->rightEndpoint->clone());
-        cl->openLeftEndpoint = this->openLeftEndpoint;
-        cl->openRightEndpoint = this->openRightEndpoint;
+        std::unique_ptr<MatrixSelector> cl = std::make_unique<MatrixSelector>(std::make_unique<SymbRef>(*this->matrix.get()));
+        if (this->cellRow) {
+            cl->cellRow = this->cellRow->clone();
+            cl->cellColumn = this->cellColumn->clone();
+        } else if (this->blockStartRow) {
+            cl->blockStartRow = this->blockStartRow->clone();
+            cl->blockStartColumn = this->blockStartColumn->clone();
+            cl->rowsNumber = this->rowsNumber->clone();
+            cl->columnsNumber = this->columnsNumber->clone();
+        } else if (this->row) {
+            cl->row = this->row->clone();
+        } else if (this->column) {
+            cl->column = this->column->clone();
+        }
         return std::move(cl);
     }
 

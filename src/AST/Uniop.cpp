@@ -95,4 +95,8 @@ namespace pharmmlcpp
     UNIOP_METHODS(UniopCeiling, "Uniop", "ceiling")
     UNIOP_METHODS(LogicUniopIsdefined, "LogicUniop", "isDefined")
     UNIOP_METHODS(LogicUniopNot, "LogicUniop", "not")
+    UNIOP_METHODS(MatrixUniopDeterminant, "MatrixUniop", "determinant")
+    UNIOP_METHODS(MatrixUniopInverse, "MatrixUniop", "inverse")
+    UNIOP_METHODS(MatrixUniopTrace, "MatrixUniop", "trace")
+    UNIOP_METHODS(MatrixUniopTranspose, "MatrixUniop", "transpose")
 }

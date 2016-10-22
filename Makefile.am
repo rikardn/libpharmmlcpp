@@ -5,8 +5,10 @@ libpharmmlcpp_a_SOURCES = \
    	src/AST/AstBuilder.cpp \
    	src/AST/AstNode.cpp \
 	src/AST/AstTransformation.cpp \
-   	src/AST/Binop.cpp src/AST/Constant.cpp \
-   	src/AST/FunctionCall.cpp src/AST/Interval.cpp \
+   	src/AST/Binop.cpp \
+   	src/AST/Constant.cpp \
+   	src/AST/FunctionCall.cpp \
+   	src/AST/Interval.cpp \
    	src/AST/Piecewise.cpp \
    	src/AST/Scalar.cpp \
    	src/AST/symbols.cpp \

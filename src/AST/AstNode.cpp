@@ -45,7 +45,7 @@ namespace pharmmlcpp
             name = node.getName();
         }
 
-        if (name == "Uniop" || name == "LogicUniop") {
+        if (name == "Uniop" || name == "LogicUniop"  || name == "MatrixUniop") {
             std::string op = node.getAttribute("op").getValue();
             std::unique_ptr<Uniop> uniop;
             std::unique_ptr<AstNode> child = AstNode::create(reader, node.getChild());
@@ -141,6 +141,14 @@ namespace pharmmlcpp
                 uniop = std::make_unique<LogicUniopIsdefined>(std::move(child));
             } else if (op == "not") {
                 uniop = std::make_unique<LogicUniopNot>(std::move(child));
+            } else if (op == "determinant") {
+                uniop = std::make_unique<MatrixUniopDeterminant>(std::move(child));
+            } else if (op == "inverse") {
+                uniop = std::make_unique<MatrixUniopInverse>(std::move(child));
+            } else if (op == "trace") {
+                uniop = std::make_unique<MatrixUniopTrace>(std::move(child));
+            } else if (op == "transpose") {
+                uniop = std::make_unique<MatrixUniopTranspose>(std::move(child));
             }
             instance = std::move(uniop);
         } else if (name == "Binop" || name == "LogicBinop") {

@@ -634,6 +634,68 @@ namespace pharmmlcpp
             std::unique_ptr<AstNode> clone() override;
             xml::Node xml(PharmMLWriter &writer) override;
     };
+
+    /**
+     * Base class for all MatrixUniop AstNodes 
+     */
+    class MatrixUniop : public Uniop
+    {
+        public:
+            MatrixUniop(std::unique_ptr<AstNode> child) : Uniop(std::move(child)) {};
+            MatrixUniop(const LogicUniop &from) : Uniop(from) {};
+    };
+
+    /**
+     *  The determinant of a matrix
+     */
+    class MatrixUniopDeterminant : public MatrixUniop
+    {
+        public:
+            MatrixUniopDeterminant(std::unique_ptr<AstNode> child) : MatrixUniop(std::move(child)) {};
+            MatrixUniopDeterminant(const MatrixUniopDeterminant &from) : MatrixUniop(from) {};
+            void accept(AstNodeVisitor *visitor) override;
+            std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
+    };
+
+    /**
+     *  The inverse of a matrix
+     */
+    class MatrixUniopInverse : public MatrixUniop
+    {
+        public:
+            MatrixUniopInverse(std::unique_ptr<AstNode> child) : MatrixUniop(std::move(child)) {};
+            MatrixUniopInverse(const MatrixUniopInverse &from) : MatrixUniop(from) {};
+            void accept(AstNodeVisitor *visitor) override;
+            std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
+    };
+
+    /**
+     *  The trace of a matrix
+     */
+    class MatrixUniopTrace : public MatrixUniop
+    {
+        public:
+            MatrixUniopTrace(std::unique_ptr<AstNode> child) : MatrixUniop(std::move(child)) {};
+            MatrixUniopTrace(const MatrixUniopTrace &from) : MatrixUniop(from) {};
+            void accept(AstNodeVisitor *visitor) override;
+            std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
+    };
+
+    /**
+     *  The transpose of a matrix
+     */
+    class MatrixUniopTranspose : public MatrixUniop
+    {
+        public:
+            MatrixUniopTranspose(std::unique_ptr<AstNode> child) : MatrixUniop(std::move(child)) {};
+            MatrixUniopTranspose(const MatrixUniopTranspose &from) : MatrixUniop(from) {};
+            void accept(AstNodeVisitor *visitor) override;
+            std::unique_ptr<AstNode> clone() override;
+            xml::Node xml(PharmMLWriter &writer) override;
+    };
 }
 
 #endif

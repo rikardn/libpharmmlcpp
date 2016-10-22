@@ -67,6 +67,11 @@ namespace pharmmlcpp
     class LogicUniopIsdefined;
     class LogicUniopNot;
 
+    class MatrixUniopDeterminant;
+    class MatrixUniopInverse;
+    class MatrixUniopTrace;
+    class MatrixUniopTranspose;
+
     class ScalarInt;
     class ScalarReal;
     class ScalarBool;
@@ -171,6 +176,11 @@ namespace pharmmlcpp
 
             virtual void visit(LogicUniopIsdefined *node) {};
             virtual void visit(LogicUniopNot *node) {};
+            
+            virtual void visit(MatrixUniopDeterminant *node) {};
+            virtual void visit(MatrixUniopInverse *node) {};
+            virtual void visit(MatrixUniopTrace *node) {};
+            virtual void visit(MatrixUniopTranspose *node) {};
 
             virtual void visit(ScalarInt *node) {};
             virtual void visit(ScalarReal *node) {};

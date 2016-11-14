@@ -29,7 +29,9 @@ int main(int argc, char **argv)
 {
     const char *filename;
     if (argc < 2) {
-        filename = "test/testfiles/UseCase4_1.xml";
+        std::cout << "Usage: mdl <file> >output.mdl" << std::endl;
+        std::cout << "  All errors, warnings and messages will be output to stderr" << std::endl;
+        exit(0);
     } else {
         filename = argv[1];
     }
@@ -43,9 +45,7 @@ int main(int argc, char **argv)
         return 5;
     }
 
-
     MDLGenerator gen; 
-
     std::cout << gen.generateModel(model) << std::endl;
 
     return 0;

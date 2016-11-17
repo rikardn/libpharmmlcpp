@@ -132,6 +132,7 @@ WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-win64
 .PHONY: winrelease
 winrelease:
 	mkdir -p ${WIN_RELEASE_PACKAGE}
+	x86_64-w64-mingw32-strip mdl.exe
 	cp mdl.exe ${WIN_RELEASE_PACKAGE}
 	cp windep/lib/*.dll ${WIN_RELEASE_PACKAGE}
 	cp -r pharmml_internalRelease_0_8_1 ${WIN_RELEASE_PACKAGE}

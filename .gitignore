@@ -1,6 +1,8 @@
 autom4te.cache/
 config.log
 config.status
+config.guess
+config.sub
 configure
 aclocal.m4
 Makefile
@@ -24,6 +26,7 @@ main.exe
 pharmml2poped
 pharmml2poped.exe
 mdl
+mdl.exe
 pharmmltool
 libpharmmlcpp.a
 test/test

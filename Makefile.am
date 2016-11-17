@@ -1,4 +1,9 @@
+if LINUX
 AM_CPPFLAGS = -I./src $(LIBXML2_CFLAGS) -std=c++14		# Need proper check of C++14
+endif
+if WINDOWS
+AM_CPPFLAGS = -I./src -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -I./windep/include
+endif
 
 noinst_LIBRARIES = libpharmmlcpp.a
 libpharmmlcpp_a_SOURCES = \

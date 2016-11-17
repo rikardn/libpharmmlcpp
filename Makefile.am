@@ -127,6 +127,17 @@ unit_SOURCES = \
 	test/SymbolNamer.cpp
 unit_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
 
+# For binary win64 release
+WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-win64
+.PHONY: winrelease
+winrelease:
+	mkdir -p ${WIN_RELEASE_PACKAGE}
+	cp mdl.exe ${WIN_RELEASE_PACKAGE}
+	cp windep/lib/*.dll ${WIN_RELEASE_PACKAGE}
+	cp -r pharmml_internalRelease_0_8_1 ${WIN_RELEASE_PACKAGE}
+	zip -r ${WIN_RELEASE_PACKAGE}.zip ${WIN_RELEASE_PACKAGE}
+	rm -rf ${WIN_RELEASE_PACKAGE}
+
 
 #Fetch and compile dependencies for windows
 .PHONY: windep

@@ -128,7 +128,7 @@ unit_SOURCES = \
 unit_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
 
 # For binary win64 release
-WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-win64
+WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-windows-x64
 .PHONY: winrelease
 winrelease:
 	mkdir -p ${WIN_RELEASE_PACKAGE}

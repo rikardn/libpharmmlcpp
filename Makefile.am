@@ -139,6 +139,15 @@ winrelease:
 	zip -r ${WIN_RELEASE_PACKAGE}.zip ${WIN_RELEASE_PACKAGE}
 	rm -rf ${WIN_RELEASE_PACKAGE}
 
+LINUX_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-linux-x64
+.PHONY: linuxrelease
+linuxrelease:
+	mkdir -p ${LINUX_RELEASE_PACKAGE}
+	strip mdl
+	cp mdl ${LINUX_RELEASE_PACKAGE}
+	cp -r pharmml_internalRelease_0_8_1 ${LINUX_RELEASE_PACKAGE}
+	tar -zcvf ${LINUX_RELEASE_PACKAGE}.tar.gz ${LINUX_RELEASE_PACKAGE}
+	rm -rf ${LINUX_RELEASE_PACKAGE}
 
 #Fetch and compile dependencies for windows
 .PHONY: windep
@@ -169,4 +178,4 @@ windep:
 #	--without-html --without-legacy --without-regexps --without-sax1 --without-schemas --without-valid --without-xpath 
 	cp -r windep/libxml2-2.9.3/include/libxml windep/include
 	cp windep/libxml2-2.9.3/.libs/libxml2-2.dll windep/lib
-	cp windep/libxml2-2.9.3/.libs/libxml2.dll.a windep/lib
+	cp windep/libxml4-2.9.3/.libs/libxml2.dll.a windep/lib

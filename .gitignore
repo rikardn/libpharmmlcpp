@@ -30,7 +30,8 @@ mdl.exe
 pharmmltool
 libpharmmlcpp.a
 test/test
-pharmmlcpp-0.3-windows-x64.zip
+pharmmlcpp-*.zip
+pharmmlcpp-*.tar.gz
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

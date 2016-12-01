@@ -37,8 +37,9 @@ namespace pharmmlcpp
         }
         xml::Node end_node = reader.getSingleElement(node, "./ct:End");
         if (end_node.exists()) {
-            this->end = AstNode::create(reader, end_node);
+            this->end = AstNode::create(reader, end_node.getChild());
         }
+
         this->checkInvariance();
     }
 

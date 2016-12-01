@@ -606,7 +606,7 @@ namespace pharmmlcpp
          * for convenience functions that can do more than only get the consolidated objects. */
         auto pop_params = pop_params_obj->getPopulationParameters();
         for (auto pop_param : pop_params) {
-            if (!pop_param->isVariabilityParameter()) {
+            if (!pop_param->isVariabilityParameter() and !pop_param->isCorrelation()) {
                 std::string parameter_name = pop_param->getPopulationParameter()->getSymbId();
                 if (pop_param->getParameterEstimation()) {
                     bpop.add(parameter_name + "=" + this->ast_gen.acceptRoot(pop_param->getParameterEstimation()->getInitValue().get()));

@@ -37,6 +37,12 @@ namespace pharmmlcpp
         this->map[blkId][symbol->getSymbId()] = symbol;
     }
 
+    // Override the symbol blkId:symbId with the symbol. Used for overriding Covariates in TrialDesign
+    // If override not possible simply add the symbol
+    void SymbolGathering::overrideSymbol(Symbol *symbol, std::string blkId, std::string symbId) {
+         this->map[blkId][symbId] = symbol;
+    }
+
     Symbol *SymbolGathering::getSymbol(std::string blkId, std::string symbId) {
         try {
             return this->map.at(blkId).at(symbId);

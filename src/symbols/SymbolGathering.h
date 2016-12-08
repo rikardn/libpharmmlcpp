@@ -34,6 +34,7 @@ namespace pharmmlcpp
             void newBlock(Block *block);
             void globalBlock();
             void addSymbol(Symbol *symbol);
+            void overrideSymbol(Symbol *symbol, std::string blkId, std::string symbId); 
             Symbol *getSymbol(std::string blkId, std::string symbId);
             SymbolSet getAllSymbols();
             void setupAllSymbRefs();

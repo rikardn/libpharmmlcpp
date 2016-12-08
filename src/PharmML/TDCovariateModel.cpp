@@ -30,11 +30,11 @@ namespace pharmmlcpp
     }
 
     void TDCovariateModel::parse(PharmMLReader &reader, xml::Node node) {
-        xml::Node ref = reader.getSingleElement(node, "./ct:CovariateModelRef");    // This is a special type of ref to either blkId or oid. Handle blkId as string for now.
+        xml::Node ref = reader.getSingleElement(node, "./design:CovariateModelRef");    // This is a special type of ref to either blkId or oid. Handle blkId as string for now.
         if (ref.exists()) {
             this->refBlkId = ref.getAttribute("blkIdRef").getValue();
         }
-        std::vector<xml::Node> cov_nodes = reader.getElements(node, "./mdef:Covariate");
+        std::vector<xml::Node> cov_nodes = reader.getElements(node, "./design:Covariate");
         for (xml::Node cov_node : cov_nodes) {
             Covariate *cov = new Covariate(reader, cov_node);
             this->covariates.push_back(cov);
@@ -44,14 +44,13 @@ namespace pharmmlcpp
     std::vector<pharmmlcpp::Covariate *> TDCovariateModel::getCovariates() {
         return this->covariates;
     }
-/*
+
     void TDCovariateModel::gatherSymbols(SymbolGathering &gathering) {
-        gathering.newBlock(this);
         for (Covariate *cov : this->covariates) {
-            gathering.addSymbol(cov);
+            gathering.overrideSymbol(cov, this->refBlkId, cov->getSymbId());
             for (Covariate *transformation : cov->getTransformations()) {
-                gathering.addSymbol(transformation);
+                gathering.overrideSymbol(transformation, this->refBlkId, transformation->getSymbId());
             }
         }
-    }*/
+    }
 }

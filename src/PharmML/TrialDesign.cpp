@@ -129,6 +129,9 @@ namespace pharmmlcpp
         for (DesignParameter *dpar : this->designParameters) {
             gathering.addSymbol(dpar);
         }
+        for (TDCovariateModel *covm : this->covariates->getCovariateModels()) {
+            covm->gatherSymbols(gathering);
+        }
     }
 
     void TrialDesign::setupRefererSymbRefs(SymbolGathering &gathering) {

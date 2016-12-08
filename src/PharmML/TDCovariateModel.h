@@ -34,7 +34,7 @@ namespace pharmmlcpp
             TDCovariateModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
             std::vector<Covariate *> getCovariates();
-            //void gatherSymbols(SymbolGathering &gathering);
+            void gatherSymbols(SymbolGathering &gathering);
         
         private:
             std::string refBlkId;

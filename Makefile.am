@@ -38,6 +38,7 @@ libpharmmlcpp_a_SOURCES = \
 	src/PharmML/ColumnMapping.cpp \
 	src/PharmML/Correlation.cpp \
 	src/PharmML/CovariateModel.cpp \
+	src/PharmML/Covariates.cpp \
 	src/PharmML/Dataset.cpp \
 	src/PharmML/DesignSpaces.cpp \
 	src/PharmML/Distribution.cpp \
@@ -55,6 +56,7 @@ libpharmmlcpp_a_SOURCES = \
 	src/PharmML/PharmMLWriter.cpp \
 	src/PharmML/PKMacro.cpp \
 	src/PharmML/StructuralModel.cpp \
+	src/PharmML/TDCovariateModel.cpp \
 	src/PharmML/TrialDesign.cpp \
 	src/PharmML/VariabilityModel.cpp \
 	src/symbols/Category.cpp \

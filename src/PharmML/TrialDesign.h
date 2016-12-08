@@ -24,9 +24,10 @@
 #include <PharmML/PharmMLReader.h>
 #include <PharmML/ExternalDataset.h>
 #include <PharmML/Interventions.h>
-#include "Observations.h"
-#include "Arms.h"
-#include "DesignSpaces.h"
+#include <PharmML/Observations.h>
+#include <PharmML/Arms.h>
+#include <PharmML/DesignSpaces.h>
+#include <PharmML/Covariates.h>
 #include <symbols/Variable.h>
 
 namespace pharmmlcpp
@@ -59,6 +60,7 @@ namespace pharmmlcpp
             std::vector<ExternalDataset *> externalDatasets;
             Observations *observations = nullptr;
             Arms *arms = nullptr;
+            Covariates *covariates = nullptr;
             DesignSpaces *designSpaces = nullptr;
             std::vector<DesignParameter *> designParameters;
     };

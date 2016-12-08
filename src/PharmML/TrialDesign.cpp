@@ -52,7 +52,12 @@ namespace pharmmlcpp
         if (ds_node.exists()) {
             this->designSpaces = new DesignSpaces(reader, ds_node);
         }
-        
+   
+        xml::Node cov_node = reader.getSingleElement(node, "./design:Covariates");
+        if (cov_node.exists()) {
+            this->covariates = new Covariates(reader, cov_node);
+        }
+
         std::vector<xml::Node> dspar_nodes = reader.getElements(node, "./mdef:DesignParameter");
         for (xml::Node dspar_node : dspar_nodes) {
             DesignParameter *dspar = new DesignParameter(reader, dspar_node);

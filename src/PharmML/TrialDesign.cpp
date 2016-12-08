@@ -112,6 +112,14 @@ namespace pharmmlcpp
         return parameters;
     }
 
+    int TrialDesign::numberOfArms() {
+        if (this->arms) {
+            return this->arms->getArms().size();
+        } else {
+            return 0;
+        }
+    }
+
     void TrialDesign::gatherSymbols(SymbolGathering &gathering) {
         for (DesignParameter *dpar : this->designParameters) {
             gathering.addSymbol(dpar);

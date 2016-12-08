@@ -46,6 +46,8 @@ namespace pharmmlcpp
 
             SymbolSet getOptimizationParameters();
 
+            int numberOfArms();
+
             void gatherSymbols(SymbolGathering &gatherer);
             void setupRefererSymbRefs(SymbolGathering &gatherer);
             void setupTargetMappings(SymbolGathering &gatherer);

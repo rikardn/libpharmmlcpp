@@ -30,6 +30,10 @@ namespace pharmmlcpp
     }
 
     void TDCovariateModel::parse(PharmMLReader &reader, xml::Node node) {
+        xml::Node ref = reader.getSingleElement(node, "./ct:CovariateModelRef");    // This is a special type of ref to either blkId or oid. Handle blkId as string for now.
+        if (ref.exists()) {
+            this->refBlkId = ref.getAttribute("blkIdRef").getValue();
+        }
         std::vector<xml::Node> cov_nodes = reader.getElements(node, "./mdef:Covariate");
         for (xml::Node cov_node : cov_nodes) {
             Covariate *cov = new Covariate(reader, cov_node);

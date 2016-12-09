@@ -173,6 +173,34 @@ namespace pharmmlcpp
         return nullptr;
     }
 
+    /**
+     *  Get the design space optimizing a certain object
+     */
+    DesignSpace *DesignSpaces::getDesignSpaceFromObject(Object *object) {
+        // FIXME: currently only searches interventionRefs
+        for (DesignSpace *ds : this->designSpaces) {
+            for (ObjectRef *ref : ds->getInterventionRefs()) {
+                if (ref->getObject() == object) {
+                    return ds;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    /**
+     *  Do we have any design spaces connected to interventions?
+     *  Does currently not take symbols connected with dosing into account
+     */
+    bool DesignSpaces::hasInterventionDesignSpaces() {
+        for (DesignSpace *ds : this->designSpaces) {
+            if (!ds->getInterventionRefs().empty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void DesignSpaces::setupRefererSymbRefs(SymbolGathering &gathering) {
         for (DesignSpace *ds : this->designSpaces) {
             ds->setupSymbRefs(gathering, "");

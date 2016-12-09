@@ -66,12 +66,13 @@ namespace pharmmlcpp
             std::vector<DesignSpace *> getDesignSpaces();
             DesignSpace *getDesignSpaceFromSymbol(Symbol *symbol);
             void setupRefererSymbRefs(SymbolGathering &gathering);
-            void accept(PharmMLVisitor *visitor);
+            void accept(PharmMLVisitor *ivisitor);
+            DesignSpace* getDesignSpaceFromObject(Object *object);
+            bool hasInterventionDesignSpaces();
 
         private:
             std::vector<Variable *> designParameters;
             std::vector<DesignSpace *> designSpaces;
-
     };
 }
 

@@ -24,15 +24,6 @@
 #include <libxml/xmlschemas.h>
 #include <libxml/catalog.h>
 
-void handleValidationError(void *ctx, const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    fprintf(stderr, "Validation Error: ");
-    vfprintf(stderr, format, args);
-    va_end(args);
-}
-
 void usage()
 {
     printf("Usage: pharmmltool <command> <cmd-options>\n"
@@ -89,11 +80,6 @@ void validate(const char *xmlPath, const char *schema_path)
         fprintf(stderr, "Could not create XSD schema validation context.\n");
         goto leave;
     }
-
-    xmlSetStructuredErrorFunc(NULL, NULL);
-    xmlSetGenericErrorFunc(NULL, handleValidationError);
-    xmlThrDefSetStructuredErrorFunc(NULL, NULL);
-    xmlThrDefSetGenericErrorFunc(NULL, handleValidationError);
 
     result = xmlSchemaValidateFile(validCtxt, xmlPath, 0);
 

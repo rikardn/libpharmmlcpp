@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
 -->
+
+<!-- This transformation is from PharmML 0.6 to PharmML 0.8.1 -->
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:pharmml="http://www.pharmml.org/pharmml/0.6/PharmML"

@@ -28,8 +28,9 @@ void usage()
 {
     printf("Usage: pharmmltool <command> <cmd-options>\n"
             "Where <command> is one of:\n"
-            "    pretty <file>               -- Pretty print a pharmml file\n"
+            "    pretty <file>               -- Pretty print a PharmML file\n"
             "    validate <file>             -- Validate a pharmml file against schema\n"
+            "    version <file>              -- Print the version of a PharmML file\n"
             "options:\n"
             "   --schema-path=<path>        Override the default path of the schemas\n"
             "   --version                   Print version information and exit\n"
@@ -115,6 +116,25 @@ void pretty(const char *filename)
     xmlFreeDoc(doc);
 }
 
+void version(const char *filename)
+{
+    xmlDocPtr doc = xmlReadFile(filename, NULL, 0);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to parse %s\n", filename);
+        exit(5);
+    }
+
+	xmlNode *root = xmlDocGetRootElement(doc);
+	if (xmlStrcmp(root->name, BAD_CAST "PharmML") != 0) {
+		fprintf(stderr, "File %s is not PharmML\n", filename);
+		xmlFreeDoc(doc);
+		exit(5);
+	}
+	xmlChar *version = xmlGetProp(root, BAD_CAST "writtenVersion");
+	printf("%s\n", version);
+    xmlFreeDoc(doc);
+}
+
 int main(int argc, const char *argv[])
 {
     const char *command = argv[1];
@@ -142,6 +162,8 @@ int main(int argc, const char *argv[])
         validate(argv[2], schema_path);
     } else if (strcmp(command, "pretty") == 0) {
         pretty(argv[2]);
+    } else if (strcmp(command, "version") == 0) {
+        version(argv[2]);
     } else {
         usage();
     }

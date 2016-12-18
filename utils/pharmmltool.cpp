@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <vector>
 #include <stdio.h>
 #include <string.h>
 
@@ -26,14 +27,18 @@
 
 void usage()
 {
-    printf("Usage: pharmmltool <command> <cmd-options>\n"
+    printf("Usage: pharmmltool <options> <command> <cmd-options>\n"
             "Where <command> is one of:\n"
             "    pretty <file>               -- Pretty print a PharmML file\n"
             "    validate <file>             -- Validate a pharmml file against schema\n"
             "    version <file>              -- Print the version of a PharmML file\n"
+            "    convert <file>              -- Convert to a later version of PharmML\n"
+            "                                   default is to version 0.8.1\n"
             "options:\n"
-            "   --schema-path=<path>        Override the default path of the schemas\n"
             "   --version                   Print version information and exit\n"
+            "cmd-options:\n"
+            "   --schema-path=<path>        Override the default path of the schemas\n"
+            "   --target-version=<version>  Version to convert to. Either 0.8.1 or 0.9\n"
           );
     exit(0);
 }
@@ -135,20 +140,66 @@ void version(const char *filename)
     xmlFreeDoc(doc);
 }
 
+void convert(const char *filename)
+{
+    // Check version of input file
+}
+ 
+enum class Command { validate, pretty, version, convert };
+
 int main(int argc, const char *argv[])
 {
-    const char *command = argv[1];
+    std::vector<std::string> arguments(argv + 1, argv + argc);
 
-    const char *schema_path = NULL;
+    if (arguments.empty()) {
+        usage();
+    }
 
-    // Scan for options
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--version") == 0) {
-            printf("pharmmltool 0.2\n");
-            exit(0);
+    // Scan for global options
+    for (std::string arg : arguments) {
+        if (arg.substr(0, 2) != "--") {
+            break;
         }
+        if (arg == "--version") {
+            std::cout << "pharmmltool 0.3" << std::endl;
+            exit(0);
+        } else {
+            std::cout << "Unknown option: " << arg << std::endl;
+            usage();
+        }
+    }
+
+    // Read command
+    std::string command_string = arguments[0];
+    arguments.erase(arguments.begin() + 0);
+
+    Command command;
+    if (command_string == "validate") {
+        command = Command::validate;
+    } else if (command_string == "pretty") {
+        command = Command::pretty;
+    } else if (command_string == "version") {
+        command = Command::version;
+    } else if (command_string == "convert") {
+        command = Command::convert;
+    } else {
+        usage();
+    }
+
+    // Read command options
+    const char *schema_path = NULL;
+    const char *pharmml_version = "0.8.1";
+
+    for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "--schema-path=", 14) == 0) {
             schema_path = argv[i] + 14;
+        }
+        if (strncmp(argv[i], "--target-version=", 17) == 0) {
+            pharmml_version = argv[i] + 17;
+            if (!(strcmp(pharmml_version, "0.8.1") == 0 || strcmp(pharmml_version, "0.9") == 0)) {
+                printf("Unknown PharmML version %s. Can only convert to PharmML 0.8.1 or PharmML 0.9\n", pharmml_version);
+                exit(5);
+            }
         }
     } 
 
@@ -158,12 +209,14 @@ int main(int argc, const char *argv[])
 
     LIBXML_TEST_VERSION
 
-    if (strcmp(command, "validate") == 0) {
+    if (command == Command::validate) {
         validate(argv[2], schema_path);
-    } else if (strcmp(command, "pretty") == 0) {
+    } else if (command == Command::pretty) {
         pretty(argv[2]);
-    } else if (strcmp(command, "version") == 0) {
+    } else if (command == Command::version) {
         version(argv[2]);
+    } else if (command == Command::convert) {
+        convert(argv[2]);
     } else {
         usage();
     }

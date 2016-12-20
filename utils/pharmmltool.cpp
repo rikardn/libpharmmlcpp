@@ -32,7 +32,7 @@ void usage()
             "    pretty <file>               -- Pretty print a PharmML file\n"
             "    validate <file>             -- Validate a pharmml file against schema\n"
             "    version <file>              -- Print the version of a PharmML file\n"
-            "    convert <file>              -- Convert to a later version of PharmML\n"
+            "    convert <infile> <outfile   -- Convert to a later version of PharmML\n"
             "                                   default is to version 0.8.1\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
@@ -43,22 +43,20 @@ void usage()
     exit(0);
 }
 
-void validate(const char *xmlPath, const char *schema_path)
+void error(std::string msg)
 {
-    std::string path;
-    if (schema_path) {
-        path = schema_path;
-    } else {
-        path = "/usr/share/libpharmmlcpp/pharmml_internalRelease_0_8_1";
-    }
+    std::cerr << msg << std::endl;
+    exit(5);
+}
 
-    path += "/pharmml-schema/definitions/";
-    std::string catalog_file = path + "xmlCatalog.xml";
-    std::string schema_file = path + "pharmml.xsd";
+void validate(std::string xmlPath, std::string schema_path)
+{
+    schema_path += "/pharmml-schema/definitions/";
+    std::string catalog_file = schema_path + "xmlCatalog.xml";
+    std::string schema_file = schema_path + "pharmml.xsd";
 
     if (xmlLoadCatalog(catalog_file.c_str()) != 0) {
-        printf("Error when loading catalog\n");
-        exit(5);
+        error("Error when loading catalog");
     }
 
     int result = 42;
@@ -87,7 +85,7 @@ void validate(const char *xmlPath, const char *schema_path)
         goto leave;
     }
 
-    result = xmlSchemaValidateFile(validCtxt, xmlPath, 0);
+    result = xmlSchemaValidateFile(validCtxt, xmlPath.c_str(), 0);
 
 leave:
 
@@ -108,39 +106,36 @@ leave:
     xmlCatalogCleanup();
 }
 
-void pretty(const char *filename)
+void pretty(std::string filename)
 {
-    xmlDocPtr doc = xmlReadFile(filename, NULL, 0);
+    xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
     if (doc == NULL) {
-        fprintf(stderr, "Failed to parse %s\n", filename);
-        exit(5);
+        error("Failed to parse " + filename);
     }
 
-    xmlSaveFormatFileEnc(filename, doc, "UTF-8", 1);
+    xmlSaveFormatFileEnc(filename.c_str(), doc, "UTF-8", 1);
 
     xmlFreeDoc(doc);
 }
 
-void version(const char *filename)
+void version(std::string filename)
 {
-    xmlDocPtr doc = xmlReadFile(filename, NULL, 0);
+    xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
     if (doc == NULL) {
-        fprintf(stderr, "Failed to parse %s\n", filename);
-        exit(5);
+        error("Failed to parse " + filename);
     }
 
 	xmlNode *root = xmlDocGetRootElement(doc);
 	if (xmlStrcmp(root->name, BAD_CAST "PharmML") != 0) {
-		fprintf(stderr, "File %s is not PharmML\n", filename);
 		xmlFreeDoc(doc);
-		exit(5);
+        error("File " + filename + " is not PharmML");
 	}
 	xmlChar *version = xmlGetProp(root, BAD_CAST "writtenVersion");
 	printf("%s\n", version);
     xmlFreeDoc(doc);
 }
 
-void convert(const char *filename)
+void convert(std::string inputfile, std::string outputfile, std::string version)
 {
     // Check version of input file
 }
@@ -183,42 +178,54 @@ int main(int argc, const char *argv[])
     } else if (command_string == "convert") {
         command = Command::convert;
     } else {
+        std::cout << "Unknow command: " << command_string << std::endl;
         usage();
     }
 
     // Read command options
-    const char *schema_path = NULL;
-    const char *pharmml_version = "0.8.1";
+    std::vector<std::string> remaining_arguments;
+    std::string target_version = "0.8.1";
+    std::string schema_path = "/usr/share/libpharmmlcpp/pharmml_internalRelease_0_8_1";
 
-    for (int i = 1; i < argc; i++) {
-        if (strncmp(argv[i], "--schema-path=", 14) == 0) {
-            schema_path = argv[i] + 14;
-        }
-        if (strncmp(argv[i], "--target-version=", 17) == 0) {
-            pharmml_version = argv[i] + 17;
-            if (!(strcmp(pharmml_version, "0.8.1") == 0 || strcmp(pharmml_version, "0.9") == 0)) {
-                printf("Unknown PharmML version %s. Can only convert to PharmML 0.8.1 or PharmML 0.9\n", pharmml_version);
-                exit(5);
+    for (std::string arg : arguments) {
+        if (arg.compare(0, 14, "--schema-path=") == 0) {
+            if (command == Command::validate) {
+                schema_path = arg.substr(14, std::string::npos);
+            } else {
+                error("Option --schema-path can only be used with the validate command");
             }
+        } else if (arg.compare(0, 17, "--target-version=") == 0) {
+            if (command == Command::convert) {
+                target_version = arg.substr(17, std::string::npos);
+                if (target_version != "0.8.1" or target_version != "0.9") {
+                    error("Unknown PharmML version " + target_version + ". Can only convert to PharmML 0.8.1 or PharmML 0.9");
+                }
+            } else {
+                error("Option --target-version can only be used with the convert command");
+            }
+        } else {
+            remaining_arguments.push_back(arg);
         }
     } 
 
-    if (argc < 2) {
-        usage();
+    int numargs = remaining_arguments.size();
+    if (!(command == Command::convert && numargs == 2 ||
+            command == Command::validate && numargs == 1 ||
+            command == Command::pretty && numargs == 1 ||
+            command == Command::version && numargs == 1)) {
+        error("Too few arguments");
     }
 
     LIBXML_TEST_VERSION
 
     if (command == Command::validate) {
-        validate(argv[2], schema_path);
+        validate(remaining_arguments[0], schema_path);
     } else if (command == Command::pretty) {
-        pretty(argv[2]);
+        pretty(remaining_arguments[0]);
     } else if (command == Command::version) {
-        version(argv[2]);
+        version(remaining_arguments[0]);
     } else if (command == Command::convert) {
-        convert(argv[2]);
-    } else {
-        usage();
+        convert(remaining_arguments[0], remaining_arguments[1], target_version);
     }
 
     return 0;

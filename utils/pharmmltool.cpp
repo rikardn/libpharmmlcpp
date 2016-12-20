@@ -29,8 +29,9 @@ void usage()
 {
     printf("Usage: pharmmltool <options> <command> <cmd-options>\n"
             "Where <command> is one of:\n"
-            "    pretty <file>               -- Pretty print a PharmML file\n"
-            "    validate <file>             -- Validate a pharmml file against schema\n"
+            "    compact <file>              -- Remove indentations and newlines\n"
+            "    indent <file>               -- Indent a PharmML file\n"
+            "    validate <file>             -- Validate a PharmML file against schema\n"
             "    version <file>              -- Print the version of a PharmML file\n"
             "    convert <infile> <outfile   -- Convert to a later version of PharmML\n"
             "                                   default is to version 0.8.1\n"
@@ -106,14 +107,14 @@ leave:
     xmlCatalogCleanup();
 }
 
-void pretty(std::string filename)
+void indent(std::string filename, bool addindent)
 {
     xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
     if (doc == NULL) {
         error("Failed to parse " + filename);
     }
 
-    xmlSaveFormatFileEnc(filename.c_str(), doc, "UTF-8", 1);
+    xmlSaveFormatFileEnc(filename.c_str(), doc, "UTF-8", addindent ? 1 : 0);
 
     xmlFreeDoc(doc);
 }
@@ -140,10 +141,15 @@ void convert(std::string inputfile, std::string outputfile, std::string version)
     // Check version of input file
 }
  
-enum class Command { validate, pretty, version, convert };
+enum class Command { validate, indent, compact, version, convert };
 
 int main(int argc, const char *argv[])
 {
+    xmlLineNumbersDefault(1);
+    xmlThrDefIndentTreeOutput(1);
+    xmlKeepBlanksDefault(0);
+    xmlThrDefTreeIndentString("  ");
+
     std::vector<std::string> arguments(argv + 1, argv + argc);
 
     if (arguments.empty()) {
@@ -171,8 +177,10 @@ int main(int argc, const char *argv[])
     Command command;
     if (command_string == "validate") {
         command = Command::validate;
-    } else if (command_string == "pretty") {
-        command = Command::pretty;
+    } else if (command_string == "indent") {
+        command = Command::indent;
+    } else if (command_string == "compact") {
+        command = Command::compact;
     } else if (command_string == "version") {
         command = Command::version;
     } else if (command_string == "convert") {
@@ -211,7 +219,8 @@ int main(int argc, const char *argv[])
     int numargs = remaining_arguments.size();
     if (!(command == Command::convert && numargs == 2 ||
             command == Command::validate && numargs == 1 ||
-            command == Command::pretty && numargs == 1 ||
+            command == Command::indent && numargs == 1 ||
+            command == Command::compact && numargs == 1 ||
             command == Command::version && numargs == 1)) {
         error("Too few arguments");
     }
@@ -220,8 +229,10 @@ int main(int argc, const char *argv[])
 
     if (command == Command::validate) {
         validate(remaining_arguments[0], schema_path);
-    } else if (command == Command::pretty) {
-        pretty(remaining_arguments[0]);
+    } else if (command == Command::indent) {
+        indent(remaining_arguments[0], true);
+    } else if (command == Command::compact) {
+        indent(remaining_arguments[0], false);
     } else if (command == Command::version) {
         version(remaining_arguments[0]);
     } else if (command == Command::convert) {

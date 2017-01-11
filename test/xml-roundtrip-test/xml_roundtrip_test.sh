@@ -38,12 +38,17 @@ for i in "${!TESTFILES[@]}"; do
     mkdir -p $outfile_dir
     ./output "$TESTFILES_DIR/$file" >/dev/null 2>&1 |:
     if [[ -e output.xml ]]; then
-        numdiff=$(xmldiff output.xml "$TESTFILES_DIR/$file" | wc -l)
+        xsltproc canon.xslt output.xml >output2.xml
+        rm output.xml
+        mv output2.xml output.xml
+        xsltproc canon.xslt "$TESTFILES_DIR/$file" >comp.xml
+        numdiff=$(xmldiff output.xml comp.xml | wc -l)
         if [ "$numdiff" -gt "0" ]; then
             numtotaldiff=$((numtotaldiff + numdiff))
             echo "$RED (FAIL) $numdiff lines $NOR"
         fi
         mv output.xml "results/$file"
+        rm comp.xml
     else
         numtotalfails=$((numtotalfails + 1))
         echo "$RED (FAIL) no output $NOR"

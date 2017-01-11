@@ -32,6 +32,7 @@ namespace pharmmlcpp
         public:
             RandomVariable(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             std::vector<VariabilityReference *> getVariabilityReferences();
             std::shared_ptr<Distribution> getDistribution();
             void setupSymbRefs(SymbolGathering &gathering, std::string blkId) override;

@@ -38,6 +38,13 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node RandomVariable::xml(PharmMLWriter &writer) {
+        xml::Node randvar("RandomVariable");
+        this->Symbol::xml(writer, randvar);
+
+        return randvar;
+    }
+
     std::vector<VariabilityReference *> RandomVariable::getVariabilityReferences() {
         return this->variabilityReferences;
     }

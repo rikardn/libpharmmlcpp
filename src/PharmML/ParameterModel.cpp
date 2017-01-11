@@ -67,6 +67,10 @@ namespace pharmmlcpp
             pmod.addChild(popparam->xml(writer));
         }
 
+        for (const auto &randvar : this->randomVariables) {
+            pmod.addChild(randvar->xml(writer));
+        }
+
         for (const auto &indparam : this->individualParameters) {
             pmod.addChild(indparam->xml(writer));
         }

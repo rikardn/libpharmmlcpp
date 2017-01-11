@@ -38,6 +38,13 @@ namespace pharmmlcpp
         }
     }
 
+    xml::Node CovariateModel::xml(PharmMLWriter &writer) {
+        xml::Node covmod("CovariateModel");
+        this->Block::xml(writer, covmod);
+
+        return covmod;
+    }
+
     std::vector<pharmmlcpp::Covariate *> CovariateModel::getCovariates() {
         return this->covariates;
     }

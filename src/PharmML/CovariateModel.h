@@ -33,6 +33,7 @@ namespace pharmmlcpp
         public:
             CovariateModel(PharmMLReader &reader, xml::Node node);
             void parse(PharmMLReader &reader, xml::Node node);
+            xml::Node xml(PharmMLWriter &writer);
             std::vector<Covariate *> getCovariates();
             void gatherSymbols(SymbolGathering &gathering) override;
         

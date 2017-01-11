@@ -42,13 +42,15 @@ for i in "${!TESTFILES[@]}"; do
         rm output.xml
         mv output2.xml output.xml
         xsltproc canon.xslt "$TESTFILES_DIR/$file" >comp.xml
-        numdiff=$(xmldiff output.xml comp.xml | wc -l)
+        xmldiff output.xml comp.xml >output.xml.diff
+        numdiff=$(cat output.xml.diff | wc -l)
         if [ "$numdiff" -gt "0" ]; then
             numtotaldiff=$((numtotaldiff + numdiff))
             echo "$RED (FAIL) $numdiff lines $NOR"
         fi
         mv output.xml "results/$file"
-        rm comp.xml
+        mv comp.xml "results/$file.true"
+        mv output.xml.diff "results/$file.diff"
     else
         numtotalfails=$((numtotalfails + 1))
         echo "$RED (FAIL) no output $NOR"

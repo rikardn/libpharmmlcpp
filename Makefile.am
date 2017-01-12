@@ -1,11 +1,3 @@
-if LINUX
-AM_CPPFLAGS = -I./src $(LIBXML2_CFLAGS) -std=c++14		# Need proper check of C++14
-endif
-if WINDOWS
-AM_CPPFLAGS = -I./src -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -I./windep/include
-AM_LDFLAGS = -static-libgcc -static-libstdc++ -L./windep/lib
-endif
-
 noinst_LIBRARIES = libpharmmlcpp.a
 libpharmmlcpp_a_SOURCES = \
    	src/AST/AstBuilder.cpp \
@@ -87,7 +79,9 @@ libpharmmlcpp_a_SOURCES = \
 	src/xml/XPathContext.cpp
 
 
-bin_PROGRAMS = pharmml2poped mdl pharmmltool
+bin_PROGRAMS = pharmml2poped mdl
+
+SUBDIRS = . utils
 
 pharmml2poped_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
 pharmml2poped_SOURCES = \
@@ -112,10 +106,6 @@ mdl_SOURCES = \
 	src/generators/MDL/MDLGenerator.cpp \
 	src/generators/MDL/MDLSymbols.cpp \
 	src/generators/MDL/MDLDeclaredVariables.cpp
-
-pharmmltool_LDADD = $(LIBXML2_LIBS)
-pharmmltool_SOURCES = \
-	utils/pharmmltool.cpp
 
 TESTS = unit
 check_PROGRAMS = unit

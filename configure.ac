@@ -19,9 +19,12 @@ build_mac=no
 
 case "${host_os}" in
     linux*)
+        AC_SUBST([AM_CPPFLAGS], ['-I./src $(LIBXML2_CFLAGS) -std=c++14'])
         build_linux=yes
         ;;
     cygwin*|mingw*)
+        AC_SUBST([AM_CPPFLAGS], ['-I./src -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -I./windep/include'])
+        AC_SUBST([AM_LDFLAGS], ['-static-libgcc -static-libstdc++ -L./windep/lib'])
         build_windows=yes
         ;;
     darwin*)
@@ -36,5 +39,5 @@ AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
 AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 
-AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES([Makefile utils/Makefile])
 AC_OUTPUT

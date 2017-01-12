@@ -27,11 +27,12 @@ pharmml2poped
 pharmml2poped.exe
 mdl
 mdl.exe
-pharmmltool
 libpharmmlcpp.a
 test/test
 pharmmlcpp-*.zip
 pharmmlcpp-*.tar.gz
+
+utils/pharmmltool
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

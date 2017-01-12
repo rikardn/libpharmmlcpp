@@ -37,6 +37,7 @@ void usage()
             "                                   default is to version 0.8.1\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
+            "\n"
             "cmd-options:\n"
             "   --schema-path=<path>        Override the default path of the schemas\n"
             "   --target-version=<version>  Version to convert to. Either 0.8.1 or 0.9\n"

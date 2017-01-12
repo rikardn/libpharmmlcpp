@@ -43,7 +43,7 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Dataset.h>
 #include <PharmML/ModellingSteps.h>
-#include <generators/MDL/MDLSymbols.h>
+#include "MDLSymbols.h"
 #include "MDLAstGenerator.h" // TODO: Diverge from RAstGenerator (now a copy)
 #include "MDLColumnMappingAstGenerator.h" // TODO: More elegant parser of Piecewise trees in ColumnMapping
 #include <PharmML/PharmML.h>
@@ -52,8 +52,8 @@ typedef std::unordered_map<std::string, std::string> stringmap;
 #include <consolidators/Consolidator.h>
 #include <consolidators/PopulationParameters.h>
 
-#include <generators/MDL/MDLSymbolNamer.h>
-#include <generators/MDL/MDLDeclaredVariables.h>
+#include "MDLSymbolNamer.h"
+#include "MDLDeclaredVariables.h"
 
 #include <helpers/Logger.h>
 

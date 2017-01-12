@@ -79,9 +79,9 @@ libpharmmlcpp_a_SOURCES = \
 	src/xml/XPathContext.cpp
 
 
-bin_PROGRAMS = pharmml2poped mdl
+bin_PROGRAMS = pharmml2poped
 
-SUBDIRS = . utils
+SUBDIRS = . mdl utils
 
 pharmml2poped_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
 pharmml2poped_SOURCES = \
@@ -97,15 +97,6 @@ pharmml2poped_SOURCES = \
 	src/generators/R/RSymbols.cpp \
 	src/generators/R/RPharmMLGenerator.cpp \
 	src/generators/R/RPharmMLConsolidator.cpp
-
-mdl_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
-mdl_SOURCES = \
-	mdl.cpp \
-	src/generators/MDL/MDLAstGenerator.cpp \
-	src/generators/MDL/MDLColumnMappingAstGenerator.cpp \
-	src/generators/MDL/MDLGenerator.cpp \
-	src/generators/MDL/MDLSymbols.cpp \
-	src/generators/MDL/MDLDeclaredVariables.cpp
 
 TESTS = unit
 check_PROGRAMS = unit

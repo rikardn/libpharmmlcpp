@@ -22,7 +22,7 @@
 #include <exception>
 #include <visitors/AstParenthesizer.h>
 #include <visitors/AstNodeVisitor.h>
-#include <generators/MDL/MDLAstGenerator.h>
+#include "MDLAstGenerator.h"
 #include <AST/symbols.h>
 #include <AST/Uniop.h>
 #include <AST/Binop.h>

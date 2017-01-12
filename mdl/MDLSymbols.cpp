@@ -15,7 +15,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <generators/MDL/MDLSymbols.h>
 #include <symbols/ObservationModel.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>
@@ -28,7 +27,8 @@
 #include <symbols/Category.h>
 #include <symbols/FunctionDefinition.h>
 
-#include <generators/MDL/MDLAstGenerator.h>
+#include "MDLSymbols.h"
+#include "MDLAstGenerator.h"
 
 namespace pharmmlcpp
 {

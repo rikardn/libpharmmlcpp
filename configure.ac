@@ -1,7 +1,7 @@
 AC_INIT(pharmmlcpp, 0.3)
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-AM_SILENT_RULES([yes])
+#AM_SILENT_RULES([yes])
 
 AC_PROG_RANLIB
 AC_PROG_CXX
@@ -39,5 +39,5 @@ AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
 AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 
-AC_CONFIG_FILES([Makefile utils/Makefile])
+AC_CONFIG_FILES([Makefile utils/Makefile mdl/Makefile])
 AC_OUTPUT

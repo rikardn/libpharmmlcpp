@@ -21,7 +21,7 @@
 #include <AST/Scalar.h>
 #include <symbols/Variable.h>
 #include <symbols/PopulationParameter.h>
-#include <generators/MDL/MDLGenerator.h>
+#include "MDLGenerator.h"
 
 using namespace pharmmlcpp;
 

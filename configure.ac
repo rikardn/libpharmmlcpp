@@ -1,9 +1,12 @@
 AC_INIT(pharmmlcpp, 0.3)
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-#AM_SILENT_RULES([yes])
 
-AC_PROG_RANLIB
+LT_PREREQ([2.2])
+LT_INIT
+
+AM_SILENT_RULES([yes])
+
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 

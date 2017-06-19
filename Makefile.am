@@ -1,5 +1,7 @@
-noinst_LIBRARIES = libpharmmlcpp.a
-libpharmmlcpp_a_SOURCES = \
+ACLOCAL_AMFLAGS = -I m4
+
+lib_LTLIBRARIES = libpharmmlcpp.la
+libpharmmlcpp_la_SOURCES = \
    	src/AST/AstBuilder.cpp \
    	src/AST/AstNode.cpp \
 	src/AST/AstTransformation.cpp \
@@ -83,7 +85,7 @@ bin_PROGRAMS = pharmml2poped
 
 SUBDIRS = . mdl utils
 
-pharmml2poped_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
+pharmml2poped_LDADD = -lpharmmlcpp $(LIBXML2_LIBS)
 pharmml2poped_SOURCES = \
 	pharmml2poped.cpp \
 	src/popedconvert.cpp \
@@ -112,7 +114,7 @@ unit_SOURCES = \
 	test/FunctionCall.cpp \
 	test/SymbolSet.cpp \
 	test/SymbolNamer.cpp
-unit_LDADD = libpharmmlcpp.a $(LIBXML2_LIBS)
+unit_LDADD = -lpharmmlcpp $(LIBXML2_LIBS)
 
 # For binary win64 release
 WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-windows-x64

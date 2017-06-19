@@ -1,6 +1,6 @@
 bin_PROGRAMS = mdl
 
-mdl_LDADD = ../libpharmmlcpp.a $(LIBXML2_LIBS)
+mdl_LDADD = -lpharmmlcpp -L../.libs  $(LIBXML2_LIBS)
 mdl_CPPFLAGS = -I../src $(LIBXML2_CFLAGS) -std=c++14
 mdl_SOURCES = \
 	mdl.cpp \

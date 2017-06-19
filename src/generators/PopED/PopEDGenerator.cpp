@@ -130,7 +130,9 @@ namespace pharmmlcpp
         // Declare dose/time
         int index = 1;
         if (td) {
-            if (td->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+            // FIXME: Doses can be handled in two ways. Either directly fed into events or also added to a-vector.
+            // It is not clear when to use which or if this can be unified. The current rule is very ad hoc.
+            if (td->getOptimizationParameters().isEmpty() and td->numberOfArms() > 1) {      // Only handle boluses specially if no opt params
                 std::vector<std::string> time_names = this->td_visitor.getTimeNames();
                 std::vector<std::string> amount_names = this->td_visitor.getDoseNames();
 
@@ -139,15 +141,6 @@ namespace pharmmlcpp
                     form.add(time_names[i] + "=a[" + std::to_string(2*i + 2) + "]");
                     index += 2;
                 }
-            }
-        }
-
-        // Declare covariates
-        SymbolSet covariates = needed_symbols.getCovariates();
-        for (Symbol *symbol : covariates) {
-            Covariate *cov = static_cast<Covariate *>(symbol);
-            if (!cov->isTransformed()) {
-                form.add(symbol->getName() + "=a[" + std::to_string(index++) + "]");
             }
         }
 
@@ -341,7 +334,7 @@ namespace pharmmlcpp
             // Dose times
             form.add("times_xt <- drop(xt)");
             if (this->td_visitor.hasBoluses()) {
-                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty() and this->model->getTrialDesign()->numberOfArms() > 1) {      // Only handle boluses specially if no opt params
                     form.add("dose_times <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getTimeNames()) + ")");
                     form.add("dose_amt <- c(" + TextFormatter::createCommaSeparatedList(this->td_visitor.getDoseNames()) + ")");
                 } else {
@@ -389,7 +382,7 @@ namespace pharmmlcpp
             // Event data
             // TODO: Consolidate and use actual dosing information (e.g. dose variable, linkage method and dosing compartment)
             if (this->td_visitor.hasBoluses()) {
-                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty()) {      // Only handle boluses specially if no opt params
+                if (this->model->getTrialDesign()->getOptimizationParameters().isEmpty() and this->model->getTrialDesign()->numberOfArms() > 1) {      // Only handle boluses specially if no opt params
                     form.indentAdd("eventdat <- data.frame(var = c('" + this->getDoseVariable() +  "'),");
                     form.add("time = dose_times,");
                     form.add("value = dose_amt, method = c('add'))");
@@ -463,13 +456,13 @@ namespace pharmmlcpp
             SymbolSet post_ode_symbol_set = output_set.getDependenciesNoPass(derivs_set);
 
             // Remove non-transformed covariates
-            SymbolSet covariates = post_ode_symbol_set.getCovariates();
+            /*SymbolSet covariates = post_ode_symbol_set.getCovariates();
             for (Symbol *symbol : covariates) {
                 Covariate *cov = static_cast<Covariate *>(symbol);
                 if (!cov->isTransformed()) {
                     post_ode_symbol_set.remove(symbol);
                 }
-            }
+            }*/
 
             std::vector<Symbol *> post_ode_symbols = post_ode_symbol_set.getOrdered();
             post_ode_symbols.push_back(output->getSymbol());
@@ -725,16 +718,18 @@ namespace pharmmlcpp
 
         form.add("m = " + std::to_string(this->nArms));
         form.addMany(this->td_visitor.getDatabaseXT());
-        if (this->designParameters.size() > 0) {
-            TextFormatter a_formatter;
-            a_formatter.openVector("a = list(c()", 0, ", ");
-            for (Symbol *param : this->designParameters) {
-                this->accept(static_cast<DesignParameter *>(param)->getAssignment().get());
-                a_formatter.add(this->ast_gen.getValue());
+        if (!(this->designParameters.empty() and this->model->getTrialDesign()->numberOfArms() > 1)) {
+            if (!this->designParameters.empty()) {
+                TextFormatter a_formatter;
+                a_formatter.openVector("a = list(c()", 0, ", ");
+                for (Symbol *param : this->designParameters) {
+                    this->accept(static_cast<DesignParameter *>(param)->getAssignment().get());
+                    a_formatter.add(this->ast_gen.getValue());
+                }
+                a_formatter.closeVector();
+                a_formatter.noFinalNewline();
+                form.add(a_formatter.createString() + ")");
             }
-            a_formatter.closeVector();
-            a_formatter.noFinalNewline();
-            form.add(a_formatter.createString() + ")");
         } else {
             form.addMany(this->td_visitor.getDatabaseA());
         }

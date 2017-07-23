@@ -43,5 +43,5 @@ AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
 AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 
-AC_CONFIG_FILES([Makefile utils/Makefile mdl/Makefile])
+AC_CONFIG_FILES([Makefile utils/Makefile mdl/Makefile pharmml2poped/Makefile])
 AC_OUTPUT

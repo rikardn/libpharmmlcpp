@@ -15,7 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <generators/PopED/PopEDPastDerivativesSymbols.h>
+#include "PopED/PopEDPastDerivativesSymbols.h"
 #include <symbols/ObservationModel.h>
 #include <symbols/PopulationParameter.h>
 #include <symbols/IndividualParameter.h>

@@ -1,3 +1,5 @@
+* Add --version
+
 * Should not assume that for example one and only one ParameterModel exists.
 * blkId as namespace to symbIds
 * gather Symbols/Objects to be done via call to model and recursion

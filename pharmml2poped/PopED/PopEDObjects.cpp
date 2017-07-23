@@ -15,7 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <generators/PopED/PopEDObjects.h>
+#include "PopED/PopEDObjects.h"
 #include <vector>
 #include <PharmML/Arms.h>
 #include <PharmML/Observations.h>

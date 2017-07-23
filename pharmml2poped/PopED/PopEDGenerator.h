@@ -24,19 +24,19 @@
 #include <symbols/IndividualParameter.h>
 #include <symbols/Variable.h>
 #include <PharmML/PKMacro.h>
-#include <generators/R/RAstGenerator.h>
-#include <generators/R/RPharmMLGenerator.h>
+#include "R/RAstGenerator.h"
+#include "R/RPharmMLGenerator.h"
 #include <visitors/PharmMLVisitor.h>
 #include <symbols/ObservationModel.h>
 #include <PharmML/PharmML.h>
-#include <generators/PopED/PopEDAstGenerator.h>
+#include "PopED/PopEDAstGenerator.h"
 #include <generators/TextFormatter.h>
-#include <generators/R/RSymbols.h>
-#include <generators/PopED/PopEDPastDerivativesSymbols.h>
-#include <generators/PopED/PopEDErrorAstGenerator.h>
+#include "R/RSymbols.h"
+#include "PopED/PopEDPastDerivativesSymbols.h"
+#include "PopED/PopEDErrorAstGenerator.h"
 #include <helpers/Logger.h>
-#include <generators/PopED/PopEDObjects.h>
-#include <generators/R/RSymbolNamer.h>
+#include "PopED/PopEDObjects.h"
+#include "R/RSymbolNamer.h"
 
 namespace pharmmlcpp
 {

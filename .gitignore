@@ -27,15 +27,13 @@ m4/lt~obsolete.m4
 unit
 main
 main.exe
-pharmml2poped
-pharmml2poped.exe
-libpharmmlcpp.a
 test/test
 pharmmlcpp-*.zip
 pharmmlcpp-*.tar.gz
 
 utils/pharmmltool
 mdl/mdl
+pharmml2poped/pharmml2poped
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

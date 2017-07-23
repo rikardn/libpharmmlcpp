@@ -15,8 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHARMMLCPP_POPEDERRORASTGENERATOR_H_
-#define PHARMMLCPP_POPEDERRORASTGENERATOR_H_
+#ifndef PHARMMLCPP_POPEDASTGENERATOR_H_
+#define PHARMMLCPP_POPEDASTGENERATOR_H_
 
 #include <string>
 #include <visitors/AstNodeVisitor.h>
@@ -33,19 +33,22 @@
 #include <PharmML/Distribution.h>
 #include <PharmML/ColumnMapping.h>
 #include <PharmML/Interventions.h>
-#include <generators/R/RAstGenerator.h>
-#include <generators/PopED/PopEDSymbols.h>
+#include "R/RAstGenerator.h"
+#include "PopED/PopEDSymbols.h"
 
 
 namespace pharmmlcpp
 {
-    /*  A special PopED generator to generate the special MDL error models separately.
-     *  proportionalError needs to have the proportional argument set to one.
-     */
-    class PopEDErrorAstGenerator : public RAstGenerator
+    class PopEDAstGenerator : public RAstGenerator
     {
         public:
-            void visit(FunctionCall *node) override;
+            PopEDAstGenerator();
+            PopEDAstGenerator(PopEDSymbols *symbgen);
+            ~PopEDAstGenerator();
+            void visit(SymbRef *node) override;
+        
+        private:
+            PopEDSymbols *symbgen;      // FIXME: This is so C++98. Should use unique_ptr<>
     };
 }
 

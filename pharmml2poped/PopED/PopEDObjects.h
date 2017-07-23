@@ -21,7 +21,7 @@
 #include <visitors/ObjectVisitor.h>
 #include <visitors/StringVisitor.h>
 #include <helpers/Logger.h>
-#include <generators/R/RAstGenerator.h>
+#include "R/RAstGenerator.h"
 #include <generators/TextFormatter.h>
 #include <PharmML/Interventions.h>
 

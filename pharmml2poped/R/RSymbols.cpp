@@ -25,7 +25,7 @@
 #include <symbols/Covariate.h>
 #include <symbols/Category.h>
 #include <symbols/FunctionDefinition.h>
-#include <generators/R/RSymbols.h>
+#include "R/RSymbols.h"
 #include <iostream>
 
 namespace pharmmlcpp

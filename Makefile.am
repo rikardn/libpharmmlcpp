@@ -81,24 +81,7 @@ libpharmmlcpp_la_SOURCES = \
 	libpharmmlcpp/xml/XPathContext.cpp
 
 
-bin_PROGRAMS = pharmml2poped
-
-SUBDIRS = . mdl utils
-
-pharmml2poped_LDADD = -lpharmmlcpp $(LIBXML2_LIBS)
-pharmml2poped_SOURCES = \
-	pharmml2poped.cpp \
-	libpharmmlcpp/popedconvert.cpp \
-	libpharmmlcpp/generators/PopED/PopEDAstGenerator.cpp \
-	libpharmmlcpp/generators/PopED/PopEDGenerator.cpp \
-	libpharmmlcpp/generators/PopED/PopEDPastDerivativesSymbols.cpp \
-	libpharmmlcpp/generators/PopED/PopEDSymbols.cpp \
-	libpharmmlcpp/generators/PopED/PopEDObjects.cpp \
-	libpharmmlcpp/generators/R/RSymbolNamer.cpp \
-	libpharmmlcpp/generators/R/RAstGenerator.cpp \
-	libpharmmlcpp/generators/R/RSymbols.cpp \
-	libpharmmlcpp/generators/R/RPharmMLGenerator.cpp \
-	libpharmmlcpp/generators/R/RPharmMLConsolidator.cpp
+SUBDIRS = . mdl pharmml2poped utils
 
 TESTS = unit
 check_PROGRAMS = unit

@@ -15,28 +15,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <generators/PopED/PopEDAstGenerator.h>
-#include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDSymbols.h>
+#include "R/RSymbolNamer.h"
 
 namespace pharmmlcpp
 {
-    PopEDAstGenerator::PopEDAstGenerator() {
-        this->symbgen = new PopEDSymbols();
-    }
-
-    PopEDAstGenerator::PopEDAstGenerator(PopEDSymbols *symbgen) {
-        this->symbgen = symbgen;
-    }
-
-    PopEDAstGenerator::~PopEDAstGenerator() {
-        //FIXME: How to delete this?  delete this->symbgen;
-    }
-
-    void PopEDAstGenerator::visit(SymbRef *node) {
-        Symbol *symbol = node->getSymbol();
-        symbol->accept(this->symbgen);
-        this->setValue(this->symbgen->getValue());
-    }
 }

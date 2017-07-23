@@ -21,7 +21,7 @@
 #include <AST/Scalar.h>
 #include <symbols/Variable.h>
 #include <symbols/PopulationParameter.h>
-#include <generators/PopED/PopEDGenerator.h>
+#include "PopED/PopEDGenerator.h"
 
 using namespace pharmmlcpp;
 

@@ -23,11 +23,11 @@ build_mac=no
 
 case "${host_os}" in
     linux*)
-        AC_SUBST([AM_CPPFLAGS], ['-I./src $(LIBXML2_CFLAGS) -std=c++14'])
+        AC_SUBST([AM_CPPFLAGS], ['-I./libpharmmlcpp $(LIBXML2_CFLAGS) -std=c++14'])
         build_linux=yes
         ;;
     cygwin*|mingw*)
-        AC_SUBST([AM_CPPFLAGS], ['-I./src -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -I./windep/include'])
+        AC_SUBST([AM_CPPFLAGS], ['-I./libpharmmlcpp -std=c++14 -static-libgcc -static-libstdc++ -L./windep/lib -I./windep/include'])
         AC_SUBST([AM_LDFLAGS], ['-static-libgcc -static-libstdc++ -L./windep/lib'])
         build_windows=yes
         ;;

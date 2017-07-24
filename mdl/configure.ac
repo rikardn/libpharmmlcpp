@@ -14,6 +14,31 @@ AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.4)
 
+# Get paths to libpharmmlcpp
+AC_ARG_VAR([PHARMMLCPPLIB], [The PATH wherein libpharmmlcpp.la can be found.])
+AC_ARG_VAR([PHARMMLCPPINC], [The PATH wherein the includes for libpharmmlcpp can be found.])
+
+if (test -n "$PHARMMLCPPLIB" && test -z "$PHARMMLCPPINC") || \
+    (test -n "$PHARMMLCPPINC" && test -z "$PHARMMLCPPLIB"); then
+    AC_MSG_ERROR([Specify both libpharmmlcpp library and include paths, or neither.])
+fi
+
+if test -z "$PHARMMLCPPLIB"; then
+    if test -d "$srcdir/../libpharmmlcpp"; then
+        PHARMMLCPPLIB='$(top_builddir)/../libpharmmlcpp/.libs'
+        PHARMMLCPPINC='$(top_srcdir)/../libpharmmlcpp'
+    fi
+fi
+
+#if test -z "$PHARMMLCPPLIB"; then
+    #Check for installed lib and includes here.
+#fi
+
+if test -n "$PHARMMLCPPLIB"; then
+    AC_SUBST([PHARMMLCPP_LDADD], ["-lpharmmlcpp -L$PHARMMLCPPLIB"])
+    AC_SUBST([PHARMMLCPP_INCLUDE], ["-I$PHARMMLCPPINC"])
+fi
+
 
 # Detect the target system
 AC_CANONICAL_HOST

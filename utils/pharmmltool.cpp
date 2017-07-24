@@ -24,6 +24,8 @@
 #include <libxml/valid.h>
 #include <libxml/xmlschemas.h>
 #include <libxml/catalog.h>
+#include "config.h"
+
 
 void usage()
 {
@@ -140,6 +142,7 @@ void version(std::string filename)
 void convert(std::string inputfile, std::string outputfile, std::string version)
 {
     // Check version of input file
+    printf("Convert not supported yet\n");
 }
  
 enum class Command { validate, indent, compact, version, convert };
@@ -163,7 +166,7 @@ int main(int argc, const char *argv[])
             break;
         }
         if (arg == "--version") {
-            std::cout << "pharmmltool 0.3" << std::endl;
+            std::cout << "pharmmltool " VERSION << std::endl;
             exit(0);
         } else {
             std::cout << "Unknown option: " << arg << std::endl;

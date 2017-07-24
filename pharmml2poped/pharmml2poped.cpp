@@ -16,12 +16,22 @@
  */
 
 #include <iostream>
+#include <vector>
+#include "config.h"
 
 void convert_pharmml_poped(const char *);
 
 int main(int argc, char **argv)
 {
-    if (argc < 2) {
+    std::vector<std::string> args(argv, argv + argc);
+    for (std::string arg : args) {
+        if (arg == "--version") {
+            std::cout << "pharmml2poped " VERSION << std::endl; 
+            exit(0);
+        }
+    }
+
+    if (args.empty()) {
         std::cerr << "No PharmML file specified" << std::endl;
         return 5;
     }

@@ -22,11 +22,20 @@
 #include <symbols/Variable.h>
 #include <symbols/PopulationParameter.h>
 #include "MDLGenerator.h"
+#include "config.h"
 
 using namespace pharmmlcpp;
 
 int main(int argc, char **argv)
 {
+    std::vector<std::string> args(argv, argv + argc);
+    for (std::string arg : args) {
+        if (arg == "--version") {
+            std::cout << "mdl " VERSION << std::endl; 
+            exit(0);
+        }
+    }
+
     const char *filename;
     if (argc < 2) {
         std::cout << "Usage: mdl <file> >output.mdl" << std::endl;

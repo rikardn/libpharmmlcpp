@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = libpharmmlcpp mdl pharmml2poped utils
+SUBDIRS = libpharmmlcpp pharmml2mdl pharmml2poped utils
 
 # For binary win64 release
 WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-windows-x64

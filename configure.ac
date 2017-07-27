@@ -8,7 +8,7 @@ LT_PREREQ([2.2])
 LT_INIT
 
 AM_SILENT_RULES([yes])
-AC_CONFIG_SUBDIRS([libpharmmlcpp mdl pharmml2poped utils])
+AC_CONFIG_SUBDIRS([libpharmmlcpp pharmml2mdl pharmml2poped utils])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     std::vector<std::string> args(argv, argv + argc);
     for (std::string arg : args) {
         if (arg == "--version") {
-            std::cout << "mdl " VERSION << std::endl; 
+            std::cout << "pharmml2mdl " VERSION << std::endl; 
             exit(0);
         }
     }

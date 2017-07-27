@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT(mdl, 0.4)
+AC_INIT(pharmml2mdl, 0.4)
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])

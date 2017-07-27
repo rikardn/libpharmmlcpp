@@ -17,6 +17,9 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <experimental/filesystem>
 #include <stdio.h>
 #include <string.h>
 
@@ -24,8 +27,13 @@
 #include <libxml/valid.h>
 #include <libxml/xmlschemas.h>
 #include <libxml/catalog.h>
+#include <libxslt/xslt.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
+
 #include "config.h"
 
+namespace fs = std::experimental::filesystem;
 
 void usage()
 {
@@ -35,7 +43,7 @@ void usage()
             "    indent <file>               -- Indent a PharmML file\n"
             "    validate <file>             -- Validate a PharmML file against schema\n"
             "    version <file>              -- Print the version of a PharmML file\n"
-            "    convert <infile> <outfile   -- Convert to a later version of PharmML\n"
+            "    convert <infile> <outfile>  -- Convert to a later version of PharmML\n"
             "                                   default is to version 0.8.1\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
@@ -122,7 +130,7 @@ void indent(std::string filename, bool addindent)
     xmlFreeDoc(doc);
 }
 
-void version(std::string filename)
+std::string version(std::string filename)
 {
     xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
     if (doc == NULL) {
@@ -135,14 +143,90 @@ void version(std::string filename)
         error("File " + filename + " is not PharmML");
 	}
 	xmlChar *version = xmlGetProp(root, BAD_CAST "writtenVersion");
-	printf("%s\n", version);
+    std::string string_version = std::string((char *) version);
     xmlFreeDoc(doc);
+
+    return(string_version);
 }
 
-void convert(std::string inputfile, std::string outputfile, std::string version)
+std::vector<std::string> split(std::string const &in, char sep)
 {
-    // Check version of input file
-    printf("Convert not supported yet\n");
+    std::string::size_type b = 0;
+    std::vector<std::string> result;
+
+    while ((b = in.find_first_not_of(sep, b)) != std::string::npos) {
+        auto e = in.find_first_of(sep, b);
+        result.push_back(in.substr(b, e-b));
+        b = e;
+    }
+    return result;
+}
+
+fs::path which(std::string command)
+{
+    std::string path_env = std::getenv("PATH");
+    std::vector<std::string> path_dirs = split(path_env, ':');
+    fs::path command_path{command};
+    for (std::string path_string : path_dirs) {
+        fs::path path(path_string);
+        if (fs::exists(path / command_path)) {
+            return path;
+        }
+    }
+}
+
+fs::path auxfile_path(std::string command)
+{
+    fs::path command_path(command);
+
+    if (command_path.filename() == command_path) {
+        return which(command_path);
+    } else {
+        return command_path.parent_path();
+    }
+}
+
+void transform(fs::path xslt, std::string inputfile, std::string outputfile)
+{
+    auto stylesheet = xsltParseStylesheetFile(BAD_CAST xslt.c_str());
+    auto doc = xmlParseFile(inputfile.c_str());
+
+    const char *params = NULL;
+    auto result = xsltApplyStylesheet(stylesheet, doc, &params);
+    xsltSaveResultToFilename(outputfile.c_str(), result, stylesheet, 0);
+
+    xmlFreeDoc(doc);
+    xmlFreeDoc(result);
+    xsltFreeStylesheet(stylesheet);
+}
+
+void convert(std::string inputfile, std::string outputfile, std::string output_version, fs::path transformations_path)
+{
+    std::string input_version = version(inputfile);
+
+    std::string original_input_version = input_version;
+    if (input_version == "0.6.1") {
+        input_version = "0.6";
+    }
+
+    if (input_version != "0.6" && input_version != "0.8.1") {
+        error("pharmmltool error: found PharmML version " + input_version +
+            "\npharmmltool can only convert from version 0.6 and 0.8.1");
+    }
+
+    std::cout << "Converting PharmML" << std::endl;
+    std::cout << "    from version " + original_input_version << std::endl;
+    std::cout << "      to version " + output_version << std::endl;
+
+    std::string xslt_name;
+    if (input_version == "0.6" && output_version == "0.8.1") {
+        transform(transformations_path / fs::path{"0_6to0_8_1.xslt"}, inputfile, outputfile); 
+    } else if (input_version == "0.6" && output_version == "0.9") {
+        transform(transformations_path / fs::path{"0_6to0_8_1.xslt"}, inputfile, outputfile); 
+        transform(transformations_path / fs::path{"0_8_1to0_9.xslt"}, outputfile, outputfile); 
+    } else if (input_version == "0.8.1" && output_version == "0.9") {
+        transform(transformations_path / fs::path{"0_8_1to0_9.xslt"}, inputfile, outputfile);
+    }
 }
  
 enum class Command { validate, indent, compact, version, convert };
@@ -209,7 +293,7 @@ int main(int argc, const char *argv[])
         } else if (arg.compare(0, 17, "--target-version=") == 0) {
             if (command == Command::convert) {
                 target_version = arg.substr(17, std::string::npos);
-                if (target_version != "0.8.1" or target_version != "0.9") {
+                if (target_version != "0.8.1" && target_version != "0.9") {
                     error("Unknown PharmML version " + target_version + ". Can only convert to PharmML 0.8.1 or PharmML 0.9");
                 }
             } else {
@@ -226,7 +310,7 @@ int main(int argc, const char *argv[])
             command == Command::indent && numargs == 1 ||
             command == Command::compact && numargs == 1 ||
             command == Command::version && numargs == 1)) {
-        error("Too few arguments");
+        error("Wrong number of arguments");
     }
 
     LIBXML_TEST_VERSION
@@ -238,9 +322,12 @@ int main(int argc, const char *argv[])
     } else if (command == Command::compact) {
         indent(remaining_arguments[0], false);
     } else if (command == Command::version) {
-        version(remaining_arguments[0]);
+        std::string pharmml_version = version(remaining_arguments[0]);
+        std::cout << pharmml_version << std::endl;
     } else if (command == Command::convert) {
-        convert(remaining_arguments[0], remaining_arguments[1], target_version);
+        auto auxpath = auxfile_path(argv[0]);
+        auxpath /= fs::path{"transformations"};
+        convert(remaining_arguments[0], remaining_arguments[1], target_version, auxpath);
     }
 
     return 0;

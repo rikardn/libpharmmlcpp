@@ -33,6 +33,7 @@ main.exe
 test/test
 pharmmlcpp-*.zip
 pharmmlcpp-*.tar.gz
+pharmmlutils-*.tar.gz
 
 utils/pharmmltool
 mdl/mdl

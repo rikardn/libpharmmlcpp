@@ -13,7 +13,7 @@ AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.4)
-
+PKG_CHECK_MODULES([LIBXSLT],[libxslt >= 1.0])
 
 # Detect the target system
 AC_CANONICAL_HOST
@@ -24,11 +24,11 @@ build_mac=no
 
 case "${host_os}" in
     linux*)
-        AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) -std=c++14'])
+        AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) $(LIBXSLT_CFLAGS) -std=c++17'])
         build_linux=yes
         ;;
     cygwin*|mingw*)
-        AC_SUBST([AM_CPPFLAGS], ['-std=c++14 -static-libgcc -static-libstdc++ -L../windep/lib -I../windep/include'])
+        AC_SUBST([AM_CPPFLAGS], ['-std=c++17 -static-libgcc -static-libstdc++ -L../windep/lib -I../windep/include'])
         AC_SUBST([AM_LDFLAGS], ['-static-libgcc -static-libstdc++ -L../windep/lib'])
         build_windows=yes
         ;;

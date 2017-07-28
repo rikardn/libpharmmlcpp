@@ -280,7 +280,7 @@ int main(int argc, const char *argv[])
 
     // Read command options
     std::vector<std::string> remaining_arguments;
-    std::string target_version = "0.8.1";
+    std::string target_version = "0.9";
     std::string schema_path = "/usr/share/libpharmmlcpp/pharmml_internalRelease_0_8_1";
 
     for (std::string arg : arguments) {

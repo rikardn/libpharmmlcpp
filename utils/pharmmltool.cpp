@@ -1,4 +1,4 @@
-/* pharmmltool - A command line tool for mainly validation of PharmML files 
+/* pharmmltool - A command line tool for validation, conversion etc of PharmML files
  * Copyright (C) 2015 Rikard Nordgren
  * 
  * This library is free software; you can redistribute it and/or

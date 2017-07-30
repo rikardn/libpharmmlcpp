@@ -24,7 +24,7 @@ build_mac=no
 
 case "${host_os}" in
     linux*)
-        AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) $(LIBXSLT_CFLAGS) -std=c++17 -DDATA_PATH="$(pkgdatadir)"'])
+        AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) $(LIBXSLT_CFLAGS) -std=c++17 -DDATA_PATH=\"$(pkgdatadir)\"'])
         build_linux=yes
         ;;
     cygwin*|mingw*)

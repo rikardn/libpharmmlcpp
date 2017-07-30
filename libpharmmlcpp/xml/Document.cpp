@@ -72,7 +72,7 @@ namespace xml {
     }
 
     void Document::validate() {
-        if (xmlLoadCatalog("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
+        if (xmlLoadCatalog("schema/0.8.1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
             return;
         }
         int result = 42;
@@ -80,7 +80,7 @@ namespace xml {
         xmlSchemaPtr schema = NULL;
         xmlSchemaValidCtxtPtr validCtxt = NULL;
 
-        parserCtxt = xmlSchemaNewParserCtxt("pharmml_internalRelease_0_8_1/pharmml-schema/definitions/pharmml.xsd");
+        parserCtxt = xmlSchemaNewParserCtxt("schema/0.8.1/pharmml-schema/definitions/pharmml.xsd");
 
         if (parserCtxt == NULL) {
             goto leave;

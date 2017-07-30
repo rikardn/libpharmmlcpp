@@ -35,6 +35,8 @@
 
 namespace fs = std::experimental::filesystem;
 
+std::string version(std::string filename);
+
 void usage()
 {
     printf("Usage: pharmmltool <options> <command> <cmd-options>\n"
@@ -61,11 +63,23 @@ void error(std::string msg)
     exit(5);
 }
 
-void validate(std::string xmlPath, std::string schema_path)
+void validate(std::string xmlPath, std::string schema_path, fs::path auxpath)
 {
-    schema_path += "/pharmml-schema/definitions/";
-    std::string catalog_file = schema_path + "xmlCatalog.xml";
-    std::string schema_file = schema_path + "pharmml.xsd";
+    fs::path path;
+    if (schema_path.empty()) {
+        path = auxpath / fs::path{"schema"};
+        std::string pharmml_version = version(xmlPath);
+        if (pharmml_version != "0.8.1") {
+            error("Validate only support PharmML version 0.8.1");
+        }
+        path /= fs::path{pharmml_version};
+    } else {
+        path = fs::path{schema_path};
+    }
+
+    path /= fs::path{"pharmml-schema/definitions"};
+    fs::path catalog_file = path / fs::path{"xmlCatalog.xml"};
+    fs::path schema_file = path / fs::path{"pharmml.xsd"};
 
     if (xmlLoadCatalog(catalog_file.c_str()) != 0) {
         error("Error when loading catalog");
@@ -281,7 +295,7 @@ int main(int argc, const char *argv[])
     // Read command options
     std::vector<std::string> remaining_arguments;
     std::string target_version = "0.9";
-    std::string schema_path = "/usr/share/libpharmmlcpp/pharmml_internalRelease_0_8_1";
+    std::string schema_path;
 
     for (std::string arg : arguments) {
         if (arg.compare(0, 14, "--schema-path=") == 0) {
@@ -316,7 +330,8 @@ int main(int argc, const char *argv[])
     LIBXML_TEST_VERSION
 
     if (command == Command::validate) {
-        validate(remaining_arguments[0], schema_path);
+        auto auxpath = auxfile_path(argv[0]);
+        validate(remaining_arguments[0], schema_path, auxpath);
     } else if (command == Command::indent) {
         indent(remaining_arguments[0], true);
     } else if (command == Command::compact) {

@@ -16,8 +16,17 @@ nobase_dist_schema_DATA = \
     schema/0.8.1/pharmml-schema/definitions/pharmml.xsd \
     schema/0.8.1/pharmml-schema/definitions/trialDesign.xsd \
     schema/0.8.1/pharmml-schema/definitions/xmlCatalog.xml \
-    schema/0.8.1/pharmml-schema/uncertweb/UncertML30.xsd
-
+    schema/0.8.1/pharmml-schema/uncertweb/UncertML30.xsd \
+    schema/0.9/pharmml-probonto/probOnto.xsd \
+    schema/0.9/pharmml-schema/definitions/commonTypes.xsd \
+    schema/0.9/pharmml-schema/definitions/dataset.xsd \
+    schema/0.9/pharmml-schema/definitions/maths.xsd \
+    schema/0.9/pharmml-schema/definitions/modelDefinition.xsd \
+    schema/0.9/pharmml-schema/definitions/modellingSteps.xsd \
+    schema/0.9/pharmml-schema/definitions/pharmml.xsd \
+	schema/0.9/pharmml-schema/definitions/trialDesign.xsd \
+    schema/0.9/pharmml-schema/definitions/xmlCatalog.xml \
+    schema/0.9/pharmml-schema/uncertweb/UncertML30.xsd
 
 bin_PROGRAMS = pharmmltool
 

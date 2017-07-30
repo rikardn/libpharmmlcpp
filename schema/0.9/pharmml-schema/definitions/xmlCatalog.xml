@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    
+    <system systemId="http://www.pharmml.org/pharmml/0.9/Maths" 
+        uri="maths.xsd"/>
+    
+    <system
+        systemId="http://www.uncertml.org/3.0" 
+        uri="../uncertweb/UncertML30.xsd"/>
+    
+    <!-- probonto -->
+    <system
+        systemId="http://www.pharmml.org/probonto/ProbOnto" 
+        uri="../../pharmml-probonto/probOnto.xsd"/>
+    
+    <system systemId="http://www.pharmml.org/pharmml/0.9/Dataset" 
+        uri="dataset.xsd"/>
+
+    <system
+        systemId="http://www.pharmml.org/pharmml/0.9/PharmML" 
+        uri="pharmml.xsd"/>
+
+    <uri
+        name="http://www.pharmml.org/pharmml/0.9/PharmML" 
+        uri="pharmml.xsd"/>
+    
+    <system
+        systemId="http://www.pharmml.org/pharmml/0.9/TrialDesign" 
+        uri="trialDesign.xsd"/>
+
+    <system
+        systemId="http://www.pharmml.org/pharmml/0.9/CommonTypes" 
+        uri="commonTypes.xsd"/>
+    
+    <system
+        systemId="http://www.pharmml.org/pharmml/0.9/ModellingSteps"
+        uri="modellingSteps.xsd"/>
+    
+    <system systemId="http://www.pharmml.org/pharmml/0.9/ModelDefinition"
+        uri="modelDefinition.xsd"/>
+    
+</catalog>

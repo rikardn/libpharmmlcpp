@@ -191,12 +191,30 @@ fs::path which(std::string command)
 
 fs::path auxfile_path(std::string command)
 {
+    // Check where data files are available
+    // 1. If command has path use that
+    // 2. If no path in command use PATH
+    // 3. Look in installation path
+
     fs::path command_path(command);
 
+    fs::path aux_path;
+
     if (command_path.filename() == command_path) {
-        return which(command_path);
+        aux_path = which(command_path);
     } else {
-        return command_path.parent_path();
+        aux_path = command_path.parent_path();
+    }
+
+    if (fs::exists(aux_path / "transformations")) {
+        return aux_path;
+    } else {
+        aux_path = fs::path{DATA_PATH};
+        if (fs::exists(aux_path / "transformations")) {
+            return aux_path;
+        } else {
+            error("Error: Cannot find auxiliary data files (XML schemas and style sheets)");
+        }
     }
 }
 

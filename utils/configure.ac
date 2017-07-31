@@ -25,10 +25,11 @@ build_mac=no
 case "${host_os}" in
     linux*)
         AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) $(LIBXSLT_CFLAGS) -std=c++17 -DDATA_PATH=\"$(pkgdatadir)\"'])
+        AC_SUBST([AM_LDFLAGS], ['-lstdc++fs'])
         build_linux=yes
         ;;
     cygwin*|mingw*)
-        AC_SUBST([AM_CPPFLAGS], ['-std=c++17 -static-libgcc -static-libstdc++ -L../windep/lib -I../windep/include'])
+        AC_SUBST([AM_CPPFLAGS], ['-std=c++17 -static-libgcc -static-libstdc++ -L../windep/lib -I../windep/include -DDATA_PATH=\"$(pkgdatadir)\"'])
         AC_SUBST([AM_LDFLAGS], ['-static-libgcc -static-libstdc++ -L../windep/lib'])
         AC_DEFINE([WINDOWS], [1], [operating system is Windows])
         build_windows=yes

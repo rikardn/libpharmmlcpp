@@ -36,6 +36,7 @@ pharmmlcpp-*.tar.gz
 pharmmlutils-*.tar.gz
 
 utils/pharmmltool
+utils/pharmmltool.exe
 pharmml2mdl/pharmml2mdl
 pharmml2poped/pharmml2poped
 

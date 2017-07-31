@@ -20,6 +20,7 @@
 #ifdef WINDOWS
 #include <string>
 
+
 namespace std::experimental::filesystem
 {
     class path
@@ -28,9 +29,39 @@ namespace std::experimental::filesystem
             std::string s;
 
         public:
+            path() { s = ""; };
             path(std::string in) { s = in; };
             const char *c_str() { return s.c_str(); };
             std::experimental::filesystem::path operator/(const std::experimental::filesystem::path& p) { std::experimental::filesystem::path n{this->s + "\\" + p.s}; return n; };
+            std::experimental::filesystem::path operator/=(const std::experimental::filesystem::path& right) { this->s = this->s + "\\" + right.s; return *this; };
+            bool operator==(const std::experimental::filesystem::path& right) { return this->s == right.s; };
+            operator const std::string & () const { return this->s; };
+            std::experimental::filesystem::path filename() {
+                auto pos = this->s.rfind('\\');
+                if (pos == string::npos) {
+                    return std::experimental::filesystem::path{this->s};
+                } else {
+                    return std::experimental::filesystem::path{this->s.substr(pos + 1, string::npos)};
+                }
+            };
+            std::experimental::filesystem::path parent_path() {
+                auto pos = this->s.rfind('\\');
+                if (pos == string::npos) {
+                    return std::experimental::filesystem::path{".."};
+                } else {
+                    return std::experimental::filesystem::path{this->s.substr(0, pos - 1)};
+                }
+            };
     };
+    bool exists(std::experimental::filesystem::path p) {
+        if (FILE *file = fopen(p.c_str(), "r")) {
+        	fclose(file);
+        	return true;
+    	} else {
+        	return false;
+    	}
+    }
+
 }
+
 #endif

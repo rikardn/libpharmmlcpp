@@ -30,7 +30,6 @@ nobase_dist_schema_DATA = \
 
 bin_PROGRAMS = pharmmltool
 
-pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS) -lstdc++fs
+pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS)
 pharmmltool_SOURCES = \
-	pharmmltool.cpp \
-	filesystem.cpp
+	pharmmltool.cpp

@@ -35,6 +35,8 @@ case "${host_os}" in
         build_windows=yes
         ;;
     darwin*)
+        AC_SUBST([AM_CPPFLAGS], ['$(LIBXML2_CFLAGS) $(LIBXSLT_CFLAGS) -std=c++17 -DDATA_PATH=\"$(pkgdatadir)\"'])
+        AC_SUBST([AM_LDFLAGS], ['-lstdc++fs'])
         build_mac=yes
         ;;
     *)

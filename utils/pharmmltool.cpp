@@ -19,7 +19,16 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
+
+#include "config.h"
+
+// Hack for lack of filesystem support in MinGW
+#ifndef WINDOWS
 #include <experimental/filesystem>
+#else
+#include "filesystem.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
@@ -30,8 +39,6 @@
 #include <libxslt/xslt.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-
-#include "config.h"
 
 namespace fs = std::experimental::filesystem;
 

@@ -30,6 +30,7 @@ case "${host_os}" in
     cygwin*|mingw*)
         AC_SUBST([AM_CPPFLAGS], ['-std=c++17 -static-libgcc -static-libstdc++ -L../windep/lib -I../windep/include'])
         AC_SUBST([AM_LDFLAGS], ['-static-libgcc -static-libstdc++ -L../windep/lib'])
+        AC_DEFINE([WINDOWS], [1], [operating system is Windows])
         build_windows=yes
         ;;
     darwin*)
@@ -41,7 +42,7 @@ case "${host_os}" in
 esac
 
 AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
-AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
+#AM_CONDITIONAL(AC_DEFINE([WINDOWS]), [test "$build_windows" = "yes"])
 AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 
 AC_CONFIG_HEADERS([config.h])

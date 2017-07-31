@@ -17,6 +17,9 @@
 
 // Temporary hack for missing filesystem class in MinGW
 
+#ifdef WINDOWS
+#include <string>
+
 namespace std::experimental::filesystem
 {
     class path
@@ -25,8 +28,9 @@ namespace std::experimental::filesystem
             std::string s;
 
         public:
-            path(std::string in) { s = in };
-            char *c_str() { return s.c_str() };
-            path operator/(const path& p) { path n; n.s = this->s + "\\" + p.s };
+            path(std::string in) { s = in; };
+            const char *c_str() { return s.c_str(); };
+            std::experimental::filesystem::path operator/(const std::experimental::filesystem::path& p) { std::experimental::filesystem::path n{this->s + "\\" + p.s}; return n; };
     };
 }
+#endif

@@ -18,11 +18,19 @@
 
 // Temporary hack for missing filesystem class in MinGW
 
+#ifdef WINDOWS
 #include <stdio.h>
+#include "filesystem.h"
 
 namespace std::experimental::filesystem
 {
-    bool exists(std::experimental::filesystem::path) {
-
+    bool exists(std::experimental::filesystem::path p) {
+    	if (FILE *file = fopen(p.c_str(), "r")) {
+        	fclose(file);
+        	return true;
+    	} else {
+        	return false;
+    	}
     }
 }
+#endif

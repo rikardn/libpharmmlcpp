@@ -62,3 +62,6 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* operating system is Windows */
+#undef WINDOWS

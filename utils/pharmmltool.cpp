@@ -76,8 +76,8 @@ void validate(std::string xmlPath, std::string schema_path, fs::path auxpath)
     if (schema_path.empty()) {
         path = auxpath / fs::path{"schema"};
         std::string pharmml_version = version(xmlPath);
-        if (pharmml_version != "0.8.1") {
-            error("Validate only support PharmML version 0.8.1");
+        if (pharmml_version != "0.8.1" && pharmml_version != "0.9") {
+            error("Validate only support PharmML versions 0.8.1 and 0.9");
         }
         path /= fs::path{pharmml_version};
     } else {

@@ -1,1 +1,6 @@
-C++ library to handle PharmML files.
+This project contains the following subprojects:
+
+libpharmmlcpp - a C++ library to handle PharmML files.
+pharmml2mdl - A converter from PharmML to MDL
+pharmml2poped - A converter from PharmML to PopED
+pharmmlutilities - Contain  pharmmltool to validate, indent and convert between PharmML versions

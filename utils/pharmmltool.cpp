@@ -56,6 +56,7 @@ void usage()
             "                                   default is to version 0.8.1\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
+            "   --help                      View this usage text\n"
             "\n"
             "cmd-options:\n"
             "   --schema-path=<path>        Override the default path of the schemas\n"
@@ -291,6 +292,8 @@ int main(int argc, const char *argv[])
         if (arg == "--version") {
             std::cout << "pharmmltool " VERSION << std::endl;
             exit(0);
+        } else if (arg == "--help") {
+            usage();
         } else {
             std::cout << "Unknown option: " << arg << std::endl;
             usage();

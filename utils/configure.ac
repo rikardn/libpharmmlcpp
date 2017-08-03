@@ -4,8 +4,8 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
-#LT_PREREQ([2.2])
-#LT_INIT
+LT_PREREQ([2.2])
+LT_INIT
 
 AM_SILENT_RULES([yes])
 

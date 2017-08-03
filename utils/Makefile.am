@@ -51,8 +51,8 @@ WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-windows-x64
 .PHONY: winrelease
 winrelease:
 	mkdir -p ${WIN_RELEASE_PACKAGE}
-	x86_64-w64-mingw32-strip pharmmltool.exe
-	cp pharmmltool.exe ${WIN_RELEASE_PACKAGE}
+	cp .libs/pharmmltool.exe ${WIN_RELEASE_PACKAGE}
+	x86_64-w64-mingw32-strip ${WIN_RELEASE_PACKAGE}/pharmmltool.exe
 	cp ../windep/lib/*.dll ${WIN_RELEASE_PACKAGE}
 	cp -r schema ${WIN_RELEASE_PACKAGE}
 	cp -r transformations ${WIN_RELEASE_PACKAGE}

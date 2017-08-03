@@ -1,6 +1,11 @@
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = README LICENSE
+EXTRA_DIST = \
+    README \
+    LICENSE \
+    test/testfiles/UseCase1.xml \
+    test/testfiles/Executable_Krippendorff_ModelB.xml \
+    test/testfiles/glucoseKinetics.xml
 
 transformationsdir = $(pkgdatadir)/transformations
 dist_transformations_DATA = \
@@ -35,3 +40,9 @@ bin_PROGRAMS = pharmmltool
 pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS)
 pharmmltool_SOURCES = \
 	pharmmltool.cpp
+
+
+dist_check_SCRIPTS = test/pharmmltool.py
+TESTS = test/pharmmltool.py
+TEST_EXTENSIONS = .py
+PY_LOG_COMPILER = python3

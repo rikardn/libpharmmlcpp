@@ -39,6 +39,8 @@ utils/pharmmltool
 utils/pharmmltool.exe
 pharmml2mdl/pharmml2mdl
 pharmml2poped/pharmml2poped
+utils/pharmmlutils-0.4-windows-x64.zip
+utils/pharmmlutils-0.4-windows-x64
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

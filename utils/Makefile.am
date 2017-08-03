@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
+EXTRA_DIST = README LICENSE
+
 transformationsdir = $(pkgdatadir)/transformations
 dist_transformations_DATA = \
     transformations/0_6to0_8_1.xslt \

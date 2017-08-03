@@ -1,0 +1,41 @@
+pharmmlutils
+
+pharmmlutils is a collection of command line utilities for validating, formatting and version conversion of PharmML files. It currently contains the command "pharmmltool" that can perform all the different operations. Further utilities might be added in the fututure. Give the command "pharmmltool" or "pharmmltool --help" to get the different options.
+
+*** Validate ***
+
+The validate operation can validate PharmML files against schema. Supported versions are 0.8.1 and 0.9
+It is also possible to use the option --schema-path to validate against any schema.
+
+Examples:
+    pharmmltool validate mymodel1.xml
+    pharmmltool validate --schema-path=myschemadir mymodel1.xml
+
+*** Version ***
+
+The version operation will print the PharmML version of a PharmML file.
+Example:
+    pharmmltool version mymodel1.xml
+
+*** Indent ***
+
+Indent will add pretty indentations to a PharmML file. The changes are done in place.
+Example:
+    pharmmltool indent mymodel1.xml
+
+*** Compact ***
+
+All unnecessary spacings are stripped from a PharmML file. This will reduce the size of the file. The changes are done in place.
+Example:
+    pharmmltool compact mymodel1.xml
+
+*** Convert ***
+
+Converts a PharmML file from one version to another. Default is to convert to the latest version, which is currently 0.9. The PharmML version to convert
+to can be changed with the option --target-version.
+Supported input versions: 0.6, 0.6.1, 0.8.1
+Supported output versions: 0.8.1, 0.9
+Converting using the same PharmML version for input and output is not supported.
+Example:
+    pharmmltool convert infile.xml outfile.xml
+    pharmmltool convert infile.xml outfile.xml --target-version=0.8.1

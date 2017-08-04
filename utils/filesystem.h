@@ -20,6 +20,8 @@
 #ifdef WINDOWS
 #include <string>
 
+#define SEP "\\"
+#define SEPCH '\\'
 
 namespace std::experimental::filesystem
 {
@@ -32,12 +34,30 @@ namespace std::experimental::filesystem
             path() { s = ""; };
             path(std::string in) { s = in; };
             const char *c_str() { return s.c_str(); };
-            std::experimental::filesystem::path operator/(const std::experimental::filesystem::path& p) { std::experimental::filesystem::path n{this->s + "\\" + p.s}; return n; };
-            std::experimental::filesystem::path operator/=(const std::experimental::filesystem::path& right) { this->s = this->s + "\\" + right.s; return *this; };
+            std::experimental::filesystem::path operator/(const std::experimental::filesystem::path& p) {
+                std::string pre;
+                if (this->s == "") {
+                    pre = "";
+                } else {
+                    pre = this->s + SEP;
+                }
+                std::experimental::filesystem::path n{pre + p.s};
+                return n;
+            };
+            std::experimental::filesystem::path operator/=(const std::experimental::filesystem::path& right) {
+                std::string pre;
+                if (this->s == "") {
+                    pre = "";
+                } else {
+                    pre = this->s + SEP;
+                }
+                this->s = pre + right.s;
+                return *this;
+            };
             bool operator==(const std::experimental::filesystem::path& right) { return this->s == right.s; };
             operator const std::string & () const { return this->s; };
             std::experimental::filesystem::path filename() {
-                auto pos = this->s.rfind('\\');
+                auto pos = this->s.rfind(SEPCH);
                 if (pos == string::npos) {
                     return std::experimental::filesystem::path{this->s};
                 } else {
@@ -45,7 +65,7 @@ namespace std::experimental::filesystem
                 }
             };
             std::experimental::filesystem::path parent_path() {
-                auto pos = this->s.rfind('\\');
+                auto pos = this->s.rfind(SEPCH);
                 if (pos == string::npos) {
                     return std::experimental::filesystem::path{".."};
                 } else {

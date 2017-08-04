@@ -184,10 +184,27 @@ std::vector<std::string> split(std::string const &in, char sep)
     return result;
 }
 
+bool ends_with(const std::string &str, const std::string &suffix)
+{
+    return str.size() >= suffix.size() &&
+        str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 fs::path which(std::string command)
 {
     std::string path_env = std::getenv("PATH");
-    std::vector<std::string> path_dirs = split(path_env, ':');
+
+    char split_char;
+    if (WINDOWS) {
+        path_env = ".;" + path_env;     // Windows always have the current directory first in the path
+        split_char = ';';
+        if (not ends_with(command, std::string{".exe"})) {
+            command += ".exe";
+        }
+    } else {
+        split_char = ':';
+    }
+    std::vector<std::string> path_dirs = split(path_env, split_char);
     fs::path command_path{command};
     for (std::string path_string : path_dirs) {
         fs::path path(path_string);

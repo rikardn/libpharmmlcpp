@@ -5,6 +5,8 @@ pharmmlutils is a collection of command line utilities for validating, formattin
 pharmmlutils is authored, maintained and Copyright Rikard Nordgren 2017 and released under the GPL v3 license
 (See LICENSE for the full license text)
 
+For installation instructions see INSTALL
+
 *** Validate ***
 
 The validate operation can validate PharmML files against schema. Supported versions are 0.8.1 and 0.9

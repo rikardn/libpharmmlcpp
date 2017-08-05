@@ -2,6 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
     README \
+	INSTALL \
     LICENSE \
     test/testfiles/UseCase1.xml \
     test/testfiles/Executable_Krippendorff_ModelB.xml \
@@ -58,5 +59,7 @@ winrelease:
 	cp ../windep/lib/*.dll ${WIN_RELEASE_PACKAGE}
 	cp -r schema ${WIN_RELEASE_PACKAGE}
 	cp -r transformations ${WIN_RELEASE_PACKAGE}
+	cp INSTALL ${WIN_RELEASE_PACKAGE}
+	cp README ${WIN_RELEASE_PACKAGE}
 	zip -r ${WIN_RELEASE_PACKAGE}.zip ${WIN_RELEASE_PACKAGE}
 	rm -rf ${WIN_RELEASE_PACKAGE}

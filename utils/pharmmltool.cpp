@@ -195,15 +195,15 @@ fs::path which(std::string command)
     std::string path_env = std::getenv("PATH");
 
     char split_char;
-    if (WINDOWS) {
+#ifdef WINDOWS
         path_env = ".;" + path_env;     // Windows always have the current directory first in the path
         split_char = ';';
         if (not ends_with(command, std::string{".exe"})) {
             command += ".exe";
         }
-    } else {
+#else
         split_char = ':';
-    }
+#endif
     std::vector<std::string> path_dirs = split(path_env, split_char);
     fs::path command_path{command};
     for (std::string path_string : path_dirs) {
@@ -232,11 +232,11 @@ fs::path auxfile_path(std::string command)
     }
 
     fs::path search_path;
-    if (WINDOWS) {
-        search_path = fs::path{"transformations\\0_6to0_8_1.xslt"};
-    } else {
-        search_path = fs::path{"transformations"};
-    }
+#ifdef WINDOWS
+    search_path = fs::path{"transformations\\0_6to0_8_1.xslt"};
+#else
+    search_path = fs::path{"transformations"};
+#endif
 
     if (fs::exists(aux_path / search_path)) {
         return aux_path;

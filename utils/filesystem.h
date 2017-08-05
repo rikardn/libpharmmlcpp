@@ -69,7 +69,7 @@ namespace std::experimental::filesystem
                 if (pos == string::npos) {
                     return std::experimental::filesystem::path{".."};
                 } else {
-                    return std::experimental::filesystem::path{this->s.substr(0, pos - 1)};
+                    return std::experimental::filesystem::path{this->s.substr(0, pos)};
                 }
             };
     };

@@ -231,11 +231,18 @@ fs::path auxfile_path(std::string command)
         aux_path = command_path.parent_path();
     }
 
-    if (fs::exists(aux_path / fs::path{"transformations"})) {
+    fs::path search_path;
+    if (WINDOWS) {
+        search_path = fs::path{"transformations\\0_6to0_8_1.xslt"};
+    } else {
+        search_path = fs::path{"transformations"};
+    }
+
+    if (fs::exists(aux_path / search_path)) {
         return aux_path;
     } else {
         aux_path = fs::path{DATA_PATH};
-        if (fs::exists(aux_path / fs::path{"transformations"})) {
+        if (fs::exists(aux_path / search_path)) {
             return aux_path;
         } else {
             error("Error: Cannot find auxiliary data files (XML schemas and style sheets)");

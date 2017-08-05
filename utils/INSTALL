@@ -4,7 +4,8 @@ Installation of pharmmlutils
 
 To build and install on Linux and Mac the g++ C++ compiler must be available together
 with the development files for libxml2 and libxslt. g++ must be of a fairly new version
-6.3.0 has been tested to work but a bit earlier versions might also work. 
+5.4.0 has been tested to work but a bit earlier versions might also work. 4.9.2 has been
+tested to not work.
 
 tar zxvf pharmmlutils-0.4.tar.gz
 cd pharmmlutils-0.4

@@ -3,7 +3,8 @@ pharmmlutils
 pharmmlutils is a collection of command line utilities for validating, formatting and version conversion of PharmML files. It currently contains the command "pharmmltool" that can perform all the different operations. Further utilities might be added in the fututure. Give the command "pharmmltool" or "pharmmltool --help" to get the different options.
 
 pharmmlutils is authored, maintained and Copyright Rikard Nordgren 2017 and released under the GPL v3 license
-(See LICENSE for the full license text)
+(See LICENSE for the full license text). The xslt transformation style sheets are released under the Apache license v2.
+The PharmML schemas are copyright EMBL and Novo Nordisk and are under the Apache license v2.
 
 For installation instructions see INSTALL
 

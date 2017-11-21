@@ -1,13 +1,15 @@
 pharmmlutils
 
-pharmmlutils is a collection of command line utilities for validating, formatting and version conversion of PharmML files. It currently contains the command "pharmmltool" that can perform all the different operations. Further utilities might be added in the fututure. Give the command "pharmmltool" or "pharmmltool --help" to get the different options.
+pharmmlutils is a collection of command line utilities for validating, formatting and version conversion of PharmML files. It currently contains the command "pharmmltool" that can perform all the different operations and "sotool" that can validate, format and merge SO-files. Further utilities might be added in the future. Give the command "pharmmltool", "pharmmltool --help", "sotool" or "sotool --help" to get the different options.
 
 pharmmlutils is authored, maintained and Copyright Rikard Nordgren 2017 and released under the GPL v3 license
 (See LICENSE for the full license text). The xslt transformation style sheets are released under the Apache license v2.
 The PharmML schemas are copyright EMBL and Novo Nordisk and are under the Apache license v2.
+The SO schema is copyright EMBL and Merck Serono and is under the Apache license v2
 
 For installation instructions see INSTALL
 
+=== Documentation for pharmmltool ===
 *** Validate ***
 
 The validate operation can validate PharmML files against schema. Supported versions are 0.8.1 and 0.9
@@ -45,3 +47,38 @@ Converting using the same PharmML version for input and output is not supported.
 Example:
     pharmmltool convert infile.xml outfile.xml
     pharmmltool convert infile.xml outfile.xml --target-version=0.8.1
+
+
+=== Documentation for sotool ===
+*** Validate ***
+
+The validate operation can validate SO files against schema. Supported version is 0.3.1
+It is also possible to use the option --schema-path to validate against any schema.
+
+Examples:
+    sotool validate mymodel1.SO.xml
+    sotool validate --schema-path=myschemadir mymodel1.SO.xml
+
+*** Version ***
+
+The version operation will print the version of an SO file.
+Example:
+    sotool version mymodel1.SO.xml
+
+*** Indent ***
+
+Indent will add pretty indentations to an SO file. The changes are done in place.
+Example:
+    sotool indent mymodel1.SO.xml
+
+*** Compact ***
+
+All unnecessary spacings are stripped from an SO file. This will reduce the size of the file. The changes are done in place.
+Example:
+    sotool compact mymodel1.SO.xml
+
+*** Merge ***
+
+Merge the SOBlocks from multiple SO files together into one file.
+Example:
+    sotool merge new.SO.xml file1.SO.xml file2.SO.xml file3.SO.xml 

@@ -34,13 +34,20 @@ nobase_dist_schema_DATA = \
     schema/0.9/pharmml-schema/definitions/pharmml.xsd \
 	schema/0.9/pharmml-schema/definitions/trialDesign.xsd \
     schema/0.9/pharmml-schema/definitions/xmlCatalog.xml \
-    schema/0.9/pharmml-schema/uncertweb/UncertML30.xsd
+    schema/0.9/pharmml-schema/uncertweb/UncertML30.xsd \
+	schema/SO_0.3.1/standardisedOutput.xsd
 
-bin_PROGRAMS = pharmmltool
+bin_PROGRAMS = pharmmltool sotool
 
 pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS)
 pharmmltool_SOURCES = \
+	common.cpp \
 	pharmmltool.cpp
+
+sotool_LDADD = $(LIBXML2_LIBS)
+sotool_SOURCES = \
+	common.cpp \
+	sotool.cpp
 
 dist_check_SCRIPTS = test/pharmmltool.py
 TESTS = test/pharmmltool.py
@@ -55,7 +62,9 @@ winrelease:
 	rm pharmmlutils-0.4-windows-x64 -rf
 	mkdir -p ${WIN_RELEASE_PACKAGE}
 	cp .libs/pharmmltool.exe ${WIN_RELEASE_PACKAGE}
+	cp .libs/sotool.exe ${WIN_RELEASE_PACKAGE}
 	x86_64-w64-mingw32-strip ${WIN_RELEASE_PACKAGE}/pharmmltool.exe
+	x86_64-w64-mingw32-strip ${WIN_RELEASE_PACKAGE}/sotool.exe
 	cp ../windep/lib/*.dll ${WIN_RELEASE_PACKAGE}
 	cp -r schema ${WIN_RELEASE_PACKAGE}
 	cp -r transformations ${WIN_RELEASE_PACKAGE}

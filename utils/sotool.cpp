@@ -1,4 +1,4 @@
-/* pharmmltool - A command line tool for validation, conversion etc of PharmML files
+/* sotool - A command line tool for validation, conversion etc of SO files
  * Copyright (C) 2015 Rikard Nordgren
  * 
  * This library is free software; you can redistribute it and/or
@@ -36,69 +36,67 @@
 
 void usage()
 {
-    printf("Usage: pharmmltool <options> <command> <cmd-options>\n"
+    printf("Usage: sotool <options> <command> <cmd-options>\n"
             "Where <command> is one of:\n"
             "    compact <file>              -- Remove indentations and newlines\n"
             "    indent <file>               -- Indent a PharmML file\n"
             "    validate <file>             -- Validate a PharmML file against schema\n"
             "    version <file>              -- Print the version of a PharmML file\n"
-            "    convert <infile> <outfile>  -- Convert to a later version of PharmML\n"
-            "                                   default is to version 0.8.1\n"
+            "    merge <dest> <source files> -- Merge SOBlocks from multiple files into one file\n"
+            "\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
             "   --help                      View this usage text\n"
             "\n"
             "cmd-options:\n"
             "   --schema-path=<path>        Override the default path of the schemas\n"
-            "   --target-version=<version>  Version to convert to. Either 0.8.1 or 0.9\n"
           );
     exit(0);
 }
 
-void transform(fs::path xslt, std::string inputfile, std::string outputfile)
+void merge(const std::string dest, std::vector<std::string> source)
 {
-    auto stylesheet = xsltParseStylesheetFile(BAD_CAST xslt.c_str());
-    auto doc = xmlParseFile(inputfile.c_str());
+    if (source.empty()) {
+        std::cerr << "No source files specified" << std::endl;
+        exit(5);
+    }
 
-    const char *params = NULL;
-    auto result = xsltApplyStylesheet(stylesheet, doc, &params);
-    xsltSaveResultToFilename(outputfile.c_str(), result, stylesheet, 0);
+    xmlDocPtr doc = xmlReadFile(source[0].c_str(), NULL, 0);
+    if (doc == NULL) {
+        std::cerr << "Failed to parse " + source[0] << std::endl;
+        exit(5);
+    }
+    xmlNodePtr root = xmlDocGetRootElement(doc);
 
+    std::cout << "Merging: " + source[0] << std::endl;
+    xmlDocPtr source_doc;
+    xmlNodePtr source_root;
+
+    for (int i = 1; i < source.size(); i++) {
+        source_doc = xmlReadFile(source[i].c_str(), NULL, 0);
+        if (source_doc == NULL) {
+            std::cerr << "Failed to parse " + source[i] << std::endl;
+            xmlFreeDoc(doc);
+            exit(5);
+        }
+        source_root = xmlDocGetRootElement(source_doc);
+        xmlNodePtr child = source_root->children;
+        while (child) {
+            if (strcmp((char *) child->name, "SOBlock") == 0) {
+                xmlNodePtr new_node = xmlCopyNode(child, 1);
+                xmlAddChild(root, new_node);
+            }
+            child = child->next;
+        }
+        std::cout << "Merging: " + source[i] << std::endl;
+        xmlFreeDoc(source_doc);
+    }
+
+    xmlSaveFormatFileEnc(dest.c_str(), doc, "UTF-8", 0);
     xmlFreeDoc(doc);
-    xmlFreeDoc(result);
-    xsltFreeStylesheet(stylesheet);
 }
 
-void convert(std::string inputfile, std::string outputfile, std::string output_version, fs::path transformations_path)
-{
-    std::string input_version = version(inputfile, "PharmML");
-
-    std::string original_input_version = input_version;
-    if (input_version == "0.6.1") {
-        input_version = "0.6";
-    }
-
-    if (input_version != "0.6" && input_version != "0.8.1") {
-        error("pharmmltool error: found PharmML version " + input_version +
-            "\npharmmltool can only convert from version 0.6 and 0.8.1");
-    }
-
-    std::cout << "Converting PharmML" << std::endl;
-    std::cout << "    from version " + original_input_version << std::endl;
-    std::cout << "      to version " + output_version << std::endl;
-
-    std::string xslt_name;
-    if (input_version == "0.6" && output_version == "0.8.1") {
-        transform(transformations_path / fs::path{"0_6to0_8_1.xslt"}, inputfile, outputfile); 
-    } else if (input_version == "0.6" && output_version == "0.9") {
-        transform(transformations_path / fs::path{"0_6to0_8_1.xslt"}, inputfile, outputfile); 
-        transform(transformations_path / fs::path{"0_8_1to0_9.xslt"}, outputfile, outputfile); 
-    } else if (input_version == "0.8.1" && output_version == "0.9") {
-        transform(transformations_path / fs::path{"0_8_1to0_9.xslt"}, inputfile, outputfile);
-    }
-}
- 
-enum class Command { validate, indent, compact, version, convert };
+enum class Command { validate, indent, compact, version, merge };
 
 int main(int argc, const char *argv[])
 {
@@ -121,7 +119,7 @@ int main(int argc, const char *argv[])
             break;
         }
         if (arg == "--version") {
-            std::cout << "pharmmltool " VERSION << std::endl;
+            std::cout << "sotool " VERSION << std::endl;
             exit(0);
         } else if (arg == "--help") {
             usage();
@@ -144,8 +142,8 @@ int main(int argc, const char *argv[])
         command = Command::compact;
     } else if (command_string == "version") {
         command = Command::version;
-    } else if (command_string == "convert") {
-        command = Command::convert;
+    } else if (command_string == "merge") {
+        command = Command::merge;
     } else {
         std::cout << "Unknow command: " << command_string << std::endl;
         usage();
@@ -153,7 +151,6 @@ int main(int argc, const char *argv[])
 
     // Read command options
     std::vector<std::string> remaining_arguments;
-    std::string target_version = "0.9";
     std::string schema_path;
 
     for (std::string arg : arguments) {
@@ -163,23 +160,13 @@ int main(int argc, const char *argv[])
             } else {
                 error("Option --schema-path can only be used with the validate command");
             }
-        } else if (arg.compare(0, 17, "--target-version=") == 0) {
-            if (command == Command::convert) {
-                target_version = arg.substr(17, std::string::npos);
-                if (target_version != "0.8.1" && target_version != "0.9") {
-                    error("Unknown PharmML version " + target_version + ". Can only convert to PharmML 0.8.1 or PharmML 0.9");
-                }
-            } else {
-                error("Option --target-version can only be used with the convert command");
-            }
         } else {
             remaining_arguments.push_back(arg);
         }
     } 
 
     int numargs = remaining_arguments.size();
-    if (!(command == Command::convert && numargs == 2 ||
-            command == Command::validate && numargs == 1 ||
+    if (!(command == Command::validate && numargs == 1 ||
             command == Command::indent && numargs == 1 ||
             command == Command::compact && numargs == 1 ||
             command == Command::version && numargs == 1)) {
@@ -188,18 +175,18 @@ int main(int argc, const char *argv[])
 
     if (command == Command::validate) {
         auto auxpath = auxfile_path(argv[0]);
-        validate(remaining_arguments[0], schema_path, auxpath, "PharmML");
+        validate(remaining_arguments[0], schema_path, auxpath, "SO");
     } else if (command == Command::indent) {
         indent(remaining_arguments[0], true);
     } else if (command == Command::compact) {
         indent(remaining_arguments[0], false);
     } else if (command == Command::version) {
-        std::string pharmml_version = version(remaining_arguments[0], "PharmML");
-        std::cout << pharmml_version << std::endl;
-    } else if (command == Command::convert) {
-        auto auxpath = auxfile_path(argv[0]);
-        auxpath /= fs::path{"transformations"};
-        convert(remaining_arguments[0], remaining_arguments[1], target_version, auxpath);
+        std::string so_version = version(remaining_arguments[0], "SO");
+        std::cout << so_version << std::endl;
+    } else if (command == Command::merge) {
+        std::string destination = remaining_arguments[0];
+        remaining_arguments.erase(remaining_arguments.begin());
+        merge(destination, remaining_arguments);
     }
 
     return 0;

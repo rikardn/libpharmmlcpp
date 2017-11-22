@@ -49,8 +49,8 @@ sotool_SOURCES = \
 	common.cpp \
 	sotool.cpp
 
-dist_check_SCRIPTS = test/pharmmltool.py
-TESTS = test/pharmmltool.py
+dist_check_SCRIPTS = test/pharmmltool.py test/sotool.py
+TESTS = test/pharmmltool.py test/sotool.py
 TEST_EXTENSIONS = .py
 PY_LOG_COMPILER = python3
 

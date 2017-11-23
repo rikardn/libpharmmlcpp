@@ -60,5 +60,20 @@ class Testpharmmltool(unittest.TestCase):
                 l = content.split("\n")
                 self.assertTrue(len(l) > 3)
 
+    def test_compress_uncompress(self):
+        with tempfile.TemporaryDirectory() as dirpath:
+            shutil.copy(testfile_path("pheno_real.SO.xml"), dirpath)
+            filepath = dirpath + '/pheno_real.SO.xml'
+            size_before = os.path.getsize(filepath)
+            subprocess.run([exe_path('sotool'), 'compress', filepath])
+            size_after = os.path.getsize(filepath)
+            self.assertTrue(size_before > size_after)
+
+            subprocess.run([exe_path('sotool'), 'uncompress', filepath])
+            size_final = os.path.getsize(filepath)
+            self.assertTrue(size_final > size_after)
+
+
+
 if __name__ == '__main__':
     unittest.main()

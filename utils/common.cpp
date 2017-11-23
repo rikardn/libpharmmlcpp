@@ -116,6 +116,7 @@ fs::path auxfile_path(std::string command)
 
 void indent(std::string filename, bool addindent)
 {
+    xmlKeepBlanksDefault(0);
     xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 0);
     if (doc == NULL) {
         error("Failed to parse " + filename);

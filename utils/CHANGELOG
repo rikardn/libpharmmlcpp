@@ -1,0 +1,4 @@
+0.5:
+
+* Add tool 'sotool' with the following operations on SO files:
+    validate, indent, compact, version, merge, compress and uncompress

@@ -1,5 +1,5 @@
 /* sotool - A command line tool for validation, conversion etc of SO files
- * Copyright (C) 2015 Rikard Nordgren
+ * Copyright (C) 2017 Rikard Nordgren
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -39,10 +39,12 @@ void usage()
     printf("Usage: sotool <options> <command> <cmd-options>\n"
             "Where <command> is one of:\n"
             "    compact <file>              -- Remove indentations and newlines\n"
-            "    indent <file>               -- Indent a PharmML file\n"
-            "    validate <file>             -- Validate a PharmML file against schema\n"
-            "    version <file>              -- Print the version of a PharmML file\n"
+            "    indent <file>               -- Indent an SO-file\n"
+            "    validate <file>             -- Validate an SO-file against schema\n"
+            "    version <file>              -- Print the version of an SO file\n"
             "    merge <dest> <source files> -- Merge SOBlocks from multiple files into one file\n"
+            "    compress <file>             -- Compress the SO inplace using gzip compression\n"
+            "    uncompress <file>           -- Uncompress the SO inplace\n"
             "\n"
             "options:\n"
             "   --version                   Print version information and exit\n"
@@ -52,6 +54,19 @@ void usage()
             "   --schema-path=<path>        Override the default path of the schemas\n"
           );
     exit(0);
+}
+
+void compress(std::string filename, int level)
+{
+    xmlDocPtr doc = xmlReadFile(filename.c_str(), NULL, 5);
+    if (doc == NULL) {
+        error("Failed to parse " + filename);
+    }
+
+    xmlSetDocCompressMode(doc, level);
+    xmlSaveFile(filename.c_str(), doc);
+
+    xmlFreeDoc(doc);
 }
 
 void merge(const std::string dest, std::vector<std::string> source)
@@ -96,7 +111,7 @@ void merge(const std::string dest, std::vector<std::string> source)
     xmlFreeDoc(doc);
 }
 
-enum class Command { validate, indent, compact, version, merge };
+enum class Command { validate, indent, compact, version, merge, compress, uncompress };
 
 int main(int argc, const char *argv[])
 {
@@ -104,7 +119,6 @@ int main(int argc, const char *argv[])
 
     xmlLineNumbersDefault(1);
     xmlThrDefIndentTreeOutput(1);
-    xmlKeepBlanksDefault(0);
     xmlThrDefTreeIndentString("  ");
 
     std::vector<std::string> arguments(argv + 1, argv + argc);
@@ -144,6 +158,10 @@ int main(int argc, const char *argv[])
         command = Command::version;
     } else if (command_string == "merge") {
         command = Command::merge;
+    } else if (command_string == "compress") {
+        command = Command::compress;
+    } else if (command_string == "uncompress") {
+        command = Command::uncompress;
     } else {
         std::cout << "Unknow command: " << command_string << std::endl;
         usage();
@@ -168,7 +186,9 @@ int main(int argc, const char *argv[])
     int numargs = remaining_arguments.size();
     if (!(command == Command::validate && numargs == 1 ||
             command == Command::indent && numargs == 1 ||
+            command == Command::compress && numargs == 1 ||
             command == Command::compact && numargs == 1 ||
+            command == Command::uncompress && numargs == 1 ||
             command == Command::version && numargs == 1)) {
         error("Wrong number of arguments");
     }
@@ -187,6 +207,10 @@ int main(int argc, const char *argv[])
         std::string destination = remaining_arguments[0];
         remaining_arguments.erase(remaining_arguments.begin());
         merge(destination, remaining_arguments);
+    } else if (command == Command::compress) {
+        compress(remaining_arguments[0], 9);
+    } else if (command == Command::uncompress) {
+        compress(remaining_arguments[0], 0);
     }
 
     return 0;

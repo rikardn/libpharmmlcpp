@@ -82,3 +82,15 @@ Example:
 Merge the SOBlocks from multiple SO files together into one file.
 Example:
     sotool merge new.SO.xml file1.SO.xml file2.SO.xml file3.SO.xml 
+
+*** Compress ***
+
+Compress the specified SO file using gzip compression. The compressed file will overwrite the original file.
+Example:
+    sotool compress run1.SO.xml
+            
+*** Uncompress ***
+
+Uncompress the specified SO. The uncompressed file will overwrite the original file.
+Example:
+    sotool uncompress run1.SO.xml

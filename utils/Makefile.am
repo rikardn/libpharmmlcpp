@@ -1,12 +1,14 @@
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
-    README \
+	README \
 	INSTALL \
-    LICENSE \
-    test/testfiles/UseCase1.xml \
-    test/testfiles/Executable_Krippendorff_ModelB.xml \
-    test/testfiles/glucoseKinetics.xml
+	LICENSE \
+	CHANGELOG \
+	licenses/LICENSE-2.0.txt \
+	test/testfiles/UseCase1.xml \
+	test/testfiles/Executable_Krippendorff_ModelB.xml \
+	test/testfiles/glucoseKinetics.xml
 
 transformationsdir = $(pkgdatadir)/transformations
 dist_transformations_DATA = \
@@ -70,5 +72,6 @@ winrelease:
 	cp -r transformations ${WIN_RELEASE_PACKAGE}
 	cp INSTALL ${WIN_RELEASE_PACKAGE}
 	cp README ${WIN_RELEASE_PACKAGE}
+	cp -r licenses ${WIN_RELEASE_PACKAGE}
 	zip -r ${WIN_RELEASE_PACKAGE}.zip ${WIN_RELEASE_PACKAGE}
 	rm -rf ${WIN_RELEASE_PACKAGE}

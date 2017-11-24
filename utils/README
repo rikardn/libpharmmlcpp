@@ -6,6 +6,9 @@ pharmmlutils is authored, maintained and Copyright Rikard Nordgren 2017 and rele
 (See LICENSE for the full license text). The xslt transformation style sheets are released under the Apache license v2.
 The PharmML schemas are copyright EMBL and Novo Nordisk and are under the Apache license v2.
 The SO schema is copyright EMBL and Merck Serono and is under the Apache license v2
+The libxml2 and libxslt libraries is copyright Daniel Veillard and is under the MIT license
+The libiconv library is copyright Free Software Foundation and is under the LGPL license
+The zlib is copyright Jean-loup Gailly and Mark Adler and is under the zlib license
 
 For installation instructions see INSTALL
 

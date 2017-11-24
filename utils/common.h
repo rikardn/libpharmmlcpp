@@ -16,6 +16,20 @@
  */
 
 // Hack for lack of filesystem support in MinGW
+
+#include "config.h"
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <libxml/parser.h>
+#include <libxml/valid.h>
+#include <libxml/xmlschemas.h>
+#include <libxml/catalog.h>
+#include <libxslt/xslt.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
+
 #ifndef WINDOWS
 #include <experimental/filesystem>
 #else

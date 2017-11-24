@@ -189,6 +189,7 @@ int main(int argc, const char *argv[])
             command == Command::compress && numargs == 1 ||
             command == Command::compact && numargs == 1 ||
             command == Command::uncompress && numargs == 1 ||
+            command == Command::merge && numargs >= 2 ||
             command == Command::version && numargs == 1)) {
         error("Wrong number of arguments");
     }

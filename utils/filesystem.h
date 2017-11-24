@@ -17,6 +17,9 @@
 
 // Temporary hack for missing filesystem class in MinGW
 
+#ifndef FILESYSTEM_H_
+#define FILESYSTEM_H_
+
 #ifdef WINDOWS
 #include <string>
 
@@ -83,5 +86,7 @@ namespace std::experimental::filesystem
     }
 
 }
+
+#endif
 
 #endif

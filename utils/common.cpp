@@ -149,36 +149,39 @@ std::string version(std::string filename, std::string type)
 
 void validate(std::string xmlPath, std::string schema_path, fs::path auxpath, std::string type)
 {
-    fs::path path;
     std::string file_version;
-    if (schema_path.empty()) {
-        path = auxpath / fs::path{"schema"};
-        file_version = version(xmlPath, type);
-        std::string pharmml_version;
-        if (type == "PharmML") {
+
+    fs::path catalog_file;
+    fs::path schema_file;
+
+    if (type == "PharmML") {
+        if (schema_path.empty()) {
+            fs::path path = auxpath / fs::path{"schema"};
+            std::string file_version = version(xmlPath, type);
             if (file_version != "0.8.1" && file_version != "0.9") {
                 error("Validate only support PharmML versions 0.8.1 and 0.9");
             }
-            pharmml_version = file_version;
+            path /= fs::path{file_version} / fs::path{"pharmml-schema/definitions"};
+            catalog_file = path / fs::path{"xmlCatalog.xml"};
+            schema_file = path / fs::path{"pharmml.xsd"};
         } else {
+            fs::path path = fs::path{schema_path} / fs::path{"pharmml-schema/definitions"};
+            catalog_file = path / fs::path{"xmlCatalog.xml"};
+            schema_file = path / fs::path{"pharmml.xsd"};
+        }
+    } else {
+        if (schema_path.empty()) {
+            fs::path path = auxpath / fs::path{"schema"};
+            std::string file_version = version(xmlPath, type);
             if (file_version != "0.3.1") {
                 error("Validate only supports SO version 0.3.1");
             }
-            pharmml_version = "0.8.1";  // The PharmML version used by the SO schema
+            catalog_file = path / fs::path{"0.8.1/pharmml-schema/definitions/xmlCatalog.xml"};
+            schema_file = path / fs::path{"SO_" + file_version} / fs::path{"standardisedOutput.xsd"};
+        } else {
+            catalog_file = fs::path{schema_path} / fs::path{"xmlCatalog.xml"};
+            schema_file = fs::path{schema_path} / fs::path{"standardisedOutput.xsd"};
         }
-        path /= fs::path{pharmml_version};
-    } else {
-        path = fs::path{schema_path};
-    }
-
-    path /= fs::path{"pharmml-schema/definitions"};
-    fs::path catalog_file = path / fs::path{"xmlCatalog.xml"};
-    fs::path schema_file;
-   
-    if (type == "PharmML") {
-        schema_file = path / fs::path{"pharmml.xsd"};
-    } else {
-        schema_file = auxpath / fs::path{"schema"} / fs::path{"SO_" + file_version} / fs::path{"standardisedOutput.xsd"};
     }
 
     if (xmlLoadCatalog(catalog_file.c_str()) != 0) {

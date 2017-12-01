@@ -43,11 +43,13 @@ bin_PROGRAMS = pharmmltool sotool
 
 pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS)
 pharmmltool_SOURCES = \
+	filesystem.cpp \
 	common.cpp \
 	pharmmltool.cpp
 
 sotool_LDADD = $(LIBXML2_LIBS)
 sotool_SOURCES = \
+	filesystem.cpp \
 	common.cpp \
 	sotool.cpp
 

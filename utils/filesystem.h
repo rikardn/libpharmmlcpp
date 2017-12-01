@@ -76,15 +76,8 @@ namespace std::experimental::filesystem
                 }
             };
     };
-    bool exists(std::experimental::filesystem::path p) {
-        if (FILE *file = fopen(p.c_str(), "r")) {
-        	fclose(file);
-        	return true;
-    	} else {
-        	return false;
-    	}
-    }
 
+    bool exists(std::experimental::filesystem::path p);
 }
 
 #endif

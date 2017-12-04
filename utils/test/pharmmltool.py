@@ -47,7 +47,10 @@ class Testpharmmltool(unittest.TestCase):
         self.assertEqual(l[1], 'Validation successful: YES (result: 0)')
 
     def test_schema_path(self):
-        output = subprocess.run([exe_path('pharmmltool'), 'validate', testfile_path('glucoseKinetics.xml'), '--schema-path=../schema/0.8.1'], stdout=subprocess.PIPE)
+        schema_path = '../schema/0.8.1'
+        if not os.path.exists(schema_path):
+            schema_path = 'schema/0.8.1'
+        output = subprocess.run([exe_path('pharmmltool'), 'validate', testfile_path('glucoseKinetics.xml'), '--schema-path=' + schema_path], stdout=subprocess.PIPE)
         l = output.stdout.decode('UTF-8').split("\n")
         self.assertEqual(l[1], 'Validation successful: YES (result: 0)')
 

@@ -4,8 +4,8 @@
 !define APPNAME "pharmmlutils"
 !define COMPANYNAME "pharmmlcpp"
 !define DESCRIPTION "Utilities for handling PharmML and SO files"
-!define VERSIONMAJOR 0
-!define VERSIONMINOR 5
+!define VERSIONMAJOR 1
+!define VERSIONMINOR 0
 !define VERSIONBUILD 0
 # These will be displayed by the "Click here for support information" link in "Add/Remove Programs"
 # It is possible to use "mailto:" links in here to open the email client
@@ -24,7 +24,7 @@ LicenseData "LICENSE"
 # This will be in the installer/uninstaller's title bar
 Name "${COMPANYNAME} - ${APPNAME}"
 #Icon "logo.ico"
-outFile "../pharmmlutils-0.5.0-windows-x64.exe"
+outFile "../pharmmlutils-1.0.0-windows-x64.exe"
  
 !include LogicLib.nsh
 !include EnvVarUpdate.nsh

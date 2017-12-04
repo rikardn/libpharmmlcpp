@@ -40,8 +40,9 @@ utils/sotool
 utils/sotool.exe
 pharmml2mdl/pharmml2mdl
 pharmml2poped/pharmml2poped
-utils/pharmmlutils-0.5.0-windows-x64.zip
-utils/pharmmlutils-0.5.0-windows-x64.exe
+utils/*.tar.gz
+utils/pharmmlutils-*-windows-x64.zip
+utils/pharmmlutils-*-windows-x64.exe
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

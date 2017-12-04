@@ -8,7 +8,8 @@ EXTRA_DIST = \
 	licenses/LICENSE-2.0.txt \
 	test/testfiles/UseCase1.xml \
 	test/testfiles/Executable_Krippendorff_ModelB.xml \
-	test/testfiles/glucoseKinetics.xml
+	test/testfiles/glucoseKinetics.xml \
+	test/testfiles/pheno_real.SO.xml
 
 transformationsdir = $(pkgdatadir)/transformations
 dist_transformations_DATA = \
@@ -44,13 +45,17 @@ bin_PROGRAMS = pharmmltool sotool
 pharmmltool_LDADD = $(LIBXML2_LIBS) $(LIBXSLT_LIBS)
 pharmmltool_SOURCES = \
 	filesystem.cpp \
+	filesystem.h \
 	common.cpp \
+	common.h \
 	pharmmltool.cpp
 
 sotool_LDADD = $(LIBXML2_LIBS)
 sotool_SOURCES = \
 	filesystem.cpp \
+	filesystem.h \
 	common.cpp \
+	common.h \
 	sotool.cpp
 
 dist_check_SCRIPTS = test/pharmmltool.py test/sotool.py

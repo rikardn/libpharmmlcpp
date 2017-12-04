@@ -62,8 +62,8 @@ PY_LOG_COMPILER = python3
 WIN_RELEASE_PACKAGE = ${PACKAGE_NAME}-${PACKAGE_VERSION}-windows-x64
 .PHONY: winrelease
 winrelease:
-	rm -f pharmmlutils-0.4-windows-x64.zip
-	rm pharmmlutils-0.4-windows-x64 -rf
+	rm -f pharmmlutils-0.5.0-windows-x64.zip
+	rm pharmmlutils-0.5.0-windows-x64 -rf
 	mkdir -p ${WIN_RELEASE_PACKAGE}
 	cp .libs/pharmmltool.exe ${WIN_RELEASE_PACKAGE}
 	cp .libs/sotool.exe ${WIN_RELEASE_PACKAGE}
@@ -76,4 +76,8 @@ winrelease:
 	cp README ${WIN_RELEASE_PACKAGE}
 	cp -r licenses ${WIN_RELEASE_PACKAGE}
 	zip -r ${WIN_RELEASE_PACKAGE}.zip ${WIN_RELEASE_PACKAGE}
+	cp LICENSE ${WIN_RELEASE_PACKAGE}
+	cp installer.nsi ${WIN_RELEASE_PACKAGE}
+	cp EnvVarUpdate.nsh ${WIN_RELEASE_PACKAGE}
+	makensis ${WIN_RELEASE_PACKAGE}/installer.nsi
 	rm -rf ${WIN_RELEASE_PACKAGE}

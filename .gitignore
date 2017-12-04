@@ -33,7 +33,6 @@ main.exe
 test/test
 pharmmlcpp-*.zip
 pharmmlcpp-*.tar.gz
-pharmmlutils-*.tar.gz
 
 utils/pharmmltool
 utils/pharmmltool.exe
@@ -41,8 +40,8 @@ utils/sotool
 utils/sotool.exe
 pharmml2mdl/pharmml2mdl
 pharmml2poped/pharmml2poped
-utils/pharmmlutils-0.4-windows-x64.zip
-utils/pharmmlutils-0.4-windows-x64
+utils/pharmmlutils-0.5.0-windows-x64.zip
+utils/pharmmlutils-0.5.0-windows-x64.exe
 
 test/xml-roundtrip-test/results
 test/xml-roundtrip-test/output

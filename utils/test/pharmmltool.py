@@ -27,7 +27,7 @@ class Testpharmmltool(unittest.TestCase):
     def test_version(self):
         output = subprocess.run([exe_path('pharmmltool'), '--version'], stdout=subprocess.PIPE)
         l = output.stdout.decode('UTF-8').split("\n")
-        m = re.match("pharmmltool \d+\.\d+$", l[0])
+        m = re.match("pharmmltool \d+\.\d+.\d+$", l[0])
         self.assertTrue(m)
 
     def test_pharmml_version(self):

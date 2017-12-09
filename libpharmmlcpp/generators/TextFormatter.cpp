@@ -51,7 +51,7 @@ namespace pharmmlcpp
     std::string TextFormatter::genIndentation() {
         int amount = this->indentLevel * this->indentSize;
         // Add up all open vectors
-        for (struct VectorLevel vl: this->vectorLevels) {
+        for (auto vl: this->vectorLevels) {
             amount += vl.indentLevel * this->indentSize;
         }
 
